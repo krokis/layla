@@ -1,0 +1,537 @@
+# 3rd party
+fs            = require 'fs'
+path          = require 'path'
+
+Walker        = require './walker'
+Parser        = require '../parser'
+Plugin        = require '../plugin'
+Expression    = require '../node/expression'
+Operation     = require '../node/expression/operation'
+Call          = require '../node/expression/call'
+LiteralNumber = require '../node/expression/literal/number'
+Break         = require '../node/statement/break'
+Continue      = require '../node/statement/continue'
+Object        = require '../node/object'
+Document      = require '../node/object/document'
+List          = require '../node/object/list'
+Block         = require '../node/object/block'
+Number        = require '../node/object/number'
+RegExp        = require '../node/object/regexp'
+Boolean       = require '../node/object/boolean'
+String        = require '../node/object/string'
+Null          = require '../node/object/null'
+Range         = require '../node/object/range'
+Function      = require '../node/object/function'
+URL           = require '../node/object/url'
+Color         = require '../node/object/color'
+Property      = require '../node/object/property'
+RuleSet       = require '../node/object/rule-set'
+AtRule        = require '../node/object/at-rule'
+Scope         = require '../node/object/scope'
+
+TypeError     = require '../error/type'
+RuntimeError  = require '../error/runtime'
+InternalError = require '../error/internal'
+
+class Evaluator extends Walker
+
+  constructor: (@layla, scope) ->
+
+  ###
+  ###
+  evaluateNode: (node, self, scope) ->
+    if node
+      method = "evaluate#{node.type}"
+      if method of this
+        return this[method].call this, node, self, scope
+
+    unless node instanceof Object
+      throw new InternalError "Don't know how to evaluate node #{node.type}"
+
+    return node
+
+  ###
+  TODO: allow interpolation here?
+  col = #`'a2f'`
+  ###
+  evaluateLiteralColor: (node, self, scope) ->
+    hex = node.value.substr 1
+    alpha = 255
+
+    switch hex.length
+      when 1
+        red = green = blue = 17 * parseInt hex, 16
+      when 2
+        red = green = blue = parseInt hex, 16
+      when 3, 4
+        red   = 17 * parseInt hex[0], 16
+        green = 17 * parseInt hex[1], 16
+        blue  = 17 * parseInt hex[2], 16
+        if hex.length > 3
+          alpha = 17 * parseInt hex[3], 16
+      when 6, 8
+        red   = parseInt (hex.substr 0, 2), 16
+        green = parseInt (hex.substr 2, 2), 16
+        blue  = parseInt (hex.substr 4, 2), 16
+        if hex.length > 6
+          alpha = parseInt (hex.substr 6, 2), 16
+      else
+        throw new InternalError "something"
+
+    new Color red / 255, green / 255, blue / 255, alpha / 255
+
+  ###
+  ###
+  evaluateLiteralString: (node, self, scope) ->
+    value = ''
+
+    for chunk in [].concat node.value
+      if typeof chunk is 'string'
+        value += chunk
+      else
+        val = @evaluateNode chunk, self, scope
+        value += val.toString()
+
+    new String value, node.quote
+
+  ###
+  ###
+  evaluateLiteralThis: (node, self, scope) -> self
+
+  ###
+  ###
+  evaluateLiteralURL: (node, self, scope) ->
+    val = @evaluateNode node.value, self, scope
+    new URL val.value, val.quote
+
+  ###
+  ###
+  evaluateCall: (node, self, scope) ->
+    switch node.value
+      when 'true'
+        Boolean.true
+      when 'false'
+        Boolean.false
+      when 'null'
+        Null.null
+      else
+        if scope.has node.value
+          if node.arguments?
+            args = (@evaluateNode arg, self, scope for arg in node.arguments)
+          else
+            args = []
+          (scope.get node.value, self, args...) or Null.null
+        else
+          new String node.value, null
+
+  ###
+  ###
+  evaluateLiteralNumber: (node) ->
+    new Number node.value, node.unit?.value
+
+  ###
+  ###
+  evaluateLiteralRegExp: (node, self, scope) ->
+    new RegExp node.value, node.flags
+
+  ###
+  ###
+  evaluateLiteralFunction: (node, self, scope) ->
+    block = node.block
+    in_args = node.arguments
+
+    new Function (self, args...) =>
+      try
+        scp = new Scope scope
+
+        l = in_args.length
+
+        for arg, i in args
+          if i < l
+            scp.set in_args[i].name, arg
+          else
+            break
+
+        for d in [i...in_args.length]
+          if in_args[d].value
+            scp.set in_args[d].name, (@evaluateNode in_args[d].value, self, scp)
+
+        @evaluateBody block.body, self, scp
+        return
+
+      catch e
+        if e instanceof Object
+          return e
+        else
+          throw e
+
+  ###
+  ###
+  evaluateGroup: (node, self, scope) ->
+    @evaluateNode node.expression, self, scope
+
+  ###
+  ###
+  evaluateLiteralList: (node, self, scope) ->
+    new List (@evaluateNode item, self, scope for item in node.body), node.separator
+
+  ###
+  ###
+  evaluateUnaryOperation: (node, self, scope) ->
+    (@evaluateNode node.right, self, scope).operate node.operator
+
+  ###
+  TODO Reimplement this mess as a Node methods
+  ###
+  evaluateBinaryOperation: (node, self, scope) ->
+    switch node.operator
+      when '=', '|='
+        @evaluateAssignment node, self, scope
+
+      when '.'
+        left = @evaluateNode node.left, self, scope
+
+        if node.right instanceof Call
+          if node.right.arguments?
+            args = (@evaluateNode arg, self, scope for arg in node.right.arguments)
+          else
+            args = []
+
+          return (left.callMethod node.right.name, args...) or Null.null
+        else
+          throw new Error "Bad member expression"
+
+      when '('
+        left = @evaluateNode node.left, self, scope
+        unless left instanceof Function
+          throw new ReferenceError "Call to non-function"
+
+        args = (@evaluateNode arg, self, scope for arg in node.right)
+
+        ret = left.invoke.call left, self, args...
+        return ret or Null.null
+
+      else
+        left = @evaluateNode node.left, self, scope
+        right = @evaluateNode node.right, self, scope
+        left.operate node.operator, right
+
+  evaluateOperation: (node, self, scope) ->
+    if node.right and node.left
+      @evaluateBinaryOperation node, self, scope
+    else
+      @evaluateUnaryOperation node, self, scope
+
+  isReference: (node) ->
+    (node instanceof Operation) and
+    node.binary and
+    (node.right instanceof Call or node.right instanceof String) and
+    (node.operator is '.' or node.operator is '::')
+
+  ###
+  TODO Refactor!
+  Maybe the left node SHOULD be evaluated, but maybe in a new scope,
+  so existing defined factors on current scope are not applied
+  ###
+  evaluateUnitAssignment: (node, self, scope) ->
+    value = parseFloat node.left.value
+    unit = node.left.unit.value
+
+    unless unit and value isnt 0
+      throw new Error "Bad unit definition"
+
+    unless node.operator is '|=' and Number.isDefined unit
+      right = (@evaluateNode node.right, self, scope)
+
+      unless right.unit and right.value isnt 0
+        throw new Error "Bad unit definition"
+
+      # This is a temporary hack, because units are not scoped yet
+      left = new Number value
+      left.unit = unit
+
+      Number.define left, right, yes
+
+    @evaluateNode node.left, self, scope
+
+  ###
+  ###
+  evaluateAssignment: (node, self, scope) ->
+    getter = setter = null
+
+    {left, right} = node
+
+    if left instanceof LiteralNumber
+      return @evaluateUnitAssignment node, self, scope
+
+    if left instanceof Call
+      name = left.value
+      getter = scope.get.bind scope, name
+      setter = scope.set.bind scope, name
+    else if @isReference left
+      if left.right instanceof String
+        name = @evaluateNode left.right, self, scope
+      else
+        name = left.right.value
+
+      ref = @evaluateNode left.left, self, scope
+
+      if left.operator is '.'
+        getter = ref.callMethod.bind ref, name
+        setter = ref.callMethod.bind ref, "#{name}="
+      else
+        getter = ref.get.bind ref, name
+        setter = ref.set.bind ref, name
+
+    unless getter and setter
+      throw new TypeError "Bad left side of assignment"
+
+    if node.operator is '|='
+      curr = getter()
+      return curr unless curr.isNull()
+
+    value = (@evaluateNode right, self, scope).clone()
+    setter value
+    value
+
+  ###
+  ###
+  evaluateWith: (node, self, scope) ->
+    self = @evaluateNode node.reference, self, scope
+    unless self instanceof Block
+      throw new RuntimeError "Can only use `with` with blocks"
+    @evaluateBody node.body, self, scope
+    self
+
+  ###
+  ###
+  evaluateConditional: (node, self, scope) ->
+    if node.condition
+      met = (@evaluateNode node.condition, self, scope).toBoolean()
+    else
+      met = yes
+
+    if met isnt node.negate
+      @evaluateBody node.block.body, self, scope
+    else if node.elses
+      for els in node.elses
+        unless els.condition
+          met = yes
+        else
+          met = (@evaluateNode els.condition, self, scope).toBoolean()
+          met = not met if els.negate
+
+        if met
+          @evaluateBody els.block.body, self, scope
+          break
+
+    return #undefined
+
+  evaluateBreak: (node, self, scope) ->
+    if node.depth?
+      depth = @evaluateNode node.depth, self, scope
+
+      unless depth instanceof Number
+        throw new TypeError "Bad argument for `break`"
+
+      depth = parseInt depth.value, 10
+
+      unless depth > 0
+        throw new TypeError "Bad argument for `break`"
+    else
+      depth = 1
+
+    node = new node.constructor
+    node.depth = depth
+
+    throw node
+
+  evaluateContinue: (node, self, scope) ->
+    if node.depth?
+      depth = @evaluateNode node.depth, self, scope
+
+      unless depth instanceof Number
+        throw new Error "Bad argument for `continue`"
+
+      depth = parseInt depth.value, 10
+
+      unless depth > 0
+        throw new Error "Bad argument for `continue`"
+    else
+      depth = 1
+
+    node = new node.constructor
+    node.depth = depth
+
+    throw node
+
+  evaluateReturn: (node, self, scope) ->
+    throw @evaluateNode node.expression, self, scope
+
+  ###
+  ###
+  evaluateFor: (node, self, scope) ->
+    expression = @evaluateNode node.expression, self, scope
+
+    expression.each (key, value) =>
+      scope.set node.value.value, value
+
+      if node.key?
+        scope.set node.key.value, key
+
+      try
+        @evaluateBody node.block.body, self, scope
+      catch e
+        if e instanceof Break
+          return no unless --e.depth > 0
+        else if e instanceof Continue
+          return unless --e.depth > 0
+        throw e
+
+    return # undefined
+
+  ###
+  ###
+  evaluateLoop: (node, self, scope) ->
+    loop
+      try
+        if node.condition
+          met = (@evaluateNode node.condition, self, scope).toBoolean()
+          if met is node.negate
+            break
+        @evaluateBody node.block.body, self, scope
+      catch e
+        if e instanceof Break
+          break unless --e.depth > 0
+        else if e instanceof Continue
+          continue unless --e.depth > 0
+        throw e
+
+    return #undefined
+
+  resolvePath: (path, base) ->
+    path
+
+  doImportFile: (file, self, scope) ->
+    source = fs.readFileSync file, 'utf-8'
+    ast = @layla.parse source
+    scope.paths.push path.dirname file
+    imported = @evaluate ast, scope, self
+    scope.paths.pop()
+
+  importFile: (file, self, scope) ->
+    for p in scope.paths
+      real_path = path.join p, file
+
+      if fs.existsSync real_path
+        return @doImportFile real_path, self, scope
+
+    throw "Could not import file: #{file}"
+
+  ###
+  ###
+  evaluateImport: (node, self, scope) ->
+    for arg in node.arguments
+      [name, file] = arg
+
+      file = @evaluateNode file, self, scope
+
+      unless file instanceof URL or file instanceof String
+        throw new Error "Bad argument for `import`"
+
+      file = file.value
+      real_path = @resolvePath file
+
+      if name isnt '&'
+        _self = new Block
+      else
+        _self = self
+
+      @importFile real_path, _self, scope
+
+      if name isnt '&'
+        scope.set name, _self
+
+    Null.null
+
+  ###
+  ###
+  evaluateUse: (node, self, scope) ->
+    for arg in node.arguments
+      name = @evaluateNode arg
+      unless name instanceof String
+        throw new Error "Bad argument for `use`"
+      @layla.use name.value
+
+    Null.null
+
+  ###
+  ###
+  evaluatePropertyDeclaration: (node, self, scope) ->
+    value = (@evaluateNode node.value, self, scope).clone()
+
+    for name in node.names
+      name = (@evaluateNode name, self, scope)
+      property = new Property name.value, value
+      self.items.push property
+
+    property
+
+  ###
+  ###
+  evaluateBody: (body, self, scope) ->
+    @evaluateNode node, self, scope for node in body
+
+  ###
+  ###
+  evaluateLiteralBlock: (node, self, scope) ->
+    block = new Block
+    @evaluateBody node.body, block, scope
+    block
+
+  evaluateSelector: (selector, self, scope) ->
+    if self instanceof RuleSet
+      ret = []
+      for sel in selector
+        if 0 > sel.indexOf '&'
+          sel = "& #{sel}"
+        for psel in self.selector
+          ret.push sel.replace /&/g, psel
+      ret
+    else
+      (sel for sel in selector)
+
+  ###
+  ###
+  evaluateRuleSetDeclaration: (node, self, scope) ->
+    rule = new RuleSet
+    self.items.push rule
+    rule.selector = @evaluateSelector node.selector, self, scope
+    @evaluateBody node.block.body, rule, scope
+    rule
+
+  ###
+  ###
+  evaluateAtRuleDeclaration: (node, self, scope) ->
+    rule = new AtRule
+    self.items.push rule
+    rule.name = node.name
+    rule.arguments = node.arguments
+
+    if node.block
+      (@evaluateBody node.block.body, rule, scope)
+    else
+      rule.block = null
+
+    rule
+
+  ###
+  ###
+  evaluate: (node, scope = null, self = null) ->
+    doc = new Document
+    self ?= doc
+    scope ?= new Scope
+    @evaluateBody node.body, self, scope
+    doc
+
+module.exports = Evaluator

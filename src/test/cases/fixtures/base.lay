@@ -1,0 +1,8 @@
+$base-font |= 'Helvetica'
+
+body {
+  p {
+    font-family: $base-font
+    font-size: 12px
+  }
+}

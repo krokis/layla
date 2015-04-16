@@ -1,0 +1,2 @@
+describe 'Style', ->
+  #require './coffee'

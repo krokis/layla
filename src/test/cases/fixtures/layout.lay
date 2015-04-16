@@ -1,0 +1,12 @@
+$body-width |= 940px
+
+body {
+  max-width: $body-width
+
+  header {
+    position: absolute
+    top: 0
+  }
+}
+
+
