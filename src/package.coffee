@@ -4,7 +4,7 @@ module.exports =
   description:      ""
   author:           "Jaume Alemany <jaume@krokis.com>"
   contributors:     []
-  license:          "BSD"
+  license:          "BSD-3-Clause"
   readmeFilename:   "Readme.md"
   keywords:         ["css"]
   repository:
