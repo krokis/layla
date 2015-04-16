@@ -56,7 +56,11 @@ class Block extends List
   ###
   extend: (blocks...) ->
 
-  hasProperty: ->
+  hasProperty: (name) ->
+    @items.some (item) ->
+      (item instanceof Property) and
+      (item.name is name) and
+      (not item.value.isNull())
 
   ###
   Find a nested block.
@@ -66,7 +70,7 @@ class Block extends List
   '.properties': ->
     new List (@items.filter (obj) -> obj instanceof Property)
 
-  '.has-property?': (name) -> Boolean.new @hasProperty name
+  '.has-property?': (name) -> Boolean.new @hasProperty name.value
 
   ###
   '.extend':  @::['.include']

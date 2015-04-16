@@ -472,6 +472,9 @@ class Evaluator extends Walker
 
     for name in node.names
       name = (@evaluateNode name, self, scope)
+
+      continue if node.conditional and self.hasProperty(name.value)
+
       property = new Property name.value, value
       self.items.push property
 

@@ -21,7 +21,6 @@ module.exports =
                       --compilers coffee:coffee-script/register \
                       --slow 500 \
                       --reporter spec \
-                      --inline-diffs \
                       src/test/**/index.coffee
                     """
     start:          "node ./bin/layla -i"

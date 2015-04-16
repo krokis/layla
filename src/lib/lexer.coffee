@@ -37,7 +37,7 @@ class Lexer extends Class
   RE_UNIT                  = /(%|(?:[a-z]+))/i
   RE_REGEXP                = /\/([^\s](?:(?:\\.)|[^\\\/\n\r])+)\/([a-z]+)?/i
   RE_COLOR                 = /#([a-f\d]{1,2}){1,4}/i
-  RE_PUNCTUATION           = /[\{\}\(\),;:=&"'`]/
+  RE_PUNCTUATION           = /[\{\}\(\),;:=&"'`\|]/
   RE_ALL_WHITESPACE        = /\s+/
   RE_HORIZONTAL_WHITESPACE = /[ \t]+/
   RE_TRAILING_WHITESPACE   = /[ \t]*(\n|$)/

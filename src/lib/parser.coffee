@@ -506,11 +506,20 @@ class Parser extends Lexer
     start = @position
 
     if names = @parsePropertyNames()
-      if @read PUNC, ':', /[ \t]*/
-        unless @peek PUNC, ':', no
+      if op = @read PUNC, ['|', ':'], /[ \t]*/
+        other = @peek PUNC, ':', no
+
+        loop
+          if op.value is '|'
+            break unless other
+            @moveTo other.end
+          else
+            break if other
+
           return @makeNode Property, (prop) ->
             prop.names = names
             prop.start = names[0].start
+            prop.conditional = op.value is '|'
             return no unless prop.value = @parseExpression()
 
     @moveTo start

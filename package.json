@@ -16,7 +16,7 @@
   "directories": {},
   "main": "./index.js",
   "scripts": {
-    "test": "node ./node_modules/mocha/bin/mocha --require should --compilers coffee:coffee-script/register --slow 500 --reporter spec --inline-diffs src/test/**/index.coffee",
+    "test": "node ./node_modules/mocha/bin/mocha --require should --compilers coffee:coffee-script/register --slow 500 --reporter spec src/test/**/index.coffee",
     "start": "node ./bin/layla -i"
   },
   "bin": {

@@ -202,6 +202,29 @@ Blocks
 
 - Can use `|:` to conditionally set the property only a property with the same name has not been already or if it's `null`
 
+  ~~~ lay
+  body {
+    color: red
+    border-left-width, border-right-width|: 1px
+    font|: null
+    color|: blue
+    border-left-width|: 2px
+    border-top-width|: 2px
+    font|: 'Arial'
+  }
+  ~~~
+
+  ~~~ css
+  body {
+    color: red;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    font: null;
+    border-top-width: 2px;
+    font: 'Arial';
+  }
+  ~~~
+
 - Empty properties are not output
 
 ## Methods
@@ -256,6 +279,46 @@ Blocks
   ~~~
 
 ### `.has-property?`
+
+- Returns `true` if the block has a property with given name, and it's not `null`.
+
+  ~~~~ lay
+  body {
+    color: red
+    has-color: &.has-property?(color)
+    has-background-color: &.has-property?(background-color)
+    background-color: white
+    has-background-color: &.has-property?(background-color)
+  }
+  ~~~~
+
+  ~~~~ css
+  body {
+    color: red;
+    has-color: true;
+    has-background-color: false;
+    background-color: white;
+    has-background-color: true;
+  }
+  ~~~~
+
+- Is case sensitive
+
+  ~~~~ lay
+  body {
+    color: red
+    has-color: &.has-property?(color)
+    has-Color: &.has-property?(Color)
+  }
+  ~~~~
+
+  ~~~~ css
+  body {
+    color: red;
+    has-color: true;
+    has-Color: false;
+  }
+  ~~~~
 
 ### `rules`
 
