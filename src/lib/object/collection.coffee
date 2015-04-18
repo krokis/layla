@@ -20,28 +20,6 @@ class Collection extends Indexed
   push: (objs...) ->
     @items.push obj.clone() for obj in objs
 
-  contains: (other) ->
-    for value in @items
-      return yes if value.isEqual other
-    return no
-
-  isEqual: (other) ->
-    if other instanceof Collection
-      if other.items.length is @items.length
-        for i in [0...@items.length]
-          return no unless @items[i].isEqual other.items[i]
-        return yes
-    return no
-
-  toJSON: ->
-    json = super
-    json.separator = @separator
-    json.items = @items
-    json
-
-  clone: (items = @items, etc...) ->
-    super (obj.clone() for obj in items), etc...
-
   '.+': (other) ->
     if other instanceof Collection
       return @clone @items.concat other.items
@@ -81,13 +59,6 @@ class Collection extends Indexed
 
     @items.slice start, end
 
-  isUnique: ->
-    for a in @items
-      for b in @items
-        if a isnt b and a.isEqual b
-          return no
-    yes
-
   unique = (arr) ->
     vals = []
 
@@ -97,6 +68,35 @@ class Collection extends Indexed
           return no
       vals.push item
       return yes
+
+  contains: (other) ->
+    for value in @items
+      return yes if value.isEqual other
+    return no
+
+  isUnique: ->
+    for a in @items
+      for b in @items
+        if a isnt b and a.isEqual b
+          return no
+    yes
+
+  isEqual: (other) ->
+    if other instanceof Collection
+      if other.items.length is @items.length
+        for i in [0...@items.length]
+          return no unless @items[i].isEqual other.items[i]
+        return yes
+    return no
+
+  toJSON: ->
+    json = super
+    json.separator = @separator
+    json.items = @items
+    json
+
+  clone: (items = @items, etc...) ->
+    super (obj.clone() for obj in items), etc...
 
   '.length': -> new Number @length()
 

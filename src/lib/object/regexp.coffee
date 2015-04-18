@@ -105,16 +105,16 @@ class RegExp extends Object
   '.multiline': -> @clone().setFlag 'm', yes
 
 do ->
-  _match = String::match
+  supah = String::match
 
   String::['.~'] = (other, etc...) ->
     if other instanceof RegExp
       other.match this
     else
-      _match.call @, other, etc...
+      supah.call @, other, etc...
 
 do ->
-  _divide = String::divide
+  supah = String::divide
 
   String::['./'] = (other) ->
     if other instanceof RegExp
@@ -124,7 +124,7 @@ do ->
       reg = reg.replace /[-\/\\^$*+?.()|[\]{}]/g, '\\$&'
       reg = new global.RegExp "#{reg}+"
     else
-      return _divide.call this, other
+      return supah.call this, other
 
     chunks = (@value.split reg)
              .filter (str) -> str isnt ''

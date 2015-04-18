@@ -86,7 +86,7 @@ Number::['...'] = (other) ->
 
 
 do ->
-  _paamayim = List::['.::']
+  supah = List::['.::']
 
   List::['.::'] = (other, etc...) ->
     if other instanceof Range
@@ -95,12 +95,12 @@ do ->
         slice.items.push @['.::'] idx
       slice
     else
-      _paamayim.call @, other, etc...
+      supah.call @, other, etc...
 
 do ->
   {min, max} = Math
 
-  _paamayim = String::['.::']
+  supah = String::['.::']
 
   String::['.::'] = (other, etc...) ->
     if other instanceof Range
@@ -121,6 +121,6 @@ do ->
           idx = (idx + 1) % len
       @clone str
     else
-      _paamayim.call @, other, etc...
+      supah.call @, other, etc...
 
 module.exports = Range

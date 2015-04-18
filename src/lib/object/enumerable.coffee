@@ -53,9 +53,7 @@ class Enumerable extends Object
 
   ###
   '.min': -> @minValue() or Null.null
-
   '.max': -> @maxValue() or Null.null
-
   ###
 
 module.exports = Enumerable

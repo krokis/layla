@@ -55,5 +55,4 @@ class Indexed extends Enumerable
     else
       throw new TypeError
 
-
 module.exports = Indexed
