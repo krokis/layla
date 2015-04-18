@@ -30,7 +30,6 @@ task 'build:all', 'Build everything',  ->
   invoke 'build:bin'
   invoke 'build:license'
   invoke 'build:package'
-  invoke 'build:etc'
   invoke 'build:dist'
 
 task 'build:bin', 'Build binary', (options) ->
@@ -64,9 +63,6 @@ task 'build:package', 'Build node package', (options) ->
   source = readFile "#{__dirname}/src/index.coffee"
   js = coffee.compile source, bare: yes, header: no
   writeFile "#{__dirname}/index.js", js
-
-task 'build:etc', 'Build etc files', (options) ->
-  # tmLanguage
 
 task 'build:dist', 'Build browserified lib', (options) ->
   fs = require 'fs'

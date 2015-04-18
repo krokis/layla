@@ -13,10 +13,6 @@ String     = require './object/string'
 Error      = require './object/scope'
 Scope      = require './object/scope'
 
-# Core plugins
-Size         = require './plugins/css-extras/size'
-Clearfix     = require './plugins/clearfix'
-
 class Layla
 
   # Library version
@@ -43,8 +39,6 @@ class Layla
     @evaluator = new Evaluator @, @scope
     @normalizer = new Normalizer
     @emitter = new CSSEmitter
-    @register Size
-    @register Clearfix
 
   register: (plugin, name) ->
     name ?= plugin.name.toLowerCase()
