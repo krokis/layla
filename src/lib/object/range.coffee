@@ -1,29 +1,32 @@
+Indexed   = require './indexed'
 List      = require './list'
 Number    = require './number'
 String    = require './string'
 TypeError = require '../error/type'
 
-# TODO this should *not* extend List. This should extend `Indexed`
-class Range extends List
+class Range extends Indexed
 
   {abs, floor} = Math
-
-  min: 0
-  max: 0
-  resolution: 1
-  unit: null
 
   @property 'items',
     get: -> ([@min..@max]).map (item) => new Number item, @unit
 
+  @property 'resolution',
+    get: -> if @min >= @max then -1 else 1
+
   length: -> 1 + abs (@max - @min)
 
-  constructor: (@min = 0, @max = 0, @unit = null, @resolution = 1) ->
+  getByIndex: (index) -> new Number @min + index * @resolution
+
+  constructor: (@min = 0, @max = 0, @unit = null) ->
     super()
     @min = floor @min
     @max = floor @max
 
-  push: (args...) ->
+  ###
+  TODO this is buggy
+  ###
+  '.<<': (args...) ->
     # TODO check units
     vals = []
     for arg in args
@@ -40,7 +43,7 @@ class Range extends List
     @min = Math.min @min, vals...
     @max = Math.max @max, vals...
 
-    super
+    return @
 
   convert: (unit) ->
     if unit isnt ''
@@ -50,10 +53,9 @@ class Range extends List
 
     return @
 
-  '.<<': (other) ->
-    # TODO do a custom, faster << method
-    super
-
+  ###
+  TODO this is buggy
+  ###
   contains: (other) ->
     try
       other = other.convert @unit
@@ -61,10 +63,12 @@ class Range extends List
     catch
       no
 
-  clone: (min = @min, max = @max, unit = @unit) ->
-    new @constructor min, max, unit
+  clone: (min = @min, max = @max, unit = @unit, etc...) ->
+    super min, max, unit, etc...
 
   '.convert': (args...) -> @convert args...
+
+  '.list': -> new List @items
 
 Number::['...'] = (other) ->
   if other instanceof Number
@@ -79,6 +83,19 @@ Number::['...'] = (other) ->
     return new Range @value, other.value, unit
 
   throw new TypeError "Cannot make a range with that: #{other.type}"
+
+
+do ->
+  _paamayim = List::['.::']
+
+  List::['.::'] = (other, etc...) ->
+    if other instanceof Range
+      slice = @clone []
+      for idx in other.items
+        slice.items.push @['.::'] idx
+      slice
+    else
+      _paamayim.call @, other, etc...
 
 do ->
   {min, max} = Math
@@ -104,6 +121,6 @@ do ->
           idx = (idx + 1) % len
       @clone str
     else
-      _paamayim.call this, other, etc...
+      _paamayim.call @, other, etc...
 
 module.exports = Range

@@ -55,7 +55,8 @@ class CSSEmitter extends Emitter
     return str
 
   emitRange: (range) ->
-    @emitList range
+    list = range['.list']()
+    @emitList list
 
   emitList: (list) ->
     sep = "#{list.separator.trim()} "
