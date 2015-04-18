@@ -1,8 +1,11 @@
 Class     = require './class'
 
-TypeError = require './error/type'
+TypeError           = require './error/type'
+NotImplementedError = require './error/not-implemented'
 
 class Object extends Class
+
+  @NOT_IMPLEMENTED: (name) -> throw new NotImplementedError
 
   @new: (args...) ->
     new (@bind.apply @, args)

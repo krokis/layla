@@ -54,13 +54,12 @@ class CSSEmitter extends Emitter
       str = str.substr 0, (str.length - 1)
     return str
 
-  emitRange: (range) ->
-    list = range['.list']()
-    @emitList list
-
   emitList: (list) ->
     sep = "#{list.separator.trim()} "
     (list.items.map (item) => @emit item).join sep
+
+  emitRange: (range) ->
+    (range.items.map (item) => @emit item).join ' '
 
   emitBlock: (block) ->
     css = "{\n#{@indent (@emitBody block.items)}\n}"

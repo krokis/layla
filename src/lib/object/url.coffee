@@ -101,6 +101,8 @@ class URL extends Object
     else
       throw new Error "Bad URL host"
 
+  '.domain': -> #TODO
+
   '.port': -> if @port? then new String @port, @quote
 
   '.port=': (port) ->

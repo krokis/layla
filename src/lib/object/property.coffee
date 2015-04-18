@@ -5,13 +5,9 @@ List   = require './list'
 
 class Property extends Object
 
-  name: null
-  value: null
-
   constructor: (@name, @value = Null.null) ->
 
-  isEmpty: ->
-    @value.isNull()
+  isEmpty: -> @value.isNull()
 
   isEqual: (other) ->
     (other instanceof Property) and
@@ -24,8 +20,8 @@ class Property extends Object
     json.value = @value
     json
 
-  clone: (name = @name, value = @value) ->
-    super name, value.clone()
+  clone: (name = @name, value = @value, etc...) ->
+    super name, value.clone(), etc...
 
   reprValue: -> "#{@name}: #{@value.repr()}"
 

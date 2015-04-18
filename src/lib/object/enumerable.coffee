@@ -2,27 +2,25 @@ Object = require '../object'
 Null   = require './null'
 Number = require './number'
 
-NotImplementedError = require '../error/not-implemented'
-
 class Enumerable extends Object
 
-  length: -> throw new NotImplementedError
+  length: -> @NOT_IMPLEMENTED
 
-  get: (key) -> throw new NotImplementedError
+  get: (key) -> @NOT_IMPLEMENTED
 
-  reset: -> throw new NotImplementedError
+  reset: -> @NOT_IMPLEMENTED
 
-  next: -> throw new NotImplementedError
+  next: -> @NOT_IMPLEMENTED
 
   currentValue: -> @get @currentKey()
 
-  currentKey: -> throw new NotImplementedError
+  currentKey: -> @NOT_IMPLEMENTED
 
-  firstKey: -> throw new NotImplementedError
+  firstKey: -> @NOT_IMPLEMENTED
 
-  lastKey: -> throw new NotImplementedError
+  lastKey: -> @NOT_IMPLEMENTED
 
-  each: -> throw new NotImplementedError
+  each: -> @NOT_IMPLEMENTED
 
   firstValue: ->
     @get @firstKey()

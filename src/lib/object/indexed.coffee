@@ -2,8 +2,6 @@ Enumerable = require './enumerable'
 Null       = require './null'
 Number     = require './number'
 
-NotImplementedError = require '../error/not-implemented'
-
 class Indexed extends Enumerable
 
   reset: -> @index = 0
@@ -22,7 +20,7 @@ class Indexed extends Enumerable
     if 0 <= @index <= @length()
       @index++
 
-  getByIndex: (index) -> throw new NotImplementedError
+  getByIndex: @NOT_IMPLEMENTED
 
   get: (key) ->
     if ('number' is typeof (key + 0)) and (0 <= key < @length())

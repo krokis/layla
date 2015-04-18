@@ -20,12 +20,11 @@ class List extends Collection
 
   '.spaces': -> @clone null, ' '
 
+  '.list': -> @
+
 Object::['.list'] = ->
   if @ instanceof Collection
-    if @ instanceof List
-      @
-    else
-      new List @items
+    new List @items
   else
     new List [@]
 

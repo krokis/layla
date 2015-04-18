@@ -361,6 +361,10 @@ URLs
   foo: url('/movies/');
   ~~~
 
+### `domain`
+
+- Returns the hostname, without `www.`
+
 ### `http?`
 
 - Returns `true` if the URL has a protocol and it's 'http'

@@ -40,6 +40,8 @@ class RegExp extends Object
       if flags?.length
         @setFlag flag, yes for flag in flags
 
+  @escape: (str) -> str.replace /[-\/\\^$*+?.()|[\]{}]/g, '\\$&'
+
   setFlag: (flag, value) ->
     switch flag
       when 'm'
@@ -61,32 +63,28 @@ class RegExp extends Object
 
   constructor: (@source, @flags) -> @build()
 
+  isEqual: (other) ->
+    (other instanceof RegExp) and
+    (other.source is @source) and
+    (other.flags is @flags)
+
+  toString: -> @source
+
+  clone: (source = @source, flags = @flags, etc...) ->
+    super source, flags, etc...
+
+  reprValue: -> "/#{@constructor.escape source}/#{@flags}"
+
   ###
   TODO: convert any object to string with `.string`?
   ###
-  match: (other) ->
+  '.~': (other) ->
     if other instanceof String
       if m = other.value.match @value
         return new List m.map (str) -> other.clone str
       return Null.null
 
     throw new Error "Cannot match that!"
-
-  isEqual: (other) ->
-    (other instanceof RegExp) and
-    (other.source is @source) and
-    (other.global is @global) and
-    (other.multiline is @multiline) and
-    (other.insensitive is @insensitive)
-
-  toString: -> @source
-
-  clone: (source = @source, flags = @flags) ->
-    super source, flags
-
-  reprValue: -> "/#{@source}/#{@flags}"
-
-  '.~': @::match
 
   '.global?': -> Boolean.new @global
 
@@ -109,7 +107,7 @@ do ->
 
   String::['.~'] = (other, etc...) ->
     if other instanceof RegExp
-      other.match this
+      other['.~'] this
     else
       supah.call @, other, etc...
 
@@ -120,8 +118,7 @@ do ->
     if other instanceof RegExp
       reg = other.value
     else if other instanceof String
-      reg = other.value
-      reg = reg.replace /[-\/\\^$*+?.()|[\]{}]/g, '\\$&'
+      reg = RegExp.escape other.value
       reg = new global.RegExp "#{reg}+"
     else
       return supah.call this, other
