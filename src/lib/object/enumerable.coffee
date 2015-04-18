@@ -2,7 +2,7 @@ Object = require '../object'
 Null   = require './null'
 Number = require './number'
 
-NotImplementedError = require '../../error/not-implemented'
+NotImplementedError = require '../error/not-implemented'
 
 class Enumerable extends Object
 

@@ -1,7 +1,7 @@
 List      = require './list'
 Number    = require './number'
 String    = require './string'
-TypeError = require '../../error/type'
+TypeError = require '../error/type'
 
 # TODO this should *not* extend List. This should extend `Indexed`
 class Range extends List

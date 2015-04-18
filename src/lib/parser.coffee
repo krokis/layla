@@ -27,7 +27,7 @@ AtRule       = require './node/statement/declaration/rule/at-rule'
 RuleSet      = require './node/statement/declaration/rule/rule-set'
 LineComment  = require './node/comment/line'
 BlockComment = require './node/comment/block'
-Document     = require './node/object/document'
+Root         = require './node/root'
 
 SyntaxError  = require './error/syntax'
 
@@ -738,13 +738,13 @@ class Parser extends Lexer
 
   ###
   ###
-  parseDocument: ->
-    @makeNode Document, (doc) ->
+  parseRoot: ->
+    @makeNode Root, (doc) ->
       doc.source = @source
       doc.body = @parseBody()
 
   parse: (source) ->
     @prepare source
-    @parseDocument()
+    @parseRoot()
 
 module.exports = Parser

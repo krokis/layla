@@ -3,7 +3,7 @@ Boolean   = require './boolean'
 Null      = require './null'
 String    = require './string'
 List      = require './list'
-TypeError = require '../../error/type'
+TypeError = require '../error/type'
 
 class RegExp extends Object
 

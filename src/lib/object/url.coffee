@@ -7,8 +7,8 @@ Null        = require './null'
 String      = require './string'
 Number      = require './number'
 
-Error     = require '../../error'
-TypeError = require '../../error/type'
+Error     = require '../error'
+TypeError = require '../error/type'
 
 class URL extends Object
 

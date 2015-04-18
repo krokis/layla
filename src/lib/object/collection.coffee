@@ -3,8 +3,8 @@ Indexed    = require './indexed'
 Number     = require './number'
 Null       = require './null'
 
-TypeError           = require '../../error/type'
-NotImplementedError = require '../../error/not-implemented'
+TypeError           = require '../error/type'
+NotImplementedError = require '../error/not-implemented'
 
 class Collection extends Indexed
 

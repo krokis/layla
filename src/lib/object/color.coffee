@@ -2,7 +2,7 @@ Object    = require '../object'
 Boolean   = require './boolean'
 Number    = require './number'
 
-TypeError = require '../../error/type'
+TypeError = require '../error/type'
 
 class Color extends Object
 

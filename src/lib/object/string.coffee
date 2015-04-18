@@ -10,7 +10,7 @@ Null       = require './null'
 Boolean    = require './boolean'
 Number     = require './number'
 
-TypeError  = require '../../error/type'
+TypeError  = require '../error/type'
 
 class String extends Indexed
 

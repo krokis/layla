@@ -11,8 +11,6 @@ class Node extends Class
   before: null # pre (left) comment
   after: null # post (right) comment
 
-  clone: (etc...) -> new @constructor etc...
-
   toJSON: ->
     json = super
     json.start = @start

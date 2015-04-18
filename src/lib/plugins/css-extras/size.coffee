@@ -1,5 +1,5 @@
 Plugin   = require '../../plugin'
-Function = require '../../node/object/function'
+Function = require '../../object/function'
 
 class Size extends Plugin
 

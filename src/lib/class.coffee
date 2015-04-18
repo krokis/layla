@@ -30,6 +30,8 @@ class Class
   @property 'type',
     get: -> @constructor.name
 
+  clone: (etc...) -> new @constructor etc...
+
   toJSON: -> {
     type: @type
   }

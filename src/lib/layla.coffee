@@ -1,4 +1,6 @@
 VERSION    = require '../version'
+
+Class      = require './class'
 Parser     = require './parser'
 Evaluator  = require './visitor/evaluator'
 Normalizer = require './visitor/normalizer'
@@ -6,10 +8,10 @@ Emitter    = require './emitter'
 CSSEmitter = require './emitter/css'
 Plugin     = require './plugin'
 Node       = require './node'
-Object     = require './node/object'
-String     = require './node/object/string'
-Error      = require './node/object/scope'
-Scope      = require './node/object/scope'
+Object     = require './object'
+String     = require './object/string'
+Error      = require './object/scope'
+Scope      = require './object/scope'
 
 # Core plugins
 Size         = require './plugins/css-extras/size'
@@ -21,6 +23,7 @@ class Layla
   @version: VERSION
 
   # Core classes
+  @Class: Class
   @Node: Node
   @Object: Object
   @String: String

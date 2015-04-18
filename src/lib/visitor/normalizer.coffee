@@ -1,8 +1,8 @@
 Walker        = require './walker'
-RuleSet       = require '../node/object/rule-set'
-AtRule        = require '../node/object/at-rule'
-Property      = require '../node/object/property'
-Null          = require '../node/object/null'
+RuleSet       = require '../object/rule-set'
+AtRule        = require '../object/at-rule'
+Property      = require '../object/property'
+Null          = require '../object/null'
 
 InternalError = require '../error/internal'
 

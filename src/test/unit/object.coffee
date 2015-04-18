@@ -1,9 +1,8 @@
-{Object, Node} = require '../../lib'
+{Class, Object} = require '../../lib'
 
 describe '`Object`', ->
   it 'is a class', ->
     Object.should.be.a.Function
+    (new Object).should.be.an.instanceOf Class
 
-  it 'extends `Node`', ->
-    (new Object).should.be.an.instanceOf Node
 

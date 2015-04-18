@@ -1,9 +1,8 @@
-Node                = require '../node'
+Class     = require './class'
 
-TypeError           = require '../error/type'
-NotImplementedError = require '../error/not-implemented'
+TypeError = require './error/type'
 
-class Object extends Node
+class Object extends Class
 
   @new: (args...) ->
     new (@bind.apply @, args)

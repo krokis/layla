@@ -1,7 +1,7 @@
 Emitter      = require '../emitter'
-Block        = require '../node/object/block'
-Rule         = require '../node/object/rule'
-Property     = require '../node/object/property'
+Block        = require '../object/block'
+Rule         = require '../object/rule'
+Property     = require '../object/property'
 Comment      = require '../node/comment'
 
 class CSSEmitter extends Emitter
