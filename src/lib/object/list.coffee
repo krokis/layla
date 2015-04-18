@@ -8,39 +8,6 @@ class List extends Collection
 
   constructor: (items, @separator = ' ') -> super items
 
-  slice: (start, end) ->
-    unless start?
-      start = 0
-    else unless start instanceof Number
-      throw new Error "Bad arguments for `.slice`"
-      start = start.value
-
-    if end?
-      unless end instanceof Number
-        throw new Error "Bad arguments for `.slice`"
-      end = end.value
-    else
-      end = @items.length
-
-    @items.slice start, end
-
-  isUnique: ->
-    for a in @items
-      for b in @items
-        if a isnt b and a.isEqual b
-          return no
-    yes
-
-  unique = (arr) ->
-    vals = []
-
-    arr.filter (item) ->
-      for val in vals
-        if val.isEqual item
-          return no
-      vals.push item
-      return yes
-
   clone: (items, separator = @separator, etc...) ->
     super items, separator, etc...
 
@@ -49,15 +16,9 @@ class List extends Collection
     json.separator = @separator
     json
 
-  '.unique?': -> Boolean.new @isUnique()
-
-  '.unique': -> @clone (unique @items), @separator
-
   '.commas': -> @clone null, ','
 
   '.spaces': -> @clone null, ' '
-
-  '.slice': (start, end) -> @clone (@slice start, end)
 
 Object::['.list'] = ->
   if @ instanceof Collection

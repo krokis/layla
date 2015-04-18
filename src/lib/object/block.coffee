@@ -1,12 +1,13 @@
-List     = require './list'
-Property = require './property'
-Boolean  = require './boolean'
-String   = require './string'
-Null     = require './null'
+Collection = require './collection'
+List       = require './list'
+Property   = require './property'
+Boolean    = require './boolean'
+String     = require './string'
+Null       = require './null'
 
 ###
 ###
-class Block extends List
+class Block extends Collection
 
   ###
   Should hold a reference to child properties.

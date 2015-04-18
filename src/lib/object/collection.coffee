@@ -1,5 +1,6 @@
 Object     = require '../object'
 Indexed    = require './indexed'
+Boolean    = require './boolean'
 Number     = require './number'
 Null       = require './null'
 
@@ -64,6 +65,41 @@ class Collection extends Indexed
     else
       throw new TypeError "Bad member: #{other.type}"
 
+  slice: (start, end) ->
+    unless start?
+      start = 0
+    else unless start instanceof Number
+      throw new Error "Bad arguments for `.slice`"
+      start = start.value
+
+    if end?
+      unless end instanceof Number
+        throw new Error "Bad arguments for `.slice`"
+      end = end.value
+    else
+      end = @items.length
+
+    @items.slice start, end
+
+  isUnique: ->
+    for a in @items
+      for b in @items
+        if a isnt b and a.isEqual b
+          return no
+    yes
+
+  unique = (arr) ->
+    vals = []
+
+    arr.filter (item) ->
+      for val in vals
+        if val.isEqual item
+          return no
+      vals.push item
+      return yes
+
+  '.length': -> new Number @length()
+
   '.push': (args...) -> @push args...; @
 
   '.pop': -> @items.pop() or Null.null
@@ -74,13 +110,17 @@ class Collection extends Indexed
     @items.unshift (obj.clone() for obj in objs)...
     this
 
-  '.length': -> new Number @length()
+  '.slice': (start, end) -> @clone (@slice start, end)
 
   '.empty': -> @items = []; @
 
   '.first': -> @items[0] or Null.null
 
   '.last': -> @items[@items.length - 1] or Null.null
+
+  '.unique?': -> Boolean.new @isUnique()
+
+  '.unique': -> @clone (unique @items), @separator
 
   ###
   '.reverse':       @::reverse
@@ -97,6 +137,7 @@ class Collection extends Indexed
   '.without':       @::without
   ###
 
-Object::['.>>'] = (other) -> other['.<<'] this
+# TODO I don't think this belongs here
+Object::['.>>'] = (other) -> other['.<<'] @
 
 module.exports = Collection
