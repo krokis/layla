@@ -532,10 +532,30 @@ Blocks
 
 #### `<<` and `>>`
 
-- Push properties and rules to a block
+- Push properties to a block
 
-- Merge other blocks
+  ~~~ lay
+  $props = {
+    color: red
+    padding: 0
+    margin: 0
+  }
 
-- Merge other collections
+  body {
+    & << $props.first
+    background: white
+    $props.last >> &
+  }
+  ~~~
+
+  ~~~ css
+  body {
+    color: red;
+    background: white;
+    margin: 0;
+  }
+  ~~~
+
+- Push other blocks to a block
 
 - Fail for other types
