@@ -173,7 +173,8 @@ class Evaluator extends Walker
   ###
   ###
   evaluateLiteralList: (node, self, scope) ->
-    new List (@evaluateNode item, self, scope for item in node.body), node.separator
+    items = (@evaluateNode item, self, scope for item in node.body)
+    new List items, node.separator
 
   ###
   ###
@@ -193,7 +194,9 @@ class Evaluator extends Walker
 
         if node.right instanceof Call
           if node.right.arguments?
-            args = (@evaluateNode arg, self, scope for arg in node.right.arguments)
+            args = (
+              @evaluateNode arg, self, scope for arg in node.right.arguments
+            )
           else
             args = []
 
@@ -426,7 +429,7 @@ class Evaluator extends Walker
       if fs.existsSync real_path
         return @doImportFile real_path, self, scope
 
-    throw "Could not import file: #{file}"
+    throw new Error "Could not import file: #{file}"
 
   ###
   ###

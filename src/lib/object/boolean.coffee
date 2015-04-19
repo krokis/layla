@@ -60,7 +60,7 @@ Object::['.hasnt'] = (other) -> Boolean.new not @contains other
 
 Object::['.in'] = (other) -> Boolean.new other.contains @
 
-Object::['.enumerable?'] =-> Boolean.new @isEnumerable() # TODO ???
+Object::['.enumerable?'] = -> Boolean.new @isEnumerable() # TODO ???
 
 Object::['.boolean'] = -> Boolean.new @toBoolean()
 

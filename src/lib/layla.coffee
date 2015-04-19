@@ -45,7 +45,8 @@ class Layla
 
     if name of @plugins
       unless this is @plugins[name]
-        throw new Error "Cannot register plugin '#{name}': that name has already been used"
+        throw new Error "\
+          Cannot register plugin '#{name}': that name has already been used"
 
     @plugins[name] = plugin
 
@@ -57,7 +58,7 @@ class Layla
       if kind.prototype instanceof Plugin
         plugin = new kind
         plugin.use this
-      else if '[object String]' is @toString.call kind
+      else if ('[object String]' is @toString.call kind)
         if kind of @plugins
           @use @plugins[kind]
         else
@@ -72,11 +73,6 @@ class Layla
         @use kind[k] for k of kind
       else
         throw new TypeError "That's not a plugin"
-
-  ###
-  *Stop* using one or more plugins
-  ###
-  unuse: (plugins...) ->
 
   # Core methods
   parse: (source) ->

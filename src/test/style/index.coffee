@@ -1,2 +1,2 @@
 describe 'Style', ->
-  #require './coffee'
+  require './coffee'

@@ -13,7 +13,7 @@ describe 'CoffeeScript', ->
       errors = coffeelint.lint source, rules
       for err in errors
         if err.level isnt 'ignore'
-          throw new Error "[#{err.lineNumber}] #{err.message}"
+          throw new Error "#{err.message} @ #{file}:#{err.lineNumber}"
 
   doDir = (dir) ->
     for name in fs.readdirSync dir

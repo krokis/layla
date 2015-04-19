@@ -231,7 +231,7 @@ class Parser extends Lexer
 
   ###
   ###
-  parseFunctionArguments:->
+  parseFunctionArguments: ->
     start = @position
 
     if @eat PUNC, '('
@@ -334,7 +334,7 @@ class Parser extends Lexer
   ###
   Parse a quoted or unquoted string
   ###
-  parseString:->
+  parseString: ->
     @parseQuotedString() or @parseUnquotedString()
 
   parseQuotedString: ->
@@ -570,7 +570,9 @@ class Parser extends Lexer
 
         if tok = @read IDENT, ['if', 'unless']
           unless els.condition = (@parseExpression 0, no)
-            throw new SyntaxError "Expected expression after `else #{tok.value}`"
+            throw new SyntaxError (
+              "Expected expression after `else #{tok.value}`"
+            )
           els.negate = tok.value is 'unless'
 
         unless els.block = @parseBlock()
@@ -614,10 +616,14 @@ class Parser extends Lexer
         @moveTo token.end
         node.negate = token.value is 'until'
         unless node.condition = (@parseExpression 0, no)
-          throw new SyntaxError "Expected expression after `#{token.value}`"
+          throw new SyntaxError (
+            "Expected expression after `#{token.value}`"
+          )
 
         unless node.block = @parseBlock()
-          throw new SyntaxError "Expected block after `#{token.value}` expression"
+          throw new SyntaxError (
+            "Expected block after `#{token.value}` expression"
+          )
 
         node.end = node.block.end
 
@@ -685,7 +691,7 @@ class Parser extends Lexer
           break unless @eat PUNC, ','
 
         unless imp.arguments.length
-          throw "Expected string after import!"
+          throw new SyntaxError "Expected string after import!"
 
   ###
   ###

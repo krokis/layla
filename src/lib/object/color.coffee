@@ -119,13 +119,13 @@ class Color extends Object
 
   '.component': (comp) ->
     unless comp in COMPONENTS
-      throw "Cannot get component #{comp} of color"
+      throw new Error "Cannot get component #{comp} of color"
 
     new Number 100 * @[comp], '%'
 
   '.component=': (comp, value) ->
     unless comp in COMPONENTS
-      throw "Cannot get component #{comp} of color"
+      throw new Error "Cannot get component #{comp} of color"
 
     if value instanceof Number
       if value.unit is '%'
@@ -133,7 +133,7 @@ class Color extends Object
       else if value.isPure()
         @[comp] = value.value / 255
       else
-        throw "Bad #{comp} component value: #{value.repr()}"
+        throw new Error "Bad #{comp} component value: #{value.repr()}"
 
       @['.component'] comp
 
@@ -141,7 +141,7 @@ class Color extends Object
     if comp in COMPONENTS
       Boolean.new @[comp] > 0
     else
-      throw "Cannot check component #{comp} of color"
+      throw new Error "Cannot check component #{comp} of color"
 
   COMPONENTS.forEach (comp) =>
     @::[".#{comp}"]  = -> @['.component'] comp

@@ -42,7 +42,17 @@ class Lexer extends Class
   RE_HORIZONTAL_WHITESPACE = /[ \t]+/
   RE_TRAILING_WHITESPACE   = /[ \t]*(\n|$)/
   RE_UNARY_OPERATOR        = /\-|\+|not/
-  RE_BINARY_OPERATOR       = /(::|\.\.|\.|\()|(([\t ]*)(\,|\|?=|~|\*|\/|(?:[\+\-](?!(?:\d|(?:(?:[\!\?\_\-\$]+)?[a-z]))))|>>|<<|>=|>|<=|<|and|or|is-a|is-an|isnt-a|isnt-an|isnt|is|in|hasnt|has|if|unless))|([\t ]+)/
+  RE_BINARY_OPERATOR       = ///
+                             (::|\.\.|\.|\()|(([\t\ ]*)
+                             (\,|\|?=|~|\*|\/|
+                             (?:[\+\-]
+                             (?!(?:\d|(?:(?:[\!\?\_\-\$]+)?
+                             [a-z]))))
+                             |>>|<<|>=|>|<=|<|
+                             and|or|is-a|is-an|isnt-a|isnt-an|isnt|is|in|hasnt|
+                             has|if|unless))
+                             |([\t\ ]+)
+                             ///
   RE_ID_SELECTOR           = /#[a-z][a-z\d_-]*/i
   RE_CLASS_SELECTOR        = /\.[a-z][a-z\d_-]*/i
   RE_ELEMENTAL_SELECTOR    = ///
@@ -216,7 +226,9 @@ class Lexer extends Class
       if @char is '\\'
 
         if @isEndOfText()
-          throw new Error "Unexpected end of text before boundary ('#{boundary}')"
+          throw new Error (
+            "Unexpected end of text before boundary ('#{boundary}')"
+          )
         @move()
 
         switch @char
@@ -238,7 +250,7 @@ class Lexer extends Class
   ###
   TODO: Interpolation
   ###
-  readName: (offset = 0)->
+  readName: (offset = 0) ->
     if match = @match RE_IDENT, offset
       name = match[0]
 
@@ -247,6 +259,10 @@ class Lexer extends Class
   readIdent: ->
     if (name = @readName())?
       @makeToken IDENT, -> @move name.length
+
+
+
+
 
   ###
   At-idents may have interpolation too, but they have to start with an `@`.

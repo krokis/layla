@@ -21,7 +21,7 @@ module.exports =
                       --compilers coffee:coffee-script/register \
                       --slow 500 \
                       --reporter spec \
-                      src/test/**/index.coffee
+                      src/test
                     """
     start:          "node ./bin/layla -i"
 
@@ -42,11 +42,12 @@ module.exports =
     "camel-case":    "^1.1.1"
     "param-case":    "^1.1.1"
     "browserify":    "^6.1.0"
+    "coffeelint":    "^1.9.3"
     "coffeeify":     "~1.0.0"
     "uglify-js":     "^2.4.17"
     "mkdirp":        "^0.5.0"
+    "season":        "^5.1.5"
     "should":        "~4.1.0"
     "mocha":         "~2.2.0"
     "plist":         "^1.1.0"
-    "cson":          "^1.6.1"
     "del":           "~1.1.0"

@@ -55,13 +55,15 @@ describe 'Cases', ->
                   err_msg = null
                 else if node.info is 'css'
                   if expected?
-                    throw "Unexpected two blocks of `css` code at #{file}"
+                    throw new Error(
+                      "Unexpected two blocks of `css` code at #{file}"
+                    )
                   expected = stringContent node
                 else if '!' is (node.info.substr 0, 1)
                   err_name = node.info.substr 1
                   err_msg = (stringContent node).trim()
               else
-                throw 'Oops'
+                throw new Error 'Oops'
 
             if desc and source? and (expected? or err_name)
               it desc, ((source, expected, err_name, err_msg) ->

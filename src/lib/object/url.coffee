@@ -28,10 +28,11 @@ class URL extends Object
       catch e
         throw e # TODO
 
-      @scheme = if not fake_scheme and parsed.protocol?
-                  parsed.protocol.substr 0, parsed.protocol.length - 1
-                else
-                  null
+      @scheme =
+        if not fake_scheme and parsed.protocol?
+          parsed.protocol.substr 0, parsed.protocol.length - 1
+        else
+          null
 
       @host     = parsed.hostname
       @port     = parsed.port

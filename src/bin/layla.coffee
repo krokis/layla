@@ -58,17 +58,15 @@ help = ->
 ###
 ###
 evaluate = (source) ->
-  #try
+  try
     ast = $layla.parse source
     css = $layla.emit ast
     return css
-  ###
   catch e
     if false
       warn "\x1b[33m#{e}\x1b[0m"
     else
       err "\x1b[31m#{e}\x1b[0m"
-  ###
 
 compile = (source) ->
   ast = $layla.parse source
@@ -128,7 +126,10 @@ try
 
       when '--no-color'
         if val isnt null
-          warn "Bad value for --no-color option: this option does not accept arguments"
+          warn """
+          Bad value for --no-color option: \
+          this option does not accept arguments
+          """
           exit 1
 
         $colors = no

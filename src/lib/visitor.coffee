@@ -6,7 +6,7 @@ class Visitor extends Class
     method = "visit#{node.type}"
 
     unless method of this
-      throw new Error "Don't know how visit node of type #{node.type} (with #{method}?)"
+      throw new Error "Don't know how visit node of type #{node.type}"
 
     this[method].call this, node
 

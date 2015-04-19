@@ -123,9 +123,10 @@ do ->
     else
       return supah.call this, other
 
-    chunks = (@value.split reg)
-             .filter (str) -> str isnt ''
-             .map (str) => @clone str
+    chunks =
+      (@value.split reg)
+      .filter (str) -> str isnt ''
+      .map (str) => @clone str
 
     new List chunks
 
