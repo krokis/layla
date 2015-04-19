@@ -50,6 +50,16 @@ class Collection extends Indexed
       return yes if value.isEqual other
     return no
 
+  flatten: ->
+    flat = []
+    for item in @items
+      if item instanceof Collection
+        flat.push item.flatten()...
+      else
+        flat.push item
+
+    flat
+
   isUnique: ->
     for a in @items
       for b in @items
@@ -131,6 +141,8 @@ class Collection extends Indexed
   '.unique?': -> Boolean.new @isUnique()
 
   '.unique': -> @clone (unique @items), @separator
+
+  '.flatten': -> @clone @flatten()
 
   ###
   '.reverse':       @::reverse

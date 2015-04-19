@@ -102,6 +102,7 @@ Lists
     font: 14px ("Helvetica", "Arial", sans-serif) #666
     font: (14px "Helvetica"), "Arial", (sans-serif #666)
     font: 14px "Helvetica", "Arial", sans-serif #666
+    font: (14px "Helvetica", "Arial", sans-serif #666).flatten
   }
 
   nums = (1 2 3), (a b c), (I II III)
@@ -143,6 +144,7 @@ Lists
     font: 14px 'Helvetica', 'Arial', sans-serif #666666;
     font: 14px 'Helvetica', 'Arial', sans-serif #666666;
     font: 14px 'Helvetica', 'Arial', sans-serif #666666;
+    font: 14px, 'Helvetica', 'Arial', sans-serif, #666666;
   }
 
   #bar {
@@ -451,6 +453,8 @@ Lists
 - Can be used with negative indices
 
 ### `splice`
+
+### `flatten`
 
 ### `max`
 
