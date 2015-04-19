@@ -84,7 +84,6 @@ Number::['...'] = (other) ->
 
   throw new TypeError "Cannot make a range with that: #{other.type}"
 
-
 do ->
   supah = List::['.::']
 

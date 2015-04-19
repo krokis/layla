@@ -10,5 +10,3 @@ describe 'The CSS emitter', ->
   describe '.emit()', ->
     it 'emits an AST as CSS', ->
       emitter.emit.should.be.a.Function
-
-

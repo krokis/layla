@@ -19,11 +19,6 @@ class Token extends Class
   @SIMPLE_SELECTOR = 'SimpleSelector'
   @COMBINATOR      = 'Combinator'
 
-  type:  null
-  value: null
-  start: null
-  end:   null
-
   ###
   Returns length of token, if it has a start and an end. Otherwise, returns
   `null`.

@@ -98,7 +98,6 @@ class String extends Indexed
         """
       )
 
-
   '.<<': @::append
 
   '.blank?': -> Boolean.new @value.trim() is ''

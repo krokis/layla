@@ -531,7 +531,6 @@ URLs
   d: 'q=google';
   ~~~
 
-
 ### `query=`
 
 - Sets the `?query` part of the URL

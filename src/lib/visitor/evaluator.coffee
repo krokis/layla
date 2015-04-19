@@ -228,7 +228,6 @@ class Evaluator extends Walker
   isReference: (node) ->
     (node instanceof Operation) and
     node.binary and
-    (node.right instanceof Call or node.right instanceof String) and
     (node.operator is '.' or node.operator is '::')
 
   ###
@@ -272,26 +271,24 @@ class Evaluator extends Walker
       getter = scope.get.bind scope, name
       setter = scope.set.bind scope, name
     else if @isReference left
-      if left.right instanceof String
-        name = @evaluateNode left.right, self, scope
-      else
-        name = left.right.value
+      name = @evaluateNode left.right, self, scope
 
       ref = @evaluateNode left.left, self, scope
 
       if left.operator is '.'
-        getter = ref.callMethod.bind ref, name
-        setter = ref.callMethod.bind ref, "#{name}="
+        getter = ref.callMethod.bind ref, name.value
+        setter = ref.callMethod.bind ref, "#{name.value}="
       else
-        getter = ref.get.bind ref, name
-        setter = ref.set.bind ref, name
+        getter = ref['.::'].bind ref, name
+        setter = ref['.::='].bind ref, name
 
-    unless getter and setter
+    unless setter
       throw new TypeError "Bad left side of assignment"
 
     if node.operator is '|='
-      curr = getter()
-      return curr unless curr.isNull()
+      if getter
+        curr = getter()
+        return curr unless curr.isNull()
 
     value = (@evaluateNode right, self, scope).clone()
     setter value

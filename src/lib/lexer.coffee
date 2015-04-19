@@ -260,10 +260,6 @@ class Lexer extends Class
     if (name = @readName())?
       @makeToken IDENT, -> @move name.length
 
-
-
-
-
   ###
   At-idents may have interpolation too, but they have to start with an `@`.
   ###

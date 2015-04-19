@@ -608,7 +608,6 @@ Strings
   baz: 'd';
   ~~~
 
-
 ### `append`
 
 - Appends one or more strings to this string

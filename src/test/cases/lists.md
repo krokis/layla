@@ -703,6 +703,51 @@ Lists
 
 - When a list is passed, the list returned should have right side separator, which is not what the previous test says
 
+### `::=`
+
+- Replaces an item of the list with another value by its numerical index
+
+  ~~~ lay
+  a = 1 2 3
+  a::0 = 2
+  foo: a
+  ~~~
+
+  ~~~ css
+  foo: 2 2 3;
+  ~~~
+
+- Adds items at the end of the list
+
+  ~~~ lay
+  a = 1 2 3
+  a::3 = 4
+  foo: a
+  ~~~
+
+  ~~~ css
+  foo: 1 2 3 4;
+  ~~~
+
+- Accepts negative indices
+
+  ~~~ lay
+  a = 1 2 3
+  a::(-1) = 1
+  foo: a
+  a::(-3) = 3
+  foo: a
+  ~~~
+
+  ~~~ css
+  foo: 1 2 1;
+  foo: 3 2 1;
+  ~~~
+
+- Fails for indices out of bounds
+
+- Fails for non-numeric indices
+
 ### `<<` and `>>`
 
 - Pushes objects to a list

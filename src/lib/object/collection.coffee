@@ -19,29 +19,6 @@ class Collection extends Indexed
   push: (objs...) ->
     @items.push obj.clone() for obj in objs
 
-  '.+': (other) ->
-    if other instanceof Collection
-      return @clone @items.concat other.items
-    throw new TypeError "Cannot sum collection with that"
-
-  '.<<': (other) -> @push other; @
-
-  '.::': (other) ->
-    if other instanceof Number
-      idx = other.value
-      idx += @items.length if idx < 0
-      if 0 <= idx < @items.length
-        @items[idx]
-      else
-        Null.null
-    else if other instanceof Collection
-      slice = @clone []
-      for idx in other.items
-        slice.items.push @['.::'] idx
-      slice
-    else
-      throw new TypeError "Bad member: #{other.type}"
-
   slice: (start, end) ->
     unless start?
       start = 0
@@ -96,6 +73,40 @@ class Collection extends Indexed
 
   clone: (items = @items, etc...) ->
     super (obj.clone() for obj in items), etc...
+
+  '.+': (other) ->
+    if other instanceof Collection
+      return @clone @items.concat other.items
+    throw new TypeError "Cannot sum collection with that"
+
+  '.<<': (other) -> @push other; @
+
+  '.::': (other) ->
+    if other instanceof Number
+      idx = other.value
+      idx += @items.length if idx < 0
+      if 0 <= idx < @items.length
+        @items[idx]
+      else
+        Null.null
+    else if other instanceof Collection
+      slice = @clone []
+      for idx in other.items
+        slice.items.push @['.::'] idx
+      slice
+    else
+      throw new TypeError "Bad member: #{other.type}"
+
+  '.::=': (key, value) ->
+    if key instanceof Number
+      idx = key.value
+      idx += @items.length if idx < 0
+      if 0 <= idx <= @items.length
+        @items[idx] = value
+      else
+        throw new TypeError
+    else
+      throw new TypeError
 
   '.length': -> new Number @length()
 
