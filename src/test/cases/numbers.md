@@ -1325,10 +1325,24 @@ Numbers
 - Converts a number to roman notation
 
   ~~~ lay
-  for n in 1..10 {
+  for n in 1..9 {
     `{n.roman.lower-case}`: n
   }
 
+  for n in 1..5 {
+    `{(n * 10).roman.lower-case}`: n * 10
+    `{(n * 10 + 1).roman.lower-case}`: n * 10 + 1
+    `{(n * 10 + 5).roman.lower-case}`: n * 10 + 5
+    `{(n * 10 + 9).roman.lower-case}`: n * 10 + 9
+  }
+
+  for n in 1..10 {
+    `{(n * 100).roman.lower-case}`: n * 100
+  }
+
+  for n in 2000, 3000 {
+    `{n.roman.lower-case}`: n
+  }
   ~~~
 
   ~~~ css
@@ -1342,11 +1356,99 @@ Numbers
   viii: 8;
   ix: 9;
   x: 10;
+  xi: 11;
+  xv: 15;
+  xix: 19;
+  xx: 20;
+  xxi: 21;
+  xxv: 25;
+  xxix: 29;
+  xxx: 30;
+  xxxi: 31;
+  xxxv: 35;
+  xxxix: 39;
+  xl: 40;
+  xli: 41;
+  xlv: 45;
+  xlix: 49;
+  l: 50;
+  li: 51;
+  lv: 55;
+  lix: 59;
+  c: 100;
+  cc: 200;
+  ccc: 300;
+  cd: 400;
+  d: 500;
+  dc: 600;
+  dcc: 700;
+  dccc: 800;
+  cm: 900;
+  m: 1000;
+  mm: 2000;
+  mmm: 3000;
   ~~~
 
 - Fails for zero
-- What about negatives?
-- What about units?
+
+  ~~~ lay
+  0.roman
+  ~~~
+
+  ~~~ !TypeError
+  ~~~
+
+- Fails for negative numbers
+
+  ~~~ lay
+  -2.roman
+  ~~~
+
+  ~~~ !TypeError
+  ~~~
+
+- Fails for non integers
+
+  ~~~ lay
+  foo: (1.0).roman
+  ~~~
+
+  ~~~ css
+  foo: I;
+  ~~~
+
+  ~~~ lay
+  0.2.roman
+  ~~~
+
+  ~~~ !TypeError
+  ~~~
+
+- Fails for numbers over 3000
+
+  ~~~ lay
+  foo: 3001.roman
+  ~~~
+
+  ~~~ !TypeError
+  ~~~
+
+  ~~~ lay
+  foo: 3000.roman
+  ~~~
+
+  ~~~ css
+  foo: MMM;
+  ~~~
+
+- Fails for non-pure numbers
+
+  ~~~ lay
+  5px.roman
+  ~~~
+
+  ~~~ !TypeError
+  ~~~
 
 ## Operators
 

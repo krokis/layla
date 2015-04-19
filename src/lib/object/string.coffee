@@ -214,13 +214,17 @@ ROMANS =
   I:     1
 
 Number::['.roman'] = ->
-  val = @value
-  roman = ''
-  for i of ROMANS
-    while val >= ROMANS[i]
-      roman += i
-      val -= ROMANS[i]
-  new String roman
+  if not @unit and @value % 1 is 0 and 0 < @value <= 3000
+    val = @value
+    roman = ''
+
+    for i of ROMANS
+      while val >= ROMANS[i]
+        roman += i
+        val -= ROMANS[i]
+    new String roman
+  else
+    throw new TypeError
 
 do ->
   _multiply = Number::['.*']
