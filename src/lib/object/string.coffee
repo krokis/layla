@@ -234,7 +234,7 @@ do ->
 
 Number::['.format'] = (fmt) -> # TODO
 
-Number::['.unit'] = -> if @unit then new String @unit else Null.nulle
+Number::['.unit'] = -> if @unit then new String @unit else Null.null
 
 Object::['.string'] = -> new String @toString()
 
