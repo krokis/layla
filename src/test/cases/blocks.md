@@ -478,9 +478,57 @@ Blocks
   }
   ~~~
 
+### `::=`
+
+- Updates existing properties by their name
+
+  ~~~ lay
+  $b = {
+    color: red
+    background-color: white
+  }
+
+  $b::color = $b::`background-color`
+  $b::"background-color" = red
+
+  body {
+    color: $b::color
+    background-color: $b::background-color
+  }
+  ~~~
+
+  ~~~ css
+  body {
+    color: white;
+    background-color: red;
+  }
+  ~~~
+
 - Adds properties to the block
 
-- Updates existing properties
+  ~~~ lay
+   $b = {
+    color: #666
+  }
+
+  $b::color |= red
+  $b::background-color |= white
+  $b::margin = 0px
+
+  body {
+    color: $b::color
+    background-color: $b::background-color
+    margin: $b::margin
+  }
+  ~~~
+
+  ~~~ css
+  body {
+    color: #666666;
+    background-color: white;
+    margin: 0;
+  }
+  ~~~
 
 #### `<<` and `>>`
 

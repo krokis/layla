@@ -19,18 +19,6 @@ class Block extends Collection
   ###
   rules: {} # "blocks"?
 
-  '.::': (other) ->
-    if other instanceof String
-      val = Null.null
-
-      for node in @items
-        if node instanceof Property and node.name is other.value
-          val = node.value
-
-      val
-    else
-      super
-
   ###
   ###
   push: (elements...) ->
@@ -67,6 +55,34 @@ class Block extends Collection
   Find a nested block.
   ###
   find: (selector) ->
+
+  '.::': (other) ->
+    if other instanceof String
+      val = Null.null
+
+      for node in @items
+        if node instanceof Property and node.name is other.value
+          val = node.value
+
+      val
+    else
+      super
+
+  '.::=': (key, value) ->
+    if key instanceof String
+      name = key.value
+      prop = null
+      for node in @items
+        if node instanceof Property and node.name is name
+          prop = node
+
+      if prop
+        prop.value = value
+      else
+        @push new Property name, value
+      value
+    else
+      super
 
   '.properties': ->
     new List (@items.filter (obj) -> obj instanceof Property)
