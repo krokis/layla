@@ -8,6 +8,16 @@ class List extends Collection
 
   constructor: (items, @separator = ' ') -> super items
 
+  flatten: ->
+    flat = []
+    for item in @items
+      if item instanceof List
+        flat.push item.flatten()...
+      else
+        flat.push item
+
+    flat
+
   clone: (items, separator = @separator, etc...) ->
     super items, separator, etc...
 
@@ -21,6 +31,8 @@ class List extends Collection
   '.spaces': -> @clone null, ' '
 
   '.list': -> @
+
+  '.flatten': -> @clone @flatten()
 
 Object::['.list'] = ->
   if @ instanceof Collection
