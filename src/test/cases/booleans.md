@@ -1,20 +1,32 @@
 Booleans
 ========
 
+## `true`
+
+- Is case sensitive
+
+  ~~~ lay
+  foo: true, not true, True, TRUE
+  ~~~
+
+  ~~~ css
+  foo: true, false, True, TRUE;
+  ~~~
+
 ## `false`
 
 - Is case sensitive
 
   ~~~ lay
-  foo: not false
-  foo: not False
-  foo: not FALSE
+  foo: false, not false
+  foo: False, not False
+  foo: FALSE, not FALSE
   ~~~
 
   ~~~ css
-  foo: true;
-  foo: false;
-  foo: false;
+  foo: false, true;
+  foo: False, false;
+  foo: FALSE, false;
   ~~~
 
 ## Operators
@@ -52,9 +64,11 @@ Booleans
   foo: not ({})
   foo: not #666
   foo: not (not null)
+  foo: not ((foo=null) { return false })
   ~~~
 
   ~~~ css
+  foo: false;
   foo: false;
   foo: false;
   foo: false;

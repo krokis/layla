@@ -10,20 +10,21 @@ class CSSEmitter extends Emitter
 
   constructor: (@options = {}) ->
     defaults =
-      new_line:                   '\n'
-      tab:                        '  '
-      comments:                   yes # Also: block only, banged only
-      before_opening_brace:       ' '
-      after_opening_brace:        '\n'
-      before_statement:           '\t'
-      after_statement:            '\n'
-      align_declarations:         no # Or 'left' or 'right'
-      after_declaration_property: ''
-      before_declaration_value:   ' '
-      after_declaration_value:    ''
-      preferred_string_quote:     null # original, ", '
-      force_string_quote:         null # same
-      decimal_places:             2
+      new_line:                    '\n'
+      tab:                         '  '
+      comments:                    yes # Also: block only, banged only
+      before_opening_brace:        ' '
+      after_opening_brace:         '\n'
+      before_statement:            '\t'
+      after_statement:             '\n'
+      align_declarations:          no # Or 'left' or 'right', all properties
+      align_prefixed_declarations: no # Or 'left' or 'right'
+      after_declaration_property:  ''
+      before_declaration_value:    ' '
+      after_declaration_value:     ''
+      preferred_string_quote:      null # original, ", '
+      force_string_quote:          null # same
+      decimal_places:              2
 
     for name of defaults
       @options[name] = defaults[name] unless name of @options

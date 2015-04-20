@@ -200,7 +200,7 @@ Blocks
   }
   ~~~
 
-- When their content is a block, it's expanded
+- When their content is a block, they are expanded with the block properties
 
   ~~~~ lay
   body {
