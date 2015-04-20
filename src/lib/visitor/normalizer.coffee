@@ -1,4 +1,5 @@
 Visitor       = require '../visitor'
+Block         = require '../object/block'
 RuleSet       = require '../object/rule-set'
 AtRule        = require '../object/at-rule'
 Property      = require '../object/property'
@@ -16,6 +17,7 @@ class Normalizer extends Visitor
   constructor: (@options = {}) ->
     defaults =
       unnest_rules:           yes
+      expand_blocks:          yes
       strip_nulls:            yes
       strip_empty_blocks:     yes
       strip_empty_rule_sets:  yes
@@ -41,12 +43,7 @@ class Normalizer extends Visitor
 
   normalizeRule: (node, root) -> node
 
-  isEmptyProperty: (node) ->
-    value = node.value
-    if value instanceof Null
-      yes
-    else
-      no
+  isEmptyProperty: (node) -> node.value instanceof Null
 
   normalizeBlock: (node, root) ->
     if body = node.items
@@ -69,6 +66,15 @@ class Normalizer extends Visitor
         else if child instanceof Property
           if @options.strip_empty_properties and @isEmptyProperty child
             continue
+
+          if child.value instanceof Block
+            for grandchild in child.value.items
+              if grandchild instanceof Property
+                name = "#{child.name}-#{grandchild.name}"
+                value = grandchild.value
+                node.items.push new Property name, value
+            continue
+
         else if child instanceof AtRule
         else
           throw new InternalError # This should never happen

@@ -200,6 +200,35 @@ Blocks
   }
   ~~~
 
+- When their content is a block, it's expanded
+
+  ~~~~ lay
+  body {
+    background: {
+      color: white
+      image: url('/back.png')
+    }
+
+    margin: {
+      left: 1px
+      top: 2px
+      right: 3px
+      bottom: 4px
+    }
+  }
+  ~~~~
+
+  ~~~~ css
+  body {
+    background-color: white;
+    background-image: url('/back.png');
+    margin-left: 1px;
+    margin-top: 2px;
+    margin-right: 3px;
+    margin-bottom: 4px;
+  }
+  ~~~~
+
 - Can use `|:` to conditionally set the property only a property with the same name has not been already or if it's `null`
 
   ~~~ lay
