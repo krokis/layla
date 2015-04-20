@@ -8,7 +8,7 @@ class Emitter extends Class
 
       unless method of this
         throw new Error (
-          "Don't know how to emit node of type #{node.type} (with #{method}?)"
+          "Don't know how to emit node of type #{node.type}"
         )
 
       this[method].call this, node

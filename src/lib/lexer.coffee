@@ -20,15 +20,6 @@ SyntaxError = require './error/syntax'
 } = Token
 
 ###
-This is not an "standalone" lexer as it cannot generate a sequence of tokens by
-its own. This "abstract" class can read several token types but, given the
-ambiguous nature of the lenguage, more logic is required in order to
-interpretate the source code (e.g., to  differentiate between a color literal
-and a id selector or to differentiate between an expression and a selector).
-
-This class serves as a base to the `Parser`, which adds that required logic.
-This model makes the parsing a bit more complicated and maybe slower, but also
-allows us to detect (and hopefully resolve) ambiguities better.
 ###
 class Lexer extends Class
 

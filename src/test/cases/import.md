@@ -4,8 +4,8 @@ Import
 - Imports rulesets from a external file onto current block
 
   ~~~ lay
-  import './fixtures/base.lay'
-  import './fixtures/extensionless'
+  import './import/base.lay'
+  import './import/extensionless'
   ~~~
 
   ~~~ css
@@ -23,7 +23,7 @@ Import
 
   ~~~ lay
   html {
-    import './fixtures/base.lay'
+    import './import/base.lay'
   }
   ~~~
 
@@ -38,8 +38,8 @@ Import
 
   ~~~ lay
   html {
-    import './fixtures/base.lay'
-    import './fixtures/base.lay'
+    import './import/base.lay'
+    import './import/base.lay'
   }
   ~~~
 
@@ -59,7 +59,7 @@ Import
 
   ~~~ lay
   html {
-    import './fixtures/base.lay'
+    import './import/base.lay'
 
     a {
       font: $base-font
@@ -81,7 +81,7 @@ Import
 - Can import CSS files
 
   ~~~ lay
-  import './fixtures/layout.css'
+  import './import/layout.css'
   ~~~
 
   ~~~ css
@@ -102,8 +102,8 @@ Import
   $body-width |= 1200px
 
   html {
-    import "fixtures/base.lay",
-           "fixtures/layout.lay"
+    import "import/base.lay",
+           "import/layout.lay"
   }
   ~~~
 
@@ -126,7 +126,7 @@ Import
 - Arguments can be any type of expressions
 
   ~~~ lay
-  path = './fixtures/'
+  path = './import/'
   base = 'base.lay'
 
   import ("{path}layout.css"), path + base
@@ -152,7 +152,7 @@ Import
 
   ~~~ lay
   html {
-    import 'fixtures/base-comic.lay'
+    import 'import/base-comic.lay'
   }
   ~~~
 
@@ -169,7 +169,7 @@ Import
   $base-font = "Comic Sans"
 
   html {
-    import './fixtures/base.lay'
+    import './import/base.lay'
   }
   ~~~
 
@@ -183,10 +183,10 @@ Import
 - Imported rule-sets and properties can be assigned to variables instead of being imported in current block with `as`
 
   ~~~ lay
-  import 'fixtures/base.lay',
-         'fixtures/font.lay' as $font,
-         'fixtures/font.lay' as $back,
-         'fixtures/background.lay' as $back
+  import 'import/base.lay',
+         'import/font.lay' as $font,
+         'import/font.lay' as $back,
+         'import/background.lay' as $back
 
   body {
     background-color: $back::color
@@ -213,13 +213,13 @@ Import
 - URL's can be used instead of strings
 
   ~~~ lay
-  $inc = url(./fixtures/)
+  $inc = url(./import/)
 
   html {
-    import $inc + './../fixtures/base.lay'
+    import $inc + './../import/base.lay'
   }
 
-  import url('./fixtures/layout.lay')
+  import url('./import/layout.lay')
   ~~~
 
   ~~~ css

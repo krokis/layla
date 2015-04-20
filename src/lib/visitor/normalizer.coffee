@@ -1,4 +1,4 @@
-Walker        = require './walker'
+Visitor       = require '../visitor'
 RuleSet       = require '../object/rule-set'
 AtRule        = require '../object/at-rule'
 Property      = require '../object/property'
@@ -8,13 +8,14 @@ InternalError = require '../error/internal'
 
 ###
 ###
-class Normalizer extends Walker
+class Normalizer extends Visitor
 
   options: null
   indentation: 0
 
   constructor: (@options = {}) ->
     defaults =
+      unnest_rules:           yes
       strip_nulls:            yes
       strip_empty_blocks:     yes
       strip_empty_rule_sets:  yes
@@ -78,7 +79,6 @@ class Normalizer extends Walker
 
   ###
   ###
-  normalizeDocument: (node) ->
-    @normalizeBlock node
+  normalizeDocument: (node) -> @normalizeBlock node
 
 module.exports = Normalizer

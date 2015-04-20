@@ -1,4 +1,3 @@
 require './cases'
-require './readme'
-require './unit'
+require './docs'
 require './style'

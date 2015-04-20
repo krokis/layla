@@ -227,13 +227,13 @@ Number::['.roman'] = ->
     throw new TypeError
 
 do ->
-  _multiply = Number::['.*']
+  supah = Number::['.*']
 
   Number::['.*'] = (other, etc...) ->
     if other instanceof String
       other['.*'] @
     else
-      _multiply.call @, other, etc...
+      supah.call @, other, etc...
 
 Number::['.format'] = (fmt) -> # TODO
 

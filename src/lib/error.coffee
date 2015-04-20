@@ -4,10 +4,6 @@ Class = require './class'
 ###
 class Error extends Class
 
-  message: null
-  location: null
-  stack: null
-
   @property 'name', get: -> @type
 
   @property 'file', get: -> @location?.file

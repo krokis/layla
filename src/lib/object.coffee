@@ -12,16 +12,13 @@ class Object extends Class
 
   @reprType: -> @name
 
-  method: (name) ->
+  callMethod: (name, args...) ->
     method = @[".#{name}"]
 
     if typeof method is 'function'
-      method
+      method.call this, args...
     else
-      throw new TypeError "No such method: `#{@type}.#{name}`"
-
-  callMethod: (name, args...) ->
-    (@method name).call this, args...
+      throw new TypeError "Call to undefined method: `#{@type}.#{name}`"
 
   hasMethod: (name) -> typeof @[".#{name}"] is 'function'
 

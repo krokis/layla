@@ -32,8 +32,7 @@ class Class
 
   clone: (etc...) -> new @constructor etc...
 
-  toJSON: -> {
+  toJSON: ->
     type: @type
-  }
 
 module.exports = Class

@@ -26,6 +26,8 @@ class Number extends Object
 
     if from.unit and to.unit
       if from.unit isnt to.unit
+        # Now check from.unit has not been defined before. If it is, throw an
+        # error if passed factor doesn't match existing.
         if derived
           DERIVED[from.unit] = to.unit
         else

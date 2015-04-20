@@ -2,7 +2,7 @@ VERSION    = require '../version'
 
 Class      = require './class'
 Parser     = require './parser'
-Evaluator  = require './visitor/evaluator'
+Evaluator  = require './evaluator'
 Normalizer = require './visitor/normalizer'
 Emitter    = require './emitter'
 CSSEmitter = require './emitter/css'
