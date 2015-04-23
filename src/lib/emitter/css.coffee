@@ -150,11 +150,15 @@ class CSSEmitter extends Emitter
     #{@emitSelectorList rule} #{@emitBlock rule}
     """
 
+  emitAtRuleName: (rule) -> "@#{rule.name}"
+
+  emitAtRuleArguments: (rule) -> rule.arguments
+
   emitAtRule: (rule) ->
-    css = "@#{rule.name}"
+    css = @emitAtRuleName rule
 
     if rule.arguments?
-      css += " #{rule.arguments}"
+      css += " #{@emitAtRuleArguments rule}"
 
     if rule.items?.length
       css += " #{@emitBlock rule}"
