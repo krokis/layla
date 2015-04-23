@@ -416,7 +416,7 @@ class Evaluator extends Class
     source = fs.readFileSync file, 'utf-8'
     ast = @layla.parse source
     scope.paths.push path.dirname file
-    imported = @evaluate ast, scope, self
+    imported = @evaluateRoot ast, self, scope
     scope.paths.pop()
 
   importFile: (file, self, scope) ->
@@ -530,11 +530,10 @@ class Evaluator extends Class
 
   ###
   ###
-  evaluate: (node, scope = null, self = null) ->
-    doc = new Document
-    self ?= doc
+  evaluateRoot: (node, self = null, scope = null) ->
+    self ?= new Document
     scope ?= new Scope
     @evaluateBody node.body, self, scope
-    doc
+    self
 
 module.exports = Evaluator

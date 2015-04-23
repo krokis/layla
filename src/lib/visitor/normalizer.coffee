@@ -17,7 +17,7 @@ class Normalizer extends Visitor
 
   constructor: (@options = {}) ->
     defaults =
-      expand_blocks:              yes
+      flatten_block_properties:   yes
       strip_root_properties:      no
       strip_empty_blocks:         no
       strip_null_properties:      no
@@ -28,6 +28,7 @@ class Normalizer extends Visitor
       hoist_rule_sets:            yes
       hoist_at_rules:             no
       hoist_media_at_rules:       yes
+      convert_unknown_units:      yes
 
     for name of defaults
       @options[name] = defaults[name] unless name of @options
@@ -86,7 +87,7 @@ class Normalizer extends Visitor
           if @options.strip_empty_properties and @isEmptyProperty child
             continue
 
-          if @options.expand_blocks and child.value instanceof Block
+          if @options.flatten_block_properties and child.value instanceof Block
             for grandchild in child.value.items
               if grandchild instanceof Property
                 name = "#{child.name}-#{grandchild.name}"

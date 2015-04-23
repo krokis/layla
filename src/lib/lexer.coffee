@@ -1,6 +1,7 @@
-Class       = require './class'
-Token       = require './token'
-SyntaxError = require './error/syntax'
+Class         = require './class'
+Token         = require './token'
+SyntaxError   = require './error/syntax'
+InternalError = require './error/internal'
 
 {
   PUNC
@@ -153,7 +154,7 @@ class Lexer extends Class
   ###
   moveTo: (position) ->
     unless 0 <= position <= @length
-      throw new Error "Cannot move to position #{position}"
+      throw new InternalError "Cannot move to position #{position}"
 
     @position = position
     @char = if position < @length then @source[position] else null
@@ -201,7 +202,7 @@ class Lexer extends Class
     if '/*' is @chars 2
       @makeToken BLOCK_COMMENT, ->
         end = @source.indexOf '*/', (@position + 2)
-        throw new Error 'Unterminated /* block comment */' if end < 0
+        throw new SyntaxError 'Unterminated /* block comment */' if end < 0
         @move 2
 
   ###
@@ -212,12 +213,12 @@ class Lexer extends Class
 
     while @char isnt boundary
       if @isEndOfText()
-        throw new Error "Text termined before boundary ('#{boundary}')"
+        throw new SyntaxError "Text termined before boundary ('#{boundary}')"
 
       if @char is '\\'
 
         if @isEndOfText()
-          throw new Error (
+          throw new SyntaxError (
             "Unexpected end of text before boundary ('#{boundary}')"
           )
         @move()
@@ -258,7 +259,7 @@ class Lexer extends Class
     if @char is '@'
       name = @readName 1
       if name is undefined
-        throw new Error "Unfinished at-ident"
+        throw new SyntaxError "Unfinished at-ident"
       else
         @makeToken AT_IDENT, -> @move name.length + 1 # Skip `@` and name
   ###
@@ -351,7 +352,7 @@ class Lexer extends Class
         if val = @readAtRuleIdent() or @readAtRuleString() or (@read NUMBER)
           return yes
         else
-          throw new Error ":( #{@position}"
+          throw new SyntaxError ":( #{@position}"
     @moveTo start
     return
 
@@ -376,7 +377,7 @@ class Lexer extends Class
           parens = 1
           while parens
             if @isEndOfText()
-              throw new Error "Unterminated at-rule function call"
+              throw new SyntaxError "Unterminated at-rule function call"
             if @char is ')'
               parens--
             else if @char is '('
@@ -590,7 +591,7 @@ class Lexer extends Class
     if token = (@read type, value, ignore)
       return token
 
-    throw new Error """
+    throw new SyntaxError """
       "Unexpected `don't know what` type or value. \
       Expected `#{type}` (#{value})  at #{@position}"
       """

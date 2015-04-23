@@ -13,7 +13,7 @@ TODO use some arbitrary precission library; I cannot stand `10 - 9.9` being
 ###
 class Number extends Object
 
-  {round, ceil, floor, abs, pow} = Math
+  {round, ceil, floor, abs, pow, sin, cos, tan, asin, acos, atan} = Math
 
   RE_NUMERIC = /^\s*([\+-]?(?:\d*\.)?\d+)\s*(%|(?:[a-z]+))?\s*$/i
 
@@ -134,7 +134,7 @@ class Number extends Object
     json.unit = @unit
     json
 
-  reprValue: -> "#{@value}#{@unit}"
+  reprValue: -> "#{@value}#{@unit or ''}"
 
   clone: (value = @value, unit = @unit, etc...) -> super value, unit, etc...
 
@@ -193,6 +193,8 @@ class Number extends Object
         """
       )
 
+  '.unit?': -> Boolean.new @unit
+
   '.pure?': -> Boolean.new @isPure()
 
   '.pure': -> new Number @value
@@ -247,7 +249,17 @@ class Number extends Object
       throw new TypeError 'Cannot divide by 0'
     @clone @value % other.value
 
-  '.unit?': -> Boolean.new @unit
+  '.sin': -> @clone sin @value
+
+  '.cos': -> @clone cos @value
+
+  '.tan': -> @clone tan @value
+
+  '.asin': -> @clone asin @value
+
+  '.acos': -> @clone acos @value
+
+  '.atan': -> @clone atan @value
 
   '.convert': (unit) -> @convert unit
 

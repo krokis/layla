@@ -2,6 +2,6 @@ Class = require './class'
 
 class Plugin extends Class
 
-  use: (scope) ->
+  use: (context) ->
 
 module.exports = Plugin

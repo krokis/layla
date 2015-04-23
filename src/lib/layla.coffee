@@ -6,12 +6,14 @@ Evaluator  = require './evaluator'
 Normalizer = require './visitor/normalizer'
 Emitter    = require './emitter'
 CSSEmitter = require './emitter/css'
+CLIEmitter = require './emitter/cli'
 Plugin     = require './plugin'
 Node       = require './node'
 Object     = require './object'
+Document   = require './object/document'
 String     = require './object/string'
-Error      = require './object/scope'
 Scope      = require './object/scope'
+Error      = require './error'
 
 class Layla
 
@@ -22,6 +24,7 @@ class Layla
   @Class: Class
   @Node: Node
   @Object: Object
+  @Document: Document
   @String: String
   @Parser: Parser
   @Evaluator: Evaluator
@@ -75,14 +78,17 @@ class Layla
         throw new TypeError "That's not a plugin"
 
   # Core methods
-  parse: (source) ->
-    @parser.parse source
+  parse: (source) -> @parser.parse source
 
-  evaluate: (node, scope = @scope) ->
-    @evaluator.evaluate node, scope
+  evaluate: (node, self = null, scope = @scope) ->
+    node = @parse node unless node instanceof Node
+    @evaluator.evaluateRoot node, self, scope
 
-  emit: (node) ->
-    node = @normalizer.normalize node
-    @emitter.emit node
+  normalize: (node) -> @normalizer.normalize node
+
+  emit: (node) -> @emitter.emit node
+
+  # This is a shortcut subject to deprecation
+  compile: (source) -> @emit @normalize @evaluate @parse source
 
 module.exports = Layla

@@ -15,7 +15,7 @@ class Error extends Class
   constructor: (@message, @location = null, @stack = null) ->
 
   toString: ->
-    str = "#{@type} / #{@message}"
+    str = "#{@type} - #{@message}"
 
     if @file?
       str += " at #{@file}"

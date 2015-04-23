@@ -85,7 +85,7 @@ class Block extends Collection
       super
 
   '.properties': ->
-    new List (@items.filter (obj) -> obj instanceof Property)
+    new List (@items.filter (obj) -> obj instanceof Property), ";"
 
   '.has-property?': (name) -> Boolean.new @hasProperty name.value
 

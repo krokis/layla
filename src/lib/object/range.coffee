@@ -66,6 +66,8 @@ class Range extends Indexed
   clone: (min = @min, max = @max, unit = @unit, etc...) ->
     super min, max, unit, etc...
 
+  reprValue: -> "#{@min}..#{@max}"
+
   '.convert': (args...) -> @convert args...
 
   '.list': -> new List @items

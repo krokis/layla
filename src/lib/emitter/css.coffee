@@ -93,16 +93,21 @@ class CSSEmitter extends Emitter
 
     if quoted then @quoteString val else val.trim()
 
-  emitNumber: (num) ->
+  emitNumberValue: (num) ->
     value = num.value
 
     if value % 1 isnt 0
       m = Math.pow 10, @options.decimal_places
       value = (Math.round value * m) / m
 
-    if num.unit and value isnt 0
-      value += num.unit
+    '' + value
 
+  emitNumberUnit: (num) -> num.unit or ''
+
+  emitNumber: (num) ->
+    value = @emitNumberValue num
+    if value isnt '0'
+      value += @emitNumberUnit num
     value
 
   emitBoolean: (bool) ->
@@ -126,14 +131,23 @@ class CSSEmitter extends Emitter
   emitURL: (url) ->
     "url(#{@emitString url, url.quote?})"
 
+  emitPropertyName: (property) -> property.name
+
+  emitPropertyValue: (property) -> @emit property.value
+
   emitProperty: (property) ->
     """
-    #{property.name}: #{@emit property.value}
+    #{@emitPropertyName property}: #{@emitPropertyValue property}
     """
+
+  emitSelector: (selector) -> selector
+
+  emitSelectorList: (rule) ->
+    (rule.selector.map (sel) => @emitSelector sel).join ',\n'
 
   emitRuleSet: (rule) ->
     """
-    #{rule.selector.join ',\n'} #{@emitBlock rule}
+    #{@emitSelectorList rule} #{@emitBlock rule}
     """
 
   emitAtRule: (rule) ->

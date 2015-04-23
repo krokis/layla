@@ -6,9 +6,11 @@ readline = require 'readline'
 
 # Main lib
 Layla = require '../lib'
+CLIEmitter = require '../lib/emitter/cli'
 
 # Layla instance to be used and reused
 $layla = new Layla
+$layla.emitter = new CLIEmitter
 
 # Global options
 $colors = yes
@@ -60,7 +62,9 @@ help = ->
 evaluate = (source) ->
   try
     ast = $layla.parse source
-    css = $layla.emit ast
+    doc = $layla.evaluate ast
+    doc = $layla.normalize doc
+    css = $layla.emit doc
     return css
   catch e
     if false
@@ -165,12 +169,27 @@ catch e
   exit()
 
 if interactive
+  doc = new Layla.Document
+  scope = new Layla.Scope
+
   repl = readline.createInterface(process.stdin, process.stdout)
   repl.setPrompt '> '
 
   repl.on 'line', (text) ->
     if text.trim() isnt ''
-      evaluate text
+      try
+        $layla.parser.prepare text
+        res = null
+        for stmt in $layla.parser.parseBody()
+          if stmt?
+            res = $layla.evaluator.evaluateNode stmt, doc, scope
+        if res
+          out $layla.emit res
+      catch e
+        if e instanceof Layla.Error
+          err "\u001b[31m#{e}\u001b[0m"
+        else
+          throw e
 
     repl.prompt()
 

@@ -759,6 +759,66 @@ Numbers
   ~~~ !TypeError
   ~~~
 
+### `sin`
+
+- Returns the sine of the number
+
+  ~~~ lay
+  ~~~
+
+  ~~~ css
+  ~~~
+
+### `cos`
+
+- Returns the cosine of the number
+
+  ~~~ lay
+  ~~~
+
+  ~~~ css
+  ~~~
+
+### `tan`
+
+- Returns the tangent of the number
+
+  ~~~ lay
+  ~~~
+
+  ~~~ css
+  ~~~
+
+### `asin`
+
+- Returns the arcsine of the number
+
+  ~~~ lay
+  ~~~
+
+  ~~~ css
+  ~~~
+
+### `acos`
+
+- Returns the arccosine of the number
+
+  ~~~ lay
+  ~~~
+
+  ~~~ css
+  ~~~
+
+### `atan`
+
+- Returns the arctangent of the number
+
+  ~~~ lay
+  ~~~
+
+  ~~~ css
+  ~~~
+
 ### `base`
 
 - Returns a string representation of the number in the given base

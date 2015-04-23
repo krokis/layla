@@ -26,7 +26,7 @@ class Object extends Class
     operator += '@' unless other
     @callMethod operator, other, etc...
 
-  reprValue: -> null
+  reprValue: -> ''
 
   reprType: -> @constructor.reprType()
 

@@ -69,12 +69,8 @@ describe 'Cases', ->
               it desc, ((source, expected, err_name, err_msg) ->
                 try
                   layla = new Layla
-                  ast = layla.parse source
-                  #console.log json ast
                   layla.scope.paths.push path.dirname file
-                  doc = layla.evaluate ast
-                  #console.log json doc
-                  actual = layla.emit doc
+                  actual = layla.compile source
                   actual.should.be.exactly expected
                 catch e
                   throw e unless err_name or err_msg

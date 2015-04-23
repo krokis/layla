@@ -29,9 +29,7 @@ describe 'Docs', ->
             expected = node.string_content
 
             layla = new Layla
-            ast = layla.parse source
-            doc = layla.evaluate ast
-            actual = layla.emit doc
+            actual = layla.compile source
             actual.should.be.exactly expected
           else
             last =
