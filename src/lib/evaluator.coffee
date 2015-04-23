@@ -154,7 +154,10 @@ class Evaluator extends Class
 
         for d in [i...in_args.length]
           if in_args[d].value
-            scp.set in_args[d].name, (@evaluateNode in_args[d].value, self, scp)
+            value = @evaluateNode in_args[d].value, self, scp
+          else
+            value = Null.null
+          scp.set in_args[d].name, value
 
         @evaluateBody block.body, self, scp
         return

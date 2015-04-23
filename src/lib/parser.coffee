@@ -184,7 +184,14 @@ class Parser extends Lexer
           return left
         else if op.value is ' '
           return left
-        throw new SyntaxError "Expected right side of `#{op.value}` operation"
+
+        # TODO: should throw an EOTError if @isEndOfText() or there's only
+        # whitespace
+        if @isEndOfTextWithWhitespace()
+          throw new EOTError """
+            Unexpected EOT before right side of `#{op.value}` operation"""
+        else
+          throw new SyntaxError "Expected right side of `#{op.value}` operation"
 
       next_op = @peek BINARY_OPERATOR, null, no
 
@@ -571,9 +578,9 @@ class Parser extends Lexer
 
         if tok = @read IDENT, ['if', 'unless']
           unless els.condition = (@parseExpression 0, no)
-            throw new SyntaxError (
-              "Expected expression after `else #{tok.value}`"
-            )
+            throw new SyntaxError """
+              "Expected expression after `else #{tok.value}`
+            """
           els.negate = tok.value is 'unless'
 
         unless els.block = @parseBlock()

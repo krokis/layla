@@ -10,8 +10,6 @@ class Function extends Object
 
   toString: -> 'function'
 
-  reprValue: -> null
-
   isEqual: (other) -> other instanceof Function and (other.func is @func)
 
   clone: (func = @func, self = @self, etc...) -> super func, self, etc...

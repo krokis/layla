@@ -6,8 +6,10 @@ class CLIEmitter extends CSSEmitter
   RED        = 31
   GREEN      = 32
   YELLOW     = 33
+  BLUE       = 34
   MAGENTA    = 35
   CYAN       = 36
+  GREY       = 37
 
   constructor: (options = {}) ->
     defaults =
@@ -28,7 +30,11 @@ class CLIEmitter extends CSSEmitter
     else
       str
 
-  emitNumber: (num) -> @format (super num), CYAN
+  emitFunction: (func) -> @format func.repr(), YELLOW
+
+  emitNumber: (num) -> @format (super num), YELLOW
+
+  emitRegExp: (reg) -> @format "/#{reg.source}/#{reg.flags}", YELLOW
 
   emitString: (str) -> @format (super str), YELLOW
 
@@ -38,8 +44,6 @@ class CLIEmitter extends CSSEmitter
 
   emitAtRuleArguments: (sel) -> @format (super sel), GREEN
 
-  emitProperty: (property) ->
-    (@format (@emitPropertyName property), CYAN) + ': ' +
-    (@emitPropertyValue property)
+  emitPropertyName: (property) -> @format (super property), CYAN
 
 module.exports = CLIEmitter

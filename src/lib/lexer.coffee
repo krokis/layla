@@ -34,6 +34,7 @@ class Lexer extends Class
   RE_ALL_WHITESPACE        = /\s+/
   RE_HORIZONTAL_WHITESPACE = /[ \t]+/
   RE_TRAILING_WHITESPACE   = /[ \t]*(\n|$)/
+  RE_EOT_WHITESPACE        = /[ \t]*$/
   RE_UNARY_OPERATOR        = /\-|\+|not/
   RE_BINARY_OPERATOR       = ///
                              (::|\.\.|\.|\()|(([\t\ ]*)
@@ -91,6 +92,9 @@ class Lexer extends Class
   ###
   isEndOfText: ->
     @position >= @length
+
+  isEndOfTextWithWhitespace: ->
+    !!@match RE_EOT_WHITESPACE
 
   ###
   ###
@@ -219,9 +223,9 @@ class Lexer extends Class
       if @char is '\\'
 
         if @isEndOfText()
-          throw new EOTError (
-            "Unexpected end of text before boundary ('#{boundary}')"
-          )
+          throw new EOTError """
+            Unexpected end of text before boundary ('#{boundary}')
+            """
         @move()
 
         switch @char

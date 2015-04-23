@@ -18,7 +18,7 @@ $colors = yes
 ###
 Write a line to stdout.
 ###
-out = (text) ->
+out = (text = '') ->
   console.log text
 
 ###
@@ -160,40 +160,43 @@ if interactive
   $layla.emitter = new CLIEmitter colors: $colors
 
   repl = readline.createInterface(process.stdin, process.stdout)
-  repl.setPrompt '> '
 
   buffer = ''
+
+  do resetBuffer = ->
+    buffer = ''
+    repl.setPrompt '> '
 
   repl.on 'line', (text) ->
     if text.trim() isnt ''
       try
-        $layla.parser.prepare (buffer + text)
         res = null
+        $layla.parser.prepare "#{buffer}\n#{text}"
         for stmt in $layla.parser.parseBody()
           if stmt?
             res = $layla.evaluator.evaluateNode stmt, doc, scope
         if res
           out $layla.emit res
-        buffer = ''
+        resetBuffer()
       catch e
         if e instanceof Layla.Error
           if e instanceof EOTError
-            buffer += text
+            buffer += "\n" + text
+            repl.setPrompt '| '
           else
             err "\u001b[31m#{e}\u001b[0m"
+            resetBuffer()
         else
           throw e
 
     repl.prompt()
 
-  repl.on 'close', ->
-    out()
-    exit()
+  repl.on 'close', -> exit()
 
   repl.on 'SIGINT', ->
     out '^C'
     # Simulate ctrl+u to delete the line previously written
-    repl.write null, {ctrl: yes, name: 'u'}
+    repl.write null, ctrl: yes, name: 'u'
     repl.prompt()
 
   repl.prompt()
