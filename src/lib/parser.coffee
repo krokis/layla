@@ -30,6 +30,7 @@ BlockComment = require './node/comment/block'
 Root         = require './node/root'
 
 SyntaxError  = require './error/syntax'
+EOTError     = require './error/eot'
 
 {
   PUNC
@@ -282,7 +283,7 @@ class Parser extends Lexer
             str.value = '' # TODO why is this necessary'
             until @char is ')'
               if @isEndOfLine()
-                throw new SyntaxError "Unterminated `url()`"
+                throw new EOTError "Unterminated `url()`"
               str.value += @char
               @move()
 
@@ -347,7 +348,7 @@ class Parser extends Lexer
 
         loop
           if @isEndOfText()
-            throw new SyntaxError "Unterminated string"
+            throw new EOTError "Unterminated string"
 
           if @char is quote
             # End string

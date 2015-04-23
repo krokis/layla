@@ -1,6 +1,7 @@
 Class         = require './class'
 Token         = require './token'
 SyntaxError   = require './error/syntax'
+EOTError      = require './error/eot'
 InternalError = require './error/internal'
 
 {
@@ -202,7 +203,7 @@ class Lexer extends Class
     if '/*' is @chars 2
       @makeToken BLOCK_COMMENT, ->
         end = @source.indexOf '*/', (@position + 2)
-        throw new SyntaxError 'Unterminated /* block comment */' if end < 0
+        throw new EOTError 'Unterminated /* block comment */' if end < 0
         @move 2
 
   ###
@@ -213,12 +214,12 @@ class Lexer extends Class
 
     while @char isnt boundary
       if @isEndOfText()
-        throw new SyntaxError "Text termined before boundary ('#{boundary}')"
+        throw new EOTError "Text termined before boundary ('#{boundary}')"
 
       if @char is '\\'
 
         if @isEndOfText()
-          throw new SyntaxError (
+          throw new EOTError (
             "Unexpected end of text before boundary ('#{boundary}')"
           )
         @move()
@@ -377,7 +378,7 @@ class Lexer extends Class
           parens = 1
           while parens
             if @isEndOfText()
-              throw new SyntaxError "Unterminated at-rule function call"
+              throw new EOTError "Unterminated at-rule function call"
             if @char is ')'
               parens--
             else if @char is '('
@@ -591,10 +592,13 @@ class Lexer extends Class
     if token = (@read type, value, ignore)
       return token
 
-    throw new SyntaxError """
-      "Unexpected `don't know what` type or value. \
-      Expected `#{type}` (#{value})  at #{@position}"
-      """
+    if @isEndOfText()
+      throw new EOTError "Unexpected EOT"
+    else
+      throw new SyntaxError """
+        "Unexpected `don't know what` type or value. \
+        Expected `#{type}` (#{value})  at #{@position}"
+        """
 
   ###
   ###

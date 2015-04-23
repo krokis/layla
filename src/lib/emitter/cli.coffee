@@ -9,8 +9,6 @@ class CLIEmitter extends CSSEmitter
   MAGENTA    = 35
   CYAN       = 36
 
-  BRIGHT_RED = "#{ESC}[91m"
-
   constructor: (options = {}) ->
     defaults =
       colors: yes
@@ -41,7 +39,7 @@ class CLIEmitter extends CSSEmitter
   emitAtRuleArguments: (sel) -> @format (super sel), GREEN
 
   emitProperty: (property) ->
-    (@format (@emitPropertyName property), CYAN) + ':' +
+    (@format (@emitPropertyName property), CYAN) + ': ' +
     (@emitPropertyValue property)
 
 module.exports = CLIEmitter

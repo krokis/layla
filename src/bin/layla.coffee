@@ -7,10 +7,10 @@ readline = require 'readline'
 # Main lib
 Layla = require '../lib'
 CLIEmitter = require '../lib/emitter/cli'
+EOTError   = require '../lib/error/eot'
 
 # Layla instance to be used and reused
 $layla = new Layla
-$layla.emitter = new CLIEmitter
 
 # Global options
 $colors = yes
@@ -53,29 +53,22 @@ help = ->
   Options:
     -u, --use <plugin>,...   Use one or more plugins
     -i, --interactive        Start an interactive console
+    --colors                 Use colors on the console output
+    --no-colors              Don't use colors on the console output
     -v, --version            Print out Layla version
     -h, --help               Display this help text
   '''
 
 ###
 ###
-evaluate = (source) ->
+compile = (source) ->
   try
-    ast = $layla.parse source
-    doc = $layla.evaluate ast
-    doc = $layla.normalize doc
-    css = $layla.emit doc
-    return css
+    $layla.compile source
   catch e
     if false
       warn "\x1b[33m#{e}\x1b[0m"
     else
       err "\x1b[31m#{e}\x1b[0m"
-
-compile = (source) ->
-  ast = $layla.parse source
-  css = $layla.evaluate ast
-  $layla.emit css
 
 ###
 main
@@ -116,7 +109,7 @@ try
         version()
         exit()
 
-      when '--color'
+      when '--colors'
         if val isnt null
           if val is 'auto'
             $colors = yes
@@ -128,7 +121,7 @@ try
             warn "Bad value for --color option: `#{val}`"
             exit 1
 
-      when '--no-color'
+      when '--no-colors'
         if val isnt null
           warn """
           Bad value for --no-color option: \
@@ -140,16 +133,6 @@ try
 
       when '--repl', '-i', '--interactive'
         interactive = yes
-
-      when '--reporter', '-r'
-        try
-          while arg = args.shift()
-            if arg.substr(0, 1) is '-'
-              throw null
-            reporter = arg
-          break
-        catch
-          continue
 
       when '--help', '-h'
         help()
@@ -168,26 +151,36 @@ catch e
   help()
   exit()
 
+for plugin in plugins
+  $layla.use plugin
+
 if interactive
   doc = new Layla.Document
   scope = new Layla.Scope
+  $layla.emitter = new CLIEmitter colors: $colors
 
   repl = readline.createInterface(process.stdin, process.stdout)
   repl.setPrompt '> '
 
+  buffer = ''
+
   repl.on 'line', (text) ->
     if text.trim() isnt ''
       try
-        $layla.parser.prepare text
+        $layla.parser.prepare (buffer + text)
         res = null
         for stmt in $layla.parser.parseBody()
           if stmt?
             res = $layla.evaluator.evaluateNode stmt, doc, scope
         if res
           out $layla.emit res
+        buffer = ''
       catch e
         if e instanceof Layla.Error
-          err "\u001b[31m#{e}\u001b[0m"
+          if e instanceof EOTError
+            buffer += text
+          else
+            err "\u001b[31m#{e}\u001b[0m"
         else
           throw e
 
@@ -223,4 +216,4 @@ else
   stdin.on 'data', (chunk) ->
     text += chunk
 
-  stdin.on 'end', -> evaluate text
+  stdin.on 'end', -> out compile str
