@@ -430,6 +430,14 @@ Blocks
     been: $hey::been
     must: $hey::(`must`)
   }
+
+  foo = { color: red }
+
+  color: foo::color
+  color: foo::`color`
+  color = white
+  color: foo::color
+  color: foo::`color`
   ~~~
 
   ~~~ css
@@ -437,6 +445,11 @@ Blocks
     been: "tryin' to meet you!";
     must: 'be a devil between us';
   }
+
+  color: red;
+  color: red;
+  color: red;
+  color: red;
   ~~~
 
 - If the passed property name has been defined more than once, returns the latest value

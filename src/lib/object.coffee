@@ -12,19 +12,11 @@ class Object extends Class
 
   @reprType: -> @name
 
-  callMethod: (name, args...) ->
-    method = @[".#{name}"]
-
-    if typeof method is 'function'
-      method.call this, args...
-    else
-      throw new TypeError "Call to undefined method: `#{@type}.#{name}`"
-
   hasMethod: (name) -> typeof @[".#{name}"] is 'function'
 
   operate: (operator, other, etc...) ->
     operator += '@' unless other
-    @callMethod operator, other, etc...
+    @['.'] operator, other, etc...
 
   reprValue: -> ''
 
@@ -33,6 +25,18 @@ class Object extends Class
   repr: -> "[#{"#{@reprType()} #{@reprValue()}".trim()}]"
 
   isA: (other) -> @ instanceof other
+
+  toString: -> throw new TypeError "Cannot convert #{@repr()} to string"
+
+  '.': (name, etc...) ->
+    method = @[".#{name}"]
+
+    if typeof method is 'function'
+      method.call this, etc...
+    else
+      throw new TypeError "Call to undefined method: `#{@type}.#{name}`"
+
+  '.=': (name, etc...) -> @['.'] "#{name}=", etc...
 
   '.copy': -> @clone()
 

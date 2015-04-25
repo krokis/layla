@@ -30,7 +30,7 @@ Null
 
   #null {
     for $i in 0..($objs.length) {
-      foo: null is $objs::$i null isnt $objs::$i
+      foo: null is $objs::($i) null isnt $objs::($i)
     }
   }
   ~~~

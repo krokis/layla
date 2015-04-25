@@ -203,9 +203,21 @@ class Evaluator extends Class
           else
             args = []
 
-          return (left.callMethod node.right.name, args...) or Null.null
+          (left['.'] node.right.name, args...) or Null.null
         else
-          throw new Error "Bad member expression"
+          throw new Error "Bad right side of `.` operation"
+
+      when '::'
+        left = @evaluateNode node.left, self, scope
+
+        if node.right instanceof Call
+          if node.right.arguments?
+            throw new Error "Bad right side of `::` operation"
+          right = new String node.right.value
+        else
+          right = @evaluateNode node.right, self, scope
+
+        (left['.::'] right) or Null.null
 
       when '('
         left = @evaluateNode node.left, self, scope
@@ -215,7 +227,7 @@ class Evaluator extends Class
         args = (@evaluateNode arg, self, scope for arg in node.right)
 
         ret = left.invoke.call left, self, args...
-        return ret or Null.null
+        ret or Null.null
 
       else
         left = @evaluateNode node.left, self, scope
@@ -279,8 +291,8 @@ class Evaluator extends Class
       ref = @evaluateNode left.left, self, scope
 
       if left.operator is '.'
-        getter = ref.callMethod.bind ref, name.value
-        setter = ref.callMethod.bind ref, "#{name.value}="
+        getter = ref['.'].bind ref, name
+        setter = ref['.='].bind ref, name
       else
         getter = ref['.::'].bind ref, name
         setter = ref['.::='].bind ref, name
