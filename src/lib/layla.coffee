@@ -1,4 +1,4 @@
-VERSION    = require '../version'
+VERSION    = (require '../package').version
 
 Class      = require './class'
 Parser     = require './parser'
