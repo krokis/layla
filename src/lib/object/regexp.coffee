@@ -73,7 +73,7 @@ class RegExp extends Object
   clone: (source = @source, flags = @flags, etc...) ->
     super source, flags, etc...
 
-  reprValue: -> "/#{@constructor.escape source}/#{@flags}"
+  reprValue: -> "/#{@constructor.escape @source}/#{@flags}"
 
   ###
   TODO: convert any object to string with `.string`?

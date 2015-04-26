@@ -1,6 +1,6 @@
 Expression = require '../expression'
 
-class Call extends Expression
+class Ident extends Expression
   value: null
   name: null
   arguments: null
@@ -11,4 +11,4 @@ class Call extends Expression
     json.arguments = @arguments
     json
 
-module.exports = Call
+module.exports = Ident

@@ -152,8 +152,8 @@ class Number extends Object
     else
       throw new TypeError (
         """
-        Cannot perform #{this.repr()} + #{other.repr()}: \
-        that's not a [Number]
+        Cannot perform #{@repr()} + #{other.repr()}: \
+        right side must be a #{Number.repr()}
         """
       )
 
@@ -163,8 +163,8 @@ class Number extends Object
     else
       throw new TypeError (
         """
-        Cannot perform #{this.repr()} - #{other.repr()}: \
-        that's not a [Number]
+        Cannot perform #{@repr()} - #{other.repr()}: \
+        right side must be a #{Number.repr()}
         """
       )
 
@@ -175,8 +175,8 @@ class Number extends Object
     else
       throw new TypeError (
         """
-        Cannot perform #{this.repr()} * #{other.repr()}: \
-        that's not a [Number]
+        Cannot perform #{@repr()} * #{other.repr()}: \
+        right side must be a #{Number.repr()}
         """
       )
 
@@ -188,8 +188,8 @@ class Number extends Object
     else
       throw new TypeError (
         """
-        Cannot perform #{this.repr()} / #{other.repr()}: \
-        that's not a [Number]
+        Cannot perform #{@repr()} / #{other.repr()}: \
+        right side must be a #{Number.repr()}
         """
       )
 

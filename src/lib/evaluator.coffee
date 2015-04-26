@@ -7,7 +7,7 @@ Parser        = require './parser'
 Plugin        = require './plugin'
 Expression    = require './node/expression'
 Operation     = require './node/expression/operation'
-Call          = require './node/expression/call'
+Ident         = require './node/expression/ident'
 LiteralNumber = require './node/expression/literal/number'
 Break         = require './node/statement/break'
 Continue      = require './node/statement/continue'
@@ -106,7 +106,7 @@ class Evaluator extends Class
 
   ###
   ###
-  evaluateCall: (node, self, scope) ->
+  evaluateIdent: (node, self, scope) ->
     switch node.value
       when 'true'
         Boolean.true
@@ -182,7 +182,7 @@ class Evaluator extends Class
   ###
   ###
   evaluateUnaryOperation: (node, self, scope) ->
-    (@evaluateNode node.right, self, scope).operate node.operator
+    (@evaluateNode node.right, self, scope).operate "#{node.operator}@"
 
   ###
   TODO Reimplement this mess as a Node methods
@@ -195,7 +195,7 @@ class Evaluator extends Class
       when '.'
         left = @evaluateNode node.left, self, scope
 
-        if node.right instanceof Call
+        if node.right instanceof Ident
           if node.right.arguments?
             args = (
               @evaluateNode arg, self, scope for arg in node.right.arguments
@@ -210,7 +210,7 @@ class Evaluator extends Class
       when '::'
         left = @evaluateNode node.left, self, scope
 
-        if node.right instanceof Call
+        if node.right instanceof Ident
           if node.right.arguments?
             throw new Error "Bad right side of `::` operation"
           right = new String node.right.value
@@ -281,7 +281,7 @@ class Evaluator extends Class
     if left instanceof LiteralNumber
       return @evaluateUnitAssignment node, self, scope
 
-    if left instanceof Call
+    if left instanceof Ident
       name = left.value
       getter = scope.get.bind scope, name
       setter = scope.set.bind scope, name

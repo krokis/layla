@@ -74,6 +74,13 @@ class String extends Indexed
   '.+': (other) ->
     if other instanceof String
       return new String "#{@value}#{other.value}", @quote or other.quote
+    else
+      throw new TypeError (
+        """
+        Cannot perform #{@repr()} + #{other.repr()}: \
+        right side must be a #{String.repr()}
+        """
+      )
 
   '.*': (other) ->
     if other instanceof Number

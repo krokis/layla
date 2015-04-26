@@ -3,7 +3,7 @@ Token        = require './token'
 Expression   = require './node/expression'
 Operation    = require './node/expression/operation'
 Group        = require './node/expression/group'
-Call         = require './node/expression/call'
+Ident        = require './node/expression/ident'
 String       = require './node/expression/literal/string'
 URL          = require './node/expression/literal/url'
 Color        = require './node/expression/literal/color'
@@ -48,12 +48,11 @@ class Parser extends Lexer
 
   # All operators, with their precedence, from highest to lowest.
   PREC =
-    '+@'     : 100 # Unary plus
-    '-@'     : 100 # Unary minus
-    'not@'   :  11 # Unary boolean negation
-    '::'     :  99 # Property access
-    '.'      :  99 # Method access
-    '('      :  99 # Method arguments
+    '('      : 100 # Method arguments
+    '+@'     :  99 # Unary plus
+    '-@'     :  99 # Unary minus
+    '::'     :  98 # Property access
+    '.'      :  98 # Method access
     '*'      :  50 # Multiplication
     '/'      :  50 # Division
     '+'      :  45 # Addition
@@ -73,6 +72,7 @@ class Parser extends Lexer
     'isnt'   :  20 # Negated
     'in'     :  18 # Existence
     '~'      :  15 # String/RegExp matching
+    'not@'   :  11 # Unary boolean negation
     ' '      :  10 # List separator
     ','      :   9 # List separator
     '='      :   8 # Assignment
@@ -171,7 +171,7 @@ class Parser extends Lexer
       op = next_op
 
       if next_op.value is '('
-        right = @parseCallArguments()
+        right = @parseIdentArguments()
       else
         @moveTo op.end
         right = @parsePrimaryExpression prec, blocks
@@ -262,7 +262,7 @@ class Parser extends Lexer
 
   ###
   ###
-  parseCallArguments: ->
+  parseIdentArguments: ->
     start = @position
 
     if @read PUNC, '(', no
@@ -299,21 +299,21 @@ class Parser extends Lexer
 
   ###
   ###
-  parseCall: ->
+  parseIdent: ->
     if token = @peek IDENT
-      @makeNode Call, (call) ->
-        call.start = token.start
-        call.name = token.value
-        call.value = token.value
+      @makeNode Ident, (ident) ->
+        ident.start = token.start
+        ident.name = token.value
+        ident.value = token.value
         @moveTo token.end
 
         if @peek PUNC, '('
-          call.arguments = @parseCallArguments()
+          ident.arguments = @parseIdentArguments()
 
           if @char in ['!', '?']
             unless @peek IDENT, null, no
-              call.name += @char
-              call.value += @char
+              ident.name += @char
+              ident.value += @char
               @move()
 
   ###
@@ -430,7 +430,7 @@ class Parser extends Lexer
     @parseColor() or
     @parseRegExp() or
     @parseURL() or
-    @parseCall()
+    @parseIdent()
 
   ###
   Parenthesized expressions.

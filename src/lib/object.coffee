@@ -12,11 +12,26 @@ class Object extends Class
 
   @reprType: -> @name
 
+  @repr: -> "[#{@reprType()}]"
+
   hasMethod: (name) -> typeof @[".#{name}"] is 'function'
 
   operate: (operator, other, etc...) ->
-    operator += '@' unless other
-    @['.'] operator, other, etc...
+    if @hasMethod operator
+      @['.'] operator, other, etc...
+    else
+      repr =
+        if other
+          "#{@repr()} #{operator} #{other.repr()}"
+        else
+          "#{operator}#{@repr()}"
+
+      throw new TypeError (
+        """
+        Cannot perform #{repr}: \
+        #{@constructor.repr()} has no method [.#{operator}]
+        """
+      )
 
   reprValue: -> ''
 
@@ -34,7 +49,7 @@ class Object extends Class
     if typeof method is 'function'
       method.call this, etc...
     else
-      throw new TypeError "Call to undefined method: `#{@type}.#{name}`"
+      throw new TypeError "Call to undefined method: [#{@type}.#{name}]"
 
   '.=': (name, etc...) -> @['.'] "#{name}=", etc...
 
