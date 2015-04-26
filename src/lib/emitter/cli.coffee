@@ -36,6 +36,8 @@ class CLIEmitter extends CSSEmitter
 
   emitRegExp: (reg) -> @format "/#{reg.source}/#{reg.flags}", YELLOW
 
+  emitColor: (str) -> @format (super str), YELLOW
+
   emitString: (str) -> @format (super str), YELLOW
 
   emitSelector: (sel) -> @format (super sel), GREEN
