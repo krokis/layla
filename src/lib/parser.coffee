@@ -42,6 +42,7 @@ EOTError     = require './error/eot'
   NUMBER
   COLOR
   REGEXP
+  EOT
 } = Token
 
 class Parser extends Lexer
@@ -187,7 +188,7 @@ class Parser extends Lexer
 
         # TODO: should throw an EOTError if @isEndOfText() or there's only
         # whitespace
-        if @isEndOfTextWithWhitespace()
+        if @peek EOT
           throw new EOTError """
             Unexpected EOT before right side of `#{op.value}` operation"""
         else

@@ -18,6 +18,7 @@ class Token extends Class
   @SELECTOR        = 'Selector'
   @SIMPLE_SELECTOR = 'SimpleSelector'
   @COMBINATOR      = 'Combinator'
+  @EOT             = 'EOT'
 
   ###
   Returns length of token, if it has a start and an end. Otherwise, returns

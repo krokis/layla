@@ -19,6 +19,7 @@ InternalError = require './error/internal'
   COLOR
   REGEXP
   WHITESPACE
+  EOT
 } = Token
 
 ###
@@ -34,7 +35,6 @@ class Lexer extends Class
   RE_ALL_WHITESPACE        = /\s+/
   RE_HORIZONTAL_WHITESPACE = /[ \t]+/
   RE_TRAILING_WHITESPACE   = /[ \t]*(\n|$)/
-  RE_EOT_WHITESPACE        = /[ \t]*$/
   RE_UNARY_OPERATOR        = /\-|\+|not/
   RE_BINARY_OPERATOR       = ///
                              (::|\.\.|\.|\()|(([\t\ ]*)
@@ -92,9 +92,6 @@ class Lexer extends Class
   ###
   isEndOfText: ->
     @position >= @length
-
-  isEndOfTextWithWhitespace: ->
-    !!@match RE_EOT_WHITESPACE
 
   ###
   ###
@@ -189,11 +186,15 @@ class Lexer extends Class
         throw e
 
     # Hey, a token must be at least 1 character long
-    @move() if @position is token.start
+    @move() if not @isEndOfText() and @position is token.start
     token.end ?= @position
     token.value ?= @source.substring token.start, token.end
 
     token
+
+  readEOT: ->
+    if @isEndOfText()
+      @makeToken EOT
 
   ###
   ###
