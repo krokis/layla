@@ -9,7 +9,15 @@ Layla = require '../lib'
 CLIEmitter = require '../lib/emitter/cli'
 EOTError   = require '../lib/error/eot'
 
-class UsageError extends Layla.Error
+class UsageError
+  constructor: (@message) ->
+  toString: -> @message
+
+class TooManyArgumentsError extends UsageError
+
+class UnknownCommandError extends UsageError
+
+class UnknownOptionError extends UsageError
 
 class Arg
   constructor: (@value) ->
@@ -62,10 +70,12 @@ commands =
         if false
           warn e
         else
-          err e.toString()
+          throw e
 
     if opts.length > 0
-      throw new Error "Unkown option: #{opts[0].name} or `compile` command"
+      throw new UnknownOptionError (
+        "Unkown option: #{opts[0].name} for `compile` command"
+      )
 
     if args.length > 0
       for arg in args
@@ -97,13 +107,18 @@ commands =
       try
         out $layla.compile source
       catch e
-        if false
-          warn e
+        if e instanceof Layla.Error
+          if false
+            warn e
+          else
+            err e.toString()
         else
-          err e.toString()
+          throw e
 
     if opts.length > 0
-      throw new Error "Unkown option: #{opts[0].name} or `compile` command"
+      throw new UnknownOptionError (
+        "Unkown option: #{opts[0].name} or `compile` command"
+      )
 
     if args.length > 0
       for arg in args
@@ -126,7 +141,7 @@ commands =
       stdin.on 'end', ->
         doCompile source
 
-  repl: (args = [], opts = []) ->
+  interactive: (args = [], opts = []) ->
     $colors = $colors isnt no
 
     doc = new Layla.Document
@@ -186,59 +201,87 @@ commands =
     command = null
 
     if args.length > 1
-      throw new Error 'Too many arguments for `help` command'
+      throw new TooManyArgumentsError 'Too many arguments for `help` command'
     else if args.length is 1
       command = args[0].value
     else
       command = null
 
     for opt in opts
-      throw new Error "Unknown option `#{opt.name}`"
+      throw new UnknownOptionError "Unknown option `#{opt.name}`"
 
     switch command
       when 'compile'
         out '''
-            Usage: layla compile [<file>...|<stdin]
+            Compiles lay source code into CSS and outputs it.
+
+            Usage:
+              layla compile [<file>...|<stdin]
             '''
+
       when 'parse'
         out '''
-            Usage: layla parse [<file>]
+            Parses lay source code and outputs an AST in JSON format.
+
+            Usage:
+              layla parse [<file>]
             '''
 
       when 'repl'
         out '''
-            Usage: layla [options] repl [<file>...]
+            Starts an interactive console.
+
+            Usage:
+              layla [options] repl [<file>...]
             '''
 
       when 'help'
         out '''
-            Usage: layla help
+            Displays help about a specific command.
+
+            Usage:
+              layla help <command>
+              layla <command> --help
+              layla <command> -h
+
+            Available comands:
+              compile
+              parse
+              interactive
+              version
+              help
             '''
 
       when 'version'
         out '''
-            Usage: layla version
+            Displays Layla version.
+
+            Usage:
+              layla version
             '''
       else
         if command isnt null
           unless command of commands
-            throw new Error "Unkonwn command: #{command}"
+            throw new UnknownCommandError "Unknown command: #{command}"
 
         out '''
-            Usage: layla command [options] [args...]
+            Usage:
+              layla command [options] [args...]
 
             Commands:
-              compile                  Compile lay into css
-              parse                    Parse lay source code and return an AST
-              repl                     Start an interactive console
-              help                     Show help
-              version                  Print out Layla version
+              compile              Compile lay into css
+              parse                Parse lay source code and return an AST
+              interactive          Start an interactive console
+              version              Print out Layla version
+              help                 Show help
 
             Global options:
-              --use <plugin>,...       Use one or more plugins
-              --colors                 Use colors on the output
-              --no-colors              Don't use colors on the output
+              --use <plugin>,...   Use one or more plugins
+              --colors             Use colors on the output
+              --no-colors          Don't use colors on the output
             '''
+
+commands.repl = commands.interactive
 
 ###
 "main"
@@ -253,7 +296,7 @@ for arg, i in process.argv.slice 2
     if m = arg.match /(?:\-{1,2}([^=]+))(?:(?:=(.+))|$)/
       opts.push new Opt m[1], m[2]
     else
-      throw new Error "Bad argument: #{arg}"
+      throw new UsageError "Bad argument: #{arg}"
   else
     args.push new Arg arg
 
@@ -284,13 +327,18 @@ while i < opts.length
   opts.splice i, 1
 
 # $layla.use $plugins... # TODO
-if command is null
-  if args.length > 0
-    command = (args.shift()).value
-  else
-    command = 'help'
+try
+  if command is null
+    if args.length > 0
+      command = (args.shift()).value
+    else
+      command = 'help'
 
-if command of commands
-  commands[command] args, opts
-else
-  throw new Error "Unknown command: `#{command}`"
+  if command of commands
+    commands[command] args, opts
+  else
+    throw new UnknownCommandError "Unknown command: `#{command}`"
+catch e
+  err e.toString()
+  if e instanceof UsageError
+    commands.help()
