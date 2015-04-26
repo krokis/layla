@@ -92,6 +92,36 @@ Conditionals
 
 - Cannot have any other `else (if)` blocks after the `else`
 
+  ~~~ lay
+  if false {
+    foo: bar
+  } else if not true {
+    foo: bar
+  } else {
+    foo: bar
+  } else if true {
+    foo: bar
+  }
+  ~~~
+
+  ~~~~ !SyntaxError
+  ~~~~
+
+  ~~~ lay
+  if false {
+    foo: bar
+  } else if not true {
+    foo: bar
+  } else {
+    foo: bar
+  } else {
+    foo: bar
+  }
+  ~~~
+
+  ~~~~ !SyntaxError
+  ~~~~
+
 ## Unless
 
 - Is the negated version of `if`
