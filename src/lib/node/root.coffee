@@ -1,6 +1,9 @@
 Node = require '../node'
 
 class Root extends Node
-  body: null
+  toJSON: ->
+    json = super
+    json.body = @body
+    json
 
 module.exports = Root
