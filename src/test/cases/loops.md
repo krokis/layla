@@ -84,15 +84,15 @@ Loops
 
   ~~~ css
   body {
-    foo: 'a';
-    foo: 'b';
-    foo: 'c';
-    foo: 'd';
+    foo: "a";
+    foo: "b";
+    foo: "c";
+    foo: "d";
     l: d;
-    foo: 0 'a';
-    foo: 1 'b';
-    foo: 2 'c';
-    foo: 3 'd';
+    foo: 0 "a";
+    foo: 1 "b";
+    foo: 2 "c";
+    foo: 3 "d";
     l: d;
     k: 3;
   }
@@ -158,8 +158,8 @@ Loops
 
   ~~~ css
   #foo {
-    foo: 0 'body';
-    foo: 1 'a:hover > span';
+    foo: 0 "body";
+    foo: 1 "a:hover > span";
     prop: border, red;
     prop: background, pink;
   }
@@ -170,7 +170,7 @@ Loops
 - Can iterate strings characters
 
   ~~~ lay
-  for char in "ipsum" {
+  for char in 'ipsum' {
     char: char
   }
   ~~~
@@ -190,11 +190,11 @@ Loops
   ~~~
 
   ~~~ css
-  char-0: 'i';
-  char-1: 'p';
-  char-2: 's';
-  char-3: 'u';
-  char-4: 'm';
+  char-0: "i";
+  char-1: "p";
+  char-2: "s";
+  char-3: "u";
+  char-4: "m";
   ~~~
 
 ## `break`

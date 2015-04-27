@@ -66,11 +66,12 @@ class CSSEmitter extends Emitter
     css = "{\n#{@indent (@emitBody block.items)}\n}"
     return css
 
-  quoteString: (val) ->
-    if val.match /(^|[^\\]|(\\(\\\\)*))'/
-      quote = '"'
-    else
-      quote = "'"
+  quoteString: (val, quote = null) ->
+    if quote is null
+      if val.match /(^|[^\\]|(\\(\\\\)*))'/
+        quote = '"'
+      else
+        quote = "'"
 
     "#{quote}#{val}#{quote}"
 
@@ -85,7 +86,7 @@ class CSSEmitter extends Emitter
     # TODO: Translate `\t` to ... \9?
     val = val.replace /(|[^\\]|(\\\\)+)\t/g, '$1\\9'
 
-    if quoted then @quoteString val else val.trim()
+    if quoted then (@quoteString val, str.quote) else val.trim()
 
   emitNumberValue: (num) ->
     value = num.value

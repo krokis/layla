@@ -796,7 +796,7 @@ Numbers
   ~~~ css
   bin: 11011;
   oct: 33px;
-  hex: '1b%';
+  hex: "1b%";
   ~~~
 
 - Defaults to base `10`, returning a clone of the number

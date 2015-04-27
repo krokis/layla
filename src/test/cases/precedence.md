@@ -229,8 +229,8 @@ Operator precedence
   ~~~
 
   ~~~ css
-  foo: '1234';
-  foo: '1234';
+  foo: "1234";
+  foo: "1234";
   ~~~
 
 ## `=` and `|=`

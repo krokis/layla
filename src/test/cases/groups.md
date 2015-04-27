@@ -24,7 +24,7 @@ Parentheses
   ~~~ css
   border-width: 1px;
   line-height: 10;
-  font-family: 'Helvetica';
+  font-family: "Helvetica";
   ~~~
 
 - Can wrap unary expressions

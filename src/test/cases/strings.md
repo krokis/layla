@@ -12,7 +12,7 @@ Strings
 
   ~~~ css
   foo: 'Bar';
-  foo: 'Bar';
+  foo: "Bar";
   ~~~
 
 - Can have escaped new lines (`\n`), tabs (`\t`) and carriage returns (`\r`)
@@ -39,8 +39,8 @@ Strings
   ~~~
 
   ~~~ css
-  foo: 'Lorem\A\A\AIpsum\9dolor\9\9sit\A';
-  bar: '\ADolor\A\ASit\A';
+  foo: "Lorem\A\A\AIpsum\9dolor\9\9sit\A";
+  bar: "\ADolor\A\ASit\A";
   baz: 'LoremIpsumDolorSit';
   baz: 'Lorem Ipsum Dolor Sit';
   foo: '\9Lorem\9';
@@ -56,7 +56,7 @@ Strings
   ~~~
 
   ~~~ css
-  foo: '\20';
+  foo: "\20";
   ~~~
 
 - Support interpolation
@@ -103,7 +103,7 @@ Strings
   ~~~ css
   background: light-green;
   background: red;
-  background: '#f00';
+  background: "#f00";
   ~~~
 
 - Can be made with backticks
@@ -246,14 +246,14 @@ Strings
   ~~~
 
   ~~~ css
-  foo: '';
-  foo: 'na';
-  foo: 'nana';
-  foo: 'nanananana';
-  foo: '';
-  foo: 'na';
-  foo: 'nana';
-  foo: 'nanananana';
+  foo: "";
+  foo: "na";
+  foo: "nana";
+  foo: "nanananana";
+  foo: "";
+  foo: "na";
+  foo: "nana";
+  foo: "nanananana";
   ~~~
 
 ### `/`
@@ -340,7 +340,7 @@ Strings
   ~~~ css
   i: null, '123';
   ii: 100px 100 px;
-  iii: '99rem' '99' 'rem';
+  iii: "99rem" "99" "rem";
   iv: border-color border color;
   ~~~
 
@@ -512,8 +512,8 @@ Strings
   ~~~
 
   ~~~ css
-  foo: 'hello world';
-  bar: '';
+  foo: "hello world";
+  bar: "";
   ~~~
 
 - Accepts a parameter with the characters to be trimmed
@@ -537,8 +537,8 @@ Strings
   ~~~
 
   ~~~ css
-  foo: 'hello world ';
-  bar: '';
+  foo: "hello world ";
+  bar: "";
   ~~~
 
 - Accepts a parameter with the characters to be trimmed
@@ -562,8 +562,8 @@ Strings
   ~~~
 
   ~~~ css
-  foo: ' hello world';
-  bar: '';
+  foo: " hello world";
+  bar: "";
   ~~~
 
 - Accepts a parameter with the characters to be trimmed
@@ -633,14 +633,14 @@ Strings
 
   ~~~ lay
   foo: ''.reverse()
-  foo: "bar".reverse
+  foo: "roma".reverse
   foo: "España ".reverse
   ~~~
 
   ~~~ css
   foo: '';
-  foo: 'rab';
-  foo: ' añapsE';
+  foo: "amor";
+  foo: " añapsE";
   ~~~
 
 ### `palindrome?`
@@ -895,7 +895,7 @@ Strings
   ~~~
 
   ~~~ css
-  background: 'background.jpg' 'no-repeat';
+  background: "background.jpg" "no-repeat";
   ~~~
 
 ### `unquoted`
@@ -971,7 +971,7 @@ Strings
   ~~~ css
   foo: 'L' 'o' 'r' 'e' 'm';
   foo: i p s u m;
-  foo: 'E' 's' 'p' 'a' 'ñ' 'a';
+  foo: "E" "s" "p" "a" "ñ" "a";
   ~~~
 
 - Returns an empty list for empty strings
@@ -1195,7 +1195,7 @@ Strings
   ~~~
 
   ~~~ css
-  val: 'Hello world';
+  val: "Hello world";
   quote: true;
   diff: false;
   ~~~

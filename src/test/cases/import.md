@@ -175,7 +175,7 @@ Import
 
   ~~~ css
   html body p {
-    font-family: 'Comic Sans';
+    font-family: "Comic Sans";
     font-size: 12px;
   }
   ~~~

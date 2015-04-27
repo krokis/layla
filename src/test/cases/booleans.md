@@ -144,7 +144,7 @@ Booleans
   b {
     foo: false;
     foo: false;
-    foo: 'foo';
+    foo: "foo";
     foo: 3;
     foo: true;
   }

@@ -408,7 +408,7 @@ At-rules
 
   ~~~ css
   @font-face {
-    font-family: 'Bitstream Vera Serif Bold';
+    font-family: "Bitstream Vera Serif Bold";
   }
   ~~~
 

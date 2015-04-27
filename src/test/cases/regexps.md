@@ -158,7 +158,7 @@ Regular expressions
 
   ~~~ css
   foo {
-    bar: '^[a-zA-Z-_\d]+$';
+    bar: "^[a-zA-Z-_\d]+$";
   }
   ~~~
 
@@ -289,7 +289,7 @@ Regular expressions
   #foo {
     i: '123' null;
     ii: 100px 100 px;
-    iii: '99rem' '99' 'rem';
+    iii: "99rem" "99" "rem";
     iv: border-color border color;
   }
   ~~~

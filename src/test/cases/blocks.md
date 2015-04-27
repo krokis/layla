@@ -49,7 +49,7 @@ Blocks
 
   ~~~ css
   hey {
-    been-tryin: 'to meet you!';
+    been-tryin: "to meet you!";
   }
   ~~~
 
@@ -84,7 +84,7 @@ Blocks
 
   #hey hey between ~ us or {
     whores: 'in my head';
-    whores: 'at the door';
+    whores: "at the door";
     but: hey!;
   }
   ~~~

@@ -141,10 +141,10 @@ Lists
   ~~~ css
   body,
   html {
-    font: 14px 'Helvetica', 'Arial', sans-serif #666666;
-    font: 14px 'Helvetica', 'Arial', sans-serif #666666;
-    font: 14px 'Helvetica', 'Arial', sans-serif #666666;
-    font: 14px, 'Helvetica', 'Arial', sans-serif, #666666;
+    font: 14px "Helvetica", "Arial", sans-serif #666666;
+    font: 14px "Helvetica", "Arial", sans-serif #666666;
+    font: 14px "Helvetica", "Arial", sans-serif #666666;
+    font: 14px, "Helvetica", "Arial", sans-serif, #666666;
   }
 
   #bar {

@@ -32,7 +32,7 @@ URLs
   ~~~ css
   body {
     background: url('background.jpg') no-repeat;
-    background: url('http://example.org/background.jpg') center;
+    background: url("http://example.org/background.jpg") center;
   }
 
   @font-face {
@@ -174,7 +174,7 @@ URLs
   ~~~ css
   body {
     foo: url(https://disney.com/path/path);
-    foo: url('https://disney.com/?princess=beauty');
+    foo: url("https://disney.com/?princess=beauty");
   }
   ~~~
 
@@ -526,9 +526,9 @@ URLs
 
   ~~~ css
   a: null;
-  b: '';
+  b: "";
   c: q=google;
-  d: 'q=google';
+  d: "q=google";
   ~~~
 
 ### `query=`

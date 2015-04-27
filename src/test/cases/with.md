@@ -36,7 +36,7 @@
   ~~~ css
   body {
     color: #666666;
-    font-family: 'Helvetica';
+    font-family: "Helvetica";
   }
 
   body a {

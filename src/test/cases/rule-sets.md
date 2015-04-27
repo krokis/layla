@@ -73,7 +73,7 @@ Rule sets
   html,
   body,
   p {
-    font-family: 'Helvetica';
+    font-family: "Helvetica";
   }
 
   table,
