@@ -66,12 +66,6 @@ class CSSEmitter extends Emitter
     css = "{\n#{@indent (@emitBody block.items)}\n}"
     return css
 
-  emitQuotedString: (str) ->
-    @emitString str
-
-  emitUnquotedString: (str) ->
-    @emitString str, no
-
   quoteString: (val) ->
     if val.match /(^|[^\\]|(\\(\\\\)*))'/
       quote = '"'
