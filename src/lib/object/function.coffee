@@ -2,7 +2,7 @@ Object = require '../object'
 
 class Function extends Object
 
-  constructor: (@func = null, @self = null) ->
+  constructor: (@func = null, @self = @) ->
 
   invoke: (self, args...) -> @func.call this, self, args...
 
@@ -16,6 +16,8 @@ class Function extends Object
 
   '.bind': @::bind
 
-  '.invoke': @::invoke
+  # TODO this should not use @self by default; instead, this should be executed
+  # bound to the *calling block*.
+  '.invoke': (args...) -> @invoke @self, args...
 
 module.exports = Function

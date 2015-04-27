@@ -222,10 +222,16 @@ Functions
   foo: bar !warning;
   ~~~
 
-- Can have named arguments
+## Methods
 
-## Splats
+### `invoke`
 
-- Can be used on function definition
+- Calls the function with given arguments
 
-- Can be used on function calls
+  ~~~ lay
+  foo: ((a,b) { return a + b}).invoke(2,3)
+  ~~~
+
+  ~~~ css
+  foo: 5;
+  ~~~
