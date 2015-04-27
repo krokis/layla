@@ -172,7 +172,9 @@ class Parser extends Lexer
       op = next_op
 
       if next_op.value is '('
-        right = @parseIdentArguments()
+        @moveTo op.end
+        right = @parseArguments()
+        @expect PUNC, ')'
       else
         @moveTo op.end
         right = @parsePrimaryExpression prec, blocks
@@ -263,15 +265,7 @@ class Parser extends Lexer
 
   ###
   ###
-  parseIdentArguments: ->
-    start = @position
-
-    if @read PUNC, '(', no
-      args = @parseCommaList()
-      if @eat PUNC, ')'
-        return args || []
-
-    @moveTo start
+  parseArguments: -> @parseCommaList() || []
 
   ###
   ###
@@ -308,8 +302,9 @@ class Parser extends Lexer
         ident.value = token.value
         @moveTo token.end
 
-        if @peek PUNC, '('
-          ident.arguments = @parseIdentArguments()
+        if @read PUNC, '(', no
+          ident.arguments = @parseArguments()
+          @expect PUNC, ')'
 
           if @char in ['!', '?']
             unless @peek IDENT, null, no

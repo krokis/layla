@@ -78,7 +78,7 @@ class Lexer extends Class
 
     # Remove escaped new lines. This breaks locations, so TODO be fixed later or
     # something.
-    source = source.replace /\\(\\\\)+\n/, ''
+    source = source.replace /\\(\\\\)+[\n$]/, ''
 
     @source = source
 
@@ -597,7 +597,7 @@ class Lexer extends Class
     if token = (@read type, value, ignore)
       return token
 
-    if @isEndOfText()
+    if @peek EOT
       throw new EOTError "Unexpected EOT"
     else
       throw new SyntaxError """

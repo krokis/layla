@@ -3,6 +3,7 @@ CSSEmitter = require './css'
 class CLIEmitter extends CSSEmitter
   ESC        = '\u001b'
   RESET      = 0
+  BOLD       = 1
   RED        = 31
   GREEN      = 32
   YELLOW     = 33
@@ -24,13 +25,17 @@ class CLIEmitter extends CSSEmitter
     if @options.colors
       ret = ''
       for code in codes
-        ret += "#{ESC}[#{codes}m"
+        ret += "#{ESC}[#{code}m"
       ret += str
       ret += "#{ESC}[#{RESET}m"
     else
       str
 
-  emitFunction: (func) -> @format func.repr(), YELLOW
+  emitNull: (nil) -> @format (super nil), BOLD
+
+  emitBoolean: (bool) -> @format (super bool), BOLD
+
+  emitFunction: (func) -> @format func.repr(), BOLD
 
   emitNumber: (num) -> @format (super num), YELLOW
 
@@ -40,12 +45,12 @@ class CLIEmitter extends CSSEmitter
 
   emitString: (str) -> @format (super str), YELLOW
 
-  emitSelector: (sel) -> @format (super sel), GREEN
+  emitSelector: (sel) -> @format (super sel), BOLD, GREEN
 
-  emitAtRuleName: (sel) -> @format (super sel), GREEN
+  emitAtRuleName: (sel) -> @format (super sel), BOLD, MAGENTA
 
-  emitAtRuleArguments: (sel) -> @format (super sel), GREEN
+  emitAtRuleArguments: (sel) -> @format (super sel), MAGENTA
 
-  emitPropertyName: (property) -> @format (super property), CYAN
+  emitPropertyName: (property) -> @format (super property), BOLD, CYAN
 
 module.exports = CLIEmitter
