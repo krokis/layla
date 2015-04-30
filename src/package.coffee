@@ -28,10 +28,7 @@ module.exports =
   bin:
     layla:          "./bin/layla"
 
-  browser:          "./dist/layla.min.js"
-
-  dependencies:
-    "big.js":        "^2.5.1"
+  dependencies:     []
 
   devDependencies:
     "coffee-script": "~1.8.0"
@@ -41,9 +38,7 @@ module.exports =
     "title-case":    "^1.1.0"
     "camel-case":    "^1.1.1"
     "param-case":    "^1.1.1"
-    "browserify":    "^6.1.0"
     "coffeelint":    "^1.9.3"
-    "coffeeify":     "~1.0.0"
     "uglify-js":     "^2.4.17"
     "mkdirp":        "^0.5.0"
     "season":        "^5.1.5"

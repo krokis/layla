@@ -64,20 +64,6 @@ task 'build:package', 'Build node package', (options) ->
   js = coffee.compile source, bare: yes, header: no
   writeFile "#{__dirname}/index.js", js
 
-task 'build:dist', 'Build browserified lib', (options) ->
-  fs = require 'fs'
-  coffee = require 'coffee-script'
-  browserify = require 'browserify'
-  coffeeify = require 'coffeeify'
-  uglify = require 'uglify-js'
-
-  extensions = ['.coffee', '.cson', '.js', '.json']
-  b = browserify "#{__dirname}/src/browserify.coffee", extensions: extensions
-  b.transform 'coffeeify'
-  js = b.bundle()
-  file = fs.createWriteStream "#{__dirname}/dist/layla.js"
-  js.pipe file
-
 task 'test:source', 'Test source coffee', (options) ->
 
 task 'test:package', 'Test NPM package', (options) ->
@@ -85,8 +71,6 @@ task 'test:package', 'Test NPM package', (options) ->
 task 'test:lib', 'Test built lib', (options) ->
 
 task 'test:lib', 'Test built lib', (options) ->
-
-task 'test:dist', 'Test browserified lib on a browser environment', (options) ->
 
 task 'test:all', 'Test everything', ->
   invoke 'test:source'
