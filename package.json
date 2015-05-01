@@ -16,7 +16,7 @@
   "directories": {},
   "main": "./index.js",
   "scripts": {
-    "test": "cake build test",
+    "test": "cake --verbose build test",
     "start": "node ./bin/layla -i"
   },
   "bin": {
