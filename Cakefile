@@ -154,7 +154,7 @@ global.task = (name, description, action) ->
 
 option '-v', '--verbose', 'Be verbose'
 
-option null, '--source', 'Run tests against source coffee'
+option '-s', '--source', 'Run tests against source coffee'
 
 task 'clean', 'Remove all built files and directories', ->
   queue ->
