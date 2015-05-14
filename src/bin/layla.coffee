@@ -374,6 +374,10 @@ try
   else
     throw new UnknownCommandError "Unknown command: `#{command}`"
 catch e
-  err e.toString()
+
   if e instanceof UsageError
+    warn e.toString()
+    out()
     Commands.help()
+  else
+    err e.toString()
