@@ -34,7 +34,6 @@
     "mocha": "~2.2.0",
     "param-case": "^1.1.1",
     "pascal-case": "^1.1.0",
-    "plist": "^1.1.0",
     "should": "~4.1.0",
     "snake-case": "^1.1.1",
     "title-case": "^1.1.0",
