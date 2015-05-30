@@ -813,27 +813,6 @@ Strings
 
 - Returns a "Title Case" copy of the string
 
-  ~~~ lay-todo
-  foo: lorem.title-case IPSUM.title-case Dolor.title-case
-  foo: 'lorem ipsum dolor sit'.title-case
-  foo: 'LoremIpsumDolorSit'.title-case
-  foo: 'lorem.ipsum/dolor/sit'.title-case
-  foo: 'Lorem Ípsum\r\ndolor-SIT'.title-case
-  foo: '___Lorem__Ipsum__DOLOR__SIT'.title-case
-  foo: 'Version1.2.3'.title-case
-  ~~~
-
-  ~~~ css-todo
-  foo: Lorem Ipsum Dolor;
-  foo: 'Lorem Ipsum Dolor Sit';
-  foo: 'Lorem Ipsum Dolor Sit';
-  foo: 'Lorem Ipsum Dolor Sit';
-  foo: 'Lorem Ipsum Dolor Sit';
-  foo: 'Lorem Ípsum Dolor Sit';
-  foo: 'Lorem Ipsum Dolor Sit';
-  foo: 'Version 1.2.3';
-  ~~~
-
 ### `quoted?`
 
 - Tells if the string is quoted
@@ -1140,42 +1119,42 @@ Strings
   foo: ''.number
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   foo: ''.number
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   foo: ' '.number
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   foo: '100px20'.number
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   foo: 'a'.number
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   foo: '2.2.2px'.number
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
 ### `copy`

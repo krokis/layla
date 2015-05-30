@@ -588,24 +588,6 @@ Colors
 
 - Returns a saturated copy of the color
 
-  ~~~ lay-todo
-  a: #c33.saturate(40%)
-  b: #fd0cc7.saturate
-  c: #ee0.saturate(0%)
-  d: #dd0.saturate(20%)
-  e: #d87240.saturate(60%)
-  f: #fd0cc7.saturate(100%)
-  ~~~
-
-  ~~~ css-todo
-  a: #ff0000;
-  b: #eeee00;
-  c: #eeee00;
-  d: #f3f300;
-  e: #ff6212;
-  f: #ff00ff;
-  ~~~
-
 - Only accepts...
 
 ### `desaturate`

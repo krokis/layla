@@ -17,7 +17,7 @@ Operator precedence
   foo: +'a'.length
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay

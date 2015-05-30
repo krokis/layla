@@ -104,7 +104,7 @@ Conditionals
   }
   ~~~
 
-  ~~~~ !SyntaxError
+  ~~~~ SyntaxError
   ~~~~
 
   ~~~ lay
@@ -119,7 +119,7 @@ Conditionals
   }
   ~~~
 
-  ~~~~ !SyntaxError
+  ~~~~ SyntaxError
   ~~~~
 
 ## Unless

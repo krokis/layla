@@ -80,7 +80,7 @@
   foo: $l
   ~~~~
 
-  ~~~~ !RuntimeError
+  ~~~~ RuntimeError
   ~~~~
 
   ~~~~ lay
@@ -89,7 +89,7 @@
   }
   ~~~~
 
-  ~~~~ !RuntimeError
+  ~~~~ RuntimeError
   ~~~~
 
   ~~~~ lay
@@ -98,7 +98,7 @@
   }
   ~~~~
 
-  ~~~~ !RuntimeError
+  ~~~~ RuntimeError
   ~~~~
 
   ~~~~ lay
@@ -107,7 +107,7 @@
   }
   ~~~~
 
-  ~~~~ !RuntimeError
+  ~~~~ RuntimeError
   ~~~~
 
   ~~~~ lay
@@ -116,7 +116,7 @@
   }
   ~~~~
 
-  ~~~~ !RuntimeError
+  ~~~~ RuntimeError
   ~~~~
 
   ~~~~ lay
@@ -125,5 +125,5 @@
   }
   ~~~~
 
-  ~~~~ !RuntimeError
+  ~~~~ RuntimeError
   ~~~~

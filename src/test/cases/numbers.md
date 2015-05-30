@@ -655,7 +655,7 @@ Numbers
   foo: 17.mod(0)
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   Cannot divide by 0
   ~~~
 
@@ -737,7 +737,7 @@ Numbers
   (-1mm).root
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
 ### `sqrt`
@@ -756,7 +756,7 @@ Numbers
   (-2).sqrt
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
 ### `sin`
@@ -817,7 +817,7 @@ Numbers
   27.base(2.3)
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
 - Fails for any base lower than 2
@@ -826,21 +826,21 @@ Numbers
   27.base(-1.6)
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   27.base(0)
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   27.base(1)
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
 - Fails for any base higher than 16
@@ -849,7 +849,7 @@ Numbers
   27.base(17)
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
 ### `copy`
@@ -1316,28 +1316,28 @@ Numbers
   1mm + 1kHz
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   1deg + 1ms
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   1dpcm + 1cm
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   1foo + 1bar
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
 ### `format`
@@ -1419,7 +1419,7 @@ Numbers
   0.roman
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
 - Fails for negative numbers
@@ -1428,7 +1428,7 @@ Numbers
   -2.roman
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
 - Fails for non integers
@@ -1445,7 +1445,7 @@ Numbers
   0.2.roman
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
 - Fails for numbers over 3000
@@ -1454,7 +1454,7 @@ Numbers
   foo: 3001.roman
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
@@ -1471,7 +1471,7 @@ Numbers
   5px.roman
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
 ## Operators
@@ -1744,21 +1744,21 @@ Numbers
   1cm + 2kHz
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   foo: 32px + 10%
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   foo: 10% + 32px
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
 - Fails for non-numbers
@@ -1767,35 +1767,35 @@ Numbers
   1cm + #777
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   1cm + "0"
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   1cm + null
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   1cm + false
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   1cm + ()
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
 ### `-`
@@ -1842,21 +1842,21 @@ Numbers
   1cm - 2W
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   foo: 50% - 102px
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
   ~~~ lay
   foo: 32px - 10%
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
 - Fails for non-numbers
@@ -1865,7 +1865,7 @@ Numbers
   1px - #777
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   ~~~
 
 ### `/`
@@ -1894,7 +1894,7 @@ Numbers
   17 / 0px
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   Cannot divide by 0
   ~~~
 
@@ -1902,7 +1902,7 @@ Numbers
   17 / -(0%)
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   Cannot divide by 0
   ~~~
 
@@ -1910,7 +1910,7 @@ Numbers
   0 / (1 - 1)
   ~~~
 
-  ~~~ !TypeError
+  ~~~ TypeError
   Cannot divide by 0
   ~~~
 

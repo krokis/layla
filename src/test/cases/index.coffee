@@ -37,6 +37,7 @@ describe 'Cases', ->
 
         testListItem = (item) ->
           desc     = null
+          cases    = []
           source   = null
           expected = null
           err_name = null
@@ -45,6 +46,8 @@ describe 'Cases', ->
           for node in item.children
             switch node.t
               when 'Paragraph'
+                if desc
+                  throw new Error "Unexpected paragraph"
                 desc =  stringContent node
                 source   = null
               when 'FencedCode'
@@ -59,27 +62,38 @@ describe 'Cases', ->
                       "Unexpected two blocks of `css` code at #{file}"
                     )
                   expected = stringContent node
-                else if '!' is (node.info.substr 0, 1)
-                  err_name = node.info.substr 1
+                else if 'Error' is node.info[-5...]
+                  if err_name isnt null
+                    throw new Error 'Oops'
+                  err_name = node.info
                   err_msg = (stringContent node).trim()
               else
                 throw new Error 'Oops'
 
             if desc and source? and (expected? or err_name)
-              it desc, ((source, expected, err_name, err_msg) ->
-                try
-                  layla = new Layla
-                  layla.scope.paths.push path.dirname file
-                  actual = layla.compile source
-                  actual.should.be.exactly expected
-                catch e
-                  throw e unless err_name or err_msg
-                  throw e if err_name and e.name isnt err_name
-                  e.message.should.be.exactly err_msg if err_msg
-              ).bind @, source, expected, err_name, err_msg
+              cases.push {
+                source:   source
+                expected: expected
+                err_name: err_name
+                err_msg:  err_msg
+              }
 
-          if desc and not (source? and (expected? or err_name))
-            it desc
+          if desc
+            if cases.length
+              it desc, ((cases) ->
+                for c in cases
+                  try
+                    layla = new Layla
+                    layla.scope.paths.push path.dirname file
+                    actual = layla.compile c.source
+                    actual.should.be.exactly c.expected
+                  catch e
+                    throw e unless c.err_name or c.err_msg
+                    throw e if c.err_name and e.name isnt c.err_name
+                    e.message.should.be.exactly c.err_msg if c.err_msg
+              ).bind @, cases
+            else
+              it desc
 
         testList = (node) ->
           testListItem item for item in node.children
