@@ -159,5 +159,14 @@ String::['.lines'] = ->
   new List ((@value.match /[^\s](.+)[^\s]/g) or []).map (line) => @clone line
 
 
+String::['.replace'] = (search, replacement) ->
+  if search instanceof RegExp
+    search = search.value
+  else
+    search = search.toString()
+
+  replacement = replacement.toString()
+
+  @clone (@value.replace search, replacement)
 
 module.exports = RegExp

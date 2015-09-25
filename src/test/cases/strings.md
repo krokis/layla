@@ -1142,6 +1142,24 @@ Strings
   foo: true;
   ~~~
 
+### `replace`
+
+- Searches for the given string or regular expression and replaces with another string
+
+  ~~~ lay
+  foo: "Mr Blue has a blue house and a blue car".replace('blue', 'red')
+  foo: "Mr Blue has a blue house and a blue car".replace(/blue/g, 'green')
+  foo: 'Mr Blue has a blue house and a blue car'.replace(/blue/gi, 'pink')
+  foo: 'Mr Blue has a blue house and a blue car'.replace(/green/gi, 'pink')
+  ~~~
+
+  ~~~ css
+  foo: "Mr Blue has a red house and a blue car";
+  foo: "Mr Blue has a green house and a green car";
+  foo: 'Mr pink has a pink house and a pink car';
+  foo: 'Mr Blue has a blue house and a blue car';
+  ~~~
+
 ### `number`
 
 - Makes a number from the string, if it is numeric
