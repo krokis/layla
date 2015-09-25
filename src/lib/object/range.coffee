@@ -72,6 +72,12 @@ class Range extends Indexed
 
   '.list': -> new List @items
 
+  '.random': ->
+    min = Math.min @max, @min
+    max = Math.max @max, @min
+
+    new Number min + (Math.floor Math.random() * (max - min + 1))
+
 Number::['...'] = (other) ->
   if other instanceof Number
     if @unit
