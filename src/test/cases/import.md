@@ -240,4 +240,12 @@ Import
 
 - Fails for non-existent files
 
+  ~~~ lay
+  import './import/this-is-not-a-real-file.lay'
+  ~~~
+
+  ~~~ RuntimeError
+  Could not import file: "./import/this-is-not-a-real-file.lay"
+  ~~~
+
 - Fails for unreadable files

@@ -441,7 +441,7 @@ class Evaluator extends Class
       if fs.existsSync real_path
         return @doImportFile real_path, self, scope
 
-    throw new Error "Could not import file: #{file}"
+    throw new RuntimeError "Could not import file: \"#{file}\""
 
   ###
   ###
