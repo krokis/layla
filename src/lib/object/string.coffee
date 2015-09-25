@@ -28,8 +28,6 @@ class String extends Indexed
     letters = @value.toLowerCase().replace /[\W]+/g, ''
     letters is (letters.split '').reverse().join ''
 
-  split: (separator, limit) ->
-
   toNumber: -> Number.fromString @value
 
   isNumeric: -> !!(try @toNumber())
