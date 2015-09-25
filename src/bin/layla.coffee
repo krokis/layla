@@ -176,8 +176,15 @@ Commands =
       repl.setPrompt '> '
       repl.prompt()
 
+    process.stdin.on 'keypress', (seq) ->
+      if seq is '\f'
+        process.stdout.write '\u001B[2J\u001B[0;0f'
+        reset()
+
     repl.on 'line', (text) ->
-      if text.trim() isnt ''
+      if text.trim() is ''
+        reset()
+      else
         try
           res = null
           $layla.parser.prepare "#{buffer}\n#{text}"
@@ -199,7 +206,9 @@ Commands =
           else
             throw e
 
-    repl.on 'close', -> exit()
+    repl.on 'close', ->
+      out ''
+      exit()
 
     repl.on 'SIGINT', ->
       out ''
