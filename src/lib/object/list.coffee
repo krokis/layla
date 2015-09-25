@@ -40,13 +40,4 @@ Object::['.list'] = ->
   else
     new List [@]
 
-String::['.characters'] = ->
-  new List (@value.split '').map (char) => @clone char
-
-String::['.words'] = ->
-  new List ((@value.match /\w+/g) or []).map (word) => @clone word
-
-String::['.lines'] = ->
-  new List ((@value.match /[^\s](.+)[^\s]/g) or []).map (line) => @clone line
-
 module.exports = List

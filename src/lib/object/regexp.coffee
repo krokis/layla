@@ -2,6 +2,7 @@ Object    = require '../object'
 Boolean   = require './boolean'
 Null      = require './null'
 String    = require './string'
+Number    = require './number'
 List      = require './list'
 TypeError = require '../error/type'
 
@@ -111,23 +112,52 @@ do ->
     else
       supah.call @, other, etc...
 
-do ->
-  supah = String::divide
+String::['.split'] = (separator, limit = Null.null) ->
+  if separator instanceof RegExp
+    reg = separator.value
+  else if separator instanceof String
+    reg = RegExp.escape separator.value
+    reg = new global.RegExp "#{reg}+"
+  else
+    throw new TypeError 'Bad `separator` argument for `String.split`'
 
-  String::['./'] = (other) ->
-    if other instanceof RegExp
-      reg = other.value
-    else if other instanceof String
-      reg = RegExp.escape other.value
+  if limit instanceof Null
+    limit = -1
+  else if limit instanceof Number
+    limit = limit.value
+  else
+    throw new TypeError 'Bad `limit` argument for `String.split`'
+
+  chunks =
+    (@value.split reg, limit)
+    .filter (str) -> str isnt ''
+    .map (str) => @clone str
+
+  new List chunks
+
+do ->
+  supah = String::['./']
+
+  String::['./'] = (separator) ->
+    if separator instanceof RegExp
+      reg = separator.value
+    else if separator instanceof String
+      reg = RegExp.escape separator.value
       reg = new global.RegExp "#{reg}+"
     else
-      return supah.call this, other
+      return supah.apply this, arguments
 
-    chunks =
-      (@value.split reg)
-      .filter (str) -> str isnt ''
-      .map (str) => @clone str
+    @['.split'] separator
 
-    new List chunks
+String::['.characters'] = (limit = Null.null) ->
+  new List (@value.split '').map (char) => @clone char
+
+String::['.words'] = ->
+  new List ((@value.match /\w+/g) or []).map (word) => @clone word
+
+String::['.lines'] = ->
+  new List ((@value.match /[^\s](.+)[^\s]/g) or []).map (line) => @clone line
+
+
 
 module.exports = RegExp

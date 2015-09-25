@@ -937,6 +937,53 @@ Strings
   foo: true;
   ~~~
 
+### `split`
+
+- Splits a string by another string
+
+  ~~~ lay
+  body {
+    foo: ('Lorem ipsum dolor sit amet' / ' ').commas
+  }
+  ~~~
+
+  ~~~ css
+  body {
+    foo: 'Lorem', 'ipsum', 'dolor', 'sit', 'amet';
+  }
+  ~~~
+
+- Splits a string by a regular expression.
+
+  ~~~ lay
+  sp = /\s+/
+  body {
+    foo: 'Lorem    ipsum   \n\t \r\n dolor \
+    sit amet' / sp
+  }
+  ~~~
+
+  ~~~ css
+  body {
+    foo: 'Lorem' 'ipsum' 'dolor' 'sit' 'amet';
+  }
+  ~~~
+
+- Accepts a `limit` argument
+
+  ~~~ lay
+  $str = 'Lorem ipsum dolor sit amet'
+  foo: $str.split(/\s+/, 2)
+  bar: $str.split(/\s+/, 0).length
+  baz: $str.split(/\s+/, null)
+  ~~~
+
+  ~~~ css
+  foo: 'Lorem' 'ipsum';
+  bar: 0;
+  baz: 'Lorem' 'ipsum' 'dolor' 'sit' 'amet';
+  ~~~
+
 ### `characters`
 
 - Splits the string in characters and returns them as a list
