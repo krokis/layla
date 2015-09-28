@@ -163,7 +163,7 @@ String::['.replace'] = (search, replacement) ->
   if search instanceof RegExp
     search = search.value
   else
-    search = search.toString()
+    search = new global.RegExp (RegExp.escape search.toString()), 'g'
 
   replacement = replacement.toString()
 

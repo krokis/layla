@@ -1154,7 +1154,7 @@ Strings
   ~~~
 
   ~~~ css
-  foo: "Mr Blue has a red house and a blue car";
+  foo: "Mr Blue has a red house and a red car";
   foo: "Mr Blue has a green house and a green car";
   foo: 'Mr pink has a pink house and a pink car';
   foo: 'Mr Blue has a blue house and a blue car';
