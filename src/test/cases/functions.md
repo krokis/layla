@@ -172,6 +172,36 @@ Functions
   }
   ~~~
 
+- Can call themselves
+
+  ~~~ lay
+  factorial = (n) {
+    if n <= 1 {
+      return 1
+    } else {
+      return n * factorial(n - 1)
+    }
+  }
+
+  #factorial-of {
+      one: factorial(1)
+      two: factorial(2)
+    three: factorial(3)
+     four: factorial(4)
+     five: factorial(5)
+  }
+  ~~~
+
+  ~~~ css
+  #factorial-of {
+    one: 1;
+    two: 2;
+    three: 6;
+    four: 24;
+    five: 120;
+  }
+  ~~~
+
 - Parentheses can be omitted when calling with no arguments
 
   ~~~ lay
