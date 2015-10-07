@@ -16,6 +16,14 @@ class Indexed extends Enumerable
     else
       null
 
+  randomKey: ->
+    length = @length()
+
+    if length > 0
+      Math.floor Math.random() * length
+    else
+      null
+
   next: ->
     if 0 <= @index <= @length()
       @index++

@@ -20,12 +20,15 @@ class Enumerable extends Object
 
   lastKey: -> @NOT_IMPLEMENTED
 
+  randomKey: -> @NOT_IMPLEMENTED
+
   each: -> @NOT_IMPLEMENTED
 
-  firstValue: ->
-    @get @firstKey()
+  firstValue: -> @get @firstKey()
 
   lastValue: -> @get @lastKey()
+
+  randomValue: -> @get @randomKey()
 
   minValue: ->
     min = null
@@ -48,6 +51,8 @@ class Enumerable extends Object
   '.first': -> @firstValue() or Null.null
 
   '.last': -> @lastValue() or Null.null
+
+  '.random': -> @randomValue() or Null.null
 
   ###
   '.min': -> @minValue() or Null.null
