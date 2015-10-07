@@ -9,7 +9,13 @@ class Null extends Object
 
   toString: -> ''
 
-  isEqual: (other) -> other instanceof Null
+  ifNull: (value) ->
+    if (value is null) or (value instanceof Null)
+      Null.null
+    else
+      value
+
+  isEqual: (other) -> other.isNull()
 
   isNull: -> yes
 

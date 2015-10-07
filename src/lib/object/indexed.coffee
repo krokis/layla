@@ -37,11 +37,11 @@ class Indexed extends Enumerable
       return no if no is cb.call @, index, value
       @next()
 
-  '.index': -> @currentKey() or Null.null
+  '.index': ->  Null.ifNull @currentKey()
 
-  '.first-index': -> @firstKey() or Null.null
+  '.first-index': -> Null.ifNull @firstKey()
 
-  '.last-index': -> @lastKey() or Null.null
+  '.last-index': -> Null.ifNull @lastKey()
 
   '.::': (other) ->
     if other instanceof Number
