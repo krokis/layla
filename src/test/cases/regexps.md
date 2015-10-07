@@ -268,10 +268,6 @@ Regular expressions
   foo: true;
   ~~~
 
-### `is-a`
-
-- Returns `true` if the right side is the class `RegExp` or the string "regexp"
-
 ### `~`
 
 - Matches a string against the regular expression

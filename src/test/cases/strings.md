@@ -430,10 +430,6 @@ Strings
   foo: 'dolor ipsum lorem';
   ~~~
 
-### `is-a`
-
-- Returns `true` if the right side is the class `String` or the string "string"
-
 ## Methods
 
 ### `length`

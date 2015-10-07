@@ -43,7 +43,7 @@ class Lexer extends Class
                              (?!(?:\d|(?:(?:[\!\?\_\-\$]+)?
                              [a-z]))))
                              |>>|<<|>=|>|<=|<|
-                             and|or|is-a|is-an|isnt-a|isnt-an|isnt|is|in|hasnt|
+                             and|or|isnt|is|in|hasnt|
                              has|if|unless))
                              |([\t\ ]+)
                              ///

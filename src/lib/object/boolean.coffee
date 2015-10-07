@@ -32,14 +32,6 @@ Object::['.is'] = (other) -> Boolean.new @isEqual other
 
 Object::['.isnt'] = (other) -> Boolean.new not @isEqual other
 
-Object::['.is-a'] = (other) -> Boolean.new @isA other
-
-Object::['.is-an'] = Object::['.is-a']
-
-Object::['.isnt-a'] = (other) -> Boolean.new not @isA other
-
-Object::['.isnt-an'] = Object::['.is-a']
-
 Object::['.not@'] = (other) -> Boolean.new not @toBoolean()
 
 Object::['.and'] = (other) -> if @toBoolean() then other else this

@@ -1692,10 +1692,6 @@ Numbers
   }
   ~~~
 
-### `is-a`
-
-- Returns `true` if the right side is the class `Number` or the string "number"
-
 ### `+`
 
 - Sums numbers with compatible units

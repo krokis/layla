@@ -39,8 +39,6 @@ class Object extends Class
 
   repr: -> "[#{"#{@reprType()} #{@reprValue()}".trim()}]"
 
-  isA: (other) -> @ instanceof other
-
   toString: -> throw new TypeError "Cannot convert #{@repr()} to string"
 
   '.': (name, etc...) ->

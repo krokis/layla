@@ -63,10 +63,6 @@ class Parser extends Lexer
     '<='     :  30 # Less than or equal
     '>'      :  30 # Greater than
     '>='     :  30 # Greater than or equal
-    'is-a'   :  30 # Type test: `a is-a Number`
-    'is-an'  :  30 # Same
-    'isnt-a' :  30 # Negated type test: `a isnt-a Number`
-    'isnt-an':  30 # Same
     'has'    :  30 # Ownership
     'hasnt'  :  30 # Negated ownership
     'is'     :  20 # Equality

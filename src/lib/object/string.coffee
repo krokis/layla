@@ -254,13 +254,4 @@ Object::['.quoted'] = -> new String @toString(), '"'
 
 Object::['.repr'] = -> new String @repr(), '"'
 
-do ->
-  supah = Object::isA
-
-  Object::isA = (other, etc...) ->
-    if other instanceof String
-      @reprType().toLowerCase() is other.value.toLowerCase()
-    else
-      supah.call @, other, etc...
-
 module.exports = String

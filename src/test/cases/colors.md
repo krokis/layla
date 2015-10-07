@@ -650,26 +650,6 @@ Colors
   foo: true;
   ~~~
 
-### `is-a`
-
-- Returns `true` if the right side is the class `Color`
-
-- Returns `true` if the right side is the string "color"
-
-  ~~~~ lay
-  foo: (#000 is-a 'color')
-  foo: (#000 is-a 'Color')
-  foo: (#000 is-a 'string')
-  foo: (#000 is-a 'colour')
-  ~~~~
-
-  ~~~~ css
-  foo: true;
-  foo: true;
-  foo: false;
-  foo: false;
-  ~~~~
-
 ### `+`
 
 - Mixes two colors
