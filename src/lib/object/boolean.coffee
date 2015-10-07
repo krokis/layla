@@ -46,13 +46,15 @@ Object::['.<'] = (other) -> Boolean.new ((@compare other) > 0)
 
 Object::['.<='] = (other) -> Boolean.new ((@compare other) >= 0)
 
+Object::['.contains?'] = (other) -> Boolean.new @contains other
+
 Object::['.has'] = (other) -> Boolean.new @contains other
 
 Object::['.hasnt'] = (other) -> Boolean.new not @contains other
 
 Object::['.in'] = (other) -> Boolean.new other.contains @
 
-Object::['.enumerable?'] = -> Boolean.new @isEnumerable() # TODO ???
+Object::['.enumerable?'] = -> Boolean.new @isEnumerable()
 
 Object::['.boolean'] = -> Boolean.new @toBoolean()
 
