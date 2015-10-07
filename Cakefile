@@ -244,9 +244,9 @@ task 'test:bin', 'Run CLI tests', ->
     log 'task', 'Running CLI tests'
     test 'bin'
 
-task 'test:all', 'Test everything', ->
+task 'test:all', 'Test everything (except code style)', ->
   invoke 'test:cases'
-  invoke 'test:style'
+  # invoke 'test:style'
   invoke 'test:docs'
   invoke 'test:bin'
 
