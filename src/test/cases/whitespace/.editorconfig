@@ -1,0 +1,13 @@
+[*]
+trim_trailing_whitespace = false
+insert_final_newline = false
+
+[crlf.md]
+end_of_line = crlf
+
+[cr.md]
+end_of_line = cr
+
+[lf.md]
+end_of_line = lf
+
