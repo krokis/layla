@@ -2,7 +2,6 @@ Object     = require '../object'
 Null       = require './null'
 Boolean    = require './boolean'
 TypeError  = require '../error/type'
-RangeError = require '../error/range'
 
 FACTORS = {}
 DERIVED = {}
