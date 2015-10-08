@@ -457,11 +457,11 @@ class Parser extends Lexer
       @parseRightOperation left, prec, blocks, commas, spaces
 
   parseAtRule: ->
-    if ident = @read AT_IDENT
+    if @char is '@'
       @makeNode AtRule, (rule) ->
-        rule.start = ident.start
-        rule.name = ident.value.substr 1
-        @moveTo ident.end
+        @move()
+        unless rule.name = @parseString()
+          throw new SyntaxError "Expected At-rule name after @"
         rule.arguments = @readAtRuleArguments()
         rule.block = @parseBlock() or null
 

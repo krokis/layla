@@ -533,7 +533,7 @@ class Evaluator extends Class
   evaluateAtRuleDeclaration: (node, self, scope) ->
     rule = new AtRule
     self.items.push rule
-    rule.name = node.name
+    rule.name = (@evaluateLiteralString node.name, self, scope).value
     rule.arguments = node.arguments
 
     if node.block

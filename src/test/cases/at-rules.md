@@ -29,9 +29,97 @@ At-rules
 
 - Can be a quoted string
 
+  ~~~ lay
+  @"foo" {
+    i: 1
+  }
+
+  @'-o-keyframes' {
+    ii: 2
+  }
+
+  @`-webkit-keyframes` {
+    iii: 3
+  }
+  ~~~
+
+  ~~~ css
+  @foo {
+    i: 1;
+  }
+
+  @-o-keyframes {
+    ii: 2;
+  }
+
+  @-webkit-keyframes {
+    iii: 3;
+  }
+  ~~~
+
 - Can contain interpolation
 
-- Must follow a literal `@`
+  ~~~ lay
+  vendors = webkit, moz
+  for vendor in vendors {
+    @`-{vendor}-supports` (border-radius) {
+      body {
+        border-radius: 1px
+      }
+    }
+
+    @"-{vendor}-supports" (border-radius) {
+      body {
+        border-radius: 2px
+      }
+    }
+
+    @'-{vendor}-supports' (border-radius) {
+      body {
+        border-radius: 3px
+      }
+    }
+  }
+
+  ~~~
+
+  ~~~ css
+  @-webkit-supports (border-radius) {
+    body {
+      border-radius: 1px;
+    }
+  }
+
+  @-webkit-supports (border-radius) {
+    body {
+      border-radius: 2px;
+    }
+  }
+
+  @-webkit-supports (border-radius) {
+    body {
+      border-radius: 3px;
+    }
+  }
+
+  @-moz-supports (border-radius) {
+    body {
+      border-radius: 1px;
+    }
+  }
+
+  @-moz-supports (border-radius) {
+    body {
+      border-radius: 2px;
+    }
+  }
+
+  @-moz-supports (border-radius) {
+    body {
+      border-radius: 3px;
+    }
+  }
+  ~~~
 
 ## Block
 
