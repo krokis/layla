@@ -9,8 +9,7 @@ Expression    = require './node/expression'
 Operation     = require './node/expression/operation'
 Ident         = require './node/expression/ident'
 LiteralNumber = require './node/expression/literal/number'
-Break         = require './node/statement/break'
-Continue      = require './node/statement/continue'
+Directive     = require './node/statement/directive'
 Object        = require './object'
 Document      = require './object/document'
 List          = require './object/list'
@@ -342,46 +341,32 @@ class Evaluator extends Class
 
     return #undefined
 
-  evaluateBreak: (node, self, scope) ->
-    if node.depth?
-      depth = @evaluateNode node.depth, self, scope
+  evaluateControlFlowDirective: (node, self, scope) ->
+    switch node.arguments.length
+      when 0
+        depth = 1
+      when 1
+        depth = @evaluateNode node.arguments[0], self, scope
+        unless (depth instanceof Number) and depth > 0
+          throw new Error "Bad argument for a `#{node.name}`"
+        depth = parseInt depth.value, 10
+      else
+        throw new TypeError "Too many arguments for a `#{node.name}`"
 
-      unless depth instanceof Number
-        throw new TypeError "Bad argument for `break`"
-
-      depth = parseInt depth.value, 10
-
-      unless depth > 0
-        throw new TypeError "Bad argument for `break`"
-    else
-      depth = 1
-
-    node = new node.constructor
     node.depth = depth
-
     throw node
 
   evaluateContinue: (node, self, scope) ->
-    if node.depth?
-      depth = @evaluateNode node.depth, self, scope
+    @evaluateControlFlowDirective node, self, scope
 
-      unless depth instanceof Number
-        throw new Error "Bad argument for `continue`"
-
-      depth = parseInt depth.value, 10
-
-      unless depth > 0
-        throw new Error "Bad argument for `continue`"
-    else
-      depth = 1
-
-    node = new node.constructor
-    node.depth = depth
-
-    throw node
+  evaluateBreak: (node, self, scope) ->
+    @evaluateControlFlowDirective node, self, scope
 
   evaluateReturn: (node, self, scope) ->
-    throw @evaluateNode node.expression, self, scope
+    unless node.arguments.length is 1
+      throw new TypeError "Too many arguments for a `return`"
+
+    throw @evaluateNode node.arguments[0], self, scope
 
   ###
   ###
@@ -397,10 +382,11 @@ class Evaluator extends Class
       try
         @evaluateBody node.block.body, self, scope
       catch e
-        if e instanceof Break
-          return no unless --e.depth > 0
-        else if e instanceof Continue
-          return unless --e.depth > 0
+        if e instanceof Directive
+          if e.name == 'break'
+            return no unless --e.depth > 0
+          else if e.name == 'continue'
+            return unless --e.depth > 0
         throw e
 
     return # undefined
@@ -416,10 +402,11 @@ class Evaluator extends Class
             break
         @evaluateBody node.block.body, self, scope
       catch e
-        if e instanceof Break
-          break unless --e.depth > 0
-        else if e instanceof Continue
-          continue unless --e.depth > 0
+        if e instanceof Directive
+          if e.name == 'break'
+            break unless --e.depth > 0
+          else if e.name == 'continue'
+            continue unless --e.depth > 0
         throw e
 
     return #undefined
@@ -479,6 +466,19 @@ class Evaluator extends Class
       @layla.use name.value
 
     Null.null
+
+  evaluateDirective: (node, self, scope) ->
+    switch node.name
+      when 'use'
+        @evaluateUse node, self, scope
+      when 'import'
+        @evaluateImport node, self, scope
+      when 'return'
+        @evaluateReturn node, self, scope
+      when 'break'
+        @evaluateBreak node, self, scope
+      when 'continue'
+        @evaluateContinue node, self, scope
 
   ###
   ###

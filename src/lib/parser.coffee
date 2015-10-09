@@ -13,12 +13,9 @@ Function     = require './node/expression/literal/function'
 List         = require './node/expression/literal/list'
 Block        = require './node/expression/literal/block'
 This         = require './node/expression/literal/this'
-Break        = require './node/statement/break'
-Continue     = require './node/statement/continue'
-Return       = require './node/statement/return'
+Directive    = require './node/statement/directive'
 With         = require './node/statement/with'
 Import       = require './node/statement/import'
-Use          = require './node/statement/use'
 Conditional  = require './node/statement/conditional'
 Loop         = require './node/statement/loop'
 For          = require './node/statement/for'
@@ -107,6 +104,13 @@ class Parser extends Lexer
     ' '    : 0
     '<<'   : 0
     '>>'   : 0
+
+  DIRECTIVES = [
+    'return'
+    'break'
+    'continue'
+    'use'
+  ]
 
   ###
   Node maker.
@@ -594,19 +598,6 @@ class Parser extends Lexer
         @parseConditionalPredicate node
 
   ###
-  ###
-  parseWith: ->
-    if token = @read IDENT, 'with'
-      @makeNode With, (node) ->
-        node.start = token.start
-        unless node.reference = (@parseExpression 0, no)
-          throw new SyntaxError 'Expected expression after `with`'
-        unless block = @parseBlock()
-          throw new SyntaxError 'Expected block after `while` expression'
-        node.body = block.body
-        node.end = block.end
-
-  ###
   Parse a `loop|while|until ...` block.
   ###
   parseLoop: ->
@@ -654,25 +645,16 @@ class Parser extends Lexer
 
   ###
   ###
-  parseBreak: ->
-    if tok = @read IDENT, 'break'
-      @makeNode Break, (br) ->
-        br.start = tok.start
-        br.depth = @parseExpression()
-
-  ###
-  ###
-  parseContinue: ->
-    if tok = @read IDENT, 'continue'
-      @makeNode Continue, (cont) ->
-        cont.start = tok.start
-        cont.depth = @parseExpression()
-
-  parseReturn: ->
-    if tok = @read IDENT, 'return'
-      @makeNode Return, (ret) ->
-        ret.start = tok.start
-        ret.expression = @parseExpression()
+  parseWith: ->
+    if token = @read IDENT, 'with'
+      @makeNode With, (node) ->
+        node.start = token.start
+        unless node.reference = (@parseExpression 0, no)
+          throw new SyntaxError 'Expected expression after `with`'
+        unless block = @parseBlock()
+          throw new SyntaxError 'Expected block after `while` expression'
+        node.body = block.body
+        node.end = block.end
 
   ###
   ###
@@ -695,13 +677,13 @@ class Parser extends Lexer
 
   ###
   ###
-  parseUse: ->
-    if tok = @read IDENT, ['use', 'dont-use']
-      @makeNode Use, (use) ->
-        use.start = tok.start
-        use.dont = tok.value is 'dont-use'
-        unless use.arguments = @parseCommaList()
-          throw new SyntaxError "Expected `use` arguments"
+  parseDirective: ->
+    if tok = @read IDENT, @directives
+      @makeNode Directive, (dir) ->
+        dir.start = tok.start
+        dir.name = tok.value
+        dir.arguments = @parseArguments()
+        dir.end = @position
 
   ###
   Inside a block body, any of the valid statements, delimited with new lines or
@@ -711,12 +693,9 @@ class Parser extends Lexer
     @parseConditional() or
     @parseLoop() or
     @parseFor() or
-    @parseReturn() or
-    @parseBreak() or
-    @parseContinue() or
     @parseWith() or
     @parseImport() or
-    @parseUse() or
+    @parseDirective() or
     @parseDeclaration() or
     @parseExpression()
 
@@ -748,6 +727,10 @@ class Parser extends Lexer
     @makeNode Root, (doc) ->
       doc.source = @source
       doc.body = @parseBody()
+
+  prepare: (source) ->
+    super
+    @directives = DIRECTIVES
 
   parse: (source) ->
     @prepare source
