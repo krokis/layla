@@ -26,7 +26,25 @@ InternalError = require './error/internal'
 ###
 class Lexer extends Class
 
-  RE_IDENT                 = /([\!\?\_\-\$]+)?[a-z][a-z\d\!\?\_\-]*/i
+  RE_NON_ASCII              = /[^\x00-\xed]/
+  RE_UNICODE_ESCAPE_CHAR    = /[0-9a-fA-F]/
+  RE_UNICODE_ESCAPE         = ///
+                                \\((?:#{RE_UNICODE_ESCAPE_CHAR.source}){1,6})
+                                (\r\n|[\x20\n\r\t\f])?
+                              ///
+  RE_ESCAPE                = ///
+                               #{RE_UNICODE_ESCAPE.source}|
+                               (\\[^\n\r])
+                             ///
+  RE_IDENT_START           = ///
+                               ([!\?_\$-]+)?
+                               (?=[a-zA-Z]|#{RE_ESCAPE.source})
+                             ///
+  RE_IDENT_CHAR            = ///
+                               [a-zA-Z\d!\$\?_-]|
+                               #{RE_NON_ASCII.source}|
+                               #{RE_ESCAPE.source}
+                             ///
   RE_NUMBER                = /(?:\d*\.)?\d+/i
   RE_UNIT                  = /(%|(?:[a-z]+))/i
   RE_REGEXP                = /\/([^\s](?:(?:\\.)|[^\\\/\n\r])+)\/([a-z]+)?/i
@@ -211,6 +229,32 @@ class Lexer extends Class
         throw new EOTError 'Unterminated /* block comment */' if end < 0
         @move 2
 
+  readEscape: ->
+    # Unicode code point?
+    if match = @match RE_UNICODE_ESCAPE
+      # TODO ensure code point is not out of range. Throw an error
+      # otherwise.
+      # http://www.w3.org/TR/CSS21/syndata.html#strings
+      code = parseInt match[1], 16
+      @move match[0].length
+      global.String.fromCharCode code
+    else
+      @move()
+
+      char = switch @char
+        when 'n'
+          '\n'
+        when 'r'
+          '\r'
+        when 't'
+          '\t'
+        when null, '\n'
+          '' # TODO ????
+        else
+          @char
+      @move()
+      char
+
   ###
   TODO: Interpolation
   ###
@@ -222,52 +266,41 @@ class Lexer extends Class
         throw new EOTError "Text termined before boundary ('#{boundary}')"
 
       if @char is '\\'
-
         if @isEndOfText()
           throw new EOTError """
             Unexpected end of text before boundary ('#{boundary}')
             """
-        @move()
-
-        switch @char
-          when 'n'
-            value += '\n'
-          when 'r'
-            value += '\r'
-          when 't'
-            value += '\t'
-          else
-            value += ('\\' + @char)
-
+        value += @readEscape()
       else
         value += @char
-      @move()
+        @move()
 
     value
 
   ###
-  TODO: Interpolation
-  ###
-  readName: (offset = 0) ->
-    if match = @match RE_IDENT, offset
-      name = match[0]
-
-  ###
   ###
   readIdent: ->
-    if (name = @readName())?
-      @makeToken IDENT, -> @move name.length
+    if @match RE_IDENT_START
+      @makeToken IDENT, (idnt) ->
+        name = ''
+        while m = @match RE_IDENT_CHAR
+          if @char is '\\'
+            name += @readEscape()
+          else
+            name += m[0]
+            @move m[0].length
+
+        idnt.value = name
 
   ###
   At-idents may have interpolation too, but they have to start with an `@`.
   ###
   readAtIdent: ->
     if @char is '@'
-      name = @readName 1
-      if name is undefined
-        throw new SyntaxError "Unfinished at-ident"
-      else
-        @makeToken AT_IDENT, -> @move name.length + 1 # Skip `@` and name
+      @makeToken AT_IDENT, (at) ->
+        @move()
+        unless at.name = @readIdent()
+          throw new SyntaxError "Unfinished at-ident"
   ###
   ###
   readPunc: ->

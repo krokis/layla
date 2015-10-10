@@ -66,27 +66,37 @@ class CSSEmitter extends Emitter
     css = "{\n#{@indent (@emitBody block.items)}\n}"
     return css
 
-  quoteString: (val, quote = null) ->
-    if quote is null
-      if val.match /(^|[^\\]|(\\(\\\\)*))'/
+  escapeString: (val, quotes = '\'"') ->
+    # Escape new lines to \A
+    val = val.replace /(^|(?:[^\\])|(?:(?:\\\\)+))(\r\n|\r|\n)/gm, '$1\\A'
+
+    # Translate `\t` to \9
+    val = val.replace /(|[^\\]|(\\\\)+)\t/g, '$1\\9'
+
+    # Escape unescaped quotes. TODO: escape whitespace and other non-legal
+    # ident chars too?
+    val = val.replace ///(^|[^\\]|(?:\\(?:\\\\)*))([#{quotes}])///gm, '$1\\$2'
+
+  quoteString: (str) ->
+    if str.quote is null
+      if str.value.match /(^|[^\\]|(\\(\\\\)*))'/
         quote = '"'
       else
         quote = "'"
+    else
+      quote = str.quote
 
-    "#{quote}#{val}#{quote}"
+    "#{quote}#{@escapeString str.value, quote}#{quote}"
 
   ###
   ###
   emitString: (str, quoted = str.quote?) ->
     val = str.value
 
-    # Escape `\n` and `\r` to \A
-    val = val.replace /(^|(?:[^\\])|(?:(?:\\\\)+))(\r\n|\r|\n)/gm, '$1\\A'
-
-    # TODO: Translate `\t` to ... \9?
-    val = val.replace /(|[^\\]|(\\\\)+)\t/g, '$1\\9'
-
-    if quoted then (@quoteString val, str.quote) else val.trim()
+    if quoted
+      @quoteString str
+    else
+      @escapeString str.value
 
   emitNumberValue: (num) ->
     value = num.value

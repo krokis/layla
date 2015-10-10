@@ -359,22 +359,7 @@ class Parser extends Lexer
             break
 
           else if @char is '\\'
-            @move()
-            switch @char
-              when null
-                continue
-              when 'n'
-                chunk += '\n'
-              when 'r'
-                chunk += '\r'
-              when 't'
-                chunk += '\t'
-              when '{'
-                chunk += '{'
-              when '\n'
-              else
-                chunk += ('\\' + @char)
-            @move()
+            chunk += @readEscape()
 
           else if @char is '{'
             # Start interpolation

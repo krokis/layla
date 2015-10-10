@@ -52,11 +52,33 @@ Strings
 - Can have escaped unicode characters
 
   ~~~ lay
-  foo: "\20"
+  foo: "\20\9"
+  foo: "\2660 \2663 \2665 \2666 "
   ~~~
 
   ~~~ css
-  foo: "\20";
+  foo: " \9";
+  foo: "♠♣♥♦";
+  ~~~
+
+- Can have quotes and other characters escaped
+
+  ~~~ lay
+  i: "This\.is\ not necessary\!"
+  ii: 'This\.is\ not necessary\!'
+  iii: "These are \"double quotes\""
+  iv: &::iii.unquoted.quoted
+  v: 'These are \'single quotes\''
+  vi: &::v.unquoted.quoted
+  ~~~
+
+  ~~~ css
+  i: "This.is not necessary!";
+  ii: 'This.is not necessary!';
+  iii: "These are \"double quotes\"";
+  iv: "These are \"double quotes\"";
+  v: 'These are \'single quotes\'';
+  vi: "These are 'single quotes'";
   ~~~
 
 - Support interpolation
@@ -138,6 +160,40 @@ Strings
   body {
     foo: Hello, world;
   }
+  ~~~
+
+- Can have escaped unicode characters
+
+  ~~~ lay
+  #this {
+    is: Espa\f1ist\e1n, se\f1oras\20y\20se\f1ores!
+  }
+  ~~~
+
+  ~~~ css
+  #this {
+    is: Españistán, señoras y señores!;
+  }
+  ~~~
+
+- Can have escaped new lines (`\n`), tabs (`\t`), and carriage returns (`\r`)
+
+  ~~~ lay
+  foo: Lorem\nipsum\tdolor\rsit\r\namet
+  ~~~
+
+  ~~~ css
+  foo: Lorem\Aipsum\9dolor\Asit\Aamet;
+  ~~~
+
+- Can have escaped quotes
+
+  ~~~ lay
+  foo: Lorem\"ipsum\"
+  ~~~
+
+  ~~~ css
+  foo: Lorem\"ipsum\";
   ~~~
 
 - Are always trueish
