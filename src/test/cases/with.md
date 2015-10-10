@@ -68,7 +68,9 @@
   }
   ~~~~
 
-- Can only reference blocks
+## Can only reference blocks
+
+- Not lists
 
   ~~~~ lay
   $l = 1, 2, 3
@@ -83,6 +85,8 @@
   ~~~~ RuntimeError
   ~~~~
 
+- Not numbers
+
   ~~~~ lay
   with 1 {
     foo: bar
@@ -91,6 +95,8 @@
 
   ~~~~ RuntimeError
   ~~~~
+
+- Not strings
 
   ~~~~ lay
   with "foo" {
@@ -101,6 +107,8 @@
   ~~~~ RuntimeError
   ~~~~
 
+- Not nulls
+
   ~~~~ lay
   with null {
     foo: bar
@@ -110,6 +118,8 @@
   ~~~~ RuntimeError
   ~~~~
 
+- Not booleans
+
   ~~~~ lay
   with true {
     foo: bar
@@ -118,6 +128,8 @@
 
   ~~~~ RuntimeError
   ~~~~
+
+- Not colors
 
   ~~~~ lay
   with #fff {
