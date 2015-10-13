@@ -669,14 +669,15 @@ Strings
 
   $a.append(' ')
   $a.append('ipsum' + ' ' + 'dolor')
+  $a.append(' ', 'sit', ' ', 'amet')
 
   foo: $a
   foo: $a.append()
   ~~~
 
   ~~~ css
-  foo: 'Lorem ipsum dolor';
-  foo: 'Lorem ipsum dolor';
+  foo: 'Lorem ipsum dolor sit amet';
+  foo: 'Lorem ipsum dolor sit amet';
   ~~~
 
 ### `reverse`
