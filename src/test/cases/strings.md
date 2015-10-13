@@ -560,7 +560,7 @@ Strings
   ~~~ lay
   foo: " hello world ".trim
   bar: " \t \r \n \
-  \t".trim
+  \t\9\20".trim
   ~~~
 
   ~~~ css
@@ -585,7 +585,7 @@ Strings
   ~~~ lay
   foo: " hello world ".ltrim
   bar: " \t \r \n \
-  \t".ltrim
+  \9\20\t".ltrim
   ~~~
 
   ~~~ css
@@ -609,7 +609,7 @@ Strings
 
   ~~~ lay
   foo: " hello world ".rtrim
-  bar: " \t \r \n \
+  bar: " \t \9\20 \r \n \
   \t".rtrim
   ~~~
 

@@ -125,26 +125,27 @@ class String extends Indexed
 
   '.trim': (chars) ->
     if chars instanceof String
-      chars = chars.value
+      chars = QUOTE_REGEXP chars.value
     else
-      chars = chars = '\n\r\t '
-    chars = QUOTE_REGEXP chars
+      chars = '\\s'
+
     @clone (@value.replace ///^[#{chars}]+|[#{chars}]+$///g, '')
 
   '.ltrim': (chars) ->
     if chars instanceof String
-      chars = chars.value
+      chars = QUOTE_REGEXP chars.value
     else
-      chars = chars = '\n\r\t '
+      chars = '\\s'
 
-    @clone (@value.replace ///^[#{QUOTE_REGEXP chars}]+///g, '')
+    @clone (@value.replace ///^[#{chars}]+///g, '')
 
   '.rtrim': (chars) ->
     if chars instanceof String
-      chars = chars.value
+      chars = QUOTE_REGEXP chars.value
     else
-      chars = chars = '\n\r\t '
-    @clone (@value.replace ///[#{QUOTE_REGEXP chars}]+$///g, '')
+      chars = '\\s'
+
+    @clone (@value.replace ///[#{chars}]+$///g, '')
 
   '.starts-with?': (str) ->
     Boolean.new (
@@ -202,36 +203,37 @@ Number::['.base'] = (base = Number.TEN) ->
   str += @unit if @unit
   new String str
 
-###
-http://blog.stevenlevithan.com/archives/javascript-roman-numeral-converter#comment-16107
-###
-ROMANS =
-  M:  1000
-  CM:  900
-  D:   500
-  CD:  400
-  C:   100
-  XC:   90
-  L:    50
-  XL:   40
-  X:    10
-  IX:    9
-  V:     5
-  IV:    4
-  I:     1
+do ->
+  ###
+  http://blog.stevenlevithan.com/archives/javascript-roman-numeral-converter#comment-16107
+  ###
+  ROMANS =
+    M:  1000
+    CM:  900
+    D:   500
+    CD:  400
+    C:   100
+    XC:   90
+    L:    50
+    XL:   40
+    X:    10
+    IX:    9
+    V:     5
+    IV:    4
+    I:     1
 
-Number::['.roman'] = ->
-  if not @unit and @value % 1 is 0 and 0 < @value <= 3000
-    val = @value
-    roman = ''
+  Number::['.roman'] = ->
+    if not @unit and @value % 1 is 0 and 0 < @value <= 3000
+      val = @value
+      roman = ''
 
-    for i of ROMANS
-      while val >= ROMANS[i]
-        roman += i
-        val -= ROMANS[i]
-    new String roman
-  else
-    throw new TypeError
+      for i of ROMANS
+        while val >= ROMANS[i]
+          roman += i
+          val -= ROMANS[i]
+      new String roman
+    else
+      throw new TypeError
 
 do ->
   supah = Number::['.*']
@@ -241,8 +243,6 @@ do ->
       other['.*'] @
     else
       supah.call @, other, etc...
-
-Number::['.format'] = (fmt) -> # TODO
 
 Number::['.unit'] = -> if @unit then new String @unit else Null.null
 
