@@ -127,6 +127,8 @@ class Evaluator extends Class
   ###
   evaluateLiteralNumber: (node) ->
     new Number node.value, node.unit?.value
+    # TODO:
+    # new Number node.value, node.unit.value or ''
 
   ###
   ###
@@ -320,22 +322,17 @@ class Evaluator extends Class
   ###
   ###
   evaluateConditional: (node, self, scope) ->
-    if node.condition
-      met = (@evaluateNode node.condition, self, scope).toBoolean()
-    else
-      met = yes
+    met = not node.condition or
+          (@evaluateNode node.condition, self, scope).toBoolean()
 
     if met isnt node.negate
       @evaluateBody node.block.body, self, scope
     else if node.elses
       for els in node.elses
-        unless els.condition
-          met = yes
-        else
-          met = (@evaluateNode els.condition, self, scope).toBoolean()
-          met = not met if els.negate
+        met = not els.condition or
+              (@evaluateNode els.condition, self, scope).toBoolean()
 
-        if met
+        if met isnt els.negate
           @evaluateBody els.block.body, self, scope
           break
 
