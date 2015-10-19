@@ -228,3 +228,19 @@ Ranges
     foo: 1px 2px 3px;
   }
   ~~~
+
+### `min`
+
+- Returns the minimum value in the range
+
+  ~~~ lay
+  foo: (1..5).min
+  bar: (-5..0).min
+  baz: (5..-1).min
+  ~~~
+
+  ~~~ css
+  foo: 1;
+  bar: -5;
+  baz: -1;
+  ~~~

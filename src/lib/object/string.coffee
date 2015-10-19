@@ -53,7 +53,7 @@ class String extends Indexed
       else
         -1
     else
-      throw new Error "Cannot compare that"
+      throw new Error "Cannot compare #{@reprType()} with #{other.reprType()}"
 
   contains: (other) ->
     # TODO should throw an error when other is not an string?

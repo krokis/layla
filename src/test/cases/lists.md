@@ -458,7 +458,31 @@ Lists
 
 ### `max`
 
+- Returns the minimum value in the list
+
+  ~~~ lay
+  foo: (1, +71, 2, 3, -1, 5).max
+  foo: (b 'a' `d` "c" ).max.quoted
+  ~~~
+
+  ~~~ css
+  foo: 71;
+  foo: "d";
+  ~~~
+
 ### `min`
+
+- Returns the minimum value in the list
+
+  ~~~ lay
+  foo: (1, +71, 2, 3, -1, 5).min
+  foo: (b 'a' `d` "c" ).min.quoted
+  ~~~
+
+  ~~~ css
+  foo: -1;
+  foo: "a";
+  ~~~
 
 ## Operators
 

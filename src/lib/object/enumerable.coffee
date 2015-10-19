@@ -32,13 +32,13 @@ class Enumerable extends Object
 
   minValue: ->
     min = null
-    @each (item) ->
+    @each (i, item) ->
       min = item if min is null or (item.compare min) is 1
     min
 
   maxValue: ->
     max = null
-    @each (item) ->
+    @each (i, item) ->
       max = item if max is null or (item.compare max) is -1
     max
 
@@ -54,9 +54,8 @@ class Enumerable extends Object
 
   '.random': -> @randomValue() or Null.null
 
-  ###
   '.min': -> @minValue() or Null.null
+
   '.max': -> @maxValue() or Null.null
-  ###
 
 module.exports = Enumerable

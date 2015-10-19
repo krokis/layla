@@ -6,7 +6,7 @@ TypeError = require '../error/type'
 
 class Range extends Indexed
 
-  {abs, floor} = Math
+  { min, max, abs, floor } = Math
 
   @property 'items',
     get: -> ([@min..@max]).map (item) => new Number item, @unit
@@ -15,6 +15,9 @@ class Range extends Indexed
     get: -> if @min >= @max then -1 else 1
 
   length: -> 1 + abs (@max - @min)
+
+  minValue: -> new Number min @min, @max
+  maxValue: -> new Number max @min, @max
 
   getByIndex: (index) -> new Number @min + index * @resolution
 
@@ -99,7 +102,7 @@ do ->
       supah.call @, other, etc...
 
 do ->
-  {min, max} = Math
+  { min, max } = Math
 
   supah = String::['.::']
 
