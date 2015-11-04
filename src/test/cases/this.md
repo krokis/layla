@@ -7,19 +7,14 @@
   color: red
   border-color: &::color
   background-color: &::0.value
-
-  with & {
-    font-family: 'Arial'
-    items: &.length so far `(this makes {&.length + 1})`
-  }
+  items: &.length so far `(this makes {&.length + 1})`
   ~~~
 
   ~~~ css
   color: red;
   border-color: red;
   background-color: red;
-  font-family: 'Arial';
-  items: 4 so far (this makes 5);
+  items: 3 so far (this makes 4);
   ~~~
 
 - Cannot be overwritten

@@ -312,15 +312,6 @@ class Evaluator extends Class
 
   ###
   ###
-  evaluateWith: (node, self, scope) ->
-    self = @evaluateNode node.reference, self, scope
-    unless self instanceof Block
-      throw new RuntimeError "Can only use `with` with blocks"
-    @evaluateBody node.body, self, scope
-    self
-
-  ###
-  ###
   evaluateConditional: (node, self, scope) ->
     met = not node.condition or
           (@evaluateNode node.condition, self, scope).toBoolean()

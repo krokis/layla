@@ -14,7 +14,6 @@ List         = require './node/expression/literal/list'
 Block        = require './node/expression/literal/block'
 This         = require './node/expression/literal/this'
 Directive    = require './node/statement/directive'
-With         = require './node/statement/with'
 Import       = require './node/statement/import'
 Conditional  = require './node/statement/conditional'
 Loop         = require './node/statement/loop'
@@ -630,19 +629,6 @@ class Parser extends Lexer
 
   ###
   ###
-  parseWith: ->
-    if token = @read IDENT, 'with'
-      @makeNode With, (node) ->
-        node.start = token.start
-        unless node.reference = (@parseExpression 0, no)
-          throw new SyntaxError 'Expected expression after `with`'
-        unless block = @parseBlock()
-          throw new SyntaxError 'Expected block after `while` expression'
-        node.body = block.body
-        node.end = block.end
-
-  ###
-  ###
   parseImport: ->
     if tok = (@read IDENT, 'import')
       @makeNode Import, (imp) ->
@@ -678,7 +664,6 @@ class Parser extends Lexer
     @parseConditional() or
     @parseLoop() or
     @parseFor() or
-    @parseWith() or
     @parseImport() or
     @parseDirective() or
     @parseDeclaration() or
