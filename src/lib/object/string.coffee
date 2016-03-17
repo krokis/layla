@@ -1,9 +1,3 @@
-camelCase  = require 'camel-case'
-pascalCase = require 'pascal-case'
-snakeCase  = require 'snake-case'
-titleCase  = require 'title-case'
-kebabCase  = require 'param-case'
-
 Indexed    = require './indexed'
 Object     = require '../object'
 Null       = require './null'
@@ -164,18 +158,6 @@ class String extends Indexed
   '.lower-case': -> @clone @value.toLowerCase()
 
   '.upper-case': -> @clone @value.toUpperCase()
-
-  '.camel-case': -> @clone camelCase @value
-
-  '.pascal-case': -> @clone pascalCase @value
-
-  '.snake-case': -> @clone snakeCase @value
-
-  '.kebab-case': -> @clone kebabCase @value
-
-  '.spinal-case': @::['.kebab-case']
-
-  '.title-case': -> @clone titleCase @value
 
   '.string': -> @clone()
 
