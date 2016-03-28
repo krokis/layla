@@ -489,13 +489,68 @@ URLs
   foo: url('http://disney.com:8080/');
   ~~~
 
-- Fails for invalid ports (non-numeric or out of 1..65535)
+- Fails for non-numeric values
 
-  ~~~ lay-todo
+  ~~~ lay
   url('http://disney.com/').port = #fff
   ~~~
 
-  ~~~ css-todo
+  ~~~ TypeError
+  Cannot set URL port to non-numeric value: [Color]
+  ~~~
+
+  ~~~ lay
+  url('http://disney.com/').port = ''
+  ~~~
+
+  ~~~ TypeError
+  Cannot set URL port to non-numeric value: [String ""]
+  ~~~
+
+- Fails for non-integer numbers
+
+  ~~~ lay
+  url('http://disney.com/').port = '2.7'
+  ~~~
+
+  ~~~ TypeError
+  Cannot set URL port to non integer number: 2.7
+  ~~~
+
+  ~~~ lay
+  $url = url('http://disney.com/')
+  $url.port = '80.0'
+  background: $url
+  ~~~
+
+  ~~~ css
+  background: url('http://disney.com:80/');
+  ~~~
+
+- Fails for numbers not in the 1..65535 range
+
+  ~~~ lay
+  url('http://disney.com/').port = -1
+  ~~~
+
+  ~~~ TypeError
+  Port number out of 1..65535 range: -1
+  ~~~
+
+  ~~~ lay
+  url('http://disney.com/').port = 0
+  ~~~
+
+  ~~~ TypeError
+  Port number out of 1..65535 range: 0
+  ~~~
+
+  ~~~ lay
+  url('http://disney.com/').port = 65536
+  ~~~
+
+  ~~~ TypeError
+  Port number out of 1..65535 range: 65536
   ~~~
 
 - Accepts `null`

@@ -109,10 +109,26 @@ class URL extends Object
   '.port=': (port) ->
     if port instanceof Null
       @port = null
-    else if (port instanceof String) or (port instanceof Number)
-      @port = "#{port.value}"
+      return
+
+    if port instanceof String and port.isNumeric()
+      port = port.toNumber()
+    else if not (port instanceof Number)
+      throw new TypeError """
+        Cannot set URL port to non-numeric value: #{port.repr()}
+        """
+
+    p = port.value
+
+    if p % 1 isnt 0
+      throw new TypeError """
+        Cannot set URL port to non integer number: #{port.reprValue()}
+        """
+
+    if 1 <= p <= 65535
+      @port = p
     else
-      throw new Error "Bad URL port"
+      throw new TypeError "Port number out of 1..65535 range: #{p}"
 
   '.path': -> if @path? then new String @path, @quote
 
