@@ -1,4 +1,3 @@
-Indexed    = require './indexed'
 Object     = require '../object'
 Null       = require './null'
 Boolean    = require './boolean'
@@ -6,15 +5,16 @@ Number     = require './number'
 
 TypeError  = require '../error/type'
 
-class String extends Indexed
+class String extends Object
 
   QUOTE_REGEXP = (str) -> str.replace /[.?*+^$[\]\\(){}|-]/g, "\\$&"
 
   constructor: (@value = '', @quote = null) ->
 
-  length: -> @value.length
+  @property 'length',
+    get: -> @value.length
 
-  getByIndex: (index) -> @clone @value.charAt index
+  isEmpty: -> @length is 0
 
   isEqual: (other) -> other instanceof String and other.value is @value
 
@@ -100,6 +100,22 @@ class String extends Indexed
       )
 
   '.<<': @::append
+
+  '.::': (other) ->
+    if other instanceof Number
+      len = @length
+      idx = other.value
+      idx += len if idx < 0
+      char = @value.charAt(idx)
+
+      if char is ''
+        return Null.null
+      else
+        return new String char, @quote
+    else
+      throw new TypeError
+
+  '.length': -> new Number @length
 
   '.blank?': -> Boolean.new @value.trim() is ''
 
