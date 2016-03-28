@@ -167,36 +167,6 @@ Loops
 
 - Can iterate blocks rules
 
-- Can iterate strings characters
-
-  ~~~ lay
-  for char in 'ipsum' {
-    char: char
-  }
-  ~~~
-
-  ~~~ css
-  char: 'i';
-  char: 'p';
-  char: 's';
-  char: 'u';
-  char: 'm';
-  ~~~
-
-  ~~~ lay
-  for i, char in "ipsum" {
-    `char-{i}`: char
-  }
-  ~~~
-
-  ~~~ css
-  char-0: "i";
-  char-1: "p";
-  char-2: "s";
-  char-3: "u";
-  char-4: "m";
-  ~~~
-
 ## `break`
 
 - Can be used to escape a loop

@@ -628,38 +628,6 @@ Strings
   baz: '(hey there';
   ~~~
 
-### `first`
-
-- Returns the first character of the string, or `null` if it's empty
-
-  ~~~ lay
-  foo: ''.first
-  bar: 'Ê'.first
-  baz: 'abcd'.first
-  ~~~
-
-  ~~~ css
-  foo: null;
-  bar: 'Ê';
-  baz: 'a';
-  ~~~
-
-### `last`
-
-- Returns the last character of the string, or `null` if the string is empty
-
-  ~~~ lay
-  foo: ''.last
-  bar: 'Ê'.last
-  baz: 'abcd'.last
-  ~~~
-
-  ~~~ css
-  foo: null;
-  bar: 'Ê';
-  baz: 'd';
-  ~~~
-
 ### `append`
 
 - Appends one or more strings to this string
