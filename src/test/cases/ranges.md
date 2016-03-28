@@ -119,6 +119,13 @@ Ranges
   foo: 2 in r
   foo: r hasnt 3
   foo: not 0 in r
+  r = 2..-1
+  bar: r has 1
+  bar: r has -1
+  bar: r has 2
+  bar: r has -2
+  bar: r has 3
+  bar: r has 0
   ~~~
 
   ~~~ css
@@ -126,6 +133,12 @@ Ranges
   foo: true;
   foo: true;
   foo: true;
+  bar: true;
+  bar: true;
+  bar: true;
+  bar: false;
+  bar: false;
+  bar: true;
   ~~~
 
 - Checks units

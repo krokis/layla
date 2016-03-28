@@ -63,7 +63,7 @@ class Range extends Indexed
   contains: (other) ->
     try
       other = other.convert @unit
-      @min <= other.value <= @max
+      @minValue() <= other.value <= @maxValue()
     catch
       no
 
