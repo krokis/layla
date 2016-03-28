@@ -257,3 +257,39 @@ Ranges
   bar: -5;
   baz: -1;
   ~~~
+
+### `reverse?`
+
+- Returns `true` if the range is reversed.
+
+  ~~~ lay
+  foo: (1..5).reverse?
+  foo: (-1..5).reverse?
+  foo: (-1..-5).reverse?
+  foo: (0..0).reverse?
+  ~~~
+
+  ~~~ css
+  foo: false;
+  foo: false;
+  foo: true;
+  foo: false;
+  ~~~
+
+### `reverse`
+
+- Reverses a range
+
+  ~~~ lay
+  foo: (1..5).reverse
+  foo: (-1..5).reverse
+  foo: (-1..-5).reverse
+  foo: (0..0).reverse
+  ~~~
+
+  ~~~ css
+  foo: 5 4 3 2 1;
+  foo: 5 4 3 2 1 0 -1;
+  foo: -5 -4 -3 -2 -1;
+  foo: 0;
+  ~~~

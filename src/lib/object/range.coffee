@@ -1,4 +1,5 @@
 Indexed   = require './indexed'
+Boolean   = require './boolean'
 List      = require './list'
 Number    = require './number'
 String    = require './string'
@@ -9,45 +10,25 @@ class Range extends Indexed
   { min, max, abs, floor } = Math
 
   @property 'items',
-    get: -> ([@min..@max]).map (item) => new Number item, @unit
+    get: -> ([@first..@last]).map (item) => new Number item, @unit
 
   @property 'resolution',
-    get: -> if @min >= @max then -1 else 1
+    get: -> if @first > @last then -1 else 1
 
-  length: -> 1 + abs (@max - @min)
+  isReverse: -> @resolution < 0
 
-  minValue: -> new Number min @min, @max
+  length: -> 1 + abs (@last - @first)
 
-  maxValue: -> new Number max @min, @max
+  minValue: -> new Number min @first, @last
 
-  getByIndex: (index) -> new Number @min + index * @resolution
+  maxValue: -> new Number max @first, @last
 
-  constructor: (@min = 0, @max = 0, @unit = null) ->
+  getByIndex: (index) -> new Number @first + index * @resolution
+
+  constructor: (@first = 0, @last = 0, @unit = null) ->
     super()
-    @min = floor @min
-    @max = floor @max
-
-  ###
-  TODO this is buggy
-  ###
-  '.<<': (args...) ->
-    # TODO check units
-    vals = []
-    for arg in args
-      unless arg instanceof Number
-        throw new TypeError "Cannot add that to a range"
-
-      if arg.unit and not @unit
-        @unit = arg.unit
-      else
-        arg = arg.convert @unit
-
-      vals.push floor arg.value
-
-    @min = Math.min @min, vals...
-    @max = Math.max @max, vals...
-
-    return @
+    @first = floor @first
+    @last = floor @last
 
   convert: (unit) ->
     if unit isnt ''
@@ -67,12 +48,38 @@ class Range extends Indexed
     catch
       no
 
-  clone: (min = @min, max = @max, unit = @unit, etc...) ->
-    super min, max, unit, etc...
+  clone: (first = @first, last = @last, unit = @unit, etc...) ->
+    super first, last, unit, etc...
 
-  reprValue: -> "#{@min}..#{@max}"
+  reprValue: -> "#{@first}..#{@last}"
+
+  ###
+  TODO this is buggy
+  ###
+  '.<<': (args...) ->
+    # TODO check units
+    vals = []
+    for arg in args
+      unless arg instanceof Number
+        throw new TypeError "Cannot add that to a range"
+
+      if arg.unit and not @unit
+        @unit = arg.unit
+      else
+        arg = arg.convert @unit
+
+      vals.push floor arg.value
+
+    @first = Math.min @first, vals...
+    @last = Math.max @last, vals...
+
+    return @
 
   '.convert': (args...) -> @convert args...
+
+  '.reverse?': -> Boolean.new @isReverse()
+
+  '.reverse': -> @clone @last, @first
 
   '.list': -> new List @items
 
@@ -113,11 +120,11 @@ do ->
       if @value isnt ''
         len = @value.length
 
-        end = other.max + 1
+        end = other.last + 1
         end += len if end < 0
         end = min end, (len - 1)
 
-        idx = other.min
+        idx = other.first
         idx += len if idx < 0
         idx = max -len, idx
 
