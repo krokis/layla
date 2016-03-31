@@ -121,17 +121,7 @@ class CSSEmitter extends Emitter
   emitNull: (node) -> 'null'
 
   emitColor: (color) ->
-    hex = '#'
-    comps = ['red', 'green', 'blue']
-    comps.push 'alpha' if color.alpha < 1
-
-    for c in comps
-      c = (Math.round(255 * color[c])).toString 16
-      if c.length < 2
-        hex += '0'
-      hex += c
-
-    return hex
+    color.toString()
 
   emitURL: (url) ->
     "url(#{@emitString url, url.quote?})"

@@ -525,7 +525,7 @@ class Lexer extends Class
 
           if match = @match RE_ATTRIBUTE_OPERATOR
             @move match[0].length
-            @readString() or @readIdent()
+            @readString() or @readIdent() or @readNumber()
 
           # CSS4 case sensitivity
           if c = (@eat IDENT, 'i')

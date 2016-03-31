@@ -73,6 +73,13 @@ describe 'Cases', ->
                     throw new Error 'Oops'
                   err_name = node.info
                   err_msg = (stringContent node).trim()
+              when 'List'
+                if desc
+                  it desc, ->
+                    testList node
+                  desc = null
+                else
+                  throw new Error 'Oops'
               else
                 throw new Error 'Oops'
 
@@ -131,6 +138,9 @@ describe 'Cases', ->
               testList node
               nodes.shift()
               todo = no
+            when 'BlockQuote'
+              # Consider it a "comment"
+              nodes.shift()
             else
               throw new Error "Unexpected node type: #{node.t}"
 

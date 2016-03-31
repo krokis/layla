@@ -54,30 +54,7 @@ class Evaluator extends Class
   col = #`'a2f'`
   ###
   evaluateLiteralColor: (node, self, scope) ->
-    hex = node.value.substr 1
-    alpha = 255
-
-    switch hex.length
-      when 1
-        red = green = blue = 17 * parseInt hex, 16
-      when 2
-        red = green = blue = parseInt hex, 16
-      when 3, 4
-        red   = 17 * parseInt hex[0], 16
-        green = 17 * parseInt hex[1], 16
-        blue  = 17 * parseInt hex[2], 16
-        if hex.length > 3
-          alpha = 17 * parseInt hex[3], 16
-      when 6, 8
-        red   = parseInt (hex.substr 0, 2), 16
-        green = parseInt (hex.substr 2, 2), 16
-        blue  = parseInt (hex.substr 4, 2), 16
-        if hex.length > 6
-          alpha = parseInt (hex.substr 6, 2), 16
-      else
-        throw new InternalError "something"
-
-    new Color red / 255, green / 255, blue / 255, alpha / 255
+    new Color node.value
 
   ###
   ###

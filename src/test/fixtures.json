@@ -1,4 +1,5 @@
 [
   "cases/*.md",
-  "cases/**/*"
+  "cases/import/*",
+  "cases/whitespace/*"
 ]
