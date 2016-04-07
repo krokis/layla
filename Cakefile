@@ -19,31 +19,30 @@ RED        = "#{ESC}[31m"
 GREEN      = "#{ESC}[32m"
 YELLOW     = "#{ESC}[33m"
 CHECK      = "#{GREEN}√#{RESET}"
+CROSS      = "#{BOLD}#{RED}×#{RESET}"
 
 SOURCE = no
 VERBOSE = no
 
-next = ->
-  if QUEUE.length
-    QUEUE[0]()
+errors = 0
 
-queue = (func) ->
-  QUEUE.push func
-  if QUEUE.length is 1
-    next()
-
-log = (type, text = '', format...) ->
+log = (type = '', text = '') ->
   if type is 'task'
-    text = "#{YELLOW}#{text}"
-  else if type is 'ok'
-    if VERBOSE
-      text = "#{CHECK} #{text}"
-    else
-      text = " #{CHECK}\n"
-  else if not VERBOSE
-    return
+    text = "#{YELLOW}#{text} "
   else
-    text = "#{BOLD}#{type}#{RESET} #{text}"
+    if type is 'ok'
+      mark = CHECK
+    else if type is 'error'
+      mark = "#{CROSS}"
+    else if not VERBOSE
+      return
+    else
+      mark = "#{BOLD}#{type}#{RESET}"
+
+    if VERBOSE
+      text = "#{mark} #{text}"
+    else
+      text = "#{mark}\n"
 
   text += RESET
 
@@ -52,11 +51,35 @@ log = (type, text = '', format...) ->
   if VERBOSE
     process.stdout.write "\n"
 
+next = ->
+  if QUEUE.length
+    QUEUE[0]()
+  else
+    if errors and VERBOSE
+      s = if errors.length is 1 then 's' else ''
+      log 'error', "#{BOLD}#{errors} task#{s} failed"
+
+queue = (func) ->
+  QUEUE.push func
+  if QUEUE.length is 1
+    next()
+
 done = ->
   if QUEUE.length > 0
     log 'ok', 'Done'
+    log()
     QUEUE.shift()
     next()
+
+fail = (text = 'Error') ->
+  if QUEUE.length > 0
+    errors++
+    log 'error', text
+    log()
+    QUEUE.shift()
+    next()
+  else
+    exit 1
 
 exit = (status = 0) -> process.exit status
 
@@ -77,15 +100,17 @@ spawn = (cmd,  callback = done) ->
   log 'exec', cmd
   args = cmd.split /\s+/
   cmd = args.shift()
-  cmd = which.sync cmd
+  wcmd = which.sync cmd
 
-  child = childProcess.spawn cmd, args, stdio: 'inherit'
+  stdio = if VERBOSE then 'inherit' else 'ignore'
+
+  child = childProcess.spawn wcmd, args, stdio: stdio
 
   child.on 'exit', (status) ->
     if status is 0
       callback()
     else
-      exit status
+      fail "Command #{BOLD}#{cmd}#{RESET} did not exited nicely (#{status})"
 
 mkdir = (path, callback = done) ->
   fs.stat path, (err, stat) ->
@@ -246,7 +271,7 @@ task 'test:bin', 'Run CLI tests', ->
 
 task 'test:all', 'Test everything (except code style)', ->
   invoke 'test:cases'
-  # invoke 'test:style'
+  #invoke 'test:style'
   invoke 'test:docs'
   invoke 'test:bin'
 

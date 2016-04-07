@@ -108,3 +108,7 @@ missing_fat_arrows:
 non_empty_constructor_needs_parens:
   name: 'non_empty_constructor_needs_parens'
   level: 'ignore'
+
+no_nested_string_interpolation:
+  name: 'no_nested_string_interpolation'
+  level: 'ignore'
