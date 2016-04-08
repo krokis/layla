@@ -139,7 +139,6 @@ class URL extends Object
       @query = null
     else if query instanceof String
       @query = query.value.trim()
-      @query = @query.substr 1 if '?' is @query.charAt 0
     else
       throw new Error "Bad URL query"
 
@@ -150,7 +149,6 @@ class URL extends Object
       @fragment = null
     else if frag instanceof String
       @fragment = frag.value.trim()
-      @fragment = @fragment.substr 1 if '#' is @fragment.charAt 0
     else
       throw new Error "Bad URL fragment"
 

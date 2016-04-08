@@ -601,18 +601,6 @@ URLs
   foo: url(http://google.com/?hey=Joe);
   ~~~
 
-- Ignores leading '?'
-
-  ~~~ lay
-  $url = url(http://google.com/)
-  $url.query = '?hey=Joe '
-  foo: $url
-  ~~~
-
-  ~~~ css
-  foo: url(http://google.com/?hey=Joe);
-  ~~~
-
 - Gets properly encoded
 
 - Accepts `null` and empty string
@@ -659,18 +647,6 @@ URLs
   ~~~ lay
   $url = url('http://disney.com/')
   $url.fragment = 'footer'
-  foo: $url
-  ~~~
-
-  ~~~ css
-  foo: url('http://disney.com/#footer');
-  ~~~
-
-- Ignores leading '#'
-
-  ~~~ lay
-  $url = url('http://disney.com/')
-  $url.fragment = '#footer'
   foo: $url
   ~~~
 
