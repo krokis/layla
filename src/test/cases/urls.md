@@ -365,6 +365,24 @@ URLs
 
 - Returns the hostname, without `www.`
 
+  ~~~ lay
+  url.domain {
+    i: url('http://www.disney.com').domain
+    ii: url(http://disney.com).domain
+    iii: url(//www.disney.com).domain
+    iv: url("//disney.com").domain
+  }
+  ~~~
+
+  ~~~ css
+  url.domain {
+    i: 'disney.com';
+    ii: disney.com;
+    iii: disney.com;
+    iv: "disney.com";
+  }
+  ~~~
+
 ### `http?`
 
 - Returns `true` if the URL has a protocol and it's 'http'

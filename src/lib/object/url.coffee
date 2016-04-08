@@ -92,7 +92,11 @@ class URL extends Object
     http.scheme = 'https'
     http
 
-  '.host': -> if @host? then new String @host, @quote
+  '.host': ->
+    if @host?
+      new String @host, @quote
+    else
+      Null.null
 
   '.host=': (host) ->
     if host instanceof Null
@@ -102,7 +106,14 @@ class URL extends Object
     else
       throw new Error "Bad URL host"
 
-  '.domain': -> #TODO
+  '.domain': ->
+    domain = @host
+    if domain?
+      if domain.match /^www\./i
+        domain = domain.substr 4
+      new String domain, @quote
+    else
+      Null.null
 
   '.port': -> if @port? then new String @port, @quote
 
