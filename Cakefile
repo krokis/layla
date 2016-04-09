@@ -24,7 +24,7 @@ CROSS      = "#{BOLD}#{RED}×#{RESET}"
 SOURCE = no
 VERBOSE = no
 
-errors = 0
+ERRORS = 0
 
 log = (type = '', text = '') ->
   if type is 'task'
@@ -55,33 +55,32 @@ next = ->
   if QUEUE.length
     QUEUE[0]()
   else
-    if errors and VERBOSE
-      s = if errors.length is 1 then 's' else ''
-      log 'error', "#{BOLD}#{errors} task#{s} failed"
+    exit()
 
 queue = (func) ->
   QUEUE.push func
   if QUEUE.length is 1
     next()
 
+exit = ->
+  if ERRORS and VERBOSE
+    s = if ERRORS.length is 1 then 's' else ''
+    log 'error', "#{BOLD}#{ERRORS} task#{s} failed"
+
+  process.exit ERRORS
+
 done = ->
-  if QUEUE.length > 0
-    log 'ok', 'Done'
-    log()
-    QUEUE.shift()
-    next()
+  log 'ok', 'Done'
+  log()
+  QUEUE.shift()
+  next()
 
 fail = (text = 'Error') ->
-  if QUEUE.length > 0
-    errors++
-    log 'error', text
-    log()
-    QUEUE.shift()
-    next()
-  else
-    exit 1
-
-exit = (status = 0) -> process.exit status
+  ERRORS++
+  log 'error', text
+  log()
+  QUEUE.shift()
+  next()
 
 exec = (cmd,  callback = done) ->
   log 'exec', cmd
