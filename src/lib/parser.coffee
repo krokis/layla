@@ -197,10 +197,11 @@ class Parser extends Lexer
 
       next_op = @peek BINARY_OPERATOR, null, no
 
-      while next_op and (
-        (PREC[next_op.value] > PREC[op.value]) or
-        ((ASSOC[next_op.value] is 1) and
-        (PREC[next_op.value] is PREC[op.value])))
+      loop
+        break unless next_op and (
+          (PREC[next_op.value] > PREC[op.value]) or
+          ((ASSOC[next_op.value] is 1) and
+          (PREC[next_op.value] is PREC[op.value])))
 
         right = @parseRightOperation right, PREC[next_op.value], blocks, commas
         next_op = @peek BINARY_OPERATOR, null, no

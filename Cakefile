@@ -271,7 +271,7 @@ task 'test:bin', 'Run CLI tests', ->
 
 task 'test:all', 'Test everything (except code style)', ->
   invoke 'test:cases'
-  #invoke 'test:style'
+  invoke 'test:style'
   invoke 'test:docs'
   invoke 'test:bin'
 
