@@ -206,6 +206,25 @@ Regular expressions
 
 - Returns a copy of the regular expression with the `insensitive` flag on
 
+  ~~~ lay
+  regexp.insensitive {
+    i: /.*/g.insensitive.insensitive?
+    ii: /.*/gi.insensitive.insensitive?
+    $re = /[a-z]+/
+    iii: $re ~ "FOO"
+    iv: $re.insensitive ~ "FOO"
+  }
+  ~~~
+
+  ~~~ css
+  regexp.insensitive {
+    i: true;
+    ii: true;
+    iii: null;
+    iv: "FOO";
+  }
+  ~~~
+
 ### `sensitive?`
 
 - Tells if the regular expression has the 'insensitive' flag off
