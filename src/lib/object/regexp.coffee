@@ -16,13 +16,11 @@ class RegExp extends Object
 
   @property 'value',
     get: ->
-      if @_value
-        if @_value.source is @source and \
-           @_value.ignoreCase is @insensitive and \
-           @_value.global is @global and \
-           @_value.multiline is @multiline
-        else
-          @build()
+      @build() unless @_value and
+                      @_value.source is @source and
+                      @_value.ignoreCase is @insensitive and
+                      @_value.global is @global and
+                      @_value.multiline is @multiline
       @_value
 
   @property 'flags',
