@@ -184,6 +184,24 @@ Regular expressions
 
 - Returns a copy of the regular expression with the `global` flag on
 
+  ~~~ lay
+  $s = 'lorem\nipsum\ndolor'.unquoted
+  $r = /^[a-z]*$/m
+
+  regexp.global {
+    i: $s ~ $r
+    ii: $s ~ $r.global
+  }
+  ~~~
+
+  ~~~ css
+  regexp.global {
+    i: lorem;
+    ii: lorem ipsum dolor;
+  }
+  ~~~
+
+
 ### `insensitive?`
 
 - Tells if the regular expression has the 'insensitive' flag on
@@ -287,6 +305,23 @@ Regular expressions
 ### `multiline`
 
 - Returns a copy of the regular expression with the `multiline` flag on
+
+  ~~~ lay
+  $r = /^[a-z]+$/
+  $s = 'lorem\nipsum\ndolor'
+
+  regexp.multiline {
+    i: $r ~ $s
+    ii: $r.multiline ~ $s
+  }
+  ~~~
+
+  ~~~ css
+  regexp.multiline {
+    i: null;
+    ii: 'lorem';
+  }
+  ~~~
 
 ### Operators
 
