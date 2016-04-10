@@ -810,9 +810,9 @@ Rule sets
 
 - Is allowed in namespaces
 
-## Methods
-
 ## Operators
+
+## Methods
 
 - `selector`
 

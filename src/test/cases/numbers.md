@@ -107,8 +107,6 @@ Numbers
   }
   ~~~
 
-- Can be arbitrarily big
-
 - Units may appear after parentheses for conversion
 
   ~~~ lay
@@ -1339,10 +1337,6 @@ Numbers
 
   ~~~ TypeError
   ~~~
-
-### `format`
-
-- Formats a number as a string
 
 ### `roman`
 
