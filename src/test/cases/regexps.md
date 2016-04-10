@@ -247,6 +247,25 @@ Regular expressions
 
 - Returns a copy of the regular expression with the `insensitive` flag off
 
+  ~~~ lay
+  regexp.sensitive {
+    i: /.*/g.sensitive.sensitive?
+    ii: /.*/gi.sensitive.sensitive?
+    $re = /[a-z]+/i
+    iii: $re ~ "FOO"
+    iv: $re.sensitive ~ "FOO"
+  }
+  ~~~
+
+  ~~~ css
+  regexp.sensitive {
+    i: true;
+    ii: true;
+    iii: "FOO";
+    iv: null;
+  }
+  ~~~
+
 ### `multiline?`
 
 - Tells if the regular expression has the 'multiline' flag on

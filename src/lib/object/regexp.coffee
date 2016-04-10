@@ -46,15 +46,15 @@ class RegExp extends Object
   setFlag: (flag, value) ->
     switch flag
       when 'm'
-        @multiline = yes
+        @multiline = value
       when 'g'
-        @global = yes
+        @global = value
       when 'i'
-        @insensitive = yes
+        @insensitive = value
       else
         throw new TypeError "Bad flag for RegExp: \"#{flag}\""
 
-    return this
+    return @
 
   build: ->
     try
