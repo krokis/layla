@@ -4,7 +4,7 @@ String = require './string'
 class AtRule extends Rule
 
   constructor: (@name) ->
-    super()
+    super
     @arguments = []
 
   clone: ->

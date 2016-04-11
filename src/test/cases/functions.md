@@ -103,8 +103,6 @@ Functions
   font-size: 27px;
   ~~~
 
-- When they not explicitly return a value, last evaluated statement is returned instead
-
 - Return `null` if they don't return anything
 
   ~~~ lay

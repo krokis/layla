@@ -165,8 +165,6 @@ Blocks
   }
   ~~~
 
-- Are not expressions
-
 - Can have any value, even other blocks
 
   ~~~ lay

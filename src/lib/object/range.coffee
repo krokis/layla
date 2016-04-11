@@ -17,6 +17,7 @@ class Range extends Indexed
   length: -> 1 + abs (@max - @min)
 
   minValue: -> new Number min @min, @max
+
   maxValue: -> new Number max @min, @max
 
   getByIndex: (index) -> new Number @min + index * @resolution

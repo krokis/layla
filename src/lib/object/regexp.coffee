@@ -14,6 +14,10 @@ class RegExp extends Object
   multiline: no
   insensitive: no
 
+  @escape: (str) -> str.replace /[-\/\\^$*+?.()|[\]{}]/g, '\\$&'
+
+  constructor: (@source, @flags) -> @build()
+
   @property 'value',
     get: ->
       @build() unless @_value and
@@ -39,8 +43,6 @@ class RegExp extends Object
       if flags?.length
         @setFlag flag, yes for flag in flags
 
-  @escape: (str) -> str.replace /[-\/\\^$*+?.()|[\]{}]/g, '\\$&'
-
   setFlag: (flag, value) ->
     switch flag
       when 'm'
@@ -59,8 +61,6 @@ class RegExp extends Object
       @_value = new global.RegExp @source, @flags
     catch e
       throw new TypeError e.message
-
-  constructor: (@source, @flags) -> @build()
 
   isEqual: (other) ->
     (other instanceof RegExp) and

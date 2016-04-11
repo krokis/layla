@@ -325,7 +325,7 @@ Regular expressions
 
 ### Operators
 
-### `is`
+#### `is`
 
 - Returns `true` only if the right side is a `RegExp` with the same source and flags
 
@@ -341,7 +341,7 @@ Regular expressions
   foo: true;
   ~~~
 
-### `~`
+#### `~`
 
 - Matches a string against the regular expression
 

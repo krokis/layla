@@ -14,8 +14,6 @@ class Collection extends Indexed
 
   constructor: (@items = []) -> super
 
-  insert: (items, before_key) ->
-
   push: (objs...) ->
     @items.push obj.clone() for obj in objs
 
@@ -34,16 +32,6 @@ class Collection extends Indexed
       end = @items.length
 
     @items.slice start, end
-
-  unique = (arr) ->
-    vals = []
-
-    arr.filter (item) ->
-      for val in vals
-        if val.isEqual item
-          return no
-      vals.push item
-      return yes
 
   contains: (other) ->
     for value in @items
@@ -130,22 +118,18 @@ class Collection extends Indexed
 
   '.unique?': -> Boolean.new @isUnique()
 
-  '.unique': -> @clone (unique @items), @separator
+  '.unique': ->
+    unique = []
 
-  ###
-  '.reverse':       @::reverse
-  '.compact':       @::compact
-  '.compact':       @::compact
-  '.concat':        @::concat
-  '.max':           @::max
-  '.greatest':      @::max
-  '.min':           @::min
-  '.avg':           @::min
-  '.lowest':        @::min
-  '.index-of':      @::indexOf
-  '.last-index-of': @::lastIndexOf
-  '.without':       @::without
-  ###
+    @items.filter (item) ->
+      for val in unique
+        if val.isEqual item
+          return no
+
+      unique.push item
+      return yes
+
+    @clone unique, @separator
 
 # TODO I don't think this belongs here
 Object::['.>>'] = (other) -> other['.<<'] @

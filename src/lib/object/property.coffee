@@ -1,7 +1,6 @@
 Object = require '../object'
 Null   = require './null'
 String = require './string'
-List   = require './list'
 
 class Property extends Object
 
