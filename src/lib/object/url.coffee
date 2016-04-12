@@ -182,4 +182,13 @@ class URL extends Object
 
   '.string': -> new String @toString(), @quote
 
+  do ->
+    supah = String::['.+']
+
+    String::['.+'] = (other, etc...) ->
+      if other instanceof URL
+        other.clone parseURL.resolve @value, other.value
+      else
+        supah.call @, other, etc...
+
 module.exports = URL

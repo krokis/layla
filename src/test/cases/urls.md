@@ -790,6 +790,7 @@ URLs
   foo: url(http://disney.com) + url(?princess=ariel)
   foo: url(http://disney.com) + url(https://example.com/)
   foo: url(https://disney.com) + url(//example.com/path)
+  foo: 'http://example.com/one' + url(/two)
   ~~~
 
   ~~~ css
@@ -806,4 +807,5 @@ URLs
   foo: url(http://disney.com/?princess=ariel);
   foo: url(https://example.com/);
   foo: url(https://example.com/path);
+  foo: url(http://example.com/two);
   ~~~
