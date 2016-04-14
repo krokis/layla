@@ -120,6 +120,30 @@ class Number extends Object
 
   isEmpty: -> @value is 0
 
+  # http://www.javascripter.net/faq/numberisprime.htm
+  isPrime: ->
+    n = @value
+
+    if (n < 2) or (n % 1)
+      return no
+
+    if not (n % 2)
+      return n is 2
+
+    if not (n % 3)
+      return n is 3
+
+    i = 5
+    m = Math.sqrt n
+
+    while i <= m
+      if not (n % 1)
+        return no
+      if not (n % (i + 2))
+        return no
+
+    return yes
+
   toNumber: -> @clone()
 
   toString: ->
@@ -259,6 +283,8 @@ class Number extends Object
   '.acos': -> @clone acos @value
 
   '.atan': -> @clone atan @value
+
+  '.prime?': -> Boolean.new @isPrime()
 
   '.convert': (unit) -> @convert unit
 

@@ -1,5 +1,4 @@
-Numbers
-=======
+# Numbers
 
 - Are declared with the usual decimal notation
 
@@ -848,6 +847,50 @@ Numbers
   ~~~
 
   ~~~ TypeError
+  ~~~
+
+### `prime?`
+
+- Returns `true` if the number is prime
+
+  ~~~ lay
+  number.prime {
+    i: 0.prime?
+    ii: 1.prime?
+    iii: 2.prime?
+    iv: 3.prime?
+    v: 4.prime?
+    vi: 5.prime?
+    vii: 6.prime?
+    viii: 7.prime?
+    ix: 8.prime?
+    x: 9.prime?
+    xi: 10.prime?
+    xii: -1.prime?
+    xiii: -0.prime?
+    xiv: 4.23.prime?
+    xv: 2.00.prime?
+  }
+  ~~~
+
+  ~~~ css
+  number.prime {
+    i: false;
+    ii: false;
+    iii: true;
+    iv: true;
+    v: false;
+    vi: true;
+    vii: false;
+    viii: true;
+    ix: false;
+    x: false;
+    xi: false;
+    xii: false;
+    xiii: false;
+    xiv: false;
+    xv: true;
+  }
   ~~~
 
 ### `copy`
