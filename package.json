@@ -22,7 +22,9 @@
   "bin": {
     "layla": "./bin/layla"
   },
-  "dependencies": {},
+  "dependencies": {
+    "supports-color": "^3.1.2"
+  },
   "devDependencies": {
     "coffee-script": "^1.9.2",
     "coffeelint": "^1.9.3",
