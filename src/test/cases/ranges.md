@@ -103,7 +103,30 @@ Ranges
 
 - Can be converted to another unit
 
-- May have a `resolution`
+- May have a `step` different than `1`
+
+  ~~~ lay
+  range[step] {
+    $r = 0..10
+    i: $r
+    ii: ($r / 2).list.commas
+    $r.step = 3
+    iii: $r
+    $r = 1..-1cm
+    iv: $r
+    v: $r / 5mm
+  }
+  ~~~
+
+  ~~~ css
+  range[step] {
+    i: 0 1 2 3 4 5 6 7 8 9 10;
+    ii: 0, 2, 4, 6, 8, 10;
+    iii: 0 3 6 9;
+    iv: 1cm 0 -1cm;
+    v: 1cm 0.5cm 0 -0.5cm -1cm;
+  }
+  ~~~
 
 ## Methods
 
@@ -170,17 +193,23 @@ Ranges
   foo: true;
   ~~~
 
-#### `+`
+#### `/`
 
-- Combines two ranges
+- Make a copy of the range with a different `step`
 
-#### `-`
+  ~~~ lay
+  range[op="/"] {
+    i: (1..5) / 2
+    ii: (1..-1)mm / 1px
+  }
+  ~~~
 
-- Substracts a range
-
-#### `*`, `/`
-
-- Make ranges with a different resolution
+  ~~~ css
+  range[op="/"] {
+    i: 1 3 5;
+    ii: 1mm 0.74mm 0.47mm 0.21mm -0.06mm -0.32mm -0.59mm -0.85mm;
+  }
+  ~~~
 
 #### `<<` and `>>`
 

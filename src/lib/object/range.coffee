@@ -10,22 +10,30 @@ class Range extends Indexed
   { min, max, abs, floor } = Math
 
   @property 'items',
-    get: -> ([@first..@last]).map (item) => new Number item, @unit
+    get: ->
+      items = []
+      for i in [0...@length()]
+        items.push new Number (@getByIndex i), @unit
 
-  @property 'resolution',
-    get: -> if @first > @last then -1 else 1
+      items
 
-  isReverse: -> @resolution < 0
+  isReverse: -> @first > @last
 
-  length: -> 1 + abs (@last - @first)
+  length: -> 1 + floor (abs @last - @first) / @step
 
   minValue: -> new Number min @first, @last
 
   maxValue: -> new Number max @first, @last
 
-  getByIndex: (index) -> new Number @first + index * @resolution
+  getByIndex: (index) ->
+    step = @step
 
-  constructor: (@first = 0, @last = 0, @unit = null) ->
+    if @isReverse()
+      step *= -1
+
+    new Number @first + index * step
+
+  constructor: (@first = 0, @last = 0, @unit = null, @step = 1) ->
     super()
     @first = floor @first
     @last = floor @last
@@ -48,10 +56,17 @@ class Range extends Indexed
     catch
       no
 
-  clone: (first = @first, last = @last, unit = @unit, etc...) ->
-    super first, last, unit, etc...
+  clone: (first = @first, last = @last, unit = @unit, step = @step, etc...) ->
+    super first, last, unit, step, etc...
 
   reprValue: -> "#{@first}..#{@last}"
+
+  './': (step) ->
+    if step instanceof Number
+      step = (step.convert @unit).value
+      @clone null, null, null, step
+    else
+      throw new TypeError "Cannot divide a range by #{step.repr()}"
 
   ###
   TODO this is buggy
@@ -74,6 +89,14 @@ class Range extends Indexed
     @last = Math.max @last, vals...
 
     return @
+
+  '.step': -> new Number @step, @unit
+
+  '.step=': (step) ->
+    if step instanceof Number
+      @step = (step.convert @unit).value
+    else
+      throw new TypeError "Bad `step` value for a range: #{step.repr()}"
 
   '.convert': (args...) -> @convert args...
 
