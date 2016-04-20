@@ -27,7 +27,6 @@
     "coffee-script": "^1.9.2",
     "coffeelint": "^1.9.3",
     "commonmark": "~0.12.0",
-    "cson-parser": "^1.1.0",
     "fs-extra": "^0.18.2",
     "glob": "^5.0.5",
     "mocha": "~2.2.0",

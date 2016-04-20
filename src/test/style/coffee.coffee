@@ -1,12 +1,10 @@
 fs         = require 'fs'
 path       = require 'path'
 coffeelint = require 'coffeelint'
-CSON       = require 'cson-parser'
+rules      = require '../../coffeelint.json'
 
 describe 'CoffeeScript', ->
   base_dir = fs.realpathSync "#{__dirname}/../.."
-  cson = fs.readFileSync "#{__dirname}/../../coffeelint.cson"
-  rules = CSON.parse cson
 
   doFile = (file) ->
     it (file.substr base_dir.length + 1), ->

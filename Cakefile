@@ -6,7 +6,6 @@ childProcess  = require 'child_process'
 coffee        = require 'coffee-script'
 uglify        = require 'uglify-js'
 glob          = require 'glob'
-CSON          = require 'cson-parser'
 Layla         = require './src/lib'
 
 #
@@ -203,21 +202,19 @@ task 'build:test', 'Build tests', ->
 
   queue ->
     log 'task', 'Copying test fixtures'
-    read 'src/test/fixtures.cson', (cson) ->
-      fixtures = CSON.parse cson
+    fixtures = require './src/test/fixtures.json'
+    files = []
 
-      files = []
+    for pattern in fixtures
+      files.push (glob.sync "src/test/#{pattern}", nodir: yes)...
 
-      for pattern in fixtures
-        files.push (glob.sync "src/test/#{pattern}", nodir: yes)...
-
-      do cp = ->
-        if files.length
-          file = files.shift()
-          dest = file.replace /^src\//, ''
-          copy file, dest, -> cp()
-        else
-          done()
+    do cp = ->
+      if files.length
+        file = files.shift()
+        dest = file.replace /^src\//, ''
+        copy file, dest, -> cp()
+      else
+        done()
 
 task 'build:lib', 'Build library', ->
   queue ->
