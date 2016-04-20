@@ -4,11 +4,8 @@ Boolean    = require './boolean'
 TypeError  = require '../error/type'
 
 FACTORS = {}
-DERIVED = {}
 
 ###
-TODO use some arbitrary precission library; I cannot stand `10 - 9.9` being
-`0.09999999999999964`
 ###
 class Number extends Object
 
@@ -16,7 +13,7 @@ class Number extends Object
 
   RE_NUMERIC = /^\s*([\+-]?(?:\d*\.)?\d+)\s*(%|(?:[a-z]+))?\s*$/i
 
-  @define: (from, to, derived = no) ->
+  @define: (from, to) ->
     unless from instanceof Number
       from = @fromString from
 
@@ -25,13 +22,6 @@ class Number extends Object
 
     if from.unit and to.unit
       if from.unit isnt to.unit
-        # Now check from.unit has not been defined before. If it is, throw an
-        # error if passed factor doesn't match existing.
-        if derived
-          DERIVED[from.unit] = to.unit
-        else
-          delete DERIVED[from.unit]
-
         FACTORS[from.unit] ?= {}
         FACTORS[from.unit][to.unit] = to.value / from.value
 
@@ -55,15 +45,8 @@ class Number extends Object
 
     throw new TypeError "Could not convert \"#{str}\" to #{@reprType()}"
 
-  constructor: (value = 0, unit) ->
+  constructor: (value = 0, @unit = null) ->
     @value = parseFloat value.toString()
-
-    if unit?
-      @unit = unit
-      if DERIVED[unit]
-        try return @convert DERIVED[unit]
-    else
-      @unit = null
 
   ###
   ###

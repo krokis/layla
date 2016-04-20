@@ -142,82 +142,6 @@
   }
   ~~~
 
-## User defined units
-
-- Are made by assigning a number to another number literal
-
-  ~~~ lay
-  1dm = 10cm
-  1m = 10dm
-
-  foo: 1m
-  bar: 1m = 1000mm
-  ~~~
-
-  ~~~ css
-  foo: 100cm;
-  bar: 1000mm;
-  ~~~
-
-  ~~~ lay
-  12col = 100%
-
-  .row {
-    .col-1 {
-      width: 1col
-    }
-    .col-12 {
-      width: 12col
-    }
-  }
-  ~~~
-
-  ~~~ css
-  .row .col-1 {
-    width: 8.33%;
-  }
-
-  .row .col-12 {
-    width: 100%;
-  }
-  ~~~
-
-- Can be re-defined
-
-  ~~~ lay
-  1m = 100cm
-  height: 2.5m
-
-  1m = 1000mm
-  height: 2.5m
-
-  1m = 100cm
-  height: 2.5m
-  ~~~
-
-  ~~~ css
-  height: 250cm;
-  height: 2500mm;
-  height: 250cm;
-  ~~~
-
-- Can also be defined with the `|=` operator
-
-  ~~~ lay
-  1m = 99cm
-  foo: 2m
-  foo: 2m |= 200cm
-  foo: 2m
-  ~~~
-
-  ~~~ css
-  foo: 198cm;
-  foo: 198cm;
-  foo: 198cm;
-  ~~~
-
-- Are scoped
-
 ## Methods
 
 ### `positive?`
@@ -1320,33 +1244,6 @@
     dppx: 0.03dppx;
     dpcm: 1dpcm;
   }
-  ~~~
-
-##### User defined units
-
-- Also work
-
-  ~~~ lay
-  1ft = 12in
-  1yard = 3ft
-  1m = 100cm
-
-  foo: 1m.convert(yard)
-  foo: 1yard.convert(mm)
-  foo: 1ft.convert(m)
-
-  1dm = 10cm
-  1m = 10dm
-  foo: 1ft.convert(m)
-  foo: 1ft.convert(dm)
-  ~~~
-
-  ~~~ css
-  foo: 39.37in;
-  foo: 914.4mm;
-  foo: 30.48cm;
-  foo: 30.48cm;
-  foo: 30.48cm;
   ~~~
 
 ##### Incompatible units
