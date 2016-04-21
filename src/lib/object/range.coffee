@@ -1,4 +1,5 @@
 Indexed   = require './indexed'
+Null      = require './null'
 Boolean   = require './boolean'
 List      = require './list'
 Number    = require './number'
@@ -34,17 +35,19 @@ class Range extends Indexed
     new Number @first + index * step
 
   constructor: (@first = 0, @last = 0, @unit = null, @step = 1) ->
-    super()
-    @first = floor @first
-    @last = floor @last
+    super
 
   convert: (unit) ->
-    if unit isnt ''
-      @unit = unit
-    else
-      @unit = null
+    unit = unit.toString()
 
-    return @
+    if unit isnt ''
+      first = Number.convert @first, @unit, unit
+      last = Number.convert @last, @unit, unit
+      step = Number.convert @step, @unit, unit
+    else
+      unit = null
+
+    @clone first, last, unit, step
 
   ###
   TODO this is buggy
@@ -83,7 +86,7 @@ class Range extends Indexed
       else
         arg = arg.convert @unit
 
-      vals.push floor arg.value
+      vals.push arg.value
 
     @first = Math.min @first, vals...
     @last = Math.max @last, vals...

@@ -34,16 +34,16 @@ Ranges
   }
   ~~~
 
-- Decimals are floored
+- Decimals are allowed
 
   ~~~ lay
   foo: (.9)..1.99
-  foo: (-.75)..(1.0001)
+  foo: (-.75)..(3.2501)
   ~~~
 
   ~~~ css
-  foo: 0 1;
-  foo: -1 0 1;
+  foo: 0.9 1.9;
+  foo: -0.75 0.25 1.25 2.25 3.25;
   ~~~
 
 - May have units
@@ -102,6 +102,18 @@ Ranges
   ~~~
 
 - Can be converted to another unit
+
+  ~~~ lay
+  range[unit] {
+    i: (1..2cm)mm
+  }
+  ~~~
+
+  ~~~ css
+  range[unit] {
+    i: 10mm 20mm;
+  }
+  ~~~
 
 - May have a `step` different than `1`
 
