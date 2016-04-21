@@ -52,15 +52,21 @@ describe 'Cases', ->
                 source   = null
               when 'FencedCode'
                 if node.info is 'lay'
+                  if source?
+                    throw new Error """
+                      Unexpected two consecutive blocks of `lay` code \
+                      at #{file}:#{node.start_line}
+                      """
                   source = stringContent node
                   expected = null
                   err_name = null
                   err_msg = null
                 else if node.info is 'css'
                   if expected?
-                    throw new Error(
-                      "Unexpected two blocks of `css` code at #{file}"
-                    )
+                    throw new Error """
+                      Unexpected two consecutive blocks of `css` code \
+                      at #{file}:#{node.start_line}
+                      """
                   expected = stringContent node
                 else if 'Error' is node.info[-5...]
                   if err_name isnt null
@@ -77,6 +83,11 @@ describe 'Cases', ->
                 err_name: err_name
                 err_msg:  err_msg
               }
+
+              source   = null
+              expected = null
+              err_name = null
+              err_msg  = null
 
           if desc
             if cases.length
