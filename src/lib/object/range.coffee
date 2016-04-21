@@ -45,7 +45,7 @@ class Range extends Indexed
       last = Number.convert @last, @unit, unit
       step = Number.convert @step, @unit, unit
     else
-      unit = null
+      unit = ''
 
     @clone first, last, unit, step
 
@@ -58,6 +58,8 @@ class Range extends Indexed
       @minValue() <= other.value <= @maxValue()
     catch
       no
+
+  isPure: -> not @unit
 
   clone: (first = @first, last = @last, unit = @unit, step = @step, etc...) ->
     super first, last, unit, step, etc...
@@ -92,6 +94,14 @@ class Range extends Indexed
     @last = Math.max @last, vals...
 
     return @
+
+  '.unit': -> if @unit then new String @unit else Null.null
+
+  '.unit?': -> Boolean.new @unit
+
+  '.pure?': -> Boolean.new @isPure()
+
+  '.pure': -> @clone null, null, ''
 
   '.step': -> new Number @step, @unit
 

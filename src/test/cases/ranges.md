@@ -283,6 +283,92 @@ Ranges
   }
   ~~~
 
+### `unit`
+
+- Returns the range unit or `null` if it's pure
+
+  ~~~ lay
+  range.unit {
+    i: (1..2).unit
+    ii: (1..2px).unit
+    iii: (1cm..10)``.unit
+  }
+  ~~~
+
+  ~~~ css
+  range.unit {
+    i: null;
+    ii: px;
+    iii: null;
+  }
+  ~~~
+
+### `unit?`
+
+- Returns `true` if the range has a unit
+
+  ~~~ lay
+  range.unit {
+    i: (1..2).unit?
+    ii: (1..2px).unit?
+    iii: (1cm..10)``.unit?
+    iv: (0..5)mm.unit?
+  }
+  ~~~
+
+  ~~~ css
+  range.unit {
+    i: false;
+    ii: true;
+    iii: false;
+    iv: true;
+  }
+  ~~~
+
+### `pure?`
+
+- Returns `true` if the range has no units
+
+  ~~~ lay
+  range.pure {
+    i: (1..2).pure?
+    ii: (1..2px).pure?
+    iii: (1cm..10)``.pure?
+    iv: (0..5)mm.pure?
+  }
+  ~~~
+
+  ~~~ css
+  range.pure {
+    i: true;
+    ii: false;
+    iii: true;
+    iv: false;
+  }
+  ~~~
+
+### `pure`
+
+- Returns a copy of the range without units
+
+  ~~~ lay
+  range.pure {
+    i: (1..2).pure
+    ii: (1..2px).pure
+    iii: (1cm..10)``.pure
+    iv: (0..5)mm.pure
+  }
+  ~~~
+
+  ~~~ css
+  range.pure {
+    i: 1 2;
+    ii: 1 2;
+    iii: 1 2 3 4 5 6 7 8 9 10;
+    iv: 0 1 2 3 4 5;
+  }
+  ~~~
+
 ### `min`
 
 - Returns the minimum value in the range
