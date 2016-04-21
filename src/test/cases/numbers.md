@@ -418,23 +418,23 @@
 
   ~~~ lay
   body {
-    foo: 0.pure?
-    foo: (24 + .3).pure?
-    foo: (24px + 2).pure?
-    foo: 100%.pure?
-    foo: (22)``.pure?
-    foo: (100px)` `.pure?
+    i: 0.pure?
+    ii: (24 + .3).pure?
+    iii: (24px + 2).pure?
+    iv: 100%.pure?
+    v: (22)``.pure?
+    vi: (100px)` `.pure?
   }
   ~~~
 
   ~~~ css
   body {
-    foo: true;
-    foo: true;
-    foo: false;
-    foo: false;
-    foo: true;
-    foo: true;
+    i: true;
+    ii: true;
+    iii: false;
+    iv: false;
+    v: true;
+    vi: true;
   }
   ~~~
 

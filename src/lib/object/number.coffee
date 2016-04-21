@@ -48,36 +48,40 @@ class Number extends Object
   constructor: (value = 0, @unit = null) ->
     @value = parseFloat value.toString()
 
-  ###
-  ###
-  convert: (unit = null, stack = []) ->
-    unit = unit.toString().trim() if unit
-
-    if unit is @unit or (unit and not @unit)
-      return new Number @value, unit
-    else if not unit
-      return new Number @value
-    else if @unit of FACTORS
-      if unit of FACTORS[@unit]
-        return new Number @value * FACTORS[@unit][unit], unit
+  @convert: (value, from_unit, to_unit = '', stack = []) ->
+    if to_unit is from_unit or (to_unit and not from_unit)
+      return value
+    else if not to_unit
+      return value
+    else if to_unit of FACTORS
+      if from_unit of FACTORS[from_unit]
+        return value * FACTORS[from_unit][to_unit]
       else
-        stack.push @unit
-        for u of FACTORS[@unit]
+        stack.push from_unit
+
+        for u of FACTORS[from_unit]
           unless u in stack
             stack.push u
-            value = FACTORS[@unit][u] * @value
+            val = FACTORS[from_unit][u] * value
             try
-              return (new Number value, u).convert unit, stack
+              return @convert val, u, to_unit, stack
             stack.pop()
 
         stack.pop()
 
-    throw new TypeError "Cannot convert #{this} to #{unit}"
+    throw new TypeError "Cannot convert #{value}#{from_unit} to #{to_unit}"
 
-  ################
-  # TODO TODO TODO
-  # Super temporary. USE an arbitrary precision library
-  #
+  ###
+  ###
+  convert: (unit = null) ->
+    if unit
+      unit = unit.toString().trim()
+
+    value = @constructor.convert @value, @unit, unit
+    @clone value, (unit or '')
+
+  ###
+  ###
   isEqual: (other) ->
     other instanceof Number and
     try (round (other.convert @unit).value, 10) is (round @value, 10)
@@ -99,7 +103,7 @@ class Number extends Object
         """
       )
 
-  isPure: -> @unit is null
+  isPure: -> not @unit
 
   isEmpty: -> @value is 0
 
@@ -272,7 +276,13 @@ class Number extends Object
 
   '.prime?': -> Boolean.new @isPrime()
 
-  '.convert': (unit) -> @convert unit
+  '.convert': (unit) ->
+    if unit.isNull()
+      unit = null
+    else
+      unit = unit.toString()
+
+    @convert unit
 
 Object::toNumber = -> throw new Error "Cannot convert #{@repr()} to number"
 
