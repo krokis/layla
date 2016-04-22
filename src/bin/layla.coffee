@@ -166,11 +166,23 @@ Commands =
 
     $layla.scope.paths.push process.cwd()
 
-    autocomplete = (line) -> [[], line]
+    buffer = null
 
     repl = readline.createInterface process.stdin, process.stdout, autocomplete
 
-    buffer = null
+    if process.env.HOME
+      historyFile = path.join process.env.HOME, '.layla_history'
+
+      do loadHistory = ->
+        if fs.existsSync historyFile
+          history = (fs.readFileSync historyFile).toString().trim()
+          history = (history.split '\n').reverse()
+          repl.history = history
+
+      saveHistoryLine = (line) ->
+        fs.appendFile historyFile, line + "\n"
+
+    autocomplete = (line) -> [[], line]
 
     reset = ->
       buffer = ''
@@ -183,9 +195,11 @@ Commands =
         reset()
 
     repl.on 'line', (text) ->
-      if text.trim() is ''
+      if text.trim() is '' and buffer is ''
         reset()
       else
+        saveHistoryLine text
+
         try
           res = null
           $layla.parser.prepare "#{buffer}\n#{text}"
