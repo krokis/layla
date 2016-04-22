@@ -4,7 +4,6 @@ fs            = require 'fs-extra'
 which         = require 'which'
 childProcess  = require 'child_process'
 coffee        = require 'coffee-script'
-uglify        = require 'uglify-js'
 glob          = require 'glob'
 Layla         = require './src/lib'
 
@@ -85,19 +84,6 @@ exec = (cmd,  callback = done) ->
   log 'exec', cmd
   args = cmd.split /\s+/
   cmd = args.shift()
-  cmd = which.sync cmd
-  cmd += ' ' + args.join ' '
-
-  childProcess.exec cmd, (err, stdout, stderr) ->
-    throw err if err
-    console.log stdout if stdout
-    console.error stderr if stderr
-    callback()
-
-spawn = (cmd,  callback = done) ->
-  log 'exec', cmd
-  args = cmd.split /\s+/
-  cmd = args.shift()
   wcmd = which.sync cmd
 
   stdio = if VERBOSE then 'inherit' else 'ignore'
@@ -121,7 +107,7 @@ mkdir = (path, callback = done) ->
     callback()
 
 remove = (paths, callback = done) ->
-  for path in paths
+  for path in [].concat paths
     try
       fs.statSync path
       log 'rm', path
@@ -146,7 +132,8 @@ write = (path, contents, callback = done) ->
     throw err if err
     callback()
 
-uncoffee = (source) -> coffee.compile source, bare: yes, header: no
+uncoffee = (source) ->
+  coffee.compile source, bare: yes, header: no
 
 test = (path, source = SOURCE, callback = done) ->
   path = "test/#{path}"
@@ -161,7 +148,7 @@ test = (path, source = SOURCE, callback = done) ->
     path = "src/#{path}"
     args.push '--compilers coffee:coffee-script/register'
 
-  spawn "mocha #{args.join ' '} #{path}", callback
+  exec "mocha #{args.join ' '} #{path}", callback
 
 # Cheating a bit to get "global" options in this Cakefile
 _task = global.task
@@ -189,8 +176,10 @@ task 'build:bin', 'Build CLI binary', ->
     log 'task', 'Building binary'
 
     read "src/bin/layla.coffee", (source) ->
-      js = uncoffee source
-      js = "#!/usr/bin/env node\n#{js}"
+      js = """
+           #!/usr/bin/env node
+           #{uncoffee source}
+           """
 
       mkdir 'bin', ->
         write 'bin/layla', js
@@ -198,7 +187,7 @@ task 'build:bin', 'Build CLI binary', ->
 task 'build:test', 'Build tests', ->
   queue ->
     log 'task', 'Building tests'
-    spawn 'coffee --compile --output test/ src/test'
+    exec 'coffee --compile --output test/ src/test'
 
   queue ->
     log 'task', 'Copying test fixtures'
@@ -243,7 +232,8 @@ task 'build:all', 'Build everything', ->
   invoke 'build:module'
   invoke 'build:test'
 
-task 'build', 'Alias of build:all', -> invoke 'build:all'
+task 'build', 'Alias of build:all', ->
+  invoke 'build:all'
 
 task 'test:cases', 'Run test cases', ->
   queue ->
@@ -265,10 +255,11 @@ task 'test:bin', 'Run CLI tests', ->
     log 'task', 'Running CLI tests'
     test 'bin'
 
-task 'test:all', 'Test everything (except code style)', ->
+task 'test:all', 'Test everything', ->
   invoke 'test:cases'
   invoke 'test:style'
   invoke 'test:docs'
   invoke 'test:bin'
 
-task 'test', 'Alias of test:all', -> invoke 'test:all'
+task 'test', 'Alias of test:all', ->
+  invoke 'test:all'
