@@ -160,14 +160,15 @@ class Parser extends Lexer
   ###
   ###
   parseRightOperation: (left, prec, blocks = yes, commas = yes, spaces = yes) ->
-    if next_op = @peek BINARY_OPERATOR, null, no
-      unless commas
-        if next_op.value is ','
-          return left
-        unless spaces or next_op.value isnt ' '
-          return left
+    next_op = @peek BINARY_OPERATOR, null, no
 
     while next_op and (PREC[next_op.value] >= prec)
+      if not commas and next_op.value is ','
+        break
+
+      if not spaces and next_op.value is ' '
+        break
+
       op = next_op
 
       if next_op.value is '('
@@ -252,7 +253,7 @@ class Parser extends Lexer
         name = id.value
         if op = @eat PUNC, ['=']
           break if (op.value is ':') and (@peek PUNC, ':')
-          break unless val = @parseExpression 0, no, no, no
+          break unless val = @parseExpression 0, no, no
         else
           val = null
         args.push {name: name, value: val}
