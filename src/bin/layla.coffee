@@ -1,10 +1,9 @@
 #!/usr/bin/env coffee
 
 # 3rd party
-fs            = require 'fs'
-path          = require 'path'
-readline      = require 'readline'
-supportsColor = require 'supports-color'
+fs       = require 'fs'
+path     = require 'path'
+readline = require 'readline'
 
 Layla      = require '../lib'
 CLIEmitter = require '../lib/emitter/cli'
@@ -31,7 +30,7 @@ $layla = new Layla
 $layla.scope.set 'LAYLA-VERSION', new Layla.String Layla.version
 
 # Global options
-$colors = !!supportsColor
+$colors = null
 $plugins = []
 
 ###
