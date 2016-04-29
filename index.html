@@ -54,7 +54,6 @@
     <script src="layla.js"></script>
     <script>
       jQuery(function($) {
-
         function compile() {
           var layla = new Layla;
           $('#css textarea').val(layla.compile($('#lay textarea').val()));
@@ -62,11 +61,12 @@
 
         var toCompile;
 
-        $('#lay textarea').on('keypress paste focus blur', function() {
-          clearTimeout(toCompile);
-          toCompile = setTimeout(compile, 500);
-        });
-
+        $('#lay textarea')
+          .on('change keydown paste focus blur', function() {
+            clearTimeout(toCompile);
+            toCompile = setTimeout(compile, 500);
+          })
+          .focus();
       });
     </script>
   </head>
