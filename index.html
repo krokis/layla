@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <title>Layla</title>
+  <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.1.1/normalize.css">
+    <style>
+      html, body {
+        height: 100%;
+        min-height: 100%;
+      }
+      body {
+        text-align: center;
+        background-color: rgba(0,0,0,.05);
+      }
+
+      .source {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        padding: 12px;
+        font-family: "Menlo", "Monaco", "Consolas", "Courier New", monospace;
+      }
+
+      .source textarea {
+        color: #333;
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+        background-color: white;
+        border: 1px solid rgba(0,0,0,.2);
+        box-shadow: inset 2px 2px 2px rgba(0,0,0,.1);
+        border-radius: 4px;
+        padding: 6px;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+      }
+
+      #lay {
+        left: 0;
+        right: 50%;
+        padding-right: 6px;
+      }
+
+
+      #css {
+        left: 50%;
+        right: 0;
+        padding-left: 6px;
+      }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+    <script src="layla.js"></script>
+    <script>
+      jQuery(function($) {
+
+        function compile() {
+          var layla = new Layla;
+          $('#css textarea').val(layla.compile($('#lay textarea').val()));
+        }
+
+        var toCompile;
+
+        $('#lay textarea').on('keypress paste focus blur', function() {
+          clearTimeout(toCompile);
+          toCompile = setTimeout(compile, 500);
+        });
+
+      });
+    </script>
+  </head>
+  <body>
+
+    <div class="source" id="lay">
+      <textarea></textarea>
+    </div>
+
+    <div class="source" id="css">
+      <textarea></textarea>
+    </div>
+
+  </body>
+</html>
