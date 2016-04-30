@@ -1687,7 +1687,7 @@
   }
   ~~~
 
-### `+`
+#### `+`
 
 - Sums numbers with compatible units
 
@@ -1793,7 +1793,7 @@
   ~~~ TypeError
   ~~~
 
-### `-`
+#### `-`
 
 - Substracts numbers with compatible units
 
@@ -1867,7 +1867,7 @@
   ~~~ TypeError
   ~~~
 
-### `/`
+#### `/`
 
 - Divides numbers with compatible units
 
@@ -1940,7 +1940,7 @@
   Cannot divide by 0
   ~~~
 
-### `*`
+#### `*`
 
 - Multiplies numbers with compatible units
 
@@ -1973,7 +1973,7 @@
   ~~~ TypeError
   ~~~
 
-### `>`, `>=`, `<` and `<=`
+#### `>`, `>=`, `<` and `<=`
 
 - Compare numbers with compatible units
 
