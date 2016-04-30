@@ -1,6 +1,7 @@
 # 3rd party
-mark = require 'commonmark'
-fs   = require 'fs'
+mark     = require 'commonmark'
+fs       = require 'fs'
+{expect} = require 'chai'
 
 # Main lib
 Layla = require '../../lib'
@@ -15,7 +16,7 @@ describe 'Docs', ->
       text = fs.readFileSync 'Readme.md', 'utf8'
       parser = new mark.DocParser
       doc = parser.parse text
-      doc.should.be.an.Object
+      expect(doc).to.be.an.Object
 
     it 'Contains only code examples that actually work', ->
       last = null
@@ -23,14 +24,14 @@ describe 'Docs', ->
       doNode = (node) ->
         if node.t is 'FencedCode'
           if last?.lang is 'lay' and node.info is 'css'
-            last.text.should.not.be.empty
-            node.string_content.should.not.be.empty
+            expect(last.text).not.to.be.empty
+            expect(node.string_content).not.to.be.empty
             source = last.text
             expected = node.string_content
 
             layla = new Layla
             actual = layla.compile source
-            actual.should.be.exactly expected
+            expect(actual).to.equal expected
           else
             last =
               lang: node.info

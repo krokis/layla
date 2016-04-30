@@ -1,7 +1,8 @@
 # 3rd party
-fs   = require 'fs'
-path = require 'path'
-mark = require 'commonmark'
+fs       = require 'fs'
+path     = require 'path'
+mark     = require 'commonmark'
+{expect} = require 'chai'
 
 # Main lib
 Layla = require '../../lib'
@@ -104,11 +105,12 @@ describe 'Cases', ->
                     layla = new Layla
                     layla.scope.paths.push path.dirname file
                     actual = layla.compile c.source
-                    actual.should.be.exactly c.expected
+                    expect(actual).to.equal c.expected
                   catch e
                     throw e unless c.err_name or c.err_msg
                     throw e if c.err_name and e.name isnt c.err_name
-                    e.message.should.be.exactly c.err_msg if c.err_msg
+                    if c.err_msg
+                      expect(e.message).to.equal c.err_msg
               ).bind @, cases
             else
               it desc

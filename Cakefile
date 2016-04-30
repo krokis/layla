@@ -139,7 +139,6 @@ test = (path, source = SOURCE, callback = done) ->
   path = "test/#{path}"
 
   args = [
-    '--require should'
     '--slow 500'
     '--reporter ' + (if VERBOSE then 'spec' else 'base')
   ]
