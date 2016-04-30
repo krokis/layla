@@ -1773,6 +1773,7 @@ module.exports={
   },
   "dependencies": {},
   "devDependencies": {
+    "chai": "^3.5.0",
     "browserify": "^10.2.1",
     "coffee-script": "^1.9.2",
     "coffeeify": "^1.1.0",
@@ -1781,7 +1782,6 @@ module.exports={
     "fs-extra": "^0.18.2",
     "glob": "^5.0.5",
     "mocha": "~2.2.0",
-    "should": "~4.1.0",
     "uglify-js": "^2.4.17",
     "which": "^1.0.9"
   }
@@ -3279,27 +3279,16 @@ Evaluator = (function(superClass) {
    */
 
   Evaluator.prototype.evaluateImport = function(node, context) {
-    var arg, block, ctx, file, j, len, name, ref1;
+    var arg, file, j, len, ref1;
     ref1 = node["arguments"];
     for (j = 0, len = ref1.length; j < len; j++) {
       arg = ref1[j];
-      name = arg[0], file = arg[1];
-      file = this.evaluateNode(file, context);
+      file = this.evaluateNode(arg, context);
       if (!(file instanceof URL || file instanceof String)) {
         throw new Error("Bad argument for `import`");
       }
       path = file.value;
-      if (name !== '&') {
-        block = new Block;
-        ctx = context.fork(block);
-      } else {
-        block = context.block;
-        ctx = context;
-      }
-      ctx["import"](path);
-      if (name !== '&') {
-        context.set(name, block);
-      }
+      context["import"](path);
     }
     return Null["null"];
   };
@@ -5378,12 +5367,6 @@ Import = (function(superClass) {
   function Import() {
     return Import.__super__.constructor.apply(this, arguments);
   }
-
-  Import.prototype.from = null;
-
-  Import.prototype.symbols = '*';
-
-  Import.prototype.as = null;
 
   Import.prototype.toJSON = function() {
     var json;
@@ -10168,16 +10151,11 @@ Parser = (function(superClass) {
     var tok;
     if (tok = this.read(IDENT, 'import')) {
       return this.makeNode(Import, function(imp) {
-        var arg, as;
+        var arg;
         imp.start = tok.start;
         imp["arguments"] = [];
         while (arg = this.parseExpression(0, false, false, false)) {
-          if (this.read(IDENT, 'as')) {
-            as = (this.expect(IDENT)).value;
-          } else {
-            as = '&';
-          }
-          imp["arguments"].push([as, arg]);
+          imp["arguments"].push(arg);
           if (!this.eat(PUNC, ',')) {
             break;
           }

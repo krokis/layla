@@ -20,7 +20,7 @@
         bottom: 0;
         padding: 12px;
         font-family: "Menlo", "Monaco", "Consolas", "Courier New", monospace;
-        color: #333;
+        color: #444;
       }
 
       .source textarea {
@@ -49,11 +49,6 @@
         padding-right: 6px;
       }
 
-      body.errored #lay {
-        color: #942329;
-      }
-
-
       #css {
         left: 50%;
         right: 0;
@@ -61,7 +56,7 @@
       }
 
       body.errored #css {
-        color: #aaa;
+        color: #cc0000;
       }
     </style>
 
@@ -76,6 +71,7 @@
             $('body').removeClass('errored');
           } catch (e) {
             $('body').addClass('errored');
+            $('#css textarea').val(e.message);
           }
         }
 
