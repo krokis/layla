@@ -68,10 +68,10 @@ class Parser extends Lexer
     'not@'   :  11 # Unary boolean negation
     ' '      :  10 # List separator
     ','      :   9 # List separator
-    '='      :   8 # Assignment
-    '|='     :   8 # Conditional assignment
-    'and'    :   7 # Logical "and"
-    'or'     :   6 # Logical "or"
+    'and'    :   8 # Logical "and"
+    'or'     :   7 # Logical "or"
+    '='      :   5 # Assignment
+    '|='     :   5 # Conditional assignment
     '>>'     :   2 # Push-out
     '<<'     :   2 # Push-in
     'if'     :   0 # Postfix conditional TODO

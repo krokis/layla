@@ -1,5 +1,4 @@
-Operator precedence
-===================
+# Operator precedence
 
 ## Unary `+` and `-`
 
@@ -208,14 +207,14 @@ Operator precedence
 - Has precedence over `and` and `or`
 
   ~~~ lay
-  body {
+  [op="~"] {
     foo: /^\d+$/ ~ "12a" or 'abc' ~ /[a-z]{1,3}/
     foo: /\d+/ ~ "123" and 'abc' ~ /[a-z]{1,3}/
   }
   ~~~
 
   ~~~ css
-  body {
+  [op="~"] {
     foo: 'abc';
     foo: 'abc';
   }
@@ -224,64 +223,22 @@ Operator precedence
 - Has left associativity
 
   ~~~ lay
-  foo: /^\d+$/ ~ ("123" + "4")
-  foo: /^\d+$/ ~ "123" + "4"
+  [op="~"] {
+    foo: /^\d+$/ ~ ("123" + "4")
+    foo: /^\d+$/ ~ "123" + "4"
+  }
   ~~~
 
   ~~~ css
-  foo: "1234";
-  foo: "1234";
+  [op="~"] {
+    foo: "1234";
+    foo: "1234";
+  }
   ~~~
 
 ## `=` and `|=`
 
-- Have precedence over `and` and `or`
-
-  ~~~ lay
-  body {
-    foo: (a = 2) and 3
-    foo: b = (2 and 3)
-    foo: c |= 2 and 3
-    bar: a
-    bar: b
-    bar: c
-    baz: true or d = 3
-    baz: 2 and a = 3
-  }
-
-  pi = 3.14
-
-  body {
-    foo: (aa = false) or pi
-    foo: bb |= (false or pi)
-    foo: cc = false or pi
-    bar: aa
-    bar: bb
-    bar: cc
-  }
-  ~~~
-
-  ~~~ css
-  body {
-    foo: 3;
-    foo: 3;
-    foo: 3;
-    bar: 2;
-    bar: 3;
-    bar: 2;
-    baz: true;
-    baz: 3;
-  }
-
-  body {
-    foo: 3.14;
-    foo: 3.14;
-    foo: 3.14;
-    bar: false;
-    bar: 3.14;
-    bar: false;
-  }
-  ~~~
+- Have precedence over `<<` and `>>`
 
 - Have right associativity
 
@@ -323,7 +280,7 @@ Operator precedence
   }
   ~~~
 
-- Has left associativity
+- Has precedence over `=` and `|=`
 
 ## `or`
 
@@ -341,7 +298,7 @@ Operator precedence
   }
   ~~~
 
-- Has left associativity
+- Has precedence over `=` and `|=`
 
 ## `not`
 
