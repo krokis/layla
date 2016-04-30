@@ -182,22 +182,29 @@ class Number extends Object
       )
 
   '.*': (other) ->
+
     if other instanceof Number
-      # TODO should fail for incompatible units
-      @clone (other.convert @unit).value * @value, other.unit or @unit
+      if @isPure() or other.isPure()
+        # TODO should fail for incompatible units
+        @clone other.value * @value, other.unit or @unit
+      else
+        throw new TypeError """
+          Cannot perform #{@repr()} * #{other.repr()}
+          """
     else
-      throw new TypeError (
-        """
+      throw new TypeError """
         Cannot perform #{@repr()} * #{other.repr()}: \
         right side must be a #{Number.repr()}
         """
-      )
 
   './': (other) ->
     if other instanceof Number
       if other.value is 0
         throw new TypeError 'Cannot divide by 0'
-      @clone (@convert other.unit).value / other.value, other.unit or @unit
+      if !@isPure() and !other.isPure()
+        @clone @value / (other.convert @unit).value, ''
+      else
+        @clone @value / other.value, @unit or other.unit
     else
       throw new TypeError (
         """
@@ -218,7 +225,16 @@ class Number extends Object
 
   '.decimal?': -> Boolean.new @value % 1 isnt 0
 
-  '.divisible-by?': (other) -> Boolean.new (@value % other.value) is 0
+  '.divisible-by?': (other) ->
+    unless other.isPure()
+      try
+        other = other.convert @unit
+      catch
+        return Boolean.false
+
+    div = @value / other.value
+
+    Boolean.new div is floor div
 
   '.even?': -> Boolean.new @value % 2 is 0
 
