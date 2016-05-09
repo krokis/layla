@@ -458,7 +458,7 @@ Lists
 
 ### `max`
 
-- Returns the minimum value in the list
+- Returns the maximum value in the list
 
   ~~~ lay
   foo: (1, +71, 2, 3, -1, 5).max
@@ -593,7 +593,7 @@ Lists
 
 ### `::`
 
-- Access the items of the list by their numeric index
+- Accesses the items of the list by their numeric index
 
   ~~~ lay
   body {
@@ -647,7 +647,7 @@ Lists
   }
   ~~~
 
-- Returns `null`s for indices out of bounds
+- Returns `null` for indices out of bounds
 
   ~~~ lay
   a = null 2 3 4
@@ -669,7 +669,7 @@ Lists
   }
   ~~~
 
-- Returns multiple elements if a list is passed, including nulls
+- Returns multiple elements if a list is passed, including `null`'s
 
   ~~~ lay
   a = 1 2 3 4 5 6 7
@@ -728,8 +728,6 @@ Lists
     bar: null null 1 2 3 null 7 2 1 2 3;
   }
   ~~~
-
-- When a list is passed, the list returned should have right side separator, which is not what the previous test says
 
 ### `::=`
 

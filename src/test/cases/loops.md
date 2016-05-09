@@ -3,7 +3,7 @@ Loops
 
 ## `While` loops
 
-- Repeat their body while until the condition is falsy
+- Repeat their body while the condition is falsy
 
   ~~~ lay
   $i = 0
@@ -40,7 +40,7 @@ Loops
 
 ## `Until` loops
 
-- Repeat their body until the passed condition is trueish
+- Repeat their body until the condition is trueish
 
   ~~~ lay
   $i = 1
