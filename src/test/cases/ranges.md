@@ -4,23 +4,27 @@ Ranges
 - Are made with the `..` operator between two numbers
 
   ~~~ lay
-  foo: 1..3
-  foo: 0..(1 + 1)
-  foo: -1..1
-  foo: ((2 - 1 * 1)..(17 / 2 - .5 - 7))
+  range {
+    foo: 1..3
+    foo: 0..(1 + 1)
+    foo: -1..1
+    foo: ((2 - 1 * 1)..(17 / 2 - .5 - 7))
+  }
   ~~~
 
   ~~~ css
-  foo: 1 2 3;
-  foo: 0 1 2;
-  foo: -1 0 1;
-  foo: 1;
+  range {
+    foo: 1 2 3;
+    foo: 0 1 2;
+    foo: -1 0 1;
+    foo: 1;
+  }
   ~~~
 
 - Can be reverse
 
   ~~~ lay
-  #foo {
+  range[reverse] {
     bar: 3..0
     $baz = 999..-999
     baz: $baz.first $baz.last
@@ -28,7 +32,7 @@ Ranges
   ~~~
 
   ~~~ css
-  #foo {
+  range[reverse] {
     bar: 3 2 1 0;
     baz: 999 -999;
   }
@@ -37,19 +41,23 @@ Ranges
 - Decimals are allowed
 
   ~~~ lay
-  foo: (.9)..1.99
-  foo: (-.75)..(3.2501)
+  range[decimal] {
+    foo: (.9)..1.99
+    foo: (-.75)..(3.2501)
+  }
   ~~~
 
   ~~~ css
-  foo: 0.9 1.9;
-  foo: -0.75 0.25 1.25 2.25 3.25;
+  range[decimal] {
+    foo: 0.9 1.9;
+    foo: -0.75 0.25 1.25 2.25 3.25;
+  }
   ~~~
 
 - May have units
 
   ~~~ lay
-  body {
+  range[unit] {
     foo: 5..(7px)
     foo: 1%..10
     foo: 1em..1em
@@ -59,7 +67,7 @@ Ranges
   ~~~
 
   ~~~ css
-  body {
+  range[unit] {
     foo: 5px 6px 7px;
     foo: 1% 2% 3% 4% 5% 6% 7% 8% 9% 10%;
     foo: 1em;
@@ -72,15 +80,20 @@ Ranges
 
   ~~~ lay
   $r = 1..5mm
-  foo: $r
-  foo: $r << 1cm
-  foo: $r << .5in
+
+  range[unit] {
+    foo: $r
+    foo: $r << 1cm
+    foo: $r << .5in
+  }
   ~~~
 
   ~~~ css
-  foo: 1mm 2mm 3mm 4mm 5mm;
-  foo: 1mm 2mm 3mm 4mm 5mm 6mm 7mm 8mm 9mm 10mm;
-  foo: 1mm 2mm 3mm 4mm 5mm 6mm 7mm 8mm 9mm 10mm 11mm 12mm;
+  range[unit] {
+    foo: 1mm 2mm 3mm 4mm 5mm;
+    foo: 1mm 2mm 3mm 4mm 5mm 6mm 7mm 8mm 9mm 10mm;
+    foo: 1mm 2mm 3mm 4mm 5mm 6mm 7mm 8mm 9mm 10mm 11mm 12mm;
+  }
   ~~~
 
 - Fail for incompatible units
@@ -88,14 +101,14 @@ Ranges
 - Can be casted to any unit when they're pure
 
   ~~~ lay
-  #foo {
+  range[unit] {
     foo: (1..2)px
     foo: (0..1)%
   }
   ~~~
 
   ~~~ css
-  #foo {
+  range[unit] {
     foo: 1px 2px;
     foo: 0 1%;
   }
@@ -150,59 +163,75 @@ Ranges
 
   ~~~ lay
   r = 1..2
-  foo: r has 1
-  foo: 2 in r
-  foo: r hasnt 3
-  foo: not 0 in r
-  r = 2..-1
-  bar: r has 1
-  bar: r has -1
-  bar: r has 2
-  bar: r has -2
-  bar: r has 3
-  bar: r has 0
+
+  range.has, range.in {
+    foo: r has 1
+    foo: 2 in r
+    foo: r hasnt 3
+    foo: not 0 in r
+    r = 2..-1
+    bar: r has 1
+    bar: r has -1
+    bar: r has 2
+    bar: r has -2
+    bar: r has 3
+    bar: r has 0
+  }
   ~~~
 
   ~~~ css
-  foo: true;
-  foo: true;
-  foo: true;
-  foo: true;
-  bar: true;
-  bar: true;
-  bar: true;
-  bar: false;
-  bar: false;
-  bar: true;
+  range.has,
+  range.in {
+    foo: true;
+    foo: true;
+    foo: true;
+    foo: true;
+    bar: true;
+    bar: true;
+    bar: true;
+    bar: false;
+    bar: false;
+    bar: true;
+  }
   ~~~
 
 - Checks units
 
   ~~~ lay
-  r = 1..2px
-  foo: 1 in r
-  foo: 2px in r
-  foo: r hasnt 2rm
-  foo: not 1% in r
+  range.has, range.in {
+    $r = 1..2px
+    foo: 1 in $r
+    foo: 2px in $r
+    foo: $r hasnt 2rm
+    foo: not 1% in $r
+  }
   ~~~
 
   ~~~ css
-  foo: true;
-  foo: true;
-  foo: true;
-  foo: true;
+  range.has,
+  range.in {
+    foo: true;
+    foo: true;
+    foo: true;
+    foo: true;
+  }
   ~~~
 
   ~~~ lay
   $r = 0..30mm
 
-  foo: 2mm in $r
-  foo: 3cm in $r
+  range.has, range.in {
+    foo: 2mm in $r
+    foo: 3cm in $r
+  }
   ~~~
 
   ~~~ css
-  foo: true;
-  foo: true;
+  range.has,
+  range.in {
+    foo: true;
+    foo: true;
+  }
   ~~~
 
 #### `/`
@@ -228,7 +257,7 @@ Ranges
 - Extend a range with a number
 
   ~~~ lay
-  body {
+  range[op="<<"], range[op=">>"] {
     $r = 1..3
     foo: $r
     2 >> $r
@@ -241,7 +270,8 @@ Ranges
   ~~~
 
   ~~~ css
-  body {
+  range[op="<<"],
+  range[op=">>"] {
     foo: 1 2 3;
     foo: 1 2 3;
     foo: 0 1 2 3;
@@ -252,14 +282,15 @@ Ranges
 - Adds units to pure ranges when a dimension is passed
 
   ~~~ lay
-  .foo {
+  range[op="<<"], range[op=">>"] {
     foo: 1..3 << 1px
     foo: 0 >> 1..3 << 4% << 5
   }
   ~~~
 
   ~~~ css
-  .foo {
+  range[op="<<"],
+  range[op=">>"] {
     foo: 1px 2px 3px;
     foo: 0 1% 2% 3% 4% 5%;
   }
@@ -270,14 +301,15 @@ Ranges
 - Always return the receiver
 
   ~~~ lay
-  .foo {
+  range[op="<<"], range[op=">>"] {
     foo: (1..3) << 1px
     foo: 1px >> 1..3
   }
   ~~~
 
   ~~~ css
-  .foo {
+  range[op="<<"],
+  range[op=">>"] {
     foo: 1px 2px 3px;
     foo: 1px 2px 3px;
   }
@@ -374,15 +406,19 @@ Ranges
 - Returns the minimum value in the range
 
   ~~~ lay
-  foo: (1..5).min
-  bar: (-5..0).min
-  baz: (5..-1).min
+  range.min {
+    foo: (1..5).min
+    bar: (-5..0).min
+    baz: (5..-1).min
+  }
   ~~~
 
   ~~~ css
-  foo: 1;
-  bar: -5;
-  baz: -1;
+  range.min {
+    foo: 1;
+    bar: -5;
+    baz: -1;
+  }
   ~~~
 
 ### `reverse?`
@@ -390,17 +426,21 @@ Ranges
 - Returns `true` if the range is reversed.
 
   ~~~ lay
-  foo: (1..5).reverse?
-  foo: (-1..5).reverse?
-  foo: (-1..-5).reverse?
-  foo: (0..0).reverse?
+  range.reverse {
+    foo: (1..5).reverse?
+    foo: (-1..5).reverse?
+    foo: (-1..-5).reverse?
+    foo: (0..0).reverse?
+  }
   ~~~
 
   ~~~ css
-  foo: false;
-  foo: false;
-  foo: true;
-  foo: false;
+  range.reverse {
+    foo: false;
+    foo: false;
+    foo: true;
+    foo: false;
+  }
   ~~~
 
 ### `reverse`
@@ -408,15 +448,19 @@ Ranges
 - Reverses a range
 
   ~~~ lay
-  foo: (1..5).reverse
-  foo: (-1..5).reverse
-  foo: (-1..-5).reverse
-  foo: (0..0).reverse
+  range.reverse {
+    foo: (1..5).reverse
+    foo: (-1..5).reverse
+    foo: (-1..-5).reverse
+    foo: (0..0).reverse
+  }
   ~~~
 
   ~~~ css
-  foo: 5 4 3 2 1;
-  foo: 5 4 3 2 1 0 -1;
-  foo: -5 -4 -3 -2 -1;
-  foo: 0;
+  range.reverse {
+    foo: 5 4 3 2 1;
+    foo: 5 4 3 2 1 0 -1;
+    foo: -5 -4 -3 -2 -1;
+    foo: 0;
+  }
   ~~~

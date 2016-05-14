@@ -99,13 +99,13 @@ Regular expressions
 - Activates the multiline mode
 
   ~~~ lay
-  body {
+  regexp[multiline] {
     foo: 'lorem\nipsum\ndolor'.unquoted ~ /^[a-z]+$/m
   }
   ~~~
 
   ~~~ css
-  body {
+  regexp[multiline] {
     foo: lorem;
   }
   ~~~
@@ -115,13 +115,13 @@ Regular expressions
 - Activates the global mode
 
   ~~~ lay
-  body {
+  regexp[global] {
     foo: 'lorem\nipsum\ndolor'.unquoted ~ /^[a-z]*$/mg
   }
   ~~~
 
   ~~~ css
-  body {
+  regexp[global] {
     foo: lorem ipsum dolor;
   }
   ~~~
@@ -131,14 +131,14 @@ Regular expressions
 - Sets the case insensitive mode on
 
   ~~~ lay
-  body {
+  regexp[insensitive] {
     foo: 'Lorem\nipsum\nDOLOR\nsit'.unquoted ~ /^[a-z]*$/mg
     foo: 'Lorem\nipsum\nDOLOR\nsit'.unquoted ~ /^[a-z]*$/mgi
   }
   ~~~
 
   ~~~ css
-  body {
+  regexp[insensitive] {
     foo: ipsum sit;
     foo: Lorem ipsum DOLOR sit;
   }
@@ -151,13 +151,13 @@ Regular expressions
 - Returns the expression source as a string
 
   ~~~ lay
-  foo {
+  regexp.string {
     bar: /^[a-zA-Z-_\d]+$/.string.quoted
   }
   ~~~
 
   ~~~ css
-  foo {
+  regexp.string {
     bar: "^[a-zA-Z-_\d]+$";
   }
   ~~~
@@ -167,14 +167,14 @@ Regular expressions
 - Tells if the regular expression has the 'global' flag on
 
   ~~~ lay
-  foo {
+  regexp.global {
     bar: /.*/gi.global?
     baz: not /.*/iiim.global?
   }
   ~~~
 
   ~~~ css
-  foo {
+  regexp.global {
     bar: true;
     baz: true;
   }
@@ -207,14 +207,14 @@ Regular expressions
 - Tells if the regular expression has the 'insensitive' flag on
 
   ~~~ lay
-  foo {
+  regexp.insensitive {
     bar: /.*/gi.insensitive?
     baz: /\d/.insensitive?
   }
   ~~~
 
   ~~~ css
-  foo {
+  regexp.insensitive {
     bar: true;
     baz: false;
   }
@@ -248,14 +248,14 @@ Regular expressions
 - Tells if the regular expression has the 'insensitive' flag off
 
   ~~~ lay
-  foo {
+  regexp.sensitive {
     bar: /.*/gi.sensitive?
     baz: not /.*/.sensitive?
   }
   ~~~
 
   ~~~ css
-  foo {
+  regexp.sensitive {
     bar: false;
     baz: false;
   }
@@ -289,14 +289,14 @@ Regular expressions
 - Tells if the regular expression has the 'multiline' flag on
 
   ~~~ lay
-  foo {
+  regexp.multiline {
     bar: /.*/gi.multiline?
     baz: not /.*/m.multiline?
   }
   ~~~
 
   ~~~ css
-  foo {
+  regexp.multiline {
     bar: false;
     baz: false;
   }
@@ -330,15 +330,19 @@ Regular expressions
 - Returns `true` only if the right side is a `RegExp` with the same source and flags
 
   ~~~ lay
-  foo: /\d+/ is /\d*/
-  foo: /\d+/i is /\d+/gi
-  foo: /\d+/iggm is /\d+/mgi
+  regexp[operator="is"] {
+    foo: /\d+/ is /\d*/
+    foo: /\d+/i is /\d+/gi
+    foo: /\d+/iggm is /\d+/mgi
+  }
   ~~~
 
   ~~~ css
-  foo: false;
-  foo: false;
-  foo: true;
+  regexp[operator="is"] {
+    foo: false;
+    foo: false;
+    foo: true;
+  }
   ~~~
 
 #### `~`
@@ -346,7 +350,7 @@ Regular expressions
 - Matches a string against the regular expression
 
   ~~~ lay
-  #foo {
+  regexp[operator="~"] {
       `i`: /\d+/ ~ '123px' /\d+/ ~ 'abc'
      `ii`: /(\d+)(px|rem)/ ~ `100px`
     `iii`: /(\d+)(px|rem)/ ~ "99rem"
@@ -355,7 +359,7 @@ Regular expressions
   ~~~
 
   ~~~ css
-  #foo {
+  regexp[operator="~"] {
     i: '123' null;
     ii: 100px 100 px;
     iii: "99rem" "99" "rem";
