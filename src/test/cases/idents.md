@@ -38,4 +38,39 @@ Idents
   }
   ~~~
 
-- Cannot start with a number or a hyphen followed by a number
+- Can contain unicode characters
+
+  ~~~ lay
+  #triangle {
+
+    &:before {
+      content: ‣;
+    }
+
+    ‣ = ▷
+
+    &:after {
+      content: ‣;
+    }
+  }
+
+  @counter-style box-corner {
+    system: fixed
+    symbols: ◰ ◳ ◲ ◱
+  }
+  ~~~
+
+  ~~~ css
+  #triangle:before {
+    content: ‣;
+  }
+
+  #triangle:after {
+    content: ▷;
+  }
+
+  @counter-style box-corner {
+    system: fixed;
+    symbols: ◰ ◳ ◲ ◱;
+  }
+  ~~~

@@ -26,7 +26,7 @@ InternalError = require './error/internal'
 ###
 class Lexer extends Class
 
-  RE_NON_ASCII              = /[^\x00-\xed]/
+  RE_NON_ASCII              = /[^\x00-\x80]/
   RE_UNICODE_ESCAPE_CHAR    = /[0-9a-fA-F]/
   RE_UNICODE_ESCAPE         = ///
                                 \\((?:#{RE_UNICODE_ESCAPE_CHAR.source}){1,6})
@@ -37,16 +37,21 @@ class Lexer extends Class
                                (\\[^\n\r])
                              ///
   RE_IDENT_START           = ///
-                               ([!\?_\$-]+)?
-                               (?=[a-zA-Z]|#{RE_ESCAPE.source})
+                               (#{RE_NON_ASCII.source})|
+                               (([!\?_\$-]+)?
+                                (?=[a-zA-Z]|#{RE_ESCAPE.source}))
                              ///
   RE_IDENT_CHAR            = ///
-                               [a-zA-Z\d!\$\?_-]|
-                               #{RE_NON_ASCII.source}|
-                               #{RE_ESCAPE.source}
+                               ([a-zA-Z\d!\$\?_-])|
+                               (#{RE_NON_ASCII.source})|
+                               (#{RE_ESCAPE.source})
                              ///
   RE_NUMBER                = /(?:\d*\.)?\d+/i
-  RE_UNIT                  = /(%|(?:[a-z]+))/i
+  RE_UNIT                  = ///
+                              (%|([a-z]+))|
+                              (#{RE_NON_ASCII.source})|
+                              (#{RE_ESCAPE.source})
+                             ///i
   RE_REGEXP                = /\/([^\s](?:(?:\\.)|[^\\\/\n\r])+)\/([a-z]+)?/i
   RE_COLOR                 = /#([a-f\d]{1,2}){1,4}/i
   RE_PUNCTUATION           = /[\{\}\(\),;:=&"'`\|]/

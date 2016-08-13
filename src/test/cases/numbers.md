@@ -60,6 +60,8 @@
     height: 0fOOs
     height: 0%
     height: 0rem
+    money: 100€
+    money: 99.9£
   }
   ~~~
 
@@ -71,6 +73,8 @@
     height: 0;
     height: 0;
     height: 0;
+    money: 100€;
+    money: 99.9£;
   }
   ~~~
 
