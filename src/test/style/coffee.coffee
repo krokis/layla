@@ -21,7 +21,7 @@ describe 'CoffeeScript', ->
         if st = fs.statSync file
           if st.isDirectory()
             doDir file
-          else if st.isFile() and name.match /Cakefile|\.coffee$/
+          else if st.isFile() and name.match /Cakefile|layla|\.coffee$/
             doFile file
         else
           throw new Error "Could not stat file #{file_path}"

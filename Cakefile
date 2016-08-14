@@ -31,7 +31,7 @@ log = (type = '', text = '') ->
     if type is 'ok'
       mark = CHECK
     else if type is 'error'
-      mark = "#{CROSS}"
+      mark = CROSS
     else if not VERBOSE
       return
     else
@@ -174,7 +174,7 @@ task 'build:bin', 'Build CLI binary', ->
   queue ->
     log 'task', 'Building binary'
 
-    read "src/bin/layla.coffee", (source) ->
+    read "src/bin/layla", (source) ->
       js = """
            #!/usr/bin/env node
            #{uncoffee source}
@@ -182,6 +182,7 @@ task 'build:bin', 'Build CLI binary', ->
 
       mkdir 'bin', ->
         write 'bin/layla', js
+        # TODO make file executable
 
 task 'build:test', 'Build tests', ->
   queue ->
