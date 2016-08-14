@@ -103,6 +103,20 @@ Functions
   font-size: 27px;
   ~~~
 
+- Can `return` with no arguments
+
+  ~~~ lay
+  bar = () {
+    return
+  }
+
+  foo: bar
+  ~~~
+
+  ~~~ css
+  foo: null;
+  ~~~
+
 - Return `null` if they don't return anything
 
   ~~~ lay

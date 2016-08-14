@@ -328,7 +328,9 @@ class Evaluator extends Class
     @evaluateControlFlowDirective node, self, scope
 
   evaluateReturn: (node, self, scope) ->
-    unless node.arguments.length is 1
+    if node.arguments.length is 0
+      throw Null.null
+    else if node.arguments.length > 1
       throw new TypeError "Too many arguments for a `return`"
 
     throw @evaluateNode node.arguments[0], self, scope
