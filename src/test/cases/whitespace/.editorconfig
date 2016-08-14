@@ -2,12 +2,12 @@
 trim_trailing_whitespace = false
 insert_final_newline = false
 
-[crlf.md]
+[crlf.lay]
 end_of_line = crlf
 
-[cr.md]
+[cr.lay]
 end_of_line = cr
 
-[lf.md]
+[lf.lay]
 end_of_line = lf
 
