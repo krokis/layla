@@ -147,6 +147,7 @@ test = (path, source = SOURCE, callback = done) ->
 
   args = [
     '--slow 500'
+    '--timeout 10000'
     '--reporter ' + (if VERBOSE then 'spec' else 'base')
   ]
 
