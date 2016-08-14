@@ -23,6 +23,8 @@ Conditionals
       if ({}) {
         color: red
       }
+
+      if not true {}
     }
     ~~~
 
@@ -53,6 +55,11 @@ Conditionals
     } else if true {
       color: yellow
     }
+
+    if false {
+      color: red
+    } else if true {
+    }
   }
   ~~~
 
@@ -79,6 +86,15 @@ Conditionals
       color: white
     } else {
       color: black
+    }
+
+    if false {
+      color: red
+    } else if not true{
+      color: green
+    } else if unless true{
+    } else {
+
     }
   }
   ~~~
