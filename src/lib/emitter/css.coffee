@@ -10,6 +10,7 @@ class CSSEmitter extends Emitter
 
   constructor: (@options = {}) ->
     defaults =
+      bom:                         'preserve' # Or: true, false/strip
       new_line:                    '\n'
       tab:                         '  '
       comments:                    yes # Also: block only, banged only
@@ -161,9 +162,16 @@ class CSSEmitter extends Emitter
     css
 
   emitDocument: (doc) ->
-    css = (@emitBody doc.items, doc)
+    css = ''
+
+    if (@options.bom is yes) or (doc.bom and @options.bom is 'preserve')
+      css += '\uFEFF'
+
+    css += (@emitBody doc.items, doc)
+
     if css isnt ''
       css += '\n'
+
     css
 
 module.exports = CSSEmitter

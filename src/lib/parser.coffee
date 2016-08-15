@@ -41,6 +41,7 @@ EOTError     = require './error/eot'
   REGEXP
   UNICODE_RANGE
   EOT
+  BOM
 } = Token
 
 class Parser extends Lexer
@@ -711,6 +712,8 @@ class Parser extends Lexer
   parseRoot: ->
     @makeNode Root, (doc) ->
       doc.source = @source
+      if @eat BOM, null, no
+        doc.bom = yes
       doc.body = @parseBody()
 
   prepare: (source) ->

@@ -20,6 +20,7 @@ class Token extends Class
   @COMBINATOR      = 'Combinator'
   @UNICODE_RANGE   = 'UnicodeRange'
   @EOT             = 'EOT'
+  @BOM             = 'BOM'
 
   ###
   Returns length of token, if it has a start and an end. Otherwise, returns

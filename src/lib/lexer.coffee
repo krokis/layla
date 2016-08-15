@@ -21,6 +21,7 @@ InternalError = require './error/internal'
   UNICODE_RANGE
   WHITESPACE
   EOT
+  BOM
 } = Token
 
 ###
@@ -216,6 +217,10 @@ class Lexer extends Class
     token.value ?= @source.substring token.start, token.end
 
     token
+
+  readBOM: ->
+    if @char is '\uFEFF'
+      @makeToken BOM, -> @move()
 
   readEOT: ->
     if @isEndOfText()

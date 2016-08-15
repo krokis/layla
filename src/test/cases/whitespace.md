@@ -1,5 +1,4 @@
-Whitespace
-==========
+# Whitespace
 
 - Is correctly ignored
 
@@ -138,3 +137,57 @@ Whitespace
   ~~~
 
 - New lines are significant
+
+## Line endings
+
+- Can be of any type
+
+  + LF
+
+    ~~~ lay
+    import 'whitespace/lf.lay'
+    ~~~
+
+    ~~~ css
+    @lf {
+      is: ok;
+    }
+    ~~~
+
+  + CR
+
+    ~~~ lay
+    import 'whitespace/cr.lay'
+    ~~~
+
+    ~~~ css
+    @cr {
+      is: ok;
+    }
+    ~~~
+
+  + CRLF
+
+    ~~~ lay
+    import 'whitespace/crlf.lay'
+    ~~~
+
+    ~~~ css
+    @crlf {
+      is: ok;
+    }
+    ~~~
+
+## UTF-8 BOM's
+
+- Are stripped
+
+  ~~~ lay
+  import 'whitespace/bom.lay'
+  ~~~
+
+  ~~~ css
+  @bom {
+    is: ok;
+  }
+  ~~~
