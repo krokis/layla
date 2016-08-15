@@ -2,6 +2,6 @@ Class = require './class'
 
 class Plugin extends Class
 
-  use: (context) ->
+  use: (context) -> @NOT_IMPLEMENTED
 
 module.exports = Plugin

@@ -5,9 +5,10 @@ fs       = require 'fs'
 path     = require 'path'
 readline = require 'readline'
 
-Layla      = require '../lib'
-CLIEmitter = require '../lib/emitter/cli'
-EOTError   = require '../lib/error/eot'
+Layla       = require '../lib'
+NodeContext = require '../lib/context/node'
+CLIEmitter  = require '../lib/emitter/cli'
+EOTError    = require '../lib/error/eot'
 
 class UsageError
   constructor: (@message) ->
@@ -25,9 +26,16 @@ class Arg
 class Opt
   constructor: (@name, @value) ->
 
+class CLIContext extends NodeContext
+  constructor: (args...) ->
+    super args...
+    @pushPath process.cwd()
+
+class ReplContext extends CLIContext
+
 # Layla instance to be used and reused
-$layla = new Layla
-$layla.scope.set 'LAYLA-VERSION', new Layla.String Layla.version
+$layla = new Layla new NodeContext
+$layla.context.pushPath process.cwd()
 
 # Global options
 $colors = null
@@ -129,10 +137,8 @@ Commands =
 
           if stat.isFile()
             fs.readFile file, 'utf8', (err, str) ->
-              $layla.scope.paths.push path.dirname file
               throw err if err
               doCompile str
-              $layla.scope.paths.pop()
           else
             throw new Error
     else
@@ -153,17 +159,15 @@ Commands =
 
     $colors = $colors isnt no
 
-    doc = new Layla.Document
+    context = new ReplContext
     emitter = new CLIEmitter colors: $colors
 
     if args.length > 0
       for arg in args
         file = arg.value
-        $layla.scope.paths.push path.dirname file
-        $layla.evaluator.importFile file, doc, $layla.scope
-        $layla.scope.paths.pop()
-
-    $layla.scope.paths.push process.cwd()
+        context.pushPath path.dirname file
+        context.import file, context
+        context.popPath()
 
     buffer = null
 
@@ -172,11 +176,10 @@ Commands =
     if process.env.HOME
       historyFile = path.join process.env.HOME, '.layla_history'
 
-      do loadHistory = ->
-        if fs.existsSync historyFile
-          history = (fs.readFileSync historyFile).toString().trim()
-          history = (history.split '\n').reverse()
-          repl.history = history
+      if fs.existsSync historyFile
+        history = (fs.readFileSync historyFile).toString().trim()
+        history = (history.split '\n').reverse()
+        repl.history = history
 
       saveHistoryLine = (line) ->
         fs.appendFile historyFile, line + "\n"
@@ -188,6 +191,7 @@ Commands =
       repl.setPrompt '> '
       repl.prompt()
 
+    # Clear screen with `^L`
     process.stdin.on 'keypress', (seq) ->
       if seq is '\f'
         process.stdout.write '\u001B[2J\u001B[0;0f'
@@ -202,9 +206,10 @@ Commands =
         try
           res = null
           $layla.parser.prepare "#{buffer}\n#{text}"
+
           for stmt in $layla.parser.parseBody()
             if stmt?
-              res = $layla.evaluator.evaluateNode stmt, doc, $layla.scope
+              res = $layla.evaluator.evaluateNode stmt, context
           if res
             out emitter.emit res
           reset()
@@ -224,9 +229,10 @@ Commands =
       out ''
       exit()
 
+    # Discard line on `^C`
     repl.on 'SIGINT', ->
       out ''
-      repl.write null, ctrl: yes, name: 'u'
+      repl.write null, ctrl: yes, name: 'u' # Clears current line
       reset()
 
     reset()
@@ -256,7 +262,7 @@ Commands =
             Compile lay source code into CSS and output it.
 
             Usage:
-              layla compile [<file>...]
+              layla compile [options] [<file>...]
 
             Options:
                --use <plugin>,...   Use one or more plugins

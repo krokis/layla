@@ -1,6 +1,9 @@
-Class = require './class'
+Plugin = require './plugin'
 
-class Visitor extends Class
+class Visitor extends Plugin
+
+  use: (context) ->
+    context.useVisitor @
 
   visit: (node) ->
     method = "visit#{node.type}"

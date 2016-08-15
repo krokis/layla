@@ -4,8 +4,8 @@ path     = require 'path'
 mark     = require 'commonmark'
 {expect} = require 'chai'
 
-# Main lib
-Layla = require '../../lib'
+Layla       = require '../../lib'
+NodeContext = require '../../lib/context/node'
 
 describe 'Cases', ->
   json = (obj, indent = 4) ->
@@ -102,8 +102,9 @@ describe 'Cases', ->
               it desc, ((cases) ->
                 for c in cases
                   try
-                    layla = new Layla
-                    layla.scope.paths.push path.dirname file
+                    context = new NodeContext
+                    layla = new Layla context
+                    layla.context.pushPath path.dirname file
                     actual = layla.compile c.source
                     expect(actual).to.equal c.expected
                   catch e

@@ -103,8 +103,9 @@ class CSSEmitter extends Emitter
     value = num.value
 
     if value % 1 isnt 0
-      m = Math.pow 10, @options.decimal_places
-      value = (Math.round value * m) / m
+      if @options.decimal_places >= 0
+        m = Math.pow 10, @options.decimal_places
+        value = (Math.round value * m) / m
 
     '' + value
 

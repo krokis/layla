@@ -1,23 +1,25 @@
 Object = require '../object'
+Null   = require './null'
 
 class Function extends Object
 
-  constructor: (@func = null, @self = @) ->
+  constructor: (@func = ->) ->
 
-  invoke: (self, args...) -> @func.call this, self, args...
-
-  bind: (self) -> @clone @func, self
+  invoke: (block, args...) ->
+    (@func.call this, block, args...) or Null.null
 
   toString: -> 'function'
 
-  isEqual: (other) -> other instanceof Function and (other.func is @func)
+  isEqual: (other) ->
+    (other instanceof Function) and
+    (other.func is @func) and
+    (other.block is @block)
 
-  clone: (func = @func, self = @self, etc...) -> super func, self, etc...
+  clone: (func = @func, etc...) ->
+    super func, etc...
 
-  '.bind': @::bind
-
-  # TODO this should not use @self by default; instead, this should be executed
+  # TODO this should not use @block by default; instead, this should be executed
   # bound to the *calling block*.
-  '.invoke': (args...) -> @invoke @self, args...
+  '.invoke': (args...) -> @invoke @block, args...
 
 module.exports = Function

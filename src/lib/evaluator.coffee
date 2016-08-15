@@ -5,6 +5,7 @@ path          = require 'path'
 Class         = require './class'
 Parser        = require './parser'
 Plugin        = require './plugin'
+Context       = require './context'
 Expression    = require './node/expression'
 Operation     = require './node/expression/operation'
 Ident         = require './node/expression/ident'
@@ -26,7 +27,6 @@ Color         = require './object/color'
 Property      = require './object/property'
 RuleSet       = require './object/rule-set'
 AtRule        = require './object/at-rule'
-Scope         = require './object/scope'
 
 TypeError     = require './error/type'
 RuntimeError  = require './error/runtime'
@@ -34,15 +34,13 @@ InternalError = require './error/internal'
 
 class Evaluator extends Class
 
-  constructor: (@layla, scope) ->
-
   ###
   ###
-  evaluateNode: (node, self, scope) ->
+  evaluateNode: (node, context) ->
     if node
       method = "evaluate#{node.type}"
       if method of this
-        return this[method].call this, node, self, scope
+        return this[method].call this, node, context
 
     unless node instanceof Object
       throw new InternalError "Don't know how to evaluate node #{node.type}"
@@ -50,44 +48,42 @@ class Evaluator extends Class
     return node
 
   ###
-  TODO: allow interpolation here?
-  col = #`'a2f'`
   ###
-  evaluateLiteralColor: (node, self, scope) ->
+  evaluateLiteralColor: (node, context) ->
     new Color node.value
 
   ###
   ###
-  evaluateLiteralString: (node, self, scope) ->
+  evaluateLiteralString: (node, context) ->
     value = ''
 
     for chunk in [].concat node.value
       if typeof chunk is 'string'
         value += chunk
       else
-        val = @evaluateNode chunk, self, scope
+        val = @evaluateNode chunk, context
         value += val.toString()
 
     new String value, node.quote
 
   ###
   ###
-  evaluateLiteralThis: (node, self, scope) -> self
+  evaluateLiteralThis: (node, context) -> context.block
 
   ###
   ###
-  evaluateLiteralUnicodeRange: (node, self, scope) ->
+  evaluateLiteralUnicodeRange: (node, context) ->
     new String node.value.toUpperCase(), ''
 
   ###
   ###
-  evaluateLiteralURL: (node, self, scope) ->
-    val = @evaluateNode node.value, self, scope
+  evaluateLiteralURL: (node, context) ->
+    val = @evaluateNode node.value, context
     new URL val.value, val.quote
 
   ###
   ###
-  evaluateIdent: (node, self, scope) ->
+  evaluateIdent: (node, context) ->
     switch node.value
       when 'true'
         Boolean.true
@@ -96,53 +92,56 @@ class Evaluator extends Class
       when 'null'
         Null.null
       else
-        if scope.has node.value
+        if context.has node.value
           if node.arguments?
-            args = (@evaluateNode arg, self, scope for arg in node.arguments)
+            args = (@evaluateNode arg, context for arg in node.arguments)
           else
             args = []
-          (scope.get node.value, self, args...) or Null.null
+          val = context.get node.value, args...
+
+          if val instanceof Function
+            val = val.invoke context.block, args...
+
         else
-          new String node.value, null
+          val = new String node.value, null
+
+        val
 
   ###
   ###
   evaluateLiteralNumber: (node) ->
     new Number node.value, node.unit?.value
-    # TODO:
-    # new Number node.value, node.unit.value or ''
 
   ###
   ###
-  evaluateLiteralRegExp: (node, self, scope) ->
+  evaluateLiteralRegExp: (node, context) ->
     new RegExp node.value, node.flags
 
   ###
   ###
-  evaluateLiteralFunction: (node, self, scope) ->
-    block = node.block
+  evaluateLiteralFunction: (node, context) ->
+    body = node.block.body
     in_args = node.arguments
 
-    new Function (self, args...) =>
+    new Function (block, args...) =>
       try
-        scp = new Scope scope
-
+        ctx = context.fork block
         l = in_args.length
 
         for arg, i in args
           if i < l
-            scp.set in_args[i].name, arg
+            ctx.set in_args[i].name, arg
           else
             break
 
         for d in [i...in_args.length]
           if in_args[d].value
-            value = @evaluateNode in_args[d].value, self, scp
+            value = @evaluateNode in_args[d].value, ctx
           else
             value = Null.null
-          scp.set in_args[d].name, value
+          ctx.set in_args[d].name, value
 
-        @evaluateBody block.body, self, scp
+        @evaluateBody body, ctx
         return
 
       catch e
@@ -153,35 +152,35 @@ class Evaluator extends Class
 
   ###
   ###
-  evaluateGroup: (node, self, scope) ->
-    @evaluateNode node.expression, self, scope
+  evaluateGroup: (node, context) ->
+    @evaluateNode node.expression, context
 
   ###
   ###
-  evaluateLiteralList: (node, self, scope) ->
-    items = (@evaluateNode item, self, scope for item in node.body)
+  evaluateLiteralList: (node, context) ->
+    items = (@evaluateNode item, context for item in node.body)
     new List items, node.separator
 
   ###
   ###
-  evaluateUnaryOperation: (node, self, scope) ->
-    (@evaluateNode node.right, self, scope).operate "#{node.operator}@"
+  evaluateUnaryOperation: (node, context) ->
+    (@evaluateNode node.right, context).operate "#{node.operator}@"
 
   ###
   TODO Reimplement this mess as a Node methods
   ###
-  evaluateBinaryOperation: (node, self, scope) ->
+  evaluateBinaryOperation: (node, context) ->
     switch node.operator
       when '=', '|='
-        @evaluateAssignment node, self, scope
+        @evaluateAssignment node, context
 
       when '.'
-        left = @evaluateNode node.left, self, scope
+        left = @evaluateNode node.left, context
 
         if node.right instanceof Ident
           if node.right.arguments?
             args = (
-              @evaluateNode arg, self, scope for arg in node.right.arguments
+              @evaluateNode arg, context for arg in node.right.arguments
             )
           else
             args = []
@@ -191,37 +190,37 @@ class Evaluator extends Class
           throw new Error "Bad right side of `.` operation"
 
       when '::'
-        left = @evaluateNode node.left, self, scope
+        left = @evaluateNode node.left, context
 
         if node.right instanceof Ident
           if node.right.arguments?
             throw new Error "Bad right side of `::` operation"
           right = new String node.right.value
         else
-          right = @evaluateNode node.right, self, scope
+          right = @evaluateNode node.right, context
 
         (left['.::'] right) or Null.null
 
       when '('
-        left = @evaluateNode node.left, self, scope
+        left = @evaluateNode node.left, context
         unless left instanceof Function
           throw new ReferenceError "Call to non-function"
 
-        args = (@evaluateNode arg, self, scope for arg in node.right)
+        args = (@evaluateNode arg, context for arg in node.right)
 
-        ret = left.invoke.call left, self, args...
+        ret = left.invoke.call left, context.block, args...
         ret or Null.null
 
       else
-        left = @evaluateNode node.left, self, scope
-        right = @evaluateNode node.right, self, scope
+        left = @evaluateNode node.left, context
+        right = @evaluateNode node.right, context
         left.operate node.operator, right
 
-  evaluateOperation: (node, self, scope) ->
+  evaluateOperation: (node, context) ->
     if node.right and node.left
-      @evaluateBinaryOperation node, self, scope
+      @evaluateBinaryOperation node, context
     else
-      @evaluateUnaryOperation node, self, scope
+      @evaluateUnaryOperation node, context
 
   isReference: (node) ->
     (node instanceof Operation) and
@@ -233,7 +232,7 @@ class Evaluator extends Class
   Maybe the left node SHOULD be evaluated, but maybe in a new scope,
   so existing defined factors on current scope are not applied
   ###
-  evaluateUnitAssignment: (node, self, scope) ->
+  evaluateUnitAssignment: (node, context) ->
     value = parseFloat node.left.value
     unit = node.left.unit.value
 
@@ -241,7 +240,7 @@ class Evaluator extends Class
       throw new Error "Bad unit definition"
 
     unless node.operator is '|=' and Number.isDefined unit
-      right = (@evaluateNode node.right, self, scope)
+      right = (@evaluateNode node.right, context)
 
       unless right.unit and right.value isnt 0
         throw new Error "Bad unit definition"
@@ -252,26 +251,26 @@ class Evaluator extends Class
 
       Number.define left, right, yes
 
-    @evaluateNode node.left, self, scope
+    @evaluateNode node.left, context
 
   ###
   ###
-  evaluateAssignment: (node, self, scope) ->
+  evaluateAssignment: (node, context) ->
     getter = setter = null
 
     {left, right} = node
 
     if left instanceof LiteralNumber
-      return @evaluateUnitAssignment node, self, scope
+      return @evaluateUnitAssignment node, context
 
     if left instanceof Ident
       name = left.value
-      getter = scope.get.bind scope, name
-      setter = scope.set.bind scope, name
+      getter = context.get.bind context, name
+      setter = context.set.bind context, name
     else if @isReference left
-      name = @evaluateNode left.right, self, scope
+      name = @evaluateNode left.right, context
 
-      ref = @evaluateNode left.left, self, scope
+      ref = @evaluateNode left.left, context
 
       if left.operator is '.'
         getter = ref['.'].bind ref, name
@@ -288,35 +287,35 @@ class Evaluator extends Class
         curr = getter()
         return curr unless curr.isNull()
 
-    value = (@evaluateNode right, self, scope).clone()
+    value = @evaluateNode right, context
     setter value
     value
 
   ###
   ###
-  evaluateConditional: (node, self, scope) ->
+  evaluateConditional: (node, context) ->
     met = not node.condition or
-          (@evaluateNode node.condition, self, scope).toBoolean()
+          (@evaluateNode node.condition, context).toBoolean()
 
     if met isnt node.negate
-      @evaluateBody node.block.body, self, scope
+      @evaluateBody node.block.body, context
     else if node.elses
       for els in node.elses
         met = not els.condition or
-              (@evaluateNode els.condition, self, scope).toBoolean()
+              (@evaluateNode els.condition, context).toBoolean()
 
         if met isnt els.negate
-          @evaluateBody els.block.body, self, scope
+          @evaluateBody els.block.body, context
           break
 
     return #undefined
 
-  evaluateControlFlowDirective: (node, self, scope) ->
+  evaluateControlFlowDirective: (node, context) ->
     switch node.arguments.length
       when 0
         depth = 1
       when 1
-        depth = @evaluateNode node.arguments[0], self, scope
+        depth = @evaluateNode node.arguments[0], context
         unless (depth instanceof Number) and depth > 0
           throw new Error "Bad argument for a `#{node.name}`"
         depth = parseInt depth.value, 10
@@ -326,33 +325,33 @@ class Evaluator extends Class
     node.depth = depth
     throw node
 
-  evaluateContinue: (node, self, scope) ->
-    @evaluateControlFlowDirective node, self, scope
+  evaluateContinue: (node, context) ->
+    @evaluateControlFlowDirective node, context
 
-  evaluateBreak: (node, self, scope) ->
-    @evaluateControlFlowDirective node, self, scope
+  evaluateBreak: (node, context) ->
+    @evaluateControlFlowDirective node, context
 
-  evaluateReturn: (node, self, scope) ->
+  evaluateReturn: (node, context) ->
     if node.arguments.length is 0
       throw Null.null
     else if node.arguments.length > 1
       throw new TypeError "Too many arguments for a `return`"
 
-    throw @evaluateNode node.arguments[0], self, scope
+    throw @evaluateNode node.arguments[0], context
 
   ###
   ###
-  evaluateFor: (node, self, scope) ->
-    expression = @evaluateNode node.expression, self, scope
+  evaluateFor: (node, context) ->
+    expression = @evaluateNode node.expression, context
 
     expression.each (key, value) =>
-      scope.set node.value.value, value
+      context.set node.value.value, value
 
       if node.key?
-        scope.set node.key.value, key
+        context.set node.key.value, key
 
       try
-        @evaluateBody node.block.body, self, scope
+        @evaluateBody node.block.body, context
       catch e
         if e instanceof Directive
           if e.name == 'break'
@@ -365,14 +364,14 @@ class Evaluator extends Class
 
   ###
   ###
-  evaluateLoop: (node, self, scope) ->
+  evaluateLoop: (node, context) ->
     loop
       try
         if node.condition
-          met = (@evaluateNode node.condition, self, scope).toBoolean()
+          met = (@evaluateNode node.condition, context).toBoolean()
           if met is node.negate
             break
-        @evaluateBody node.block.body, self, scope
+        @evaluateBody node.block.body, context
       catch e
         if e instanceof Directive
           if e.name == 'break'
@@ -383,54 +382,24 @@ class Evaluator extends Class
 
     return #undefined
 
-  resolvePath: (path, base) ->
-    path
-
-  doImportFile: (file, self, scope) ->
-    source = fs.readFileSync file, 'utf-8'
-    ast = @layla.parse source
-    scope.paths.push path.dirname file
-    imported = @evaluateRoot ast, self, scope
-    scope.paths.pop()
-
-  importFile: (file, self, scope) ->
-    for p in scope.paths
-      real_path = path.join p, file
-
-      if fs.existsSync real_path
-        return @doImportFile real_path, self, scope
-
-    throw new RuntimeError "Could not import file: \"#{file}\""
-
   ###
   ###
-  evaluateImport: (node, self, scope) ->
+  evaluateImport: (node, context) ->
     for arg in node.arguments
-      [name, file] = arg
-
-      file = @evaluateNode file, self, scope
+      file = @evaluateNode arg, context
 
       unless file instanceof URL or file instanceof String
         throw new Error "Bad argument for `import`"
 
-      file = file.value
-      real_path = @resolvePath file
+      path = file.value
 
-      if name isnt '&'
-        _self = new Block
-      else
-        _self = self
-
-      @importFile real_path, _self, scope
-
-      if name isnt '&'
-        scope.set name, _self
+      context.import path
 
     Null.null
 
   ###
   ###
-  evaluateUse: (node, self, scope) ->
+  evaluateUse: (node, context) ->
     for arg in node.arguments
       name = @evaluateNode arg
       unless name instanceof String
@@ -439,53 +408,52 @@ class Evaluator extends Class
 
     Null.null
 
-  evaluateDirective: (node, self, scope) ->
+  evaluateDirective: (node, context) ->
     switch node.name
       when 'use'
-        @evaluateUse node, self, scope
+        @evaluateUse node, context
       when 'import'
-        @evaluateImport node, self, scope
+        @evaluateImport node, context
       when 'return'
-        @evaluateReturn node, self, scope
+        @evaluateReturn node, context
       when 'break'
-        @evaluateBreak node, self, scope
+        @evaluateBreak node, context
       when 'continue'
-        @evaluateContinue node, self, scope
+        @evaluateContinue node, context
 
   ###
   ###
-  evaluatePropertyDeclaration: (node, self, scope) ->
-    value = (@evaluateNode node.value, self, scope).clone()
+  evaluatePropertyDeclaration: (node, context) ->
+    value = (@evaluateNode node.value, context).clone()
 
     for name in node.names
-      name = (@evaluateNode name, self, scope)
-
-      continue if node.conditional and self.hasProperty(name.value)
-
+      name = (@evaluateNode name, context)
+      continue if node.conditional and context.block.hasProperty(name.value)
       property = new Property name.value, value
-      self.items.push property
+      context.block.items.push property
 
     property
 
   ###
   ###
-  evaluateBody: (body, self, scope) ->
-    @evaluateNode node, self, scope for node in body
+  evaluateBody: (body, context) ->
+    @evaluateNode node, context for node in body
 
   ###
   ###
-  evaluateLiteralBlock: (node, self, scope) ->
+  evaluateLiteralBlock: (node, context) ->
     block = new Block
-    @evaluateBody node.body, block, scope
+    ctx = context.fork block
+    @evaluateBody node.body, ctx
     block
 
-  evaluateSelector: (selector, self, scope) ->
-    if self instanceof RuleSet
+  evaluateSelector: (selector, context) ->
+    if context.block instanceof RuleSet
       ret = []
       for sel in selector
         if 0 > sel.indexOf '&'
           sel = "& #{sel}"
-        for psel in self.selector
+        for psel in context.block.selector
           ret.push sel.replace /&/g, psel
       ret
     else
@@ -493,23 +461,26 @@ class Evaluator extends Class
 
   ###
   ###
-  evaluateRuleSetDeclaration: (node, self, scope) ->
+  evaluateRuleSetDeclaration: (node, context) ->
     rule = new RuleSet
-    self.items.push rule
-    rule.selector = @evaluateSelector node.selector, self, scope
-    @evaluateBody node.block.body, rule, scope
+    context.block.items.push rule
+    rule.selector = @evaluateSelector node.selector, context
+    ctx = context.fork rule
+    @evaluateBody node.block.body, ctx
     rule
 
   ###
   ###
-  evaluateAtRuleDeclaration: (node, self, scope) ->
+  evaluateAtRuleDeclaration: (node, context) ->
     rule = new AtRule
-    self.items.push rule
-    rule.name = (@evaluateLiteralString node.name, self, scope).value
+    context.block.items.push rule
+    rule.name = (@evaluateLiteralString node.name, context).value
     rule.arguments = node.arguments
 
+    ctx = context.fork rule
+
     if node.block
-      (@evaluateBody node.block.body, rule, scope)
+      (@evaluateBody node.block.body, ctx)
     else
       rule.block = null
 
@@ -517,10 +488,8 @@ class Evaluator extends Class
 
   ###
   ###
-  evaluateRoot: (node, self = null, scope = null) ->
-    self ?= new Document
-    scope ?= new Scope
-    @evaluateBody node.body, self, scope
-    self
+  evaluateRoot: (node, context = new Context) ->
+    @evaluateBody node.body, context
+    context.block
 
 module.exports = Evaluator

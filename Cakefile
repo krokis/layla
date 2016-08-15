@@ -244,7 +244,7 @@ task 'test:style', 'Run style tests', ->
     log 'task', 'Running style tests'
     test 'style', yes
 
-task 'test:docs', 'Run docs test', ->
+task 'test:docs', 'Run docs tests', ->
   queue ->
     log 'task', 'Running docs tests'
     test 'docs'
@@ -254,7 +254,7 @@ task 'test:bin', 'Run CLI tests', ->
     log 'task', 'Running CLI tests'
     test 'bin'
 
-task 'test:all', 'Test everything', ->
+task 'test:all', 'Run all tests', ->
   invoke 'test:cases'
   invoke 'test:style'
   invoke 'test:docs'

@@ -21,8 +21,6 @@
 - Can have a decimal part
 
   ~~~ lay
-  PI = 3.14159265359
-
   number[decimal] {
     pi: PI
     pi: PI * 100000
@@ -81,7 +79,6 @@
 - Can have both a unit and a decimal part
 
   ~~~ lay
-  PI = 3.14159265359
   number[units][decimal] {
     width: .1%
     height: 99.9%
@@ -1178,8 +1175,6 @@
 - `rad` -> `deg`, `turn`, `grad`
 
   ~~~ lay
-  PI = 3.141592653589793
-
   number.convert#rad {
     deg:  1rad.convert(deg),
           (PI)rad.convert(deg),
@@ -1638,8 +1633,6 @@
 - Converts units as necessary
 
   ~~~ lay
-  PI = 3.141592653589793
-
   number[op="is"] {
         i: 1cm is 10mm
        ii: 10mm is 1cm

@@ -111,6 +111,7 @@ class Parser extends Lexer
     'return'
     'break'
     'continue'
+    'import'
     'use'
   ]
 
@@ -225,18 +226,10 @@ class Parser extends Lexer
   parseCommaList: ->
     start = @position
     items = []
-    parens = 0
-
-    while @read PUNC, '('
-      parens++
 
     while item = (@parseExpression null, no, no)
       items.push item
       break unless comma = @eat PUNC, ','
-
-    while parens
-      @expect PUNC, ')'
-      parens--
 
     if items.length
       return items
@@ -645,25 +638,6 @@ class Parser extends Lexer
 
   ###
   ###
-  parseImport: ->
-    if tok = (@read IDENT, 'import')
-      @makeNode Import, (imp) ->
-        imp.start = tok.start
-        imp.arguments = []
-
-        while arg = @parseExpression 0, no, no, no
-          if @read IDENT, 'as'
-            as = (@expect IDENT).value
-          else
-            as = '&'
-          imp.arguments.push [as, arg]
-          break unless @eat PUNC, ','
-
-        unless imp.arguments.length
-          throw new SyntaxError "Expected string after import!"
-
-  ###
-  ###
   parseDirective: ->
     if tok = @read IDENT, @directives
       @makeNode Directive, (dir) ->
@@ -680,7 +654,6 @@ class Parser extends Lexer
     @parseConditional() or
     @parseLoop() or
     @parseFor() or
-    @parseImport() or
     @parseDirective() or
     @parseDeclaration() or
     @parseExpression()

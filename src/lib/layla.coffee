@@ -1,9 +1,9 @@
-VERSION    = (require '../package').version
+VERSION    = require './version'
 
 Class      = require './class'
 Parser     = require './parser'
+Context    = require './context'
 Evaluator  = require './evaluator'
-Normalizer = require './visitor/normalizer'
 Emitter    = require './emitter'
 CSSEmitter = require './emitter/css'
 CLIEmitter = require './emitter/cli'
@@ -12,8 +12,9 @@ Node       = require './node'
 Object     = require './object'
 Document   = require './object/document'
 String     = require './object/string'
-Scope      = require './object/scope'
 Error      = require './error'
+
+Normalizer = require './css/normalizer'
 
 class Layla
 
@@ -30,65 +31,32 @@ class Layla
   @Evaluator: Evaluator
   @Emitter: Emitter
   @Normalizer: Normalizer
-  @Scope: Scope
+  @Context: Context
   @Error: Error
 
   ###
   ###
-  constructor: ->
-    @scope = new Scope
+  constructor: (@context = new Context) ->
     @plugins = {}
-    @parser = new Parser @
-    @evaluator = new Evaluator @, @scope
+    @parser = new Parser
+    @evaluator = new Evaluator
     @normalizer = new Normalizer
     @emitter = new CSSEmitter
 
-  register: (plugin, name) ->
-    name ?= plugin.name.toLowerCase()
-
-    if name of @plugins
-      unless this is @plugins[name]
-        throw new Error "\
-          Cannot register plugin '#{name}': that name has already been used"
-
-    @plugins[name] = plugin
-
-  ###
-  Use one or more plugins on this instance.
-  ###
-  use: (plugins...) ->
-    for kind in plugins
-      if kind.prototype instanceof Plugin
-        plugin = new kind
-        plugin.use this
-      else if ('[object String]' is @toString.call kind)
-        if kind of @plugins
-          @use @plugins[kind]
-        else
-          mod_name = "layla-#{kind}"
-          try
-            require mod_name
-          catch e
-            throw new Error "Could not load plugin: #{kind}"
-      else if kind instanceof Array
-        @use kind...
-      else if kind instanceof Object
-        @use kind[k] for k of kind
-      else
-        throw new TypeError "That's not a plugin"
-
   # Core methods
-  parse: (source) -> @parser.parse source
+  parse: (source) ->
+    @parser.parse source
 
-  evaluate: (node, self = null, scope = @scope) ->
+  evaluate: (node, context = @context) ->
     node = @parse node unless node instanceof Node
-    @evaluator.evaluateRoot node, self, scope
+    @evaluator.evaluateRoot node, context
 
   normalize: (node) -> @normalizer.normalize node
 
   emit: (node) -> @emitter.emit node
 
   # This is a shortcut subject to deprecation
-  compile: (source) -> @emit @normalize @evaluate @parse source
+  compile: (source) ->
+    @emit @normalize @evaluate @parse source
 
 module.exports = Layla

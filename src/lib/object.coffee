@@ -1,11 +1,9 @@
-Class     = require './class'
+Class = require './class'
 
 TypeError           = require './error/type'
 NotImplementedError = require './error/not-implemented'
 
 class Object extends Class
-
-  @NOT_IMPLEMENTED: (name) -> throw new NotImplementedError
 
   @new: (args...) ->
     new (@bind.apply @, args)
@@ -13,6 +11,8 @@ class Object extends Class
   @reprType: -> @name
 
   @repr: -> "[#{@reprType()}]"
+
+  @clone: -> @
 
   hasMethod: (name) -> typeof @[".#{name}"] is 'function'
 
@@ -39,7 +39,7 @@ class Object extends Class
 
   repr: -> "[#{"#{@reprType()} #{@reprValue()}".trim()}]"
 
-  toString: -> throw new TypeError "Cannot convert #{@repr()} to string"
+  toString: -> throw new Error "Cannot convert #{@repr()} to string"
 
   '.': (name, etc...) ->
     method = @[".#{name}"]

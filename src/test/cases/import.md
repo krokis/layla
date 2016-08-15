@@ -1,5 +1,4 @@
-Import
-======
+# Import
 
 - Imports rulesets from a external file onto current block
 
@@ -180,13 +179,14 @@ Import
   }
   ~~~
 
-- Imported rule-sets and properties can be assigned to variables instead of being imported in current block with `as`
+- Imported rule-sets and properties can be isolated by using a block
 
   ~~~ lay
-  import 'import/base.lay',
-         'import/font.lay' as $font,
-         'import/font.lay' as $back,
-         'import/background.lay' as $back
+  import 'import/base.lay';
+
+  $font = { import 'import/font.lay'}
+  $back = { import 'import/font.lay'}
+  $back = { import 'import/background.lay'}
 
   body {
     background-color: $back::color
@@ -244,8 +244,8 @@ Import
   import './import/this-is-not-a-real-file.lay'
   ~~~
 
-  ~~~ RuntimeError
-  Could not import file: "./import/this-is-not-a-real-file.lay"
+  ~~~ ImportError
+  Could not import "./import/this-is-not-a-real-file.lay"
   ~~~
 
 - Fails for unreadable files

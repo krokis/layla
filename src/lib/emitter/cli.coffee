@@ -15,6 +15,7 @@ class CLIEmitter extends CSSEmitter
   constructor: (options = {}) ->
     defaults =
       colors: yes
+      decimal_places: -1
 
     for name of defaults
       options[name] = defaults[name] unless name of options
