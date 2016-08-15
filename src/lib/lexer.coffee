@@ -18,6 +18,7 @@ InternalError = require './error/internal'
   NUMBER
   COLOR
   REGEXP
+  UNICODE_RANGE
   WHITESPACE
   EOT
 } = Token
@@ -53,6 +54,7 @@ class Lexer extends Class
                               (#{RE_ESCAPE.source})
                              ///i
   RE_REGEXP                = /\/([^\s](?:(?:\\.)|[^\\\/\n\r])+)\/([a-z]+)?/i
+  RE_UNICODE_RANGE         = /^u\+[0-9a-f?]{1,6}(-[0-9a-f?]{1,6})?/i
   RE_COLOR                 = /#([a-f\d]{1,2}){1,4}/i
   RE_PUNCTUATION           = /[\{\}\(\),;:=&"'`\|]/
   RE_ALL_WHITESPACE        = /\s+/
@@ -377,6 +379,12 @@ class Lexer extends Class
   ###
   readColor: ->
     @readHexColor()
+
+  ###
+  ###
+  readUnicodeRange: ->
+    if match = @match RE_UNICODE_RANGE
+      @makeToken UNICODE_RANGE, -> @move match[0].length
 
   ###
   /regular expression/options

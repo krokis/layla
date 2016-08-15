@@ -76,6 +76,11 @@ class Evaluator extends Class
 
   ###
   ###
+  evaluateLiteralUnicodeRange: (node, self, scope) ->
+    new String node.value.toUpperCase(), ''
+
+  ###
+  ###
   evaluateLiteralURL: (node, self, scope) ->
     val = @evaluateNode node.value, self, scope
     new URL val.value, val.quote

@@ -13,6 +13,7 @@ Function     = require './node/expression/literal/function'
 List         = require './node/expression/literal/list'
 Block        = require './node/expression/literal/block'
 This         = require './node/expression/literal/this'
+UnicodeRange = require './node/expression/literal/unicode-range'
 Directive    = require './node/statement/directive'
 Import       = require './node/statement/import'
 Conditional  = require './node/statement/conditional'
@@ -38,6 +39,7 @@ EOTError     = require './error/eot'
   NUMBER
   COLOR
   REGEXP
+  UNICODE_RANGE
   EOT
 } = Token
 
@@ -405,6 +407,16 @@ class Parser extends Lexer
 
   ###
   ###
+  parseUnicodeRange: ->
+    if token = @peek UNICODE_RANGE
+      @makeNode UnicodeRange, (range) ->
+        range.start = token.start
+        range.name = token.value
+        range.value = token.value
+        @moveTo token.end
+
+  ###
+  ###
   parseLiteral: ->
     @parseThis() or
     @parseQuotedString() or
@@ -412,6 +424,7 @@ class Parser extends Lexer
     @parseColor() or
     @parseRegExp() or
     @parseURL() or
+    @parseUnicodeRange() or
     @parseIdent()
 
   ###

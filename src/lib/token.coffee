@@ -18,6 +18,7 @@ class Token extends Class
   @SELECTOR        = 'Selector'
   @SIMPLE_SELECTOR = 'SimpleSelector'
   @COMBINATOR      = 'Combinator'
+  @UNICODE_RANGE   = 'UnicodeRange'
   @EOT             = 'EOT'
 
   ###
