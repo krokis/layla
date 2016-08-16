@@ -7,7 +7,6 @@ Evaluator  = require './evaluator'
 Emitter    = require './emitter'
 CSSEmitter = require './emitter/css'
 CLIEmitter = require './emitter/cli'
-Plugin     = require './plugin'
 Node       = require './node'
 Object     = require './object'
 Document   = require './object/document'
@@ -37,7 +36,6 @@ class Layla
   ###
   ###
   constructor: (@context = new Context) ->
-    @plugins = {}
     @parser = new Parser
     @evaluator = new Evaluator
     @normalizer = new Normalizer

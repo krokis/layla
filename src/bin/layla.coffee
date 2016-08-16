@@ -165,9 +165,7 @@ Commands =
     if args.length > 0
       for arg in args
         file = arg.value
-        context.pushPath path.dirname file
         context.import file, context
-        context.popPath()
 
     buffer = null
 
