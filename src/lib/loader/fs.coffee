@@ -1,5 +1,4 @@
 fs   = require 'fs'
-Path = require 'path'
 URL  = require 'url'
 
 Loader      = require '../loader'
