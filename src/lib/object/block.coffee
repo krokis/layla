@@ -50,7 +50,7 @@ class Block extends Collection
       super
 
   '.properties': ->
-    new Block (@items.filter (obj) -> obj instanceof Property), ";"
+    new Block (@items.filter (obj) -> obj instanceof Property)
 
   '.has-property?': (name) -> Boolean.new @hasProperty name.value
 
