@@ -12,6 +12,7 @@ class CSSEmitter extends Emitter
     defaults =
       bom:                         'preserve' # Or: true, false/strip
       new_line:                    '\n'
+      final_newline:               yes
       tab:                         '  '
       comments:                    yes # Also: block only, banged only
       before_opening_brace:        ' '
@@ -170,7 +171,7 @@ class CSSEmitter extends Emitter
 
     css += (@emitBody doc.items, doc)
 
-    if css isnt ''
+    if @options.final_newline and (css isnt '')
       css += '\n'
 
     css
