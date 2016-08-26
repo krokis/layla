@@ -92,11 +92,11 @@ class Context extends Class
 
           try
             return importer.import auri, @
-          catch
-            # TODO Check thrown exception is ImportError or re-throw it
-            # otherwise
-            continue
+          catch e
+            if e instanceof ImportError
+              continue
 
+            throw e
 
       break # We don't allow more than one path where to look for at the moment
 

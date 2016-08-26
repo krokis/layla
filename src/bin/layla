@@ -1,9 +1,11 @@
 #!/usr/bin/env coffee
 
 # 3rd party
-fs       = require 'fs'
-path     = require 'path'
-readline = require 'readline'
+os              = require 'os'
+fs              = require 'fs'
+path            = require 'path'
+readline        = require 'readline'
+SUPPORTS_COLORS = require 'supports-color'
 
 Layla       = require '../lib'
 NodeContext = require '../lib/context/node'
@@ -14,397 +16,290 @@ class UsageError
   constructor: (@message) ->
   toString: -> @message
 
-class TooManyArgumentsError extends UsageError
-
-class UnknownCommandError extends UsageError
-
 class UnknownOptionError extends UsageError
 
 class Arg
   constructor: (@value) ->
 
-class Opt
-  constructor: (@name, @value) ->
+class Opt extends Arg
+  constructor: (@name, value) -> super value
+  bool: ->
+    @value is null or /^\s*1|true|y|yes|on\s*/i.test(@value)
 
 class CLIContext extends NodeContext
   constructor: (args...) ->
     super args...
     @pushPath process.cwd()
 
-class ReplContext extends CLIContext
+USAGE = """
+  Usage:
+    layla [options] file...|< [>]
 
-# Layla instance to be used and reused
-$layla = new Layla new NodeContext
-$layla.context.pushPath process.cwd()
+  Options:
+    -u, -use <plugin>       Use a plugin
+    -o, --out-file <file>   Write compiled code to a file instead of printing it
+    -i, --interactive       Start an interactive console
+    -c, --colors            Use colors on the output
+    -C, --no-colors         Don't use colors on the output
+    -v, --version           Print out Layla version
+    -h, --help              Show this help
+  """
 
-# Global options
-$colors = null
-$plugins = []
+# Sets window title on Windows
+process.title = 'Layla'
+{stdout, stdin} = process.stdin
+EOL = os.EOL
 
-###
-Write a line to stdout.
-###
-out = (text = '') -> console.log text
+# "Global" options
+$interactive = no
+$colors = no
+$out_file = null
+$files = []
 
-outJSON = (obj) -> out JSON.stringify obj, null, ' '
+stdout = (text = '', new_line = yes) ->
+  process.stdout.write text
+  stdout EOL, no if new_line
 
-###
-Write a warning line to stderr.
-###
-warn = (text) ->
-  text = "\x1b[33m#{text}\x1b[0m" if $colors isnt no
-  console.warn text
+stderr = (text = '', new_line = yes) ->
+  process.stderr.write text
+  stderr EOL, no if new_line
 
 ###
 Write an error line to stderr.
 ###
 err = (text) ->
-  text = "\x1b[31m#{text}\x1b[0m" if $colors isnt no
-  console.error text
+  text = "\x1b[31m#{text}\x1b[0m" if SUPPORTS_COLORS
+  stderr text
 
 ###
+Write a warning line to stderr.
+###
+warn = (text) ->
+  text = "\x1b[33m#{text}\x1b[0m" if SUPPORTS_COLORS
+  stderr text
+
+###
+Exit with given `status`.
 ###
 exit = (status = 0) -> process.exit status
 
 ###
+Print Layla version.
 ###
-Commands =
-  parse: (args = [], opts = []) ->
-    colors = $colors is yes
+version = -> stdout Layla.version
 
-    doParse = (source) ->
-      try
-        outJSON $layla.parse source
-      catch e
-        if false
-          warn e
-        else
-          throw e
+###
+Print out usage.
+###
+help = -> stdout USAGE
 
-    if opts.length > 0
-      throw new UnknownOptionError (
-        "Unkown option: #{opts[0].name} for `parse` command"
-      )
+###
+Emit and rint or write to file a Layla node.
+###
+emit = (node) ->
+  emitter = new CLIEmitter colors: $colors
+  res = emitter.emit node
 
-    if args.length > 0
-      for arg in args
-        file = arg.value
-        fs.lstat file, (err, stat) ->
-          throw err if err
-          if stat.isFile()
-            fs.readFile file, 'utf8', (err, str) ->
-              throw err if err
-              doParse str
-          else
-            throw new Error
-    else
-      source = ''
-      stdin = process.openStdin()
-      stdin.setEncoding 'utf8'
-      stdin.on 'data', (chunk) ->
-        source += chunk
+  if $out_file
+    fs.writeFileSync $out_file, res
+  else
+    stdout res, no
 
-      stdin.on 'end', ->
-        doParse source
+###
+Start interactive (REPL) console.
+###
+repl = (context) ->
+  buffer = null
 
-  compile: (args = [], opts = []) ->
-    colors = $colors is yes
+  if process.env.HOME
+    historyFile = path.join process.env.HOME, '.layla_history'
 
-    $layla.emitter = new CLIEmitter colors: colors
+    if fs.existsSync historyFile
+      history = (fs.readFileSync historyFile).toString().trim()
+      history = (history.split '\n').reverse()
+      repl.history = history
 
-    doCompile = (source) ->
-      try
-        out $layla.compile source
-      catch e
-        if e instanceof Layla.Error
-          if false
-            warn e
-          else
-            err e.toString()
-        else
-          throw e
+    saveHistoryLine = (line) ->
+      fs.appendFile historyFile, line + "\n"
+  else
+    saveHistoryLine = ->
 
-    if opts.length > 0
-      throw new UnknownOptionError (
-        "Unkown option: #{opts[0].name} for `compile` command"
-      )
+  autocomplete = (line) -> [[], line]
 
-    if args.length > 0
-      for arg in args
-        file = arg.value
-        fs.lstat file, (err, stat) ->
-          throw err if err
+  reset = ->
+    buffer = ''
+    repl.setPrompt '> '
+    repl.prompt()
 
-          if stat.isFile()
-            fs.readFile file, 'utf8', (err, str) ->
-              throw err if err
-              doCompile str
-          else
-            throw new Error
-    else
-      source = ''
-      stdin = process.openStdin()
-      stdin.setEncoding 'utf8'
-      stdin.on 'data', (chunk) ->
-        source += chunk
+  repl = readline.createInterface process.stdin, process.stdout, autocomplete
 
-      stdin.on 'end', ->
-        doCompile source
-
-  interactive: (args = [], opts = []) ->
-    if opts.length > 0
-      throw new UnknownOptionError (
-        "Unkown option: #{opts[0].name} for `interactive` command"
-      )
-
-    $colors = $colors isnt no
-
-    context = new ReplContext
-    emitter = new CLIEmitter colors: $colors
-
-    if args.length > 0
-      for arg in args
-        file = arg.value
-        context.import file, context
-
-    buffer = null
-
-    repl = readline.createInterface process.stdin, process.stdout, autocomplete
-
-    if process.env.HOME
-      historyFile = path.join process.env.HOME, '.layla_history'
-
-      if fs.existsSync historyFile
-        history = (fs.readFileSync historyFile).toString().trim()
-        history = (history.split '\n').reverse()
-        repl.history = history
-
-      saveHistoryLine = (line) ->
-        fs.appendFile historyFile, line + "\n"
-
-    autocomplete = (line) -> [[], line]
-
-    reset = ->
-      buffer = ''
-      repl.setPrompt '> '
-      repl.prompt()
-
-    # Clear screen with `^L`
-    process.stdin.on 'keypress', (seq) ->
-      if seq is '\f'
-        process.stdout.write '\u001B[2J\u001B[0;0f'
-        reset()
-
-    repl.on 'line', (text) ->
-      if text.trim() is '' and buffer is ''
-        reset()
-      else
-        saveHistoryLine text
-
-        try
-          res = null
-          $layla.parser.prepare "#{buffer}\n#{text}"
-
-          for stmt in $layla.parser.parseBody()
-            if stmt?
-              res = $layla.evaluator.evaluateNode stmt, context
-          if res
-            out emitter.emit res
-          reset()
-        catch e
-          if e instanceof Layla.Error
-            if e instanceof EOTError
-              buffer += "\n" + text
-              repl.setPrompt '| '
-              repl.prompt()
-            else
-              err e.toString()
-              reset()
-          else
-            throw e
-
-    repl.on 'close', ->
-      out ''
-      exit()
-
-    # Discard line on `^C`
-    repl.on 'SIGINT', ->
-      out ''
-      repl.write null, ctrl: yes, name: 'u' # Clears current line
+  # Clear screen with `^L`
+  process.stdin.on 'keypress', (seq) ->
+    if seq is '\f'
+      process.stdout.write '\u001B[2J\u001B[0;0f'
       reset()
 
+  repl.on 'line', (text) ->
+    if text.trim() is '' and buffer is ''
+      reset()
+    else
+      saveHistoryLine text
+
+      try
+        res = null
+        $layla.parser.prepare "#{buffer}\n#{text}"
+
+        for stmt in $layla.parser.parseBody()
+          if stmt?
+            res = context.evaluate stmt
+        if res
+          emit res
+        reset()
+
+      catch e
+        if e instanceof Layla.Error
+          if e instanceof EOTError
+            buffer += "\n" + text
+            repl.setPrompt '| '
+            repl.prompt()
+          else
+            err e.toString()
+            reset()
+        else
+          throw e
+
+  repl.on 'close', ->
+    stdout()
+    exit()
+
+  # Discard line on `^C`
+  repl.on 'SIGINT', ->
+    stdout()
+    repl.write null, ctrl: yes, name: 'u' # Clears current line
     reset()
 
-  ###
-  ###
-  version: -> out Layla.version
-
-  ###
-  ###
-  help: (args = [], opts = []) ->
-    command = null
-
-    if args.length > 1
-      throw new TooManyArgumentsError 'Too many arguments for `help` command'
-    else if args.length is 1
-      command = args[0].value
-    else
-      command = null
-
-    for opt in opts
-      throw new UnknownOptionError "Unknown option `#{opt.name}`"
-
-    switch command
-      when 'compile'
-        out '''
-            Compile lay source code into CSS and output it.
-
-            Usage:
-              layla compile [options] [<file>...]
-
-            Options:
-               --use <plugin>,...   Use one or more plugins
-            '''
-
-      when 'parse'
-        out '''
-            Parse lay source code and output an AST in JSON format.
-
-            Usage:
-              layla parse [<file>]
-            '''
-
-      when 'interactive'
-        out '''
-            Start an interactive console.
-
-            Usage:
-              layla [options] interactive [<file>...]
-
-            Options:
-               --colors             Use colors on the output
-               --no-colors          Don't use colors on the output
-               --use <plugin>,...   Use one or more plugins
-            '''
-
-      when 'help'
-        out '''
-            Show help about a specific command.
-
-            Usage:
-              layla help <command>
-              layla <command> --help
-              layla <command> -h
-
-            Available comands:
-              compile
-              parse
-              interactive
-              version
-              help
-            '''
-
-      when 'version'
-        out '''
-            Print Layla version.
-
-            Usage:
-              layla version
-              layla --version
-              layla -v
-            '''
-      else
-        if command isnt null
-          unless command of Commands
-            throw new UnknownCommandError "Unknown command: #{command}"
-
-        out '''
-            Usage:
-              layla command [options] [args...]
-
-            Commands:
-              compile              Compile lay into css
-              parse                Parse lay source code and return an AST
-              interactive          Start an interactive console
-              version              Print out Layla version
-              help                 Show help
-
-            Common options:
-              --use <plugin>,...   Use one or more plugins
-              -c, --colors         Use colors on the output
-              -C, --no-colors      Don't use colors on the output
-            '''
-
-Commands.repl = Commands.interactive
+  reset()
 
 ###
-"main"
+"Main"
 ###
-process.title = 'Layla'
-
-command = null
-args = []
-opts = []
-
-for arg, i in process.argv.slice 2
-  if arg[0] is '-'
-    if m = arg.match /(?:\-{1,2}([^=]+))(?:(?:=(.+))|$)/
-      opts.push new Opt m[1], m[2]
-    else
-      throw new UsageError "Bad argument: #{arg}"
-  else
-    args.push new Arg arg
-
-bool = (val) -> return !!(val.toString().match /1|true|yes|on/i)
-
-i = 0
-
-while i < opts.length
-  opt = opts[i]
-
-  switch opt.name
-    when 'h', 'help'
-      command = 'help'
-    when 'v', 'version'
-      command = 'version'
-    when 'colors', 'c'
-      if opt.value is undefined
-        $colors = yes
-      else
-        $colors = bool opt.value
-    when 'no-colors', 'C'
-      if opt.value isnt undefined
-        throw new Error """
-          Bad syntax for `#{opt.name}` option: \
-          this option does not accept a value.
-          """
-      $colors = no
-    when 'use'
-      if opt.value isnt undefined
-        $plugins.push (opt.value.split ',')...
-    else
-      i++
-      continue
-
-  opts.splice i, 1
-
-# $layla.use $plugins... # TODO
 try
-  if command is null
-    if args.length > 0
-      command = (args.shift()).value
+  # Pre-parse arguments
+  args = []
+
+  for arg in process.argv.slice 2
+    if arg[0] is '-'
+      if arg[1] is '-'
+        name = arg[2..]
+        e = name.indexOf '='
+
+        if e >= 0
+          value = name[e + 1..]
+          name = name[0..e - 1]
+        else
+          value = null
+
+        args.push new Opt name, value
+      else
+        for c in arg[1..]
+          args.push new Opt c, null
     else
-      command = 'help'
+      args.push new Arg arg
 
-  if command of Commands
-    Commands[command] args, opts
+  getArg = ->
+    if args.length and args[0] instanceof Arg
+      return args.shift()
+
+  getOpt = ->
+    if args.length and args[0] instanceof Opt
+      return args.shift()
+
+  handleOpt = (opt) ->
+    switch opt.name
+      when 'h', 'help'
+        # Show usage and exit
+        help()
+        exit 0
+      when 'v', 'version'
+        # Print version and exit
+        version()
+        exit 0
+      when 'c', 'colors'
+        # Enable or disable colors
+        $colors = opt.bool()
+      when 'C', 'no-colors'
+        # Disable colors
+        $colors = not opt.bool()
+      when 'i', 'interactive', 'repl'
+        # Set interactive mode
+        $interactive = opt.bool()
+        $colors or= SUPPORTS_COLORS
+      when 'o', 'out-file'
+        if opt.value is null
+          file = getArg()
+        else if opt.value
+          file = opt
+
+        unless file
+          throw new UsageError """
+            Expected file name after `--out-file` option"""
+
+        $out_file = file.value.trim()
+      when 'u', 'use'
+        if opt.value is null
+          plugin = getArg()
+        else if opt.value
+          plugin = opt.value.trim()
+
+        unless plugin
+          throw new UsageError """
+            Expected plugin name after `--use` option"""
+
+        $plugins.push plugin
+      else
+        throw new UnknownOptionError "Unkown option: `#{opt.name}`"
+
+  # Iterate parsed arguments
+  loop
+    if opt = getOpt()
+      handleOpt opt
+    else if arg = getArg()
+      $files.push arg.value
+    else
+      break
+
+  $layla = new Layla new CLIContext
+
+  # $layla.use $plugins... # TODO
+
+  if $files.length
+    for file in $files
+      $layla.context.import file
+
+  if not ($files.length or $interactive)
+    source = ''
+
+    stdin = process.openStdin()
+    stdin.setEncoding 'utf8'
+    stdin.on 'data', (chunk) ->
+      source += chunk
+
+    stdin.on 'end', ->
+      $layla.evaluate source
+      emit $layla.context.block
+      exit 0
+  else if $interactive
+    repl $layla.context
   else
-    throw new UnknownCommandError "Unknown command: `#{command}`"
-catch e
+    emit $layla.context.block
+    exit 0
 
+catch e
   if e instanceof UsageError
     warn e.toString()
-    out()
-    Commands.help()
+    stderr()
+    stderr USAGE
   else
     err e.toString()
+
+  exit 1

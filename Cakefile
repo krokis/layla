@@ -132,6 +132,13 @@ write = (path, contents, callback = done) ->
     throw err if err
     callback()
 
+chmod = (path, mode, callback = done) ->
+  log 'chmod', "#{mode} #{path}"
+  mode = parseInt mode, 8
+  fs.chmod path, mode, (err) ->
+    throw err if err
+    callback()
+
 uncoffee = (source) ->
   coffee.compile source, bare: yes, header: no
 
@@ -179,10 +186,9 @@ task 'build:bin', 'Build CLI binary', ->
            #!/usr/bin/env node
            #{uncoffee source}
            """
-
       mkdir 'bin', ->
-        write 'bin/layla', js
-        # TODO make file executable
+        write 'bin/layla', js, ->
+          chmod 'bin/layla', '0755'
 
 task 'build:test', 'Build tests', ->
   queue ->
