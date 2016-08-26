@@ -45,9 +45,6 @@ USAGE = """
     -h, --help              Show this help
   """
 
-# Sets window title on Windows
-process.title = 'Layla'
-{stdout, stdin} = process.stdin
 EOL = os.EOL
 
 # "Global" options
@@ -183,6 +180,8 @@ repl = (context) ->
 ###
 "Main"
 ###
+process.title = 'Layla' # Sets window title on Windows
+
 try
   # Pre-parse arguments
   args = []
