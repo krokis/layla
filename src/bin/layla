@@ -151,6 +151,8 @@ repl = (context) ->
             res = context.evaluate stmt
         if res
           emit res
+          stdout()
+
         reset()
 
       catch e
