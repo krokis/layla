@@ -10,7 +10,6 @@
       }
 
       body {
-        text-align: center;
         background-color: rgba(0,0,0,.05);
       }
 
@@ -23,7 +22,8 @@
         color: #444;
       }
 
-      .source textarea {
+      .source textarea,
+      .source .CodeMirror {
         font-family: inherit;
         font-size: 14px;
         outline: none;
@@ -37,6 +37,7 @@
         box-sizing: border-box;
         resize: none;
         color: inherit;
+        cursor: text;
       }
 
       .source textarea:focus {
@@ -61,6 +62,8 @@
     </style>
 
     <script src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/codemirror.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/codemirror.css">
     <script src="layla.js"></script>
     <script>
       jQuery(function($) {
@@ -83,6 +86,15 @@
             toCompile = setTimeout(compile, 500);
           })
           .focus();
+
+        var editor = CodeMirror.fromTextArea($('#lay textarea')[0], {
+          tabSize: 2
+        });
+
+        editor.on('change', function() {
+          editor.save();
+          $('#lay textarea').trigger('change');
+        });
       });
     </script>
   </head>
