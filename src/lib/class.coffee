@@ -29,6 +29,9 @@ class Class
 
     defineProperty target, name, desc
 
+  @property 'class',
+    get: -> @constructor
+
   @property 'type',
     get: -> @constructor.name
 

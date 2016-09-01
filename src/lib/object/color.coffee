@@ -436,7 +436,7 @@ class Color extends Object
 
       return .2126 * r + .7152 * g + .0722 * b
 
-  blend: (backdrop, mode) -> @constructor.blend @, backdrop, mode
+  blend: (backdrop, mode) -> @class.blend @, backdrop, mode
 
   isEqual: (other) ->
     if other instanceof Color

@@ -77,7 +77,7 @@ class Number extends Object
     if unit
       unit = unit.toString().trim()
 
-    value = @constructor.convert @value, @unit, unit
+    value = @class.convert @value, @unit, unit
     @clone value, (unit or '')
 
   ###

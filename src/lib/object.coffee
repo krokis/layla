@@ -29,13 +29,13 @@ class Object extends Class
       throw new TypeError (
         """
         Cannot perform #{repr}: \
-        #{@constructor.repr()} has no method [.#{operator}]
+        #{@class.repr()} has no method [.#{operator}]
         """
       )
 
   reprValue: -> ''
 
-  reprType: -> @constructor.reprType()
+  reprType: -> @class.reprType()
 
   repr: -> "[#{"#{@reprType()} #{@reprValue()}".trim()}]"
 
