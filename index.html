@@ -17,9 +17,16 @@
         position: absolute;
         top: 0;
         bottom: 0;
-        padding: 12px;
+        margin: 12px;
         font-family: "Menlo", "Monaco", "Consolas", "Courier New", monospace;
         color: #444;
+        background-color: white;
+        border: 1px solid rgba(0,0,0,.2);
+        box-shadow: inset 2px 2px 2px rgba(0,0,0,.1);
+        border-radius: 4px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
       }
 
       .source textarea,
@@ -27,54 +34,90 @@
         font-family: inherit;
         font-size: 14px;
         outline: none;
-        background-color: white;
-        border: 1px solid rgba(0,0,0,.2);
-        box-shadow: inset 2px 2px 2px rgba(0,0,0,.1);
-        border-radius: 4px;
+        border: none;
+        background: none;
         padding: 12px;
-        width: 100%;
-        height: 100%;
+        flex-grow: 1;
         box-sizing: border-box;
         resize: none;
         color: inherit;
         cursor: text;
       }
 
-      .source textarea:focus {
-        box-shadow: inset 2px 2px 2px rgba(0,0,0,.1);
-      }
-
       #lay {
         left: 0;
         right: 50%;
-        padding-right: 6px;
+        margin-right: 6px;
       }
 
       #css {
         left: 50%;
         right: 0;
-        padding-left: 6px;
+        margin-left: 6px;
       }
 
-      body.errored #css {
-        color: #cc0000;
+      .source > .errors {
+        overflow: hidden;
+        margin: 0;
+        max-height: 0;
+        background-color: #fdeeb1;
+        transition: max-height .15s;
+        border-top: 1px solid rgba(0,0,0,.2);
+        box-shadow: 2px -2px 2px rgba(0,0,0,.1);
+        margin-bottom: -4px
+      }
+
+      .source > .errors > p {
+        font-size: 13px;
+        color: rgba(255, 0, 0, .7);
+        margin: 12px 12px 16px;
+      }
+
+      body.errored .source > .errors {
+        max-height: 4em;
+      }
+
+      body.errored #css textarea,
+      body.errored #css .CodeMirror{
+        opacity: .3;
       }
     </style>
 
     <script src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/codemirror.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/mode/css/css.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/codemirror.css">
+
     <script src="layla.js"></script>
     <script>
       jQuery(function($) {
+        var lay_editor = CodeMirror.fromTextArea($('#lay textarea')[0], {
+          tabSize: 2,
+          mode: 'text'
+        });
+
+        lay_editor.on('change', function() {
+          lay_editor.save();
+          $('#lay textarea').trigger('change');
+        });
+
+        var css_editor = CodeMirror.fromTextArea($('#css textarea')[0], {
+          tabSize: 2,
+          mode: 'css',
+          readOnly: true
+        });
+
         function compile() {
           var layla = new Layla;
+
           try {
-            $('#css textarea').val(layla.compile($('#lay textarea').val()));
+            var css = layla.compile($('#lay textarea').val());
+            $('#css textarea').val(css);
+            css_editor.setValue(css);
             $('body').removeClass('errored');
           } catch (e) {
             $('body').addClass('errored');
-            $('#css textarea').val(e.message);
+            $('#lay > .errors').empty().append($('<p>').text(e.message));
           }
         }
 
@@ -86,15 +129,6 @@
             toCompile = setTimeout(compile, 500);
           })
           .focus();
-
-        var editor = CodeMirror.fromTextArea($('#lay textarea')[0], {
-          tabSize: 2
-        });
-
-        editor.on('change', function() {
-          editor.save();
-          $('#lay textarea').trigger('change');
-        });
       });
     </script>
   </head>
@@ -102,6 +136,7 @@
 
     <div class="source" id="lay">
       <textarea spellcheck="false"></textarea>
+      <div class="errors"></div>
     </div>
 
     <div class="source" id="css">
