@@ -114,5 +114,10 @@
   "no_nested_string_interpolation": {
     "name": "no_nested_string_interpolation",
     "level": "ignore"
+  },
+  "no_debugger": {
+    "name": "no_debugger",
+    "level": "error",
+    "console": true
   }
 }
