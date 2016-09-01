@@ -1117,6 +1117,18 @@ Strings
   ~~~ TypeError
   ~~~
 
+### `base64`
+
+- Returns a copy of the string, encoded as Base64
+
+  ~~~ lay
+  foo: "I have 1€ and £1".base64
+  ~~~
+
+  ~~~ css
+  foo: "SSBoYXZlIDHigqwgYW5kIMKjMQ==";
+  ~~~
+
 ### `copy`
 
 - Creates a copy of the string

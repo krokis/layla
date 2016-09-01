@@ -20,11 +20,13 @@ class String extends Object
 
   isPalindrome: ->
     letters = @value.toLowerCase().replace /[\W]+/g, ''
-    letters is (letters.split '').reverse().join ''
+    return letters is (letters.split '').reverse().join ''
 
   toNumber: -> Number.fromString @value
 
   isNumeric: -> !!(try @toNumber())
+
+  toBase64: -> new Buffer(@value).toString 'base64'
 
   toString: -> @value
 
@@ -182,6 +184,8 @@ class String extends Object
   '.reverse': -> @clone (@value.split '').reverse().join ''
 
   '.palindrome?': -> Boolean.new @isPalindrome()
+
+  '.base64': -> @clone @toBase64()
 
 Number::['.base'] = (base = Number.TEN) ->
   base = base.toNumber()
