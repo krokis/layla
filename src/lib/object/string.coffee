@@ -244,11 +244,11 @@ do ->
 
 Number::['.unit'] = -> if @unit then new String @unit else Null.null
 
-Object::['.string'] = -> new String @toString()
-
-Object::['.unquoted'] = Object::['.string']
+Object::['.unquoted'] = -> new String @toString()
 
 Object::['.quoted'] = -> new String @toString(), '"'
+
+Object::['.string'] = Object::['.quoted']
 
 Object::['.repr'] = -> new String @repr(), '"'
 
