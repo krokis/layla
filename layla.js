@@ -1,6 +1,1777 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+;(function (exports) {
+	'use strict';
+
+  var Arr = (typeof Uint8Array !== 'undefined')
+    ? Uint8Array
+    : Array
+
+	var PLUS   = '+'.charCodeAt(0)
+	var SLASH  = '/'.charCodeAt(0)
+	var NUMBER = '0'.charCodeAt(0)
+	var LOWER  = 'a'.charCodeAt(0)
+	var UPPER  = 'A'.charCodeAt(0)
+	var PLUS_URL_SAFE = '-'.charCodeAt(0)
+	var SLASH_URL_SAFE = '_'.charCodeAt(0)
+
+	function decode (elt) {
+		var code = elt.charCodeAt(0)
+		if (code === PLUS ||
+		    code === PLUS_URL_SAFE)
+			return 62 // '+'
+		if (code === SLASH ||
+		    code === SLASH_URL_SAFE)
+			return 63 // '/'
+		if (code < NUMBER)
+			return -1 //no match
+		if (code < NUMBER + 10)
+			return code - NUMBER + 26 + 26
+		if (code < UPPER + 26)
+			return code - UPPER
+		if (code < LOWER + 26)
+			return code - LOWER + 26
+	}
+
+	function b64ToByteArray (b64) {
+		var i, j, l, tmp, placeHolders, arr
+
+		if (b64.length % 4 > 0) {
+			throw new Error('Invalid string. Length must be a multiple of 4')
+		}
+
+		// the number of equal signs (place holders)
+		// if there are two placeholders, than the two characters before it
+		// represent one byte
+		// if there is only one, then the three characters before it represent 2 bytes
+		// this is just a cheap hack to not do indexOf twice
+		var len = b64.length
+		placeHolders = '=' === b64.charAt(len - 2) ? 2 : '=' === b64.charAt(len - 1) ? 1 : 0
+
+		// base64 is 4/3 + up to two characters of the original data
+		arr = new Arr(b64.length * 3 / 4 - placeHolders)
+
+		// if there are placeholders, only get up to the last complete 4 chars
+		l = placeHolders > 0 ? b64.length - 4 : b64.length
+
+		var L = 0
+
+		function push (v) {
+			arr[L++] = v
+		}
+
+		for (i = 0, j = 0; i < l; i += 4, j += 3) {
+			tmp = (decode(b64.charAt(i)) << 18) | (decode(b64.charAt(i + 1)) << 12) | (decode(b64.charAt(i + 2)) << 6) | decode(b64.charAt(i + 3))
+			push((tmp & 0xFF0000) >> 16)
+			push((tmp & 0xFF00) >> 8)
+			push(tmp & 0xFF)
+		}
+
+		if (placeHolders === 2) {
+			tmp = (decode(b64.charAt(i)) << 2) | (decode(b64.charAt(i + 1)) >> 4)
+			push(tmp & 0xFF)
+		} else if (placeHolders === 1) {
+			tmp = (decode(b64.charAt(i)) << 10) | (decode(b64.charAt(i + 1)) << 4) | (decode(b64.charAt(i + 2)) >> 2)
+			push((tmp >> 8) & 0xFF)
+			push(tmp & 0xFF)
+		}
+
+		return arr
+	}
+
+	function uint8ToBase64 (uint8) {
+		var i,
+			extraBytes = uint8.length % 3, // if we have 1 byte left, pad 2 bytes
+			output = "",
+			temp, length
+
+		function encode (num) {
+			return lookup.charAt(num)
+		}
+
+		function tripletToBase64 (num) {
+			return encode(num >> 18 & 0x3F) + encode(num >> 12 & 0x3F) + encode(num >> 6 & 0x3F) + encode(num & 0x3F)
+		}
+
+		// go through the array every three bytes, we'll deal with trailing stuff later
+		for (i = 0, length = uint8.length - extraBytes; i < length; i += 3) {
+			temp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+			output += tripletToBase64(temp)
+		}
+
+		// pad the end with zeros, but make sure to not forget the extra bytes
+		switch (extraBytes) {
+			case 1:
+				temp = uint8[uint8.length - 1]
+				output += encode(temp >> 2)
+				output += encode((temp << 4) & 0x3F)
+				output += '=='
+				break
+			case 2:
+				temp = (uint8[uint8.length - 2] << 8) + (uint8[uint8.length - 1])
+				output += encode(temp >> 10)
+				output += encode((temp >> 4) & 0x3F)
+				output += encode((temp << 2) & 0x3F)
+				output += '='
+				break
+		}
+
+		return output
+	}
+
+	exports.toByteArray = b64ToByteArray
+	exports.fromByteArray = uint8ToBase64
+}(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
 },{}],2:[function(require,module,exports){
+
+},{}],3:[function(require,module,exports){
+(function (global){
+/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @license  MIT
+ */
+/* eslint-disable no-proto */
+
+'use strict'
+
+var base64 = require('base64-js')
+var ieee754 = require('ieee754')
+var isArray = require('isarray')
+
+exports.Buffer = Buffer
+exports.SlowBuffer = SlowBuffer
+exports.INSPECT_MAX_BYTES = 50
+Buffer.poolSize = 8192 // not used by this implementation
+
+var rootParent = {}
+
+/**
+ * If `Buffer.TYPED_ARRAY_SUPPORT`:
+ *   === true    Use Uint8Array implementation (fastest)
+ *   === false   Use Object implementation (most compatible, even IE6)
+ *
+ * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
+ * Opera 11.6+, iOS 4.2+.
+ *
+ * Due to various browser bugs, sometimes the Object implementation will be used even
+ * when the browser supports typed arrays.
+ *
+ * Note:
+ *
+ *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
+ *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
+ *
+ *   - Safari 5-7 lacks support for changing the `Object.prototype.constructor` property
+ *     on objects.
+ *
+ *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
+ *
+ *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
+ *     incorrect length in some situations.
+
+ * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
+ * get the Object implementation, which is slower but behaves correctly.
+ */
+Buffer.TYPED_ARRAY_SUPPORT = global.TYPED_ARRAY_SUPPORT !== undefined
+  ? global.TYPED_ARRAY_SUPPORT
+  : typedArraySupport()
+
+function typedArraySupport () {
+  function Bar () {}
+  try {
+    var arr = new Uint8Array(1)
+    arr.foo = function () { return 42 }
+    arr.constructor = Bar
+    return arr.foo() === 42 && // typed array instances can be augmented
+        arr.constructor === Bar && // constructor can be set
+        typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
+        arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
+  } catch (e) {
+    return false
+  }
+}
+
+function kMaxLength () {
+  return Buffer.TYPED_ARRAY_SUPPORT
+    ? 0x7fffffff
+    : 0x3fffffff
+}
+
+/**
+ * Class: Buffer
+ * =============
+ *
+ * The Buffer constructor returns instances of `Uint8Array` that are augmented
+ * with function properties for all the node `Buffer` API functions. We use
+ * `Uint8Array` so that square bracket notation works as expected -- it returns
+ * a single octet.
+ *
+ * By augmenting the instances, we can avoid modifying the `Uint8Array`
+ * prototype.
+ */
+function Buffer (arg) {
+  if (!(this instanceof Buffer)) {
+    // Avoid going through an ArgumentsAdaptorTrampoline in the common case.
+    if (arguments.length > 1) return new Buffer(arg, arguments[1])
+    return new Buffer(arg)
+  }
+
+  if (!Buffer.TYPED_ARRAY_SUPPORT) {
+    this.length = 0
+    this.parent = undefined
+  }
+
+  // Common case.
+  if (typeof arg === 'number') {
+    return fromNumber(this, arg)
+  }
+
+  // Slightly less common case.
+  if (typeof arg === 'string') {
+    return fromString(this, arg, arguments.length > 1 ? arguments[1] : 'utf8')
+  }
+
+  // Unusual.
+  return fromObject(this, arg)
+}
+
+function fromNumber (that, length) {
+  that = allocate(that, length < 0 ? 0 : checked(length) | 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) {
+    for (var i = 0; i < length; i++) {
+      that[i] = 0
+    }
+  }
+  return that
+}
+
+function fromString (that, string, encoding) {
+  if (typeof encoding !== 'string' || encoding === '') encoding = 'utf8'
+
+  // Assumption: byteLength() return value is always < kMaxLength.
+  var length = byteLength(string, encoding) | 0
+  that = allocate(that, length)
+
+  that.write(string, encoding)
+  return that
+}
+
+function fromObject (that, object) {
+  if (Buffer.isBuffer(object)) return fromBuffer(that, object)
+
+  if (isArray(object)) return fromArray(that, object)
+
+  if (object == null) {
+    throw new TypeError('must start with number, buffer, array or string')
+  }
+
+  if (typeof ArrayBuffer !== 'undefined') {
+    if (object.buffer instanceof ArrayBuffer) {
+      return fromTypedArray(that, object)
+    }
+    if (object instanceof ArrayBuffer) {
+      return fromArrayBuffer(that, object)
+    }
+  }
+
+  if (object.length) return fromArrayLike(that, object)
+
+  return fromJsonObject(that, object)
+}
+
+function fromBuffer (that, buffer) {
+  var length = checked(buffer.length) | 0
+  that = allocate(that, length)
+  buffer.copy(that, 0, 0, length)
+  return that
+}
+
+function fromArray (that, array) {
+  var length = checked(array.length) | 0
+  that = allocate(that, length)
+  for (var i = 0; i < length; i += 1) {
+    that[i] = array[i] & 255
+  }
+  return that
+}
+
+// Duplicate of fromArray() to keep fromArray() monomorphic.
+function fromTypedArray (that, array) {
+  var length = checked(array.length) | 0
+  that = allocate(that, length)
+  // Truncating the elements is probably not what people expect from typed
+  // arrays with BYTES_PER_ELEMENT > 1 but it's compatible with the behavior
+  // of the old Buffer constructor.
+  for (var i = 0; i < length; i += 1) {
+    that[i] = array[i] & 255
+  }
+  return that
+}
+
+function fromArrayBuffer (that, array) {
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    array.byteLength
+    that = Buffer._augment(new Uint8Array(array))
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    that = fromTypedArray(that, new Uint8Array(array))
+  }
+  return that
+}
+
+function fromArrayLike (that, array) {
+  var length = checked(array.length) | 0
+  that = allocate(that, length)
+  for (var i = 0; i < length; i += 1) {
+    that[i] = array[i] & 255
+  }
+  return that
+}
+
+// Deserialize { type: 'Buffer', data: [1,2,3,...] } into a Buffer object.
+// Returns a zero-length buffer for inputs that don't conform to the spec.
+function fromJsonObject (that, object) {
+  var array
+  var length = 0
+
+  if (object.type === 'Buffer' && isArray(object.data)) {
+    array = object.data
+    length = checked(array.length) | 0
+  }
+  that = allocate(that, length)
+
+  for (var i = 0; i < length; i += 1) {
+    that[i] = array[i] & 255
+  }
+  return that
+}
+
+if (Buffer.TYPED_ARRAY_SUPPORT) {
+  Buffer.prototype.__proto__ = Uint8Array.prototype
+  Buffer.__proto__ = Uint8Array
+} else {
+  // pre-set for values that may exist in the future
+  Buffer.prototype.length = undefined
+  Buffer.prototype.parent = undefined
+}
+
+function allocate (that, length) {
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = Buffer._augment(new Uint8Array(length))
+    that.__proto__ = Buffer.prototype
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    that.length = length
+    that._isBuffer = true
+  }
+
+  var fromPool = length !== 0 && length <= Buffer.poolSize >>> 1
+  if (fromPool) that.parent = rootParent
+
+  return that
+}
+
+function checked (length) {
+  // Note: cannot use `length < kMaxLength` here because that fails when
+  // length is NaN (which is otherwise coerced to zero.)
+  if (length >= kMaxLength()) {
+    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
+                         'size: 0x' + kMaxLength().toString(16) + ' bytes')
+  }
+  return length | 0
+}
+
+function SlowBuffer (subject, encoding) {
+  if (!(this instanceof SlowBuffer)) return new SlowBuffer(subject, encoding)
+
+  var buf = new Buffer(subject, encoding)
+  delete buf.parent
+  return buf
+}
+
+Buffer.isBuffer = function isBuffer (b) {
+  return !!(b != null && b._isBuffer)
+}
+
+Buffer.compare = function compare (a, b) {
+  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
+    throw new TypeError('Arguments must be Buffers')
+  }
+
+  if (a === b) return 0
+
+  var x = a.length
+  var y = b.length
+
+  var i = 0
+  var len = Math.min(x, y)
+  while (i < len) {
+    if (a[i] !== b[i]) break
+
+    ++i
+  }
+
+  if (i !== len) {
+    x = a[i]
+    y = b[i]
+  }
+
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+}
+
+Buffer.isEncoding = function isEncoding (encoding) {
+  switch (String(encoding).toLowerCase()) {
+    case 'hex':
+    case 'utf8':
+    case 'utf-8':
+    case 'ascii':
+    case 'binary':
+    case 'base64':
+    case 'raw':
+    case 'ucs2':
+    case 'ucs-2':
+    case 'utf16le':
+    case 'utf-16le':
+      return true
+    default:
+      return false
+  }
+}
+
+Buffer.concat = function concat (list, length) {
+  if (!isArray(list)) throw new TypeError('list argument must be an Array of Buffers.')
+
+  if (list.length === 0) {
+    return new Buffer(0)
+  }
+
+  var i
+  if (length === undefined) {
+    length = 0
+    for (i = 0; i < list.length; i++) {
+      length += list[i].length
+    }
+  }
+
+  var buf = new Buffer(length)
+  var pos = 0
+  for (i = 0; i < list.length; i++) {
+    var item = list[i]
+    item.copy(buf, pos)
+    pos += item.length
+  }
+  return buf
+}
+
+function byteLength (string, encoding) {
+  if (typeof string !== 'string') string = '' + string
+
+  var len = string.length
+  if (len === 0) return 0
+
+  // Use a for loop to avoid recursion
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'ascii':
+      case 'binary':
+      // Deprecated
+      case 'raw':
+      case 'raws':
+        return len
+      case 'utf8':
+      case 'utf-8':
+        return utf8ToBytes(string).length
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return len * 2
+      case 'hex':
+        return len >>> 1
+      case 'base64':
+        return base64ToBytes(string).length
+      default:
+        if (loweredCase) return utf8ToBytes(string).length // assume utf8
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+Buffer.byteLength = byteLength
+
+function slowToString (encoding, start, end) {
+  var loweredCase = false
+
+  start = start | 0
+  end = end === undefined || end === Infinity ? this.length : end | 0
+
+  if (!encoding) encoding = 'utf8'
+  if (start < 0) start = 0
+  if (end > this.length) end = this.length
+  if (end <= start) return ''
+
+  while (true) {
+    switch (encoding) {
+      case 'hex':
+        return hexSlice(this, start, end)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Slice(this, start, end)
+
+      case 'ascii':
+        return asciiSlice(this, start, end)
+
+      case 'binary':
+        return binarySlice(this, start, end)
+
+      case 'base64':
+        return base64Slice(this, start, end)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return utf16leSlice(this, start, end)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = (encoding + '').toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+
+Buffer.prototype.toString = function toString () {
+  var length = this.length | 0
+  if (length === 0) return ''
+  if (arguments.length === 0) return utf8Slice(this, 0, length)
+  return slowToString.apply(this, arguments)
+}
+
+Buffer.prototype.equals = function equals (b) {
+  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
+  if (this === b) return true
+  return Buffer.compare(this, b) === 0
+}
+
+Buffer.prototype.inspect = function inspect () {
+  var str = ''
+  var max = exports.INSPECT_MAX_BYTES
+  if (this.length > 0) {
+    str = this.toString('hex', 0, max).match(/.{2}/g).join(' ')
+    if (this.length > max) str += ' ... '
+  }
+  return '<Buffer ' + str + '>'
+}
+
+Buffer.prototype.compare = function compare (b) {
+  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
+  if (this === b) return 0
+  return Buffer.compare(this, b)
+}
+
+Buffer.prototype.indexOf = function indexOf (val, byteOffset) {
+  if (byteOffset > 0x7fffffff) byteOffset = 0x7fffffff
+  else if (byteOffset < -0x80000000) byteOffset = -0x80000000
+  byteOffset >>= 0
+
+  if (this.length === 0) return -1
+  if (byteOffset >= this.length) return -1
+
+  // Negative offsets start from the end of the buffer
+  if (byteOffset < 0) byteOffset = Math.max(this.length + byteOffset, 0)
+
+  if (typeof val === 'string') {
+    if (val.length === 0) return -1 // special case: looking for empty string always fails
+    return String.prototype.indexOf.call(this, val, byteOffset)
+  }
+  if (Buffer.isBuffer(val)) {
+    return arrayIndexOf(this, val, byteOffset)
+  }
+  if (typeof val === 'number') {
+    if (Buffer.TYPED_ARRAY_SUPPORT && Uint8Array.prototype.indexOf === 'function') {
+      return Uint8Array.prototype.indexOf.call(this, val, byteOffset)
+    }
+    return arrayIndexOf(this, [ val ], byteOffset)
+  }
+
+  function arrayIndexOf (arr, val, byteOffset) {
+    var foundIndex = -1
+    for (var i = 0; byteOffset + i < arr.length; i++) {
+      if (arr[byteOffset + i] === val[foundIndex === -1 ? 0 : i - foundIndex]) {
+        if (foundIndex === -1) foundIndex = i
+        if (i - foundIndex + 1 === val.length) return byteOffset + foundIndex
+      } else {
+        foundIndex = -1
+      }
+    }
+    return -1
+  }
+
+  throw new TypeError('val must be string, number or Buffer')
+}
+
+// `get` is deprecated
+Buffer.prototype.get = function get (offset) {
+  console.log('.get() is deprecated. Access using array indexes instead.')
+  return this.readUInt8(offset)
+}
+
+// `set` is deprecated
+Buffer.prototype.set = function set (v, offset) {
+  console.log('.set() is deprecated. Access using array indexes instead.')
+  return this.writeUInt8(v, offset)
+}
+
+function hexWrite (buf, string, offset, length) {
+  offset = Number(offset) || 0
+  var remaining = buf.length - offset
+  if (!length) {
+    length = remaining
+  } else {
+    length = Number(length)
+    if (length > remaining) {
+      length = remaining
+    }
+  }
+
+  // must be an even number of digits
+  var strLen = string.length
+  if (strLen % 2 !== 0) throw new Error('Invalid hex string')
+
+  if (length > strLen / 2) {
+    length = strLen / 2
+  }
+  for (var i = 0; i < length; i++) {
+    var parsed = parseInt(string.substr(i * 2, 2), 16)
+    if (isNaN(parsed)) throw new Error('Invalid hex string')
+    buf[offset + i] = parsed
+  }
+  return i
+}
+
+function utf8Write (buf, string, offset, length) {
+  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+function asciiWrite (buf, string, offset, length) {
+  return blitBuffer(asciiToBytes(string), buf, offset, length)
+}
+
+function binaryWrite (buf, string, offset, length) {
+  return asciiWrite(buf, string, offset, length)
+}
+
+function base64Write (buf, string, offset, length) {
+  return blitBuffer(base64ToBytes(string), buf, offset, length)
+}
+
+function ucs2Write (buf, string, offset, length) {
+  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+Buffer.prototype.write = function write (string, offset, length, encoding) {
+  // Buffer#write(string)
+  if (offset === undefined) {
+    encoding = 'utf8'
+    length = this.length
+    offset = 0
+  // Buffer#write(string, encoding)
+  } else if (length === undefined && typeof offset === 'string') {
+    encoding = offset
+    length = this.length
+    offset = 0
+  // Buffer#write(string, offset[, length][, encoding])
+  } else if (isFinite(offset)) {
+    offset = offset | 0
+    if (isFinite(length)) {
+      length = length | 0
+      if (encoding === undefined) encoding = 'utf8'
+    } else {
+      encoding = length
+      length = undefined
+    }
+  // legacy write(string, encoding, offset, length) - remove in v0.13
+  } else {
+    var swap = encoding
+    encoding = offset
+    offset = length | 0
+    length = swap
+  }
+
+  var remaining = this.length - offset
+  if (length === undefined || length > remaining) length = remaining
+
+  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
+    throw new RangeError('attempt to write outside buffer bounds')
+  }
+
+  if (!encoding) encoding = 'utf8'
+
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'hex':
+        return hexWrite(this, string, offset, length)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Write(this, string, offset, length)
+
+      case 'ascii':
+        return asciiWrite(this, string, offset, length)
+
+      case 'binary':
+        return binaryWrite(this, string, offset, length)
+
+      case 'base64':
+        // Warning: maxLength not taken into account in base64Write
+        return base64Write(this, string, offset, length)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return ucs2Write(this, string, offset, length)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+
+Buffer.prototype.toJSON = function toJSON () {
+  return {
+    type: 'Buffer',
+    data: Array.prototype.slice.call(this._arr || this, 0)
+  }
+}
+
+function base64Slice (buf, start, end) {
+  if (start === 0 && end === buf.length) {
+    return base64.fromByteArray(buf)
+  } else {
+    return base64.fromByteArray(buf.slice(start, end))
+  }
+}
+
+function utf8Slice (buf, start, end) {
+  end = Math.min(buf.length, end)
+  var res = []
+
+  var i = start
+  while (i < end) {
+    var firstByte = buf[i]
+    var codePoint = null
+    var bytesPerSequence = (firstByte > 0xEF) ? 4
+      : (firstByte > 0xDF) ? 3
+      : (firstByte > 0xBF) ? 2
+      : 1
+
+    if (i + bytesPerSequence <= end) {
+      var secondByte, thirdByte, fourthByte, tempCodePoint
+
+      switch (bytesPerSequence) {
+        case 1:
+          if (firstByte < 0x80) {
+            codePoint = firstByte
+          }
+          break
+        case 2:
+          secondByte = buf[i + 1]
+          if ((secondByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F)
+            if (tempCodePoint > 0x7F) {
+              codePoint = tempCodePoint
+            }
+          }
+          break
+        case 3:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F)
+            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
+              codePoint = tempCodePoint
+            }
+          }
+          break
+        case 4:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          fourthByte = buf[i + 3]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F)
+            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
+              codePoint = tempCodePoint
+            }
+          }
+      }
+    }
+
+    if (codePoint === null) {
+      // we did not generate a valid codePoint so insert a
+      // replacement char (U+FFFD) and advance only 1 byte
+      codePoint = 0xFFFD
+      bytesPerSequence = 1
+    } else if (codePoint > 0xFFFF) {
+      // encode to utf16 (surrogate pair dance)
+      codePoint -= 0x10000
+      res.push(codePoint >>> 10 & 0x3FF | 0xD800)
+      codePoint = 0xDC00 | codePoint & 0x3FF
+    }
+
+    res.push(codePoint)
+    i += bytesPerSequence
+  }
+
+  return decodeCodePointsArray(res)
+}
+
+// Based on http://stackoverflow.com/a/22747272/680742, the browser with
+// the lowest limit is Chrome, with 0x10000 args.
+// We go 1 magnitude less, for safety
+var MAX_ARGUMENTS_LENGTH = 0x1000
+
+function decodeCodePointsArray (codePoints) {
+  var len = codePoints.length
+  if (len <= MAX_ARGUMENTS_LENGTH) {
+    return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
+  }
+
+  // Decode in chunks to avoid "call stack size exceeded".
+  var res = ''
+  var i = 0
+  while (i < len) {
+    res += String.fromCharCode.apply(
+      String,
+      codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
+    )
+  }
+  return res
+}
+
+function asciiSlice (buf, start, end) {
+  var ret = ''
+  end = Math.min(buf.length, end)
+
+  for (var i = start; i < end; i++) {
+    ret += String.fromCharCode(buf[i] & 0x7F)
+  }
+  return ret
+}
+
+function binarySlice (buf, start, end) {
+  var ret = ''
+  end = Math.min(buf.length, end)
+
+  for (var i = start; i < end; i++) {
+    ret += String.fromCharCode(buf[i])
+  }
+  return ret
+}
+
+function hexSlice (buf, start, end) {
+  var len = buf.length
+
+  if (!start || start < 0) start = 0
+  if (!end || end < 0 || end > len) end = len
+
+  var out = ''
+  for (var i = start; i < end; i++) {
+    out += toHex(buf[i])
+  }
+  return out
+}
+
+function utf16leSlice (buf, start, end) {
+  var bytes = buf.slice(start, end)
+  var res = ''
+  for (var i = 0; i < bytes.length; i += 2) {
+    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256)
+  }
+  return res
+}
+
+Buffer.prototype.slice = function slice (start, end) {
+  var len = this.length
+  start = ~~start
+  end = end === undefined ? len : ~~end
+
+  if (start < 0) {
+    start += len
+    if (start < 0) start = 0
+  } else if (start > len) {
+    start = len
+  }
+
+  if (end < 0) {
+    end += len
+    if (end < 0) end = 0
+  } else if (end > len) {
+    end = len
+  }
+
+  if (end < start) end = start
+
+  var newBuf
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    newBuf = Buffer._augment(this.subarray(start, end))
+  } else {
+    var sliceLen = end - start
+    newBuf = new Buffer(sliceLen, undefined)
+    for (var i = 0; i < sliceLen; i++) {
+      newBuf[i] = this[i + start]
+    }
+  }
+
+  if (newBuf.length) newBuf.parent = this.parent || this
+
+  return newBuf
+}
+
+/*
+ * Need to make sure that buffer isn't trying to write out of bounds.
+ */
+function checkOffset (offset, ext, length) {
+  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
+  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
+}
+
+Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
+  }
+
+  return val
+}
+
+Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    checkOffset(offset, byteLength, this.length)
+  }
+
+  var val = this[offset + --byteLength]
+  var mul = 1
+  while (byteLength > 0 && (mul *= 0x100)) {
+    val += this[offset + --byteLength] * mul
+  }
+
+  return val
+}
+
+Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  return this[offset]
+}
+
+Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return this[offset] | (this[offset + 1] << 8)
+}
+
+Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return (this[offset] << 8) | this[offset + 1]
+}
+
+Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return ((this[offset]) |
+      (this[offset + 1] << 8) |
+      (this[offset + 2] << 16)) +
+      (this[offset + 3] * 0x1000000)
+}
+
+Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] * 0x1000000) +
+    ((this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    this[offset + 3])
+}
+
+Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
+  }
+  mul *= 0x80
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+  return val
+}
+
+Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var i = byteLength
+  var mul = 1
+  var val = this[offset + --i]
+  while (i > 0 && (mul *= 0x100)) {
+    val += this[offset + --i] * mul
+  }
+  mul *= 0x80
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+  return val
+}
+
+Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  if (!(this[offset] & 0x80)) return (this[offset])
+  return ((0xff - this[offset] + 1) * -1)
+}
+
+Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset] | (this[offset + 1] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+}
+
+Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset + 1] | (this[offset] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+}
+
+Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset]) |
+    (this[offset + 1] << 8) |
+    (this[offset + 2] << 16) |
+    (this[offset + 3] << 24)
+}
+
+Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] << 24) |
+    (this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    (this[offset + 3])
+}
+
+Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, true, 23, 4)
+}
+
+Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, false, 23, 4)
+}
+
+Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, true, 52, 8)
+}
+
+Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, false, 52, 8)
+}
+
+function checkInt (buf, value, offset, ext, max, min) {
+  if (!Buffer.isBuffer(buf)) throw new TypeError('buffer must be a Buffer instance')
+  if (value > max || value < min) throw new RangeError('value is out of bounds')
+  if (offset + ext > buf.length) throw new RangeError('index out of range')
+}
+
+Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkInt(this, value, offset, byteLength, Math.pow(2, 8 * byteLength), 0)
+
+  var mul = 1
+  var i = 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkInt(this, value, offset, byteLength, Math.pow(2, 8 * byteLength), 0)
+
+  var i = byteLength - 1
+  var mul = 1
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+  this[offset] = (value & 0xff)
+  return offset + 1
+}
+
+function objectWriteUInt16 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; i++) {
+    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
+      (littleEndian ? i : 1 - i) * 8
+  }
+}
+
+Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = (value & 0xff)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
+  return offset + 2
+}
+
+function objectWriteUInt32 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffffffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; i++) {
+    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
+  }
+}
+
+Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset + 3] = (value >>> 24)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 1] = (value >>> 8)
+    this[offset] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+  }
+
+  var i = 0
+  var mul = 1
+  var sub = value < 0 ? 1 : 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+  }
+
+  var i = byteLength - 1
+  var mul = 1
+  var sub = value < 0 ? 1 : 0
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+  if (value < 0) value = 0xff + value + 1
+  this[offset] = (value & 0xff)
+  return offset + 1
+}
+
+Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = (value & 0xff)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 3] = (value >>> 24)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (value < 0) value = 0xffffffff + value + 1
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
+}
+
+function checkIEEE754 (buf, value, offset, ext, max, min) {
+  if (value > max || value < min) throw new RangeError('value is out of bounds')
+  if (offset + ext > buf.length) throw new RangeError('index out of range')
+  if (offset < 0) throw new RangeError('index out of range')
+}
+
+function writeFloat (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
+  }
+  ieee754.write(buf, value, offset, littleEndian, 23, 4)
+  return offset + 4
+}
+
+Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, true, noAssert)
+}
+
+Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, false, noAssert)
+}
+
+function writeDouble (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
+  }
+  ieee754.write(buf, value, offset, littleEndian, 52, 8)
+  return offset + 8
+}
+
+Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, true, noAssert)
+}
+
+Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, false, noAssert)
+}
+
+// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
+Buffer.prototype.copy = function copy (target, targetStart, start, end) {
+  if (!start) start = 0
+  if (!end && end !== 0) end = this.length
+  if (targetStart >= target.length) targetStart = target.length
+  if (!targetStart) targetStart = 0
+  if (end > 0 && end < start) end = start
+
+  // Copy 0 bytes; we're done
+  if (end === start) return 0
+  if (target.length === 0 || this.length === 0) return 0
+
+  // Fatal error conditions
+  if (targetStart < 0) {
+    throw new RangeError('targetStart out of bounds')
+  }
+  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
+  if (end < 0) throw new RangeError('sourceEnd out of bounds')
+
+  // Are we oob?
+  if (end > this.length) end = this.length
+  if (target.length - targetStart < end - start) {
+    end = target.length - targetStart + start
+  }
+
+  var len = end - start
+  var i
+
+  if (this === target && start < targetStart && targetStart < end) {
+    // descending copy from end
+    for (i = len - 1; i >= 0; i--) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
+    // ascending copy from start
+    for (i = 0; i < len; i++) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else {
+    target._set(this.subarray(start, start + len), targetStart)
+  }
+
+  return len
+}
+
+// fill(value, start=0, end=buffer.length)
+Buffer.prototype.fill = function fill (value, start, end) {
+  if (!value) value = 0
+  if (!start) start = 0
+  if (!end) end = this.length
+
+  if (end < start) throw new RangeError('end < start')
+
+  // Fill 0 bytes; we're done
+  if (end === start) return
+  if (this.length === 0) return
+
+  if (start < 0 || start >= this.length) throw new RangeError('start out of bounds')
+  if (end < 0 || end > this.length) throw new RangeError('end out of bounds')
+
+  var i
+  if (typeof value === 'number') {
+    for (i = start; i < end; i++) {
+      this[i] = value
+    }
+  } else {
+    var bytes = utf8ToBytes(value.toString())
+    var len = bytes.length
+    for (i = start; i < end; i++) {
+      this[i] = bytes[i % len]
+    }
+  }
+
+  return this
+}
+
+/**
+ * Creates a new `ArrayBuffer` with the *copied* memory of the buffer instance.
+ * Added in Node 0.12. Only available in browsers that support ArrayBuffer.
+ */
+Buffer.prototype.toArrayBuffer = function toArrayBuffer () {
+  if (typeof Uint8Array !== 'undefined') {
+    if (Buffer.TYPED_ARRAY_SUPPORT) {
+      return (new Buffer(this)).buffer
+    } else {
+      var buf = new Uint8Array(this.length)
+      for (var i = 0, len = buf.length; i < len; i += 1) {
+        buf[i] = this[i]
+      }
+      return buf.buffer
+    }
+  } else {
+    throw new TypeError('Buffer.toArrayBuffer not supported in this browser')
+  }
+}
+
+// HELPER FUNCTIONS
+// ================
+
+var BP = Buffer.prototype
+
+/**
+ * Augment a Uint8Array *instance* (not the Uint8Array class!) with Buffer methods
+ */
+Buffer._augment = function _augment (arr) {
+  arr.constructor = Buffer
+  arr._isBuffer = true
+
+  // save reference to original Uint8Array set method before overwriting
+  arr._set = arr.set
+
+  // deprecated
+  arr.get = BP.get
+  arr.set = BP.set
+
+  arr.write = BP.write
+  arr.toString = BP.toString
+  arr.toLocaleString = BP.toString
+  arr.toJSON = BP.toJSON
+  arr.equals = BP.equals
+  arr.compare = BP.compare
+  arr.indexOf = BP.indexOf
+  arr.copy = BP.copy
+  arr.slice = BP.slice
+  arr.readUIntLE = BP.readUIntLE
+  arr.readUIntBE = BP.readUIntBE
+  arr.readUInt8 = BP.readUInt8
+  arr.readUInt16LE = BP.readUInt16LE
+  arr.readUInt16BE = BP.readUInt16BE
+  arr.readUInt32LE = BP.readUInt32LE
+  arr.readUInt32BE = BP.readUInt32BE
+  arr.readIntLE = BP.readIntLE
+  arr.readIntBE = BP.readIntBE
+  arr.readInt8 = BP.readInt8
+  arr.readInt16LE = BP.readInt16LE
+  arr.readInt16BE = BP.readInt16BE
+  arr.readInt32LE = BP.readInt32LE
+  arr.readInt32BE = BP.readInt32BE
+  arr.readFloatLE = BP.readFloatLE
+  arr.readFloatBE = BP.readFloatBE
+  arr.readDoubleLE = BP.readDoubleLE
+  arr.readDoubleBE = BP.readDoubleBE
+  arr.writeUInt8 = BP.writeUInt8
+  arr.writeUIntLE = BP.writeUIntLE
+  arr.writeUIntBE = BP.writeUIntBE
+  arr.writeUInt16LE = BP.writeUInt16LE
+  arr.writeUInt16BE = BP.writeUInt16BE
+  arr.writeUInt32LE = BP.writeUInt32LE
+  arr.writeUInt32BE = BP.writeUInt32BE
+  arr.writeIntLE = BP.writeIntLE
+  arr.writeIntBE = BP.writeIntBE
+  arr.writeInt8 = BP.writeInt8
+  arr.writeInt16LE = BP.writeInt16LE
+  arr.writeInt16BE = BP.writeInt16BE
+  arr.writeInt32LE = BP.writeInt32LE
+  arr.writeInt32BE = BP.writeInt32BE
+  arr.writeFloatLE = BP.writeFloatLE
+  arr.writeFloatBE = BP.writeFloatBE
+  arr.writeDoubleLE = BP.writeDoubleLE
+  arr.writeDoubleBE = BP.writeDoubleBE
+  arr.fill = BP.fill
+  arr.inspect = BP.inspect
+  arr.toArrayBuffer = BP.toArrayBuffer
+
+  return arr
+}
+
+var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
+
+function base64clean (str) {
+  // Node strips out invalid characters like \n and \t from the string, base64-js does not
+  str = stringtrim(str).replace(INVALID_BASE64_RE, '')
+  // Node converts strings with length < 2 to ''
+  if (str.length < 2) return ''
+  // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
+  while (str.length % 4 !== 0) {
+    str = str + '='
+  }
+  return str
+}
+
+function stringtrim (str) {
+  if (str.trim) return str.trim()
+  return str.replace(/^\s+|\s+$/g, '')
+}
+
+function toHex (n) {
+  if (n < 16) return '0' + n.toString(16)
+  return n.toString(16)
+}
+
+function utf8ToBytes (string, units) {
+  units = units || Infinity
+  var codePoint
+  var length = string.length
+  var leadSurrogate = null
+  var bytes = []
+
+  for (var i = 0; i < length; i++) {
+    codePoint = string.charCodeAt(i)
+
+    // is surrogate component
+    if (codePoint > 0xD7FF && codePoint < 0xE000) {
+      // last char was a lead
+      if (!leadSurrogate) {
+        // no lead yet
+        if (codePoint > 0xDBFF) {
+          // unexpected trail
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
+        } else if (i + 1 === length) {
+          // unpaired lead
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
+        }
+
+        // valid lead
+        leadSurrogate = codePoint
+
+        continue
+      }
+
+      // 2 leads in a row
+      if (codePoint < 0xDC00) {
+        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+        leadSurrogate = codePoint
+        continue
+      }
+
+      // valid surrogate pair
+      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
+    } else if (leadSurrogate) {
+      // valid bmp char, but last char was a lead
+      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+    }
+
+    leadSurrogate = null
+
+    // encode utf8
+    if (codePoint < 0x80) {
+      if ((units -= 1) < 0) break
+      bytes.push(codePoint)
+    } else if (codePoint < 0x800) {
+      if ((units -= 2) < 0) break
+      bytes.push(
+        codePoint >> 0x6 | 0xC0,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x10000) {
+      if ((units -= 3) < 0) break
+      bytes.push(
+        codePoint >> 0xC | 0xE0,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x110000) {
+      if ((units -= 4) < 0) break
+      bytes.push(
+        codePoint >> 0x12 | 0xF0,
+        codePoint >> 0xC & 0x3F | 0x80,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else {
+      throw new Error('Invalid code point')
+    }
+  }
+
+  return bytes
+}
+
+function asciiToBytes (str) {
+  var byteArray = []
+  for (var i = 0; i < str.length; i++) {
+    // Node's code seems to be doing this and not & 0x7F..
+    byteArray.push(str.charCodeAt(i) & 0xFF)
+  }
+  return byteArray
+}
+
+function utf16leToBytes (str, units) {
+  var c, hi, lo
+  var byteArray = []
+  for (var i = 0; i < str.length; i++) {
+    if ((units -= 2) < 0) break
+
+    c = str.charCodeAt(i)
+    hi = c >> 8
+    lo = c % 256
+    byteArray.push(lo)
+    byteArray.push(hi)
+  }
+
+  return byteArray
+}
+
+function base64ToBytes (str) {
+  return base64.toByteArray(base64clean(str))
+}
+
+function blitBuffer (src, dst, offset, length) {
+  for (var i = 0; i < length; i++) {
+    if ((i + offset >= dst.length) || (i >= src.length)) break
+    dst[i + offset] = src[i]
+  }
+  return i
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"base64-js":1,"ieee754":5,"isarray":4}],4:[function(require,module,exports){
+var toString = {}.toString;
+
+module.exports = Array.isArray || function (arr) {
+  return toString.call(arr) == '[object Array]';
+};
+
+},{}],5:[function(require,module,exports){
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
+
+  i += d
+
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  if (e === 0) {
+    e = 1 - eBias
+  } else if (e === eMax) {
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
+  } else {
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
+  }
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
+
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+
+  value = Math.abs(value)
+
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0
+    e = eMax
+  } else {
+    e = Math.floor(Math.log(value) / Math.LN2)
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--
+      c *= 2
+    }
+    if (e + eBias >= 1) {
+      value += rt / c
+    } else {
+      value += rt * Math.pow(2, 1 - eBias)
+    }
+    if (value * c >= 2) {
+      e++
+      c /= 2
+    }
+
+    if (e + eBias >= eMax) {
+      m = 0
+      e = eMax
+    } else if (e + eBias >= 1) {
+      m = (value * c - 1) * Math.pow(2, mLen)
+      e = e + eBias
+    } else {
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
+    }
+  }
+
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+  buffer[offset + i - d] |= s * 128
+}
+
+},{}],6:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -228,7 +1999,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":3}],3:[function(require,module,exports){
+},{"_process":7}],7:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -321,7 +2092,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],4:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 (function (global){
 /*! https://mths.be/punycode v1.4.1 by @mathias */
 ;(function(root) {
@@ -858,7 +2629,7 @@ process.umask = function() { return 0; };
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],5:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -944,7 +2715,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],6:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -1031,13 +2802,13 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],7:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":5,"./encode":6}],8:[function(require,module,exports){
+},{"./decode":9,"./encode":10}],12:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -1746,7 +3517,7 @@ function isNullOrUndefined(arg) {
   return  arg == null;
 }
 
-},{"punycode":4,"querystring":7}],9:[function(require,module,exports){
+},{"punycode":8,"querystring":11}],13:[function(require,module,exports){
 module.exports={
   "name": "layla",
   "version": "0.0.0",
@@ -1771,29 +3542,78 @@ module.exports={
   "bin": {
     "layla": "./bin/layla"
   },
-  "dependencies": {},
+  "dependencies": {
+    "supports-color": "^3.1.2"
+  },
   "devDependencies": {
-    "chai": "^3.5.0",
     "browserify": "^10.2.1",
+    "chai": "^3.5.0",
     "coffee-script": "^1.9.2",
     "coffeeify": "^1.1.0",
     "coffeelint": "^1.9.3",
     "commonmark": "~0.12.0",
+    "express": "^4.13.4",
     "fs-extra": "^0.18.2",
     "glob": "^5.0.5",
     "mocha": "~2.2.0",
+    "phantomjs-prebuilt": "^2.1.7",
+    "selenium-webdriver": "^2.53.2",
     "uglify-js": "^2.4.17",
     "which": "^1.0.9"
   }
 }
 
-},{}],10:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 (function (global){
+var BrowserContext;
+
 global.Layla = require('../lib/layla');
+
+BrowserContext = require('../lib/context/browser');
+
+if ((new Function('return this === window'))()) {
+  document.addEventListener("DOMContentLoaded", function() {
+    var URL, base_url, css, i, layla, len, source, style, tag, tags, uri;
+    tags = document.querySelectorAll('[type="text/lay"]');
+    if (tags.length) {
+      URL = require('url');
+      source = '';
+      for (i = 0, len = tags.length; i < len; i++) {
+        tag = tags[i];
+        switch (tag.nodeName) {
+          case 'STYLE':
+            source += tag.textContent + "\n;\n";
+            break;
+          case 'LINK':
+            if (tag.hasAttribute('href')) {
+              uri = tag.getAttribute('href');
+              source += ("import url('" + uri + "')") + "\n;\n";
+            }
+            break;
+          default:
+            continue;
+        }
+      }
+      if (source.trim()) {
+        base_url = URL.resolve(document.location.href, './');
+        console.log(source);
+        layla = new Layla;
+        layla.context = new BrowserContext;
+        layla.context.pushPath(base_url);
+        css = layla.compile(source);
+        style = document.createElement('style');
+        style.setAttribute('rel', 'stylesheet');
+        style.setAttribute('type', 'text/css');
+        style.textContent = css;
+        return document.head.appendChild(style);
+      }
+    }
+  });
+}
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lib/layla":27}],11:[function(require,module,exports){
+},{"../lib/context/browser":18,"../lib/layla":37,"url":12}],15:[function(require,module,exports){
 
 /*
 The base for all Layla classes (except for the core `Layla` class itself).
@@ -1810,13 +3630,13 @@ Class = (function() {
     throw new NotImplementedError;
   };
 
+  getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor, defineProperty = Object.defineProperty;
+
 
   /*
   Simple property support. Allows subclasses to define their own property
   accessors.
    */
-
-  getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor, defineProperty = Object.defineProperty;
 
   Class.property = function(name, desc) {
     var current, k, target, v;
@@ -1843,6 +3663,12 @@ Class = (function() {
     }
     return defineProperty(target, name, desc);
   };
+
+  Class.property('class', {
+    get: function() {
+      return this.constructor;
+    }
+  });
 
   Class.property('type', {
     get: function() {
@@ -1873,13 +3699,16 @@ Class = (function() {
 module.exports = Class;
 
 
-},{}],12:[function(require,module,exports){
-var Class, Context, Document, Function, ImportError, Null, Path,
+},{}],16:[function(require,module,exports){
+var Class, Context, Document, Evaluator, Function, ImportError, Null, Path, URL,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
-  slice = [].slice;
+  slice = [].slice,
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 Path = require('path');
+
+URL = require('url');
 
 Class = require('./class');
 
@@ -1889,6 +3718,8 @@ Null = require('./object/null');
 
 Function = require('./object/function');
 
+Evaluator = require('./evaluator');
+
 ImportError = require('./error/import');
 
 Context = (function(superClass) {
@@ -1896,15 +3727,22 @@ Context = (function(superClass) {
 
   Context.prototype.uri = null;
 
-  function Context(parent, block1) {
-    this.parent = parent != null ? parent : null;
+  function Context(_parent, block1) {
+    this._parent = _parent != null ? _parent : null;
     this.block = block1 != null ? block1 : new Document;
-    this.scope = {};
+    this._scope = {};
     this._plugins = [];
     this._importers = [];
     this._loaders = [];
     this._paths = [];
+    this._visitors = [];
   }
+
+  Context.property('parent', {
+    get: function() {
+      return this._parent;
+    }
+  });
 
   Context.property('plugins', {
     get: function() {
@@ -1932,14 +3770,14 @@ Context = (function(superClass) {
 
   Context.prototype.has = function(name) {
     var ref;
-    return (name in this.scope) || ((ref = this.parent) != null ? ref.has(name) : void 0) || false;
+    return (name in this._scope) || ((ref = this.parent) != null ? ref.has(name) : void 0) || false;
   };
 
   Context.prototype.get = function() {
     var args, name, ref;
     name = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-    if (name in this.scope) {
-      return this.scope[name];
+    if (name in this._scope) {
+      return this._scope[name];
     } else if (this.parent) {
       return (ref = this.parent).get.apply(ref, [name].concat(slice.call(args)));
     } else {
@@ -1948,7 +3786,7 @@ Context = (function(superClass) {
   };
 
   Context.prototype.set = function(name, value) {
-    return this.scope[name] = value.clone();
+    return this._scope[name] = value.clone();
   };
 
   Context.prototype.useLoader = function(loader) {
@@ -1956,6 +3794,11 @@ Context = (function(superClass) {
   };
 
   Context.prototype.pushPath = function(uri) {
+    var ref;
+    uri = uri.trim();
+    if ((ref = uri.slice(-1)) !== '/' && ref !== '\\') {
+      uri += Path.sep;
+    }
     return this._paths.push(uri);
   };
 
@@ -1980,6 +3823,7 @@ Context = (function(superClass) {
         return loader.load(uri, this);
       }
     }
+    throw new ImportError("Could not load \"" + uri + "\"");
   };
 
   Context.prototype.useImporter = function(importer) {
@@ -1997,22 +3841,37 @@ Context = (function(superClass) {
   Context.prototype.resolveURI = function(uri) {};
 
   Context.prototype["import"] = function(uri) {
-    var auri, i, importer, j, len, path, ref, ref1;
+    var auri, e, error, i, importer, j, len, path, ref, ref1;
     ref = this.paths;
     for (i = ref.length - 1; i >= 0; i += -1) {
       path = ref[i];
-      auri = Path.join(path, uri);
+      auri = URL.resolve(path, uri);
       ref1 = this.importers;
       for (j = 0, len = ref1.length; j < len; j++) {
         importer = ref1[j];
         if (importer.canImport(auri, this)) {
           try {
             return importer["import"](auri, this);
-          } catch (undefined) {}
+          } catch (error) {
+            e = error;
+            if (e instanceof ImportError) {
+              continue;
+            }
+            throw e;
+          }
         }
       }
+      break;
     }
     throw new ImportError("Could not import \"" + uri + "\"");
+  };
+
+  Context.prototype.useVisitor = function(visitor) {
+    return this._visitors.push(visitor);
+  };
+
+  Context.prototype.uses = function(plugin) {
+    return (indexOf.call(this._plugins, plugin) >= 0) || (this.parent && this.parent.uses(plugin)) || false;
   };
 
   Context.prototype.use = function() {
@@ -2021,19 +3880,22 @@ Context = (function(superClass) {
     results = [];
     for (i = 0, len = plugins.length; i < len; i++) {
       plugin = plugins[i];
-      plugin.use(this);
-      results.push(this._plugins.push(plugin));
+      if (!this.uses(plugin)) {
+        this._plugins.push(plugin);
+        results.push(plugin.use(this));
+      } else {
+        results.push(void 0);
+      }
     }
     return results;
   };
 
-  Context.prototype.uses = function(plugin) {
-    return this.plugins.some(function(p) {
-      return p === plugin || p instanceof plugin;
-    });
+  Context.prototype.evaluate = function(node, context) {
+    if (context == null) {
+      context = this;
+    }
+    return (new Evaluator).evaluateNode(node, context);
   };
-
-  Context.prototype.evaluate = function() {};
 
   Context.prototype.fork = function(block) {
     if (block == null) {
@@ -2049,7 +3911,205 @@ Context = (function(superClass) {
 module.exports = Context;
 
 
-},{"./class":11,"./error/import":18,"./object/document":65,"./object/function":67,"./object/null":70,"path":2}],13:[function(require,module,exports){
+},{"./class":15,"./error/import":25,"./evaluator":33,"./object/document":78,"./object/function":80,"./object/null":83,"path":6,"url":12}],17:[function(require,module,exports){
+var BaseContext, Context, LayImporter, Number, String, VERSION,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty,
+  slice = [].slice;
+
+Context = require('../context');
+
+LayImporter = require('../importer/lay');
+
+String = require('../object/string');
+
+Number = require('../object/number');
+
+VERSION = require('../version');
+
+BaseContext = (function(superClass) {
+  extend(BaseContext, superClass);
+
+  function BaseContext() {
+    var etc, parent;
+    parent = arguments[0], etc = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+    BaseContext.__super__.constructor.apply(this, [parent].concat(slice.call(etc)));
+    if (!parent) {
+      this.use(new LayImporter);
+      this.set('LAYLA-VERSION', new String(VERSION));
+      this.set('PI', new Number(Math.PI));
+      this.set('π', new Number(Math.PI));
+      this.set('E', new Number(Math.E));
+    }
+  }
+
+  return BaseContext;
+
+})(Context);
+
+module.exports = BaseContext;
+
+
+},{"../context":16,"../importer/lay":35,"../object/number":84,"../object/string":90,"../version":95}],18:[function(require,module,exports){
+var BaseContext, BrowserContext, XHRLoader,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+BaseContext = require('./base');
+
+XHRLoader = require('../loader/xhr');
+
+BrowserContext = (function(superClass) {
+  extend(BrowserContext, superClass);
+
+  function BrowserContext() {
+    BrowserContext.__super__.constructor.apply(this, arguments);
+    this.use(new XHRLoader);
+  }
+
+  return BrowserContext;
+
+})(BaseContext);
+
+module.exports = BrowserContext;
+
+
+},{"../loader/xhr":40,"./base":17}],19:[function(require,module,exports){
+var AtRule, Block, InternalError, Normalizer, Null, Property, Rule, RuleSet, Visitor,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+Visitor = require('../visitor');
+
+Block = require('../object/block');
+
+Rule = require('../object/rule');
+
+RuleSet = require('../object/rule-set');
+
+AtRule = require('../object/at-rule');
+
+Property = require('../object/property');
+
+Null = require('../object/null');
+
+InternalError = require('../error/internal');
+
+
+/*
+ */
+
+Normalizer = (function(superClass) {
+  extend(Normalizer, superClass);
+
+  Normalizer.prototype.options = null;
+
+  Normalizer.prototype.indentation = 0;
+
+  function Normalizer(options) {
+    var defaults, name;
+    this.options = options != null ? options : {};
+    defaults = {
+      flatten_block_properties: true,
+      strip_root_properties: false,
+      strip_empty_blocks: false,
+      strip_null_properties: false,
+      strip_empty_properties: false,
+      strip_empty_rule_sets: true,
+      strip_empty_at_rules: false,
+      strip_empty_media_at_rules: true,
+      hoist_rule_sets: true,
+      hoist_at_rules: false,
+      hoist_media_at_rules: true,
+      convert_unknown_units: true
+    };
+    for (name in defaults) {
+      if (!(name in this.options)) {
+        this.options[name] = defaults[name];
+      }
+    }
+  }
+
+
+  /*
+   */
+
+  Normalizer.prototype.normalize = function(node) {
+    var method;
+    method = "normalize" + node.type;
+    if (method in this) {
+      return this[method].call(this, node);
+    } else {
+      return node;
+    }
+  };
+
+  Normalizer.prototype.normalizeRule = function(node, root) {
+    return node;
+  };
+
+  Normalizer.prototype.isEmptyProperty = function(node) {
+    return node.value instanceof Null;
+  };
+
+  Normalizer.prototype.normalizeBlock = function(node, root) {
+    var body, child, grandchild, hoist, i, len, name, ref, strip, value;
+    if (body = node.items) {
+      if (root == null) {
+        root = node;
+      }
+      node.items = [];
+      while (body.length) {
+        child = body.shift();
+        if (child instanceof Rule) {
+          hoist = (this.options.hoist_rule_sets && (child instanceof RuleSet) && (node instanceof RuleSet)) || (child instanceof AtRule && (this.options.hoist_at_rules || this.options["hoist_" + child.name + "_at_rules"]));
+          (hoist ? root : node).items.push(child);
+          this.normalizeBlock(child, root);
+          strip = !child.items.length && (this.options.strip_empty_blocks || (child instanceof RuleSet && this.options.strip_empty_rule_sets) || (child instanceof RuleSet && (this.options.strip_empty_rule_sets || this.options["strip_empty_" + child.name + "_at_rules"])));
+          if (strip) {
+            root.items.splice(root.items.indexOf(child), 1);
+          }
+        } else if (child instanceof Property) {
+          if (this.options.strip_empty_properties && this.isEmptyProperty(child)) {
+            continue;
+          }
+          if (this.options.flatten_block_properties && child.value instanceof Block) {
+            ref = child.value.items;
+            for (i = 0, len = ref.length; i < len; i++) {
+              grandchild = ref[i];
+              if (grandchild instanceof Property) {
+                name = child.name + "-" + grandchild.name;
+                value = grandchild.value;
+                node.items.push(new Property(name, value));
+              }
+            }
+          } else {
+            node.items.push(child);
+          }
+        } else {
+          throw new InternalError;
+        }
+      }
+    }
+    return node;
+  };
+
+
+  /*
+   */
+
+  Normalizer.prototype.normalizeDocument = function(node) {
+    return this.normalizeBlock(node);
+  };
+
+  return Normalizer;
+
+})(Visitor);
+
+module.exports = Normalizer;
+
+
+},{"../error/internal":26,"../object/at-rule":73,"../object/block":74,"../object/null":83,"../object/property":85,"../object/rule":89,"../object/rule-set":88,"../visitor":96}],20:[function(require,module,exports){
 var Class, Emitter,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -2081,7 +4141,7 @@ Emitter = (function(superClass) {
 module.exports = Emitter;
 
 
-},{"./class":11}],14:[function(require,module,exports){
+},{"./class":15}],21:[function(require,module,exports){
 var CLIEmitter, CSSEmitter,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
@@ -2120,7 +4180,8 @@ CLIEmitter = (function(superClass) {
       options = {};
     }
     defaults = {
-      colors: true
+      colors: true,
+      decimal_places: -1
     };
     for (name in defaults) {
       if (!(name in options)) {
@@ -2197,7 +4258,7 @@ CLIEmitter = (function(superClass) {
 module.exports = CLIEmitter;
 
 
-},{"./css":15}],15:[function(require,module,exports){
+},{"./css":22}],22:[function(require,module,exports){
 var Block, CSSEmitter, Comment, Emitter, Property, Rule,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -2221,7 +4282,9 @@ CSSEmitter = (function(superClass) {
     var defaults, name;
     this.options = options != null ? options : {};
     defaults = {
+      bom: 'preserve',
       new_line: '\n',
+      final_newline: true,
       tab: '  ',
       comments: true,
       before_opening_brace: ' ',
@@ -2360,8 +4423,10 @@ CSSEmitter = (function(superClass) {
     var m, value;
     value = num.value;
     if (value % 1 !== 0) {
-      m = Math.pow(10, this.options.decimal_places);
-      value = (Math.round(value * m)) / m;
+      if (this.options.decimal_places >= 0) {
+        m = Math.pow(10, this.options.decimal_places);
+        value = (Math.round(value * m)) / m;
+      }
     }
     return '' + value;
   };
@@ -2448,8 +4513,12 @@ CSSEmitter = (function(superClass) {
 
   CSSEmitter.prototype.emitDocument = function(doc) {
     var css;
-    css = this.emitBody(doc.items, doc);
-    if (css !== '') {
+    css = '';
+    if ((this.options.bom === true) || (doc.bom && this.options.bom === 'preserve')) {
+      css += '\uFEFF';
+    }
+    css += this.emitBody(doc.items, doc);
+    if (this.options.final_newline && (css !== '')) {
       css += '\n';
     }
     return css;
@@ -2462,7 +4531,7 @@ CSSEmitter = (function(superClass) {
 module.exports = CSSEmitter;
 
 
-},{"../emitter":13,"../node/comment":30,"../object/block":61,"../object/property":72,"../object/rule":76}],16:[function(require,module,exports){
+},{"../emitter":20,"../node/comment":42,"../object/block":74,"../object/property":85,"../object/rule":89}],23:[function(require,module,exports){
 var Class, Error,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -2531,7 +4600,7 @@ Error = (function(superClass) {
 module.exports = Error;
 
 
-},{"./class":11}],17:[function(require,module,exports){
+},{"./class":15}],24:[function(require,module,exports){
 var EOTError, SyntaxError,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -2552,7 +4621,7 @@ EOTError = (function(superClass) {
 module.exports = EOTError;
 
 
-},{"./syntax":23}],18:[function(require,module,exports){
+},{"./syntax":30}],25:[function(require,module,exports){
 var ImportError, ValueError,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -2573,7 +4642,7 @@ ImportError = (function(superClass) {
 module.exports = ImportError;
 
 
-},{"./type":24}],19:[function(require,module,exports){
+},{"./type":31}],26:[function(require,module,exports){
 var Error, InternalError,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -2594,7 +4663,7 @@ InternalError = (function(superClass) {
 module.exports = InternalError;
 
 
-},{"../error":16}],20:[function(require,module,exports){
+},{"../error":23}],27:[function(require,module,exports){
 var Error, NotImplementedError,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
@@ -2623,7 +4692,7 @@ NotImplementedError = (function(superClass) {
 module.exports = NotImplementedError;
 
 
-},{"../error":16}],21:[function(require,module,exports){
+},{"../error":23}],28:[function(require,module,exports){
 var Error, ParseError,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -2644,7 +4713,7 @@ ParseError = (function(superClass) {
 module.exports = ParseError;
 
 
-},{"../error":16}],22:[function(require,module,exports){
+},{"../error":23}],29:[function(require,module,exports){
 var Error, RuntimeError,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -2665,7 +4734,7 @@ RuntimeError = (function(superClass) {
 module.exports = RuntimeError;
 
 
-},{"../error":16}],23:[function(require,module,exports){
+},{"../error":23}],30:[function(require,module,exports){
 var ParseError, SyntaxError,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -2686,7 +4755,7 @@ SyntaxError = (function(superClass) {
 module.exports = SyntaxError;
 
 
-},{"./parse":21}],24:[function(require,module,exports){
+},{"./parse":28}],31:[function(require,module,exports){
 var RuntimeError, TypeError,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -2707,7 +4776,7 @@ TypeError = (function(superClass) {
 module.exports = TypeError;
 
 
-},{"./runtime":22}],25:[function(require,module,exports){
+},{"./runtime":29}],32:[function(require,module,exports){
 var RuntimeError, ValueError,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -2728,7 +4797,7 @@ ValueError = (function(superClass) {
 module.exports = ValueError;
 
 
-},{"./runtime":22}],26:[function(require,module,exports){
+},{"./runtime":29}],33:[function(require,module,exports){
 var AtRule, Block, Boolean, Class, Color, Context, Directive, Document, Evaluator, Expression, Function, Ident, InternalError, List, LiteralNumber, Null, Number, Object, Operation, Parser, Plugin, Property, Range, RegExp, RuleSet, RuntimeError, String, TypeError, URL, fs, path,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
@@ -2853,6 +4922,14 @@ Evaluator = (function(superClass) {
 
   Evaluator.prototype.evaluateLiteralThis = function(node, context) {
     return context.block;
+  };
+
+
+  /*
+   */
+
+  Evaluator.prototype.evaluateLiteralUnicodeRange = function(node, context) {
+    return new String(node.value.toUpperCase(), '');
   };
 
 
@@ -3200,7 +5277,9 @@ Evaluator = (function(superClass) {
   };
 
   Evaluator.prototype.evaluateReturn = function(node, context) {
-    if (node["arguments"].length !== 1) {
+    if (node["arguments"].length === 0) {
+      throw Null["null"];
+    } else if (node["arguments"].length > 1) {
       throw new TypeError("Too many arguments for a `return`");
     }
     throw this.evaluateNode(node["arguments"][0], context);
@@ -3450,11 +5529,118 @@ Evaluator = (function(superClass) {
 module.exports = Evaluator;
 
 
-},{"./class":11,"./context":12,"./error/internal":19,"./error/runtime":22,"./error/type":24,"./node/expression":33,"./node/expression/ident":35,"./node/expression/literal/number":41,"./node/expression/operation":46,"./node/statement/directive":55,"./object":59,"./object/at-rule":60,"./object/block":61,"./object/boolean":62,"./object/color":64,"./object/document":65,"./object/function":67,"./object/list":69,"./object/null":70,"./object/number":71,"./object/property":72,"./object/range":73,"./object/regexp":74,"./object/rule-set":75,"./object/string":77,"./object/url":78,"./parser":79,"./plugin":80,"fs":1,"path":2}],27:[function(require,module,exports){
-var CLIEmitter, CSSEmitter, Class, Context, Document, Emitter, Error, Evaluator, Layla, Node, Normalizer, Object, Parser, Plugin, String, VERSION,
-  slice = [].slice;
+},{"./class":15,"./context":16,"./error/internal":26,"./error/runtime":29,"./error/type":31,"./node/expression":45,"./node/expression/ident":47,"./node/expression/literal/number":53,"./node/expression/operation":59,"./node/statement/directive":68,"./object":72,"./object/at-rule":73,"./object/block":74,"./object/boolean":75,"./object/color":77,"./object/document":78,"./object/function":80,"./object/list":82,"./object/null":83,"./object/number":84,"./object/property":85,"./object/range":86,"./object/regexp":87,"./object/rule-set":88,"./object/string":90,"./object/url":91,"./parser":92,"./plugin":93,"fs":2,"path":6}],34:[function(require,module,exports){
+var ImportError, Importer, Plugin,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
-VERSION = (require('../package')).version;
+Plugin = require('./plugin');
+
+ImportError = './error/import';
+
+Importer = (function(superClass) {
+  extend(Importer, superClass);
+
+  function Importer() {
+    return Importer.__super__.constructor.apply(this, arguments);
+  }
+
+  Importer.prototype.canImport = function(uri, context) {
+    return false;
+  };
+
+  Importer.prototype["import"] = function(uri, context) {
+    throw new ImportError("Cannot import \"" + uri + "\"");
+  };
+
+  Importer.prototype.use = function(context) {
+    return context.useImporter(this);
+  };
+
+  return Importer;
+
+})(Plugin);
+
+module.exports = Importer;
+
+
+},{"./plugin":93}],35:[function(require,module,exports){
+var Evaluator, LayImporter, LayParser, SourceImporter,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+SourceImporter = require('./source');
+
+LayParser = require('../parser');
+
+Evaluator = require('../evaluator');
+
+LayImporter = (function(superClass) {
+  extend(LayImporter, superClass);
+
+  function LayImporter() {
+    return LayImporter.__super__.constructor.apply(this, arguments);
+  }
+
+  LayImporter.prototype.parse = function(source) {
+    var parser;
+    parser = new LayParser;
+    return parser.parse(source);
+  };
+
+  return LayImporter;
+
+})(SourceImporter);
+
+module.exports = LayImporter;
+
+
+},{"../evaluator":33,"../parser":92,"./source":36}],36:[function(require,module,exports){
+var ImportError, Importer, Path, SourceImporter,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+Path = require('path');
+
+Importer = require('../importer');
+
+ImportError = '../error/import';
+
+SourceImporter = (function(superClass) {
+  extend(SourceImporter, superClass);
+
+  function SourceImporter() {
+    return SourceImporter.__super__.constructor.apply(this, arguments);
+  }
+
+  SourceImporter.prototype.parse = function(source) {
+    throw new ImportError("Don't know how to parse");
+  };
+
+  SourceImporter.prototype.canImport = function(uri, context) {
+    return context.canLoad(uri);
+  };
+
+  SourceImporter.prototype["import"] = function(uri, context) {
+    var ast, source;
+    source = context.load(uri);
+    ast = this.parse(source);
+    context.pushPath(Path.dirname(uri));
+    context.evaluate(ast, context);
+    return context.popPath();
+  };
+
+  return SourceImporter;
+
+})(Importer);
+
+module.exports = SourceImporter;
+
+
+},{"../importer":34,"path":6}],37:[function(require,module,exports){
+var CLIEmitter, CSSEmitter, Class, Context, Document, Emitter, Error, Evaluator, Layla, Node, Normalizer, Object, Parser, String, VERSION;
+
+VERSION = require('./version');
 
 Class = require('./class');
 
@@ -3464,15 +5650,11 @@ Context = require('./context');
 
 Evaluator = require('./evaluator');
 
-Normalizer = require('./visitor/normalizer');
-
 Emitter = require('./emitter');
 
 CSSEmitter = require('./emitter/css');
 
 CLIEmitter = require('./emitter/cli');
-
-Plugin = require('./plugin');
 
 Node = require('./node');
 
@@ -3483,6 +5665,8 @@ Document = require('./object/document');
 String = require('./object/string');
 
 Error = require('./error');
+
+Normalizer = require('./css/normalizer');
 
 Layla = (function() {
   Layla.version = VERSION;
@@ -3515,68 +5699,11 @@ Layla = (function() {
 
   function Layla(context1) {
     this.context = context1 != null ? context1 : new Context;
-    this.plugins = {};
     this.parser = new Parser;
     this.evaluator = new Evaluator;
     this.normalizer = new Normalizer;
     this.emitter = new CSSEmitter;
   }
-
-  Layla.prototype.register = function(plugin, name) {
-    if (name == null) {
-      name = plugin.name.toLowerCase();
-    }
-    if (name in this.plugins) {
-      if (this !== this.plugins[name]) {
-        throw new Error("Cannot register plugin '" + name + "': that name has already been used");
-      }
-    }
-    return this.plugins[name] = plugin;
-  };
-
-
-  /*
-  Use one or more plugins on this instance.
-   */
-
-  Layla.prototype.use = function() {
-    var e, error, i, k, kind, len, mod_name, plugin, plugins, results;
-    plugins = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-    results = [];
-    for (i = 0, len = plugins.length; i < len; i++) {
-      kind = plugins[i];
-      if (kind.prototype instanceof Plugin) {
-        plugin = new kind;
-        results.push(plugin.use(this));
-      } else if ('[object String]' === this.toString.call(kind)) {
-        if (kind in this.plugins) {
-          results.push(this.use(this.plugins[kind]));
-        } else {
-          mod_name = "layla-" + kind;
-          try {
-            results.push(require(mod_name));
-          } catch (error) {
-            e = error;
-            throw new Error("Could not load plugin: " + kind);
-          }
-        }
-      } else if (kind instanceof Array) {
-        results.push(this.use.apply(this, kind));
-      } else if (kind instanceof Object) {
-        results.push((function() {
-          var results1;
-          results1 = [];
-          for (k in kind) {
-            results1.push(this.use(kind[k]));
-          }
-          return results1;
-        }).call(this));
-      } else {
-        throw new TypeError("That's not a plugin");
-      }
-    }
-    return results;
-  };
 
   Layla.prototype.parse = function(source) {
     return this.parser.parse(source);
@@ -3611,9 +5738,9 @@ Layla = (function() {
 module.exports = Layla;
 
 
-},{"../package":84,"./class":11,"./context":12,"./emitter":13,"./emitter/cli":14,"./emitter/css":15,"./error":16,"./evaluator":26,"./node":29,"./object":59,"./object/document":65,"./object/string":77,"./parser":79,"./plugin":80,"./visitor/normalizer":83}],28:[function(require,module,exports){
+},{"./class":15,"./context":16,"./css/normalizer":19,"./emitter":20,"./emitter/cli":21,"./emitter/css":22,"./error":23,"./evaluator":33,"./node":41,"./object":72,"./object/document":78,"./object/string":90,"./parser":92,"./version":95}],38:[function(require,module,exports){
 (function (global){
-var AT_IDENT, BINARY_OPERATOR, COLOR, COMBINATOR, Class, EOT, EOTError, IDENT, InternalError, Lexer, NUMBER, PUNC, REGEXP, SELECTOR, SIMPLE_SELECTOR, STRING, SyntaxError, Token, UNARY_OPERATOR, UNIT, WHITESPACE,
+var AT_IDENT, BINARY_OPERATOR, BOM, COLOR, COMBINATOR, Class, EOT, EOTError, IDENT, InternalError, Lexer, NUMBER, PUNC, REGEXP, SELECTOR, SIMPLE_SELECTOR, STRING, SyntaxError, Token, UNARY_OPERATOR, UNICODE_RANGE, UNIT, WHITESPACE,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -3627,18 +5754,18 @@ EOTError = require('./error/eot');
 
 InternalError = require('./error/internal');
 
-PUNC = Token.PUNC, UNARY_OPERATOR = Token.UNARY_OPERATOR, BINARY_OPERATOR = Token.BINARY_OPERATOR, IDENT = Token.IDENT, UNIT = Token.UNIT, AT_IDENT = Token.AT_IDENT, STRING = Token.STRING, SELECTOR = Token.SELECTOR, SIMPLE_SELECTOR = Token.SIMPLE_SELECTOR, COMBINATOR = Token.COMBINATOR, NUMBER = Token.NUMBER, COLOR = Token.COLOR, REGEXP = Token.REGEXP, WHITESPACE = Token.WHITESPACE, EOT = Token.EOT;
+PUNC = Token.PUNC, UNARY_OPERATOR = Token.UNARY_OPERATOR, BINARY_OPERATOR = Token.BINARY_OPERATOR, IDENT = Token.IDENT, UNIT = Token.UNIT, AT_IDENT = Token.AT_IDENT, STRING = Token.STRING, SELECTOR = Token.SELECTOR, SIMPLE_SELECTOR = Token.SIMPLE_SELECTOR, COMBINATOR = Token.COMBINATOR, NUMBER = Token.NUMBER, COLOR = Token.COLOR, REGEXP = Token.REGEXP, UNICODE_RANGE = Token.UNICODE_RANGE, WHITESPACE = Token.WHITESPACE, EOT = Token.EOT, BOM = Token.BOM;
 
 
 /*
  */
 
 Lexer = (function(superClass) {
-  var RE_ALL_WHITESPACE, RE_ATTRIBUTE_NAME, RE_ATTRIBUTE_OPERATOR, RE_BINARY_OPERATOR, RE_CLASS_SELECTOR, RE_COLOR, RE_COMBINATOR, RE_ELEMENTAL_SELECTOR, RE_ESCAPE, RE_HORIZONTAL_WHITESPACE, RE_IDENT_CHAR, RE_IDENT_START, RE_ID_SELECTOR, RE_NON_ASCII, RE_NUMBER, RE_PUNCTUATION, RE_REGEXP, RE_TRAILING_WHITESPACE, RE_UNARY_OPERATOR, RE_UNICODE_ESCAPE, RE_UNICODE_ESCAPE_CHAR, RE_UNIT;
+  var RE_ALL_WHITESPACE, RE_ATTRIBUTE_NAME, RE_ATTRIBUTE_OPERATOR, RE_BINARY_OPERATOR, RE_CLASS_SELECTOR, RE_COLOR, RE_COMBINATOR, RE_ELEMENTAL_SELECTOR, RE_ESCAPE, RE_HORIZONTAL_WHITESPACE, RE_IDENT_CHAR, RE_IDENT_START, RE_ID_SELECTOR, RE_NON_ASCII, RE_NUMBER, RE_PUNCTUATION, RE_REGEXP, RE_TRAILING_WHITESPACE, RE_UNARY_OPERATOR, RE_UNICODE_ESCAPE, RE_UNICODE_ESCAPE_CHAR, RE_UNICODE_RANGE, RE_UNIT;
 
   extend(Lexer, superClass);
 
-  RE_NON_ASCII = /[^\x00-\xed]/;
+  RE_NON_ASCII = /[^\x00-\x80]/;
 
   RE_UNICODE_ESCAPE_CHAR = /[0-9a-fA-F]/;
 
@@ -3646,15 +5773,17 @@ Lexer = (function(superClass) {
 
   RE_ESCAPE = RegExp(RE_UNICODE_ESCAPE.source + "|(\\\\[^\\n\\r])");
 
-  RE_IDENT_START = RegExp("([!\\?_\\$-]+)?(?=[a-zA-Z]|" + RE_ESCAPE.source + ")");
+  RE_IDENT_START = RegExp("(" + RE_NON_ASCII.source + ")|(([!\\?_\\$-]+)?(?=[a-zA-Z]|" + RE_ESCAPE.source + "))");
 
-  RE_IDENT_CHAR = RegExp("[a-zA-Z\\d!\\$\\?_-]|" + RE_NON_ASCII.source + "|" + RE_ESCAPE.source);
+  RE_IDENT_CHAR = RegExp("([a-zA-Z\\d!\\$\\?_-])|(" + RE_NON_ASCII.source + ")|(" + RE_ESCAPE.source + ")");
 
   RE_NUMBER = /(?:\d*\.)?\d+/i;
 
-  RE_UNIT = /(%|(?:[a-z]+))/i;
+  RE_UNIT = RegExp("(%|([a-z]+))|(" + RE_NON_ASCII.source + ")|(" + RE_ESCAPE.source + ")", "i");
 
   RE_REGEXP = /\/([^\s](?:(?:\\.)|[^\\\/\n\r])+)\/([a-z]+)?/i;
+
+  RE_UNICODE_RANGE = /^u\+[0-9a-f?]{1,6}(-[0-9a-f?]{1,6})?/i;
 
   RE_COLOR = /#([a-f\d]{1,2}){1,4}/i;
 
@@ -3861,6 +5990,14 @@ Lexer = (function(superClass) {
       token.value = this.source.substring(token.start, token.end);
     }
     return token;
+  };
+
+  Lexer.prototype.readBOM = function() {
+    if (this.char === '\uFEFF') {
+      return this.makeToken(BOM, function() {
+        return this.move();
+      });
+    }
   };
 
   Lexer.prototype.readEOT = function() {
@@ -4110,6 +6247,19 @@ Lexer = (function(superClass) {
 
   Lexer.prototype.readColor = function() {
     return this.readHexColor();
+  };
+
+
+  /*
+   */
+
+  Lexer.prototype.readUnicodeRange = function() {
+    var match;
+    if (match = this.match(RE_UNICODE_RANGE)) {
+      return this.makeToken(UNICODE_RANGE, function() {
+        return this.move(match[0].length);
+      });
+    }
   };
 
 
@@ -4546,7 +6696,84 @@ module.exports = Lexer;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./class":11,"./error/eot":17,"./error/internal":19,"./error/syntax":23,"./token":81}],29:[function(require,module,exports){
+},{"./class":15,"./error/eot":24,"./error/internal":26,"./error/syntax":30,"./token":94}],39:[function(require,module,exports){
+var ImportError, Loader, Plugin,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+Plugin = require('./plugin');
+
+ImportError = './error/import';
+
+Loader = (function(superClass) {
+  extend(Loader, superClass);
+
+  function Loader() {
+    return Loader.__super__.constructor.apply(this, arguments);
+  }
+
+  Loader.prototype.canLoad = function(uri, context) {
+    return false;
+  };
+
+  Loader.prototype.load = function(uri, context) {
+    throw new ImportError("Cannot load \"" + uri + "\"");
+  };
+
+  Loader.prototype.use = function(context) {
+    return context.useLoader(this);
+  };
+
+  return Loader;
+
+})(Plugin);
+
+module.exports = Loader;
+
+
+},{"./plugin":93}],40:[function(require,module,exports){
+var Loader, URL, XHRLoader,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+URL = require('url');
+
+Loader = require('../loader');
+
+XHRLoader = (function(superClass) {
+  extend(XHRLoader, superClass);
+
+  function XHRLoader() {
+    return XHRLoader.__super__.constructor.apply(this, arguments);
+  }
+
+  XHRLoader.prototype.canLoad = function(uri, context) {
+    var ref, url;
+    url = URL.parse(uri);
+    return (ref = url.protocol) === 'http:' || ref === 'https:';
+  };
+
+  XHRLoader.prototype.load = function(uri, context) {
+    var xhr;
+    xhr = new XMLHttpRequest;
+    xhr.addEventListener('load', function() {});
+    xhr.open('GET', uri, false);
+    xhr.send();
+    if (xhr.status === 200) {
+      return xhr.responseText;
+    } else {
+      throw new ImportError("Could not import URL: \"" + uri + "\"");
+    }
+  };
+
+  return XHRLoader;
+
+})(Loader);
+
+module.exports = XHRLoader;
+
+
+},{"../loader":39,"url":12}],41:[function(require,module,exports){
 var Class, Node,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4577,10 +6804,6 @@ Node = (function(superClass) {
 
   Node.prototype.end = null;
 
-  Node.prototype.before = null;
-
-  Node.prototype.after = null;
-
   Node.prototype.toJSON = function() {
     var json;
     json = Node.__super__.toJSON.apply(this, arguments);
@@ -4596,7 +6819,7 @@ Node = (function(superClass) {
 module.exports = Node;
 
 
-},{"./class":11}],30:[function(require,module,exports){
+},{"./class":15}],42:[function(require,module,exports){
 var Comment, Node,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4621,7 +6844,7 @@ Comment = (function(superClass) {
 module.exports = Comment;
 
 
-},{"../node":29}],31:[function(require,module,exports){
+},{"../node":41}],43:[function(require,module,exports){
 var BlockComment, Comment,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4642,7 +6865,7 @@ BlockComment = (function(superClass) {
 module.exports = BlockComment;
 
 
-},{"../comment":30}],32:[function(require,module,exports){
+},{"../comment":42}],44:[function(require,module,exports){
 var Comment, LineComment,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4663,7 +6886,7 @@ LineComment = (function(superClass) {
 module.exports = LineComment;
 
 
-},{"../comment":30}],33:[function(require,module,exports){
+},{"../comment":42}],45:[function(require,module,exports){
 var Expression, Node,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4684,7 +6907,7 @@ Expression = (function(superClass) {
 module.exports = Expression;
 
 
-},{"../node":29}],34:[function(require,module,exports){
+},{"../node":41}],46:[function(require,module,exports){
 var Expression, Group,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4712,7 +6935,7 @@ Group = (function(superClass) {
 module.exports = Group;
 
 
-},{"../expression":33}],35:[function(require,module,exports){
+},{"../expression":45}],47:[function(require,module,exports){
 var Expression, Ident,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4747,7 +6970,7 @@ Ident = (function(superClass) {
 module.exports = Ident;
 
 
-},{"../expression":33}],36:[function(require,module,exports){
+},{"../expression":45}],48:[function(require,module,exports){
 var Expression, Literal,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4768,7 +6991,7 @@ Literal = (function(superClass) {
 module.exports = Literal;
 
 
-},{"../expression":33}],37:[function(require,module,exports){
+},{"../expression":45}],49:[function(require,module,exports){
 var Literal, LiteralBlock,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4798,7 +7021,7 @@ LiteralBlock = (function(superClass) {
 module.exports = LiteralBlock;
 
 
-},{"../literal":36}],38:[function(require,module,exports){
+},{"../literal":48}],50:[function(require,module,exports){
 var Literal, LiteralColor,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4821,7 +7044,7 @@ LiteralColor = (function(superClass) {
 module.exports = LiteralColor;
 
 
-},{"../literal":36}],39:[function(require,module,exports){
+},{"../literal":48}],51:[function(require,module,exports){
 var Literal, LiteralFunction,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4854,7 +7077,7 @@ LiteralFunction = (function(superClass) {
 module.exports = LiteralFunction;
 
 
-},{"../literal":36}],40:[function(require,module,exports){
+},{"../literal":48}],52:[function(require,module,exports){
 var Literal, LiteralList,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4884,7 +7107,7 @@ LiteralList = (function(superClass) {
 module.exports = LiteralList;
 
 
-},{"../literal":36}],41:[function(require,module,exports){
+},{"../literal":48}],53:[function(require,module,exports){
 var Literal, LiteralNumber,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4915,7 +7138,7 @@ LiteralNumber = (function(superClass) {
 module.exports = LiteralNumber;
 
 
-},{"../literal":36}],42:[function(require,module,exports){
+},{"../literal":48}],54:[function(require,module,exports){
 var Literal, LiteralRegExp,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4948,7 +7171,7 @@ LiteralRegExp = (function(superClass) {
 module.exports = LiteralRegExp;
 
 
-},{"../literal":36}],43:[function(require,module,exports){
+},{"../literal":48}],55:[function(require,module,exports){
 var Literal, LiteralString,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4978,7 +7201,7 @@ LiteralString = (function(superClass) {
 module.exports = LiteralString;
 
 
-},{"../literal":36}],44:[function(require,module,exports){
+},{"../literal":48}],56:[function(require,module,exports){
 var Literal, LiteralThis,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4999,7 +7222,28 @@ LiteralThis = (function(superClass) {
 module.exports = LiteralThis;
 
 
-},{"../literal":36}],45:[function(require,module,exports){
+},{"../literal":48}],57:[function(require,module,exports){
+var Literal, LiteralUnicodeRange,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+Literal = require('../literal');
+
+LiteralUnicodeRange = (function(superClass) {
+  extend(LiteralUnicodeRange, superClass);
+
+  function LiteralUnicodeRange(value) {
+    this.value = value != null ? value : '';
+  }
+
+  return LiteralUnicodeRange;
+
+})(Literal);
+
+module.exports = LiteralUnicodeRange;
+
+
+},{"../literal":48}],58:[function(require,module,exports){
 var Literal, LiteralURL,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5030,7 +7274,7 @@ LiteralURL = (function(superClass) {
 module.exports = LiteralURL;
 
 
-},{"../literal":36}],46:[function(require,module,exports){
+},{"../literal":48}],59:[function(require,module,exports){
 var Expression, Operation,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5074,7 +7318,7 @@ Operation = (function(superClass) {
 module.exports = Operation;
 
 
-},{"../expression":33}],47:[function(require,module,exports){
+},{"../expression":45}],60:[function(require,module,exports){
 var Node, Root,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5088,9 +7332,12 @@ Root = (function(superClass) {
     return Root.__super__.constructor.apply(this, arguments);
   }
 
+  Root.prototype.bom = false;
+
   Root.prototype.toJSON = function() {
     var json;
     json = Root.__super__.toJSON.apply(this, arguments);
+    json.bom = this.bom;
     json.body = this.body;
     return json;
   };
@@ -5102,7 +7349,7 @@ Root = (function(superClass) {
 module.exports = Root;
 
 
-},{"../node":29}],48:[function(require,module,exports){
+},{"../node":41}],61:[function(require,module,exports){
 var Node, Statement,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5123,7 +7370,7 @@ Statement = (function(superClass) {
 module.exports = Statement;
 
 
-},{"../node":29}],49:[function(require,module,exports){
+},{"../node":41}],62:[function(require,module,exports){
 var Conditional, Statement,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5166,7 +7413,7 @@ Conditional = (function(superClass) {
 module.exports = Conditional;
 
 
-},{"../statement":48}],50:[function(require,module,exports){
+},{"../statement":61}],63:[function(require,module,exports){
 var Declaration, Statement,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5187,7 +7434,7 @@ Declaration = (function(superClass) {
 module.exports = Declaration;
 
 
-},{"../statement":48}],51:[function(require,module,exports){
+},{"../statement":61}],64:[function(require,module,exports){
 var Declaration, PropertyDeclaration,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5220,7 +7467,7 @@ PropertyDeclaration = (function(superClass) {
 module.exports = PropertyDeclaration;
 
 
-},{"../declaration":50}],52:[function(require,module,exports){
+},{"../declaration":63}],65:[function(require,module,exports){
 var Declaration, RuleDeclaration,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5248,7 +7495,7 @@ RuleDeclaration = (function(superClass) {
 module.exports = RuleDeclaration;
 
 
-},{"../declaration":50}],53:[function(require,module,exports){
+},{"../declaration":63}],66:[function(require,module,exports){
 var AtRuleDeclaration, RuleDeclaration,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5277,7 +7524,7 @@ AtRuleDeclaration = (function(superClass) {
 module.exports = AtRuleDeclaration;
 
 
-},{"../rule":52}],54:[function(require,module,exports){
+},{"../rule":65}],67:[function(require,module,exports){
 var RuleDeclaration, RuleSetDeclaration,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5305,7 +7552,7 @@ RuleSetDeclaration = (function(superClass) {
 module.exports = RuleSetDeclaration;
 
 
-},{"../rule":52}],55:[function(require,module,exports){
+},{"../rule":65}],68:[function(require,module,exports){
 var Directive, Statement,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5333,7 +7580,7 @@ Directive = (function(superClass) {
 module.exports = Directive;
 
 
-},{"../statement":48}],56:[function(require,module,exports){
+},{"../statement":61}],69:[function(require,module,exports){
 var For, Statement,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5354,7 +7601,7 @@ For = (function(superClass) {
 module.exports = For;
 
 
-},{"../statement":48}],57:[function(require,module,exports){
+},{"../statement":61}],70:[function(require,module,exports){
 var Import, Statement,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5380,7 +7627,7 @@ Import = (function(superClass) {
 module.exports = Import;
 
 
-},{"../statement":48}],58:[function(require,module,exports){
+},{"../statement":61}],71:[function(require,module,exports){
 var Loop, Statement,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5420,7 +7667,7 @@ Loop = (function(superClass) {
 module.exports = Loop;
 
 
-},{"../statement":48}],59:[function(require,module,exports){
+},{"../statement":61}],72:[function(require,module,exports){
 var Class, NotImplementedError, Object, TypeError,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
@@ -5453,6 +7700,10 @@ Object = (function(superClass) {
     return "[" + (this.reprType()) + "]";
   };
 
+  Object.clone = function() {
+    return this;
+  };
+
   Object.prototype.hasMethod = function(name) {
     return typeof this["." + name] === 'function';
   };
@@ -5464,7 +7715,7 @@ Object = (function(superClass) {
       return this['.'].apply(this, [operator, other].concat(slice.call(etc)));
     } else {
       repr = other ? (this.repr()) + " " + operator + " " + (other.repr()) : "" + operator + (this.repr());
-      throw new TypeError("Cannot perform " + repr + ": " + (this.constructor.repr()) + " has no method [." + operator + "]");
+      throw new TypeError("Cannot perform " + repr + ": " + (this["class"].repr()) + " has no method [." + operator + "]");
     }
   };
 
@@ -5473,7 +7724,7 @@ Object = (function(superClass) {
   };
 
   Object.prototype.reprType = function() {
-    return this.constructor.reprType();
+    return this["class"].reprType();
   };
 
   Object.prototype.repr = function() {
@@ -5512,7 +7763,7 @@ Object = (function(superClass) {
 module.exports = Object;
 
 
-},{"./class":11,"./error/not-implemented":20,"./error/type":24}],60:[function(require,module,exports){
+},{"./class":15,"./error/not-implemented":27,"./error/type":31}],73:[function(require,module,exports){
 var AtRule, Rule, String,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5549,7 +7800,7 @@ AtRule = (function(superClass) {
 module.exports = AtRule;
 
 
-},{"./rule":76,"./string":77}],61:[function(require,module,exports){
+},{"./rule":89,"./string":90}],74:[function(require,module,exports){
 var Block, Boolean, Collection, List, Null, Property, String,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
@@ -5635,9 +7886,9 @@ Block = (function(superClass) {
   };
 
   Block.prototype['.properties'] = function() {
-    return new List(this.items.filter(function(obj) {
+    return new Block(this.items.filter(function(obj) {
       return obj instanceof Property;
-    }), ";");
+    }));
   };
 
   Block.prototype['.has-property?'] = function(name) {
@@ -5651,7 +7902,7 @@ Block = (function(superClass) {
 module.exports = Block;
 
 
-},{"./boolean":62,"./collection":63,"./list":69,"./null":70,"./property":72,"./string":77}],62:[function(require,module,exports){
+},{"./boolean":75,"./collection":76,"./list":82,"./null":83,"./property":85,"./string":90}],75:[function(require,module,exports){
 var Boolean, Object,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5797,7 +8048,7 @@ Object.prototype['.empty?'] = function() {
 module.exports = Boolean;
 
 
-},{"../object":59}],63:[function(require,module,exports){
+},{"../object":72}],76:[function(require,module,exports){
 var Boolean, Collection, Indexed, Null, Number, Object, TypeError,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
@@ -6065,7 +8316,7 @@ Object.prototype['.>>'] = function(other) {
 module.exports = Collection;
 
 
-},{"../error/type":24,"../object":59,"./boolean":62,"./indexed":68,"./null":70,"./number":71}],64:[function(require,module,exports){
+},{"../error/type":31,"../object":72,"./boolean":75,"./indexed":81,"./null":83,"./number":84}],77:[function(require,module,exports){
 var Boolean, Color, Null, Number, Object, String, TypeError, ValueError,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
@@ -6655,7 +8906,7 @@ Color = (function(superClass) {
   });
 
   Color.prototype.blend = function(backdrop, mode) {
-    return this.constructor.blend(this, backdrop, mode);
+    return this["class"].blend(this, backdrop, mode);
   };
 
   Color.prototype.isEqual = function(other) {
@@ -7003,7 +9254,7 @@ Color = (function(superClass) {
 module.exports = Color;
 
 
-},{"../error/type":24,"../error/value":25,"../object":59,"./boolean":62,"./null":70,"./number":71,"./string":77}],65:[function(require,module,exports){
+},{"../error/type":31,"../error/value":32,"../object":72,"./boolean":75,"./null":83,"./number":84,"./string":90}],78:[function(require,module,exports){
 var Block, Document,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -7038,7 +9289,7 @@ Document = (function(superClass) {
 module.exports = Document;
 
 
-},{"./block":61}],66:[function(require,module,exports){
+},{"./block":74}],79:[function(require,module,exports){
 var Enumerable, Null, Number, Object,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -7167,7 +9418,7 @@ Enumerable = (function(superClass) {
 module.exports = Enumerable;
 
 
-},{"../object":59,"./null":70,"./number":71}],67:[function(require,module,exports){
+},{"../object":72,"./null":83,"./number":84}],80:[function(require,module,exports){
 var Function, Null, Object,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
@@ -7220,7 +9471,7 @@ Function = (function(superClass) {
 module.exports = Function;
 
 
-},{"../object":59,"./null":70}],68:[function(require,module,exports){
+},{"../object":72,"./null":83}],81:[function(require,module,exports){
 var Enumerable, Indexed, Null, Number,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -7341,7 +9592,7 @@ Indexed = (function(superClass) {
 module.exports = Indexed;
 
 
-},{"./enumerable":66,"./null":70,"./number":71}],69:[function(require,module,exports){
+},{"./enumerable":79,"./null":83,"./number":84}],82:[function(require,module,exports){
 var Boolean, Collection, List, Number, Object, String,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
@@ -7427,7 +9678,7 @@ Object.prototype['.list'] = function() {
 module.exports = List;
 
 
-},{"../object":59,"./boolean":62,"./collection":63,"./number":71,"./string":77}],70:[function(require,module,exports){
+},{"../object":72,"./boolean":75,"./collection":76,"./number":84,"./string":90}],83:[function(require,module,exports){
 var Boolean, Null, Object,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -7496,7 +9747,7 @@ Object.prototype['.null?'] = function() {
 module.exports = Null;
 
 
-},{"../object":59,"./boolean":62}],71:[function(require,module,exports){
+},{"../object":72,"./boolean":75}],84:[function(require,module,exports){
 var Boolean, FACTORS, Null, Number, Object, TypeError, from, ref, to,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
@@ -7575,36 +9826,29 @@ Number = (function(superClass) {
     this.value = parseFloat(value.toString());
   }
 
-
-  /*
-   */
-
-  Number.prototype.convert = function(unit, stack) {
-    var u, value;
-    if (unit == null) {
-      unit = null;
+  Number.convert = function(value, from_unit, to_unit, stack) {
+    var u, val;
+    if (to_unit == null) {
+      to_unit = '';
     }
     if (stack == null) {
       stack = [];
     }
-    if (unit) {
-      unit = unit.toString().trim();
-    }
-    if (unit === this.unit || (unit && !this.unit)) {
-      return new Number(this.value, unit);
-    } else if (!unit) {
-      return new Number(this.value);
-    } else if (this.unit in FACTORS) {
-      if (unit in FACTORS[this.unit]) {
-        return new Number(this.value * FACTORS[this.unit][unit], unit);
+    if (to_unit === from_unit || (to_unit && !from_unit)) {
+      return value;
+    } else if (!to_unit) {
+      return value;
+    } else if (to_unit in FACTORS) {
+      if (from_unit in FACTORS[from_unit]) {
+        return value * FACTORS[from_unit][to_unit];
       } else {
-        stack.push(this.unit);
-        for (u in FACTORS[this.unit]) {
+        stack.push(from_unit);
+        for (u in FACTORS[from_unit]) {
           if (indexOf.call(stack, u) < 0) {
             stack.push(u);
-            value = FACTORS[this.unit][u] * this.value;
+            val = FACTORS[from_unit][u] * value;
             try {
-              return (new Number(value, u)).convert(unit, stack);
+              return this.convert(val, u, to_unit, stack);
             } catch (undefined) {}
             stack.pop();
           }
@@ -7612,8 +9856,28 @@ Number = (function(superClass) {
         stack.pop();
       }
     }
-    throw new TypeError("Cannot convert " + this + " to " + unit);
+    throw new TypeError("Cannot convert " + value + from_unit + " to " + to_unit);
   };
+
+
+  /*
+   */
+
+  Number.prototype.convert = function(unit) {
+    var value;
+    if (unit == null) {
+      unit = null;
+    }
+    if (unit) {
+      unit = unit.toString().trim();
+    }
+    value = this["class"].convert(this.value, this.unit, unit);
+    return this.clone(value, unit || '');
+  };
+
+
+  /*
+   */
 
   Number.prototype.isEqual = function(other) {
     return other instanceof Number && (function() {
@@ -7639,7 +9903,7 @@ Number = (function(superClass) {
   };
 
   Number.prototype.isPure = function() {
-    return this.unit === null;
+    return !this.unit;
   };
 
   Number.prototype.isEmpty = function() {
@@ -7746,7 +10010,11 @@ Number = (function(superClass) {
 
   Number.prototype['.*'] = function(other) {
     if (other instanceof Number) {
-      return this.clone((other.convert(this.unit)).value * this.value, other.unit || this.unit);
+      if (this.isPure() || other.isPure()) {
+        return this.clone(other.value * this.value, other.unit || this.unit);
+      } else {
+        throw new TypeError("Cannot perform " + (this.repr()) + " * " + (other.repr()));
+      }
     } else {
       throw new TypeError("Cannot perform " + (this.repr()) + " * " + (other.repr()) + ": right side must be a " + (Number.repr()));
     }
@@ -7757,7 +10025,11 @@ Number = (function(superClass) {
       if (other.value === 0) {
         throw new TypeError('Cannot divide by 0');
       }
-      return this.clone((this.convert(other.unit)).value / other.value, other.unit || this.unit);
+      if (!this.isPure() && !other.isPure()) {
+        return this.clone(this.value / (other.convert(this.unit)).value, '');
+      } else {
+        return this.clone(this.value / other.value, this.unit || other.unit);
+      }
     } else {
       throw new TypeError("Cannot perform " + (this.repr()) + " / " + (other.repr()) + ": right side must be a " + (Number.repr()));
     }
@@ -7788,7 +10060,16 @@ Number = (function(superClass) {
   };
 
   Number.prototype['.divisible-by?'] = function(other) {
-    return Boolean["new"]((this.value % other.value) === 0);
+    var div, error;
+    if (!other.isPure()) {
+      try {
+        other = other.convert(this.unit);
+      } catch (error) {
+        return Boolean["false"];
+      }
+    }
+    div = this.value / other.value;
+    return Boolean["new"](div === floor(div));
   };
 
   Number.prototype['.even?'] = function() {
@@ -7901,6 +10182,11 @@ Number = (function(superClass) {
   };
 
   Number.prototype['.convert'] = function(unit) {
+    if (unit.isNull()) {
+      unit = null;
+    } else {
+      unit = unit.toString();
+    }
     return this.convert(unit);
   };
 
@@ -7948,7 +10234,7 @@ for (from in ref) {
 module.exports = Number;
 
 
-},{"../error/type":24,"../object":59,"./boolean":62,"./null":70}],72:[function(require,module,exports){
+},{"../error/type":31,"../object":72,"./boolean":75,"./null":83}],85:[function(require,module,exports){
 var Null, Object, Property, String,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
@@ -8015,13 +10301,15 @@ Property = (function(superClass) {
 module.exports = Property;
 
 
-},{"../object":59,"./null":70,"./string":77}],73:[function(require,module,exports){
-var Boolean, Indexed, List, Number, Range, String, TypeError,
+},{"../object":72,"./null":83,"./string":90}],86:[function(require,module,exports){
+var Boolean, Indexed, List, Null, Number, Range, String, TypeError,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
   slice1 = [].slice;
 
 Indexed = require('./indexed');
+
+Null = require('./null');
 
 Boolean = require('./boolean');
 
@@ -8081,18 +10369,20 @@ Range = (function(superClass) {
     this.last = last1 != null ? last1 : 0;
     this.unit = unit1 != null ? unit1 : null;
     this.step = step1 != null ? step1 : 1;
-    Range.__super__.constructor.call(this);
-    this.first = floor(this.first);
-    this.last = floor(this.last);
+    Range.__super__.constructor.apply(this, arguments);
   }
 
   Range.prototype.convert = function(unit) {
+    var first, last, step;
+    unit = unit.toString();
     if (unit !== '') {
-      this.unit = unit;
+      first = Number.convert(this.first, this.unit, unit);
+      last = Number.convert(this.last, this.unit, unit);
+      step = Number.convert(this.step, this.unit, unit);
     } else {
-      this.unit = null;
+      unit = '';
     }
-    return this;
+    return this.clone(first, last, unit, step);
   };
 
 
@@ -8108,6 +10398,10 @@ Range = (function(superClass) {
     } catch (error) {
       return false;
     }
+  };
+
+  Range.prototype.isPure = function() {
+    return !this.unit;
   };
 
   Range.prototype.clone = function() {
@@ -8160,11 +10454,31 @@ Range = (function(superClass) {
       } else {
         arg = arg.convert(this.unit);
       }
-      vals.push(floor(arg.value));
+      vals.push(arg.value);
     }
     this.first = Math.min.apply(Math, [this.first].concat(slice1.call(vals)));
     this.last = Math.max.apply(Math, [this.last].concat(slice1.call(vals)));
     return this;
+  };
+
+  Range.prototype['.unit'] = function() {
+    if (this.unit) {
+      return new String(this.unit);
+    } else {
+      return Null["null"];
+    }
+  };
+
+  Range.prototype['.unit?'] = function() {
+    return Boolean["new"](this.unit);
+  };
+
+  Range.prototype['.pure?'] = function() {
+    return Boolean["new"](this.isPure());
+  };
+
+  Range.prototype['.pure'] = function() {
+    return this.clone(null, null, '');
   };
 
   Range.prototype['.step'] = function() {
@@ -8273,7 +10587,7 @@ Number.prototype['...'] = function(other) {
 module.exports = Range;
 
 
-},{"../error/type":24,"./boolean":62,"./indexed":68,"./list":69,"./number":71,"./string":77}],74:[function(require,module,exports){
+},{"../error/type":31,"./boolean":75,"./indexed":81,"./list":82,"./null":83,"./number":84,"./string":90}],87:[function(require,module,exports){
 (function (global){
 var Boolean, List, Null, Number, Object, RegExp, String, TypeError,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -8405,7 +10719,7 @@ RegExp = (function(superClass) {
   };
 
   RegExp.prototype.reprValue = function() {
-    return "/" + (this.constructor.escape(this.source)) + "/" + this.flags;
+    return "/" + (this["class"].escape(this.source)) + "/" + this.flags;
   };
 
 
@@ -8564,7 +10878,7 @@ module.exports = RegExp;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../error/type":24,"../object":59,"./boolean":62,"./list":69,"./null":70,"./number":71,"./string":77}],75:[function(require,module,exports){
+},{"../error/type":31,"../object":72,"./boolean":75,"./list":82,"./null":83,"./number":84,"./string":90}],88:[function(require,module,exports){
 var Rule, RuleSet, String,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -8608,7 +10922,7 @@ RuleSet = (function(superClass) {
 module.exports = RuleSet;
 
 
-},{"./rule":76,"./string":77}],76:[function(require,module,exports){
+},{"./rule":89,"./string":90}],89:[function(require,module,exports){
 var Block, List, Rule,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -8637,7 +10951,8 @@ Block.prototype['.rules'] = function() {
 module.exports = Rule;
 
 
-},{"./block":61,"./list":69}],77:[function(require,module,exports){
+},{"./block":74,"./list":82}],90:[function(require,module,exports){
+(function (Buffer){
 var Boolean, Null, Number, Object, String, TypeError,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
@@ -8697,6 +11012,10 @@ String = (function(superClass) {
         return this.toNumber();
       } catch (undefined) {}
     }).call(this));
+  };
+
+  String.prototype.toBase64 = function() {
+    return new Buffer(this.value).toString('base64');
   };
 
   String.prototype.toString = function() {
@@ -8892,6 +11211,10 @@ String = (function(superClass) {
     return Boolean["new"](this.isPalindrome());
   };
 
+  String.prototype['.base64'] = function() {
+    return this.clone(this.toBase64());
+  };
+
   return String;
 
 })(Object);
@@ -8976,15 +11299,15 @@ Number.prototype['.unit'] = function() {
   }
 };
 
-Object.prototype['.string'] = function() {
+Object.prototype['.unquoted'] = function() {
   return new String(this.toString());
 };
-
-Object.prototype['.unquoted'] = Object.prototype['.string'];
 
 Object.prototype['.quoted'] = function() {
   return new String(this.toString(), '"');
 };
+
+Object.prototype['.string'] = Object.prototype['.quoted'];
 
 Object.prototype['.repr'] = function() {
   return new String(this.repr(), '"');
@@ -8993,7 +11316,8 @@ Object.prototype['.repr'] = function() {
 module.exports = String;
 
 
-},{"../error/type":24,"../object":59,"./boolean":62,"./null":70,"./number":71}],78:[function(require,module,exports){
+}).call(this,require("buffer").Buffer)
+},{"../error/type":31,"../object":72,"./boolean":75,"./null":83,"./number":84,"buffer":3}],91:[function(require,module,exports){
 var Boolean, Error, Null, Number, Object, String, TypeError, URL, parseURL,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
@@ -9282,8 +11606,8 @@ URL = (function(superClass) {
 module.exports = URL;
 
 
-},{"../error":16,"../error/type":24,"../object":59,"./boolean":62,"./null":70,"./number":71,"./string":77,"url":8}],79:[function(require,module,exports){
-var AT_IDENT, AtRule, BINARY_OPERATOR, Block, BlockComment, COLOR, Color, Conditional, Directive, EOT, EOTError, Expression, For, Function, Group, IDENT, Ident, Import, Lexer, LineComment, List, Loop, NUMBER, Number, Operation, PUNC, Parser, Property, REGEXP, RegExp, Root, RuleSet, String, SyntaxError, This, Token, UNARY_OPERATOR, UNIT, URL,
+},{"../error":23,"../error/type":31,"../object":72,"./boolean":75,"./null":83,"./number":84,"./string":90,"url":12}],92:[function(require,module,exports){
+var AT_IDENT, AtRule, BINARY_OPERATOR, BOM, Block, BlockComment, COLOR, Color, Conditional, Directive, EOT, EOTError, Expression, For, Function, Group, IDENT, Ident, Import, Lexer, LineComment, List, Loop, NUMBER, Number, Operation, PUNC, Parser, Property, REGEXP, RegExp, Root, RuleSet, String, SyntaxError, This, Token, UNARY_OPERATOR, UNICODE_RANGE, UNIT, URL, UnicodeRange,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -9317,6 +11641,8 @@ Block = require('./node/expression/literal/block');
 
 This = require('./node/expression/literal/this');
 
+UnicodeRange = require('./node/expression/literal/unicode-range');
+
 Directive = require('./node/statement/directive');
 
 Import = require('./node/statement/import');
@@ -9343,7 +11669,7 @@ SyntaxError = require('./error/syntax');
 
 EOTError = require('./error/eot');
 
-PUNC = Token.PUNC, UNARY_OPERATOR = Token.UNARY_OPERATOR, BINARY_OPERATOR = Token.BINARY_OPERATOR, IDENT = Token.IDENT, UNIT = Token.UNIT, AT_IDENT = Token.AT_IDENT, NUMBER = Token.NUMBER, COLOR = Token.COLOR, REGEXP = Token.REGEXP, EOT = Token.EOT;
+PUNC = Token.PUNC, UNARY_OPERATOR = Token.UNARY_OPERATOR, BINARY_OPERATOR = Token.BINARY_OPERATOR, IDENT = Token.IDENT, UNIT = Token.UNIT, AT_IDENT = Token.AT_IDENT, NUMBER = Token.NUMBER, COLOR = Token.COLOR, REGEXP = Token.REGEXP, UNICODE_RANGE = Token.UNICODE_RANGE, EOT = Token.EOT, BOM = Token.BOM;
 
 Parser = (function(superClass) {
   var ASSOC, DIRECTIVES, PREC;
@@ -9378,10 +11704,10 @@ Parser = (function(superClass) {
     'not@': 11,
     ' ': 10,
     ',': 9,
-    '=': 8,
-    '|=': 8,
-    'and': 7,
-    'or': 6,
+    'and': 8,
+    'or': 7,
+    '=': 5,
+    '|=': 5,
     '>>': 2,
     '<<': 2,
     'if': 0,
@@ -9415,7 +11741,7 @@ Parser = (function(superClass) {
     '>>': 0
   };
 
-  DIRECTIVES = ['return', 'break', 'continue', 'use'];
+  DIRECTIVES = ['return', 'break', 'continue', 'import', 'use'];
 
 
   /*
@@ -9562,22 +11888,14 @@ Parser = (function(superClass) {
    */
 
   Parser.prototype.parseCommaList = function() {
-    var comma, item, items, parens, start;
+    var comma, item, items, start;
     start = this.position;
     items = [];
-    parens = 0;
-    while (this.read(PUNC, '(')) {
-      parens++;
-    }
     while (item = this.parseExpression(null, false, false)) {
       items.push(item);
       if (!(comma = this.eat(PUNC, ','))) {
         break;
       }
-    }
-    while (parens) {
-      this.expect(PUNC, ')');
-      parens--;
     }
     if (items.length) {
       return items;
@@ -9832,8 +12150,24 @@ Parser = (function(superClass) {
   /*
    */
 
+  Parser.prototype.parseUnicodeRange = function() {
+    var token;
+    if (token = this.peek(UNICODE_RANGE)) {
+      return this.makeNode(UnicodeRange, function(range) {
+        range.start = token.start;
+        range.name = token.value;
+        range.value = token.value;
+        return this.moveTo(token.end);
+      });
+    }
+  };
+
+
+  /*
+   */
+
   Parser.prototype.parseLiteral = function() {
-    return this.parseThis() || this.parseQuotedString() || this.parseNumber() || this.parseColor() || this.parseRegExp() || this.parseURL() || this.parseIdent();
+    return this.parseThis() || this.parseQuotedString() || this.parseNumber() || this.parseColor() || this.parseRegExp() || this.parseURL() || this.parseUnicodeRange() || this.parseIdent();
   };
 
 
@@ -10147,30 +12481,6 @@ Parser = (function(superClass) {
   /*
    */
 
-  Parser.prototype.parseImport = function() {
-    var tok;
-    if (tok = this.read(IDENT, 'import')) {
-      return this.makeNode(Import, function(imp) {
-        var arg;
-        imp.start = tok.start;
-        imp["arguments"] = [];
-        while (arg = this.parseExpression(0, false, false, false)) {
-          imp["arguments"].push(arg);
-          if (!this.eat(PUNC, ',')) {
-            break;
-          }
-        }
-        if (!imp["arguments"].length) {
-          throw new SyntaxError("Expected string after import!");
-        }
-      });
-    }
-  };
-
-
-  /*
-   */
-
   Parser.prototype.parseDirective = function() {
     var tok;
     if (tok = this.read(IDENT, this.directives)) {
@@ -10190,7 +12500,7 @@ Parser = (function(superClass) {
    */
 
   Parser.prototype.parseStatement = function() {
-    return this.parseConditional() || this.parseLoop() || this.parseFor() || this.parseImport() || this.parseDirective() || this.parseDeclaration() || this.parseExpression();
+    return this.parseConditional() || this.parseLoop() || this.parseFor() || this.parseDirective() || this.parseDeclaration() || this.parseExpression();
   };
 
   Parser.prototype.parseBody = function() {
@@ -10233,6 +12543,9 @@ Parser = (function(superClass) {
   Parser.prototype.parseRoot = function() {
     return this.makeNode(Root, function(doc) {
       doc.source = this.source;
+      if (this.eat(BOM, null, false)) {
+        doc.bom = true;
+      }
       return doc.body = this.parseBody();
     });
   };
@@ -10254,7 +12567,7 @@ Parser = (function(superClass) {
 module.exports = Parser;
 
 
-},{"./error/eot":17,"./error/syntax":23,"./lexer":28,"./node/comment/block":31,"./node/comment/line":32,"./node/expression":33,"./node/expression/group":34,"./node/expression/ident":35,"./node/expression/literal/block":37,"./node/expression/literal/color":38,"./node/expression/literal/function":39,"./node/expression/literal/list":40,"./node/expression/literal/number":41,"./node/expression/literal/regexp":42,"./node/expression/literal/string":43,"./node/expression/literal/this":44,"./node/expression/literal/url":45,"./node/expression/operation":46,"./node/root":47,"./node/statement/conditional":49,"./node/statement/declaration/property":51,"./node/statement/declaration/rule/at-rule":53,"./node/statement/declaration/rule/rule-set":54,"./node/statement/directive":55,"./node/statement/for":56,"./node/statement/import":57,"./node/statement/loop":58,"./token":81}],80:[function(require,module,exports){
+},{"./error/eot":24,"./error/syntax":30,"./lexer":38,"./node/comment/block":43,"./node/comment/line":44,"./node/expression":45,"./node/expression/group":46,"./node/expression/ident":47,"./node/expression/literal/block":49,"./node/expression/literal/color":50,"./node/expression/literal/function":51,"./node/expression/literal/list":52,"./node/expression/literal/number":53,"./node/expression/literal/regexp":54,"./node/expression/literal/string":55,"./node/expression/literal/this":56,"./node/expression/literal/unicode-range":57,"./node/expression/literal/url":58,"./node/expression/operation":59,"./node/root":60,"./node/statement/conditional":62,"./node/statement/declaration/property":64,"./node/statement/declaration/rule/at-rule":66,"./node/statement/declaration/rule/rule-set":67,"./node/statement/directive":68,"./node/statement/for":69,"./node/statement/import":70,"./node/statement/loop":71,"./token":94}],93:[function(require,module,exports){
 var Class, Plugin,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -10268,10 +12581,8 @@ Plugin = (function(superClass) {
     return Plugin.__super__.constructor.apply(this, arguments);
   }
 
-  Plugin.prototype.use = function(context) {};
-
-  Plugin.prototype.cloneContext = function(orig, clone) {
-    return clone.use(this);
+  Plugin.prototype.use = function(context) {
+    return this.NOT_IMPLEMENTED;
   };
 
   return Plugin;
@@ -10281,7 +12592,7 @@ Plugin = (function(superClass) {
 module.exports = Plugin;
 
 
-},{"./class":11}],81:[function(require,module,exports){
+},{"./class":15}],94:[function(require,module,exports){
 var Class, Token,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -10319,7 +12630,11 @@ Token = (function(superClass) {
 
   Token.COMBINATOR = 'Combinator';
 
+  Token.UNICODE_RANGE = 'UnicodeRange';
+
   Token.EOT = 'EOT';
+
+  Token.BOM = 'BOM';
 
 
   /*
@@ -10355,12 +12670,16 @@ Token = (function(superClass) {
 module.exports = Token;
 
 
-},{"./class":11}],82:[function(require,module,exports){
-var Class, Visitor,
+},{"./class":15}],95:[function(require,module,exports){
+module.exports = (require('../package')).version;
+
+
+},{"../package":97}],96:[function(require,module,exports){
+var Plugin, Visitor,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
-Class = require('./class');
+Plugin = require('./plugin');
 
 Visitor = (function(superClass) {
   extend(Visitor, superClass);
@@ -10368,6 +12687,10 @@ Visitor = (function(superClass) {
   function Visitor() {
     return Visitor.__super__.constructor.apply(this, arguments);
   }
+
+  Visitor.prototype.use = function(context) {
+    return context.useVisitor(this);
+  };
 
   Visitor.prototype.visit = function(node) {
     var method;
@@ -10380,148 +12703,13 @@ Visitor = (function(superClass) {
 
   return Visitor;
 
-})(Class);
+})(Plugin);
 
 module.exports = Visitor;
 
 
-},{"./class":11}],83:[function(require,module,exports){
-var AtRule, Block, InternalError, Normalizer, Null, Property, Rule, RuleSet, Visitor,
-  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty;
-
-Visitor = require('../visitor');
-
-Block = require('../object/block');
-
-Rule = require('../object/rule');
-
-RuleSet = require('../object/rule-set');
-
-AtRule = require('../object/at-rule');
-
-Property = require('../object/property');
-
-Null = require('../object/null');
-
-InternalError = require('../error/internal');
-
-
-/*
- */
-
-Normalizer = (function(superClass) {
-  extend(Normalizer, superClass);
-
-  Normalizer.prototype.options = null;
-
-  Normalizer.prototype.indentation = 0;
-
-  function Normalizer(options) {
-    var defaults, name;
-    this.options = options != null ? options : {};
-    defaults = {
-      flatten_block_properties: true,
-      strip_root_properties: false,
-      strip_empty_blocks: false,
-      strip_null_properties: false,
-      strip_empty_properties: false,
-      strip_empty_rule_sets: true,
-      strip_empty_at_rules: false,
-      strip_empty_media_at_rules: true,
-      hoist_rule_sets: true,
-      hoist_at_rules: false,
-      hoist_media_at_rules: true,
-      convert_unknown_units: true
-    };
-    for (name in defaults) {
-      if (!(name in this.options)) {
-        this.options[name] = defaults[name];
-      }
-    }
-  }
-
-
-  /*
-   */
-
-  Normalizer.prototype.normalize = function(node) {
-    var method;
-    method = "normalize" + node.type;
-    if (method in this) {
-      return this[method].call(this, node);
-    } else {
-      return node;
-    }
-  };
-
-  Normalizer.prototype.normalizeRule = function(node, root) {
-    return node;
-  };
-
-  Normalizer.prototype.isEmptyProperty = function(node) {
-    return node.value instanceof Null;
-  };
-
-  Normalizer.prototype.normalizeBlock = function(node, root) {
-    var body, child, grandchild, hoist, i, len, name, ref, strip, value;
-    if (body = node.items) {
-      if (root == null) {
-        root = node;
-      }
-      node.items = [];
-      while (body.length) {
-        child = body.shift();
-        if (child instanceof Rule) {
-          hoist = (this.options.hoist_rule_sets && (child instanceof RuleSet) && (node instanceof RuleSet)) || (child instanceof AtRule && (this.options.hoist_at_rules || this.options["hoist_" + child.name + "_at_rules"]));
-          (hoist ? root : node).items.push(child);
-          this.normalizeBlock(child, root);
-          strip = !child.items.length && (this.options.strip_empty_blocks || (child instanceof RuleSet && this.options.strip_empty_rule_sets) || (child instanceof RuleSet && (this.options.strip_empty_rule_sets || this.options["strip_empty_" + child.name + "_at_rules"])));
-          if (strip) {
-            root.items.splice(root.items.indexOf(child), 1);
-          }
-        } else if (child instanceof Property) {
-          if (this.options.strip_empty_properties && this.isEmptyProperty(child)) {
-            continue;
-          }
-          if (this.options.flatten_block_properties && child.value instanceof Block) {
-            ref = child.value.items;
-            for (i = 0, len = ref.length; i < len; i++) {
-              grandchild = ref[i];
-              if (grandchild instanceof Property) {
-                name = child.name + "-" + grandchild.name;
-                value = grandchild.value;
-                node.items.push(new Property(name, value));
-              }
-            }
-          } else {
-            node.items.push(child);
-          }
-        } else {
-          throw new InternalError;
-        }
-      }
-    }
-    return node;
-  };
-
-
-  /*
-   */
-
-  Normalizer.prototype.normalizeDocument = function(node) {
-    return this.normalizeBlock(node);
-  };
-
-  return Normalizer;
-
-})(Visitor);
-
-module.exports = Normalizer;
-
-
-},{"../error/internal":19,"../object/at-rule":60,"../object/block":61,"../object/null":70,"../object/property":72,"../object/rule":76,"../object/rule-set":75,"../visitor":82}],84:[function(require,module,exports){
+},{"./plugin":93}],97:[function(require,module,exports){
 module.exports = require('../package.json');
 
 
-},{"../package.json":9}]},{},[10]);
+},{"../package.json":13}]},{},[14]);
