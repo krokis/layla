@@ -55,11 +55,13 @@ $files = []
 
 stdout = (text = '', new_line = yes) ->
   process.stdout.write text
-  stdout EOL, no if new_line
+  if new_line
+    stdout EOL, no
 
 stderr = (text = '', new_line = yes) ->
   process.stderr.write text
-  stderr EOL, no if new_line
+  if new_line
+    stderr EOL, no
 
 ###
 Write an error line to stderr.
@@ -91,16 +93,16 @@ Print out usage.
 help = -> stdout USAGE
 
 ###
-Emit and rint or write to file a Layla node.
+Emit and print or write to file a Layla node.
 ###
-emit = (node) ->
+emit = (node, new_line = no) ->
   emitter = new CLIEmitter colors: $colors
   res = emitter.emit node
 
   if $out_file
     fs.writeFileSync $out_file, res
   else
-    stdout res, no
+    stdout res, new_line
 
 ###
 Start interactive (REPL) console.
@@ -277,7 +279,12 @@ try
     for file in $files
       $layla.context.import file
 
-  if not ($files.length or $interactive)
+  if $interactive
+    repl $layla.context
+  else if  $files.length
+    emit $layla.context.block
+    exit 0
+  else
     source = ''
 
     stdin = process.openStdin()
@@ -289,11 +296,6 @@ try
       $layla.evaluate source
       emit $layla.context.block
       exit 0
-  else if $interactive
-    repl $layla.context
-  else
-    emit $layla.context.block
-    exit 0
 
 catch e
   if e instanceof UsageError

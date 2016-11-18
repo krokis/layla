@@ -1,6 +1,8 @@
+os            = require 'os'
 fs            = require 'fs'
 childProcess  = require 'child_process'
 {expect}      = require 'chai'
+tmp           = require 'tmp'
 LAYLA_VERSION = require '../../lib/version'
 
 exec = (args, options = {}) ->
@@ -43,24 +45,27 @@ describe 'CLI', ->
       describe '`--out-file`', ->
 
         it 'Sets an output file', ->
-          {status, stdout, stderr} = exec '1.lay -o _1.css'
-          actual = fs.readFileSync("#{__dirname}/_1.css").toString()
+
+          out_file = tmp.fileSync().name
+
+          {status, stdout, stderr} = exec "1.lay -o #{out_file}"
+          actual = fs.readFileSync(out_file).toString()
           expected = fs.readFileSync("#{__dirname}/1.css").toString()
           expect(status).to.equal 0
           expect(stdout).to.be.empty
           expect(stderr).to.be.empty
           expect(actual).to.equal expected
 
-          {status, stdout, stderr} = exec '2.lay --out-file _2.css'
-          actual = fs.readFileSync("#{__dirname}/_2.css").toString()
+          {status, stdout, stderr} = exec "2.lay --out-file #{out_file}"
+          actual = fs.readFileSync(out_file).toString()
           expected = fs.readFileSync("#{__dirname}/2.css").toString()
           expect(status).to.equal 0
           expect(stdout).to.be.empty
           expect(stderr).to.be.empty
           expect(actual).to.equal expected
 
-          {status, stdout, stderr} = exec '1.lay --out-file=_1+2.css 2.lay'
-          actual = fs.readFileSync("#{__dirname}/_1+2.css").toString()
+          {status, stdout, stderr} = exec "1.lay --out-file=#{out_file} 2.lay"
+          actual = fs.readFileSync(out_file).toString()
           expected = fs.readFileSync("#{__dirname}/1+2.css").toString()
           expect(status).to.equal 0
           expect(stdout).to.be.empty
@@ -70,7 +75,7 @@ describe 'CLI', ->
       describe '`--version`', ->
 
         testVersion = (args) ->
-          expected = LAYLA_VERSION + '\n'
+          expected = LAYLA_VERSION + os.EOL
           {status, stdout, stderr} = exec args
           expect(status).to.equal 0
           expect(stdout).to.equal expected
