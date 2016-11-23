@@ -5,7 +5,9 @@ os              = require 'os'
 fs              = require 'fs'
 path            = require 'path'
 readline        = require 'readline'
-SUPPORTS_COLORS = require 'supports-color'
+colorSupport    = require 'color-support'
+
+SUPPORTS_COLORS = colorSupport()
 
 Layla       = require '../lib'
 NodeContext = require '../lib/context/node'
