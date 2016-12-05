@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "coffee-script": "^1.9.2",
+    "coffee-script": "^1.12.0",
     "coffeelint": "^1.9.3",
     "commonmark": "~0.12.0",
     "fs-extra": "^0.18.2",

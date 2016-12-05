@@ -309,7 +309,7 @@ Object::['.number'] = -> @toNumber()
 ###
 TODO: This should go to the `css-units` module.
 ###
-Number.define from, to for from, to of {
+Number.define frm, to for frm, to of {
   '1cm':     '10mm'
   '40q':     '1cm'
   '1in':     '25.4mm'
