@@ -240,6 +240,16 @@ class Number extends Object
 
   '.odd?': -> Boolean.new @value % 2 isnt 0
 
+  '.sign': ->
+    if @value is 0
+      sign = 0
+    else if @value > 0
+      sign = 1
+    else
+      sign = -1
+
+    return new @class sign
+
   '.positive?': -> Boolean.new @value > 0
 
   '.positive': -> @clone abs @value

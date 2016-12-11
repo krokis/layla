@@ -146,6 +146,42 @@
 
 ## Methods
 
+### `sign`
+
+- Returns a numeric value representing the sign of the number
+
+  ~~~ lay
+  number.sign {
+    i: 0.sign
+    ii: -0.sign
+    iii: -.1.sign
+    iv: 0.2.sign
+    v: 2.sign
+    vi: 1.sign is 0.1.sign
+    vii: 1.sign isnt 0.sign
+    viii: 1.sign isnt -1.sign
+    ix: -1.sign isnt 0.sign
+    x: -1.sign is -9999.sign
+    xi: -1.sign isnt .0001.sign
+  }
+  ~~~
+
+  ~~~ css
+  number.sign {
+    i: 0;
+    ii: 0;
+    iii: -1;
+    iv: 1;
+    v: 1;
+    vi: true;
+    vii: true;
+    viii: true;
+    ix: true;
+    x: true;
+    xi: true;
+  }
+  ~~~
+
 ### `positive?`
 
 - Returns `true` if the number is greater than `0`
