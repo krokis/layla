@@ -112,6 +112,8 @@ Start interactive (REPL) console.
 repl = (context) ->
   buffer = null
 
+  repl = readline.createInterface process.stdin, process.stdout, autocomplete
+
   if process.env.HOME
     historyFile = path.join process.env.HOME, '.layla_history'
 
@@ -131,8 +133,6 @@ repl = (context) ->
     buffer = ''
     repl.setPrompt '> '
     repl.prompt()
-
-  repl = readline.createInterface process.stdin, process.stdout, autocomplete
 
   # Clear screen with `^L`
   process.stdin.on 'keypress', (seq) ->
