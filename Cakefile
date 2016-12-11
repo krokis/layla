@@ -1,23 +1,23 @@
 # 3rd party
-fs            = require 'fs-extra'
-{dirname}     = require 'path'
-which         = require 'which'
-childProcess  = require 'child_process'
-coffee        = require 'coffee-script'
-glob          = require 'glob'
-Layla         = require './src/lib'
+fs           = require 'fs-extra'
+{dirname}    = require 'path'
+which        = require 'which'
+childProcess = require 'child_process'
+coffee       = require 'coffee-script'
+glob         = require 'glob'
+Layla        = require './src/lib'
 
 #
 QUEUE = []
 
-ESC        = '\u001b'
-RESET      = "#{ESC}[0m"
-BOLD       = "#{ESC}[1m"
-RED        = "#{ESC}[31m"
-GREEN      = "#{ESC}[32m"
-YELLOW     = "#{ESC}[33m"
-CHECK      = "#{GREEN}√#{RESET}"
-CROSS      = "#{BOLD}#{RED}×#{RESET}"
+ESC    = '\u001b'
+RESET  = "#{ESC}[0m"
+BOLD   = "#{ESC}[1m"
+RED    = "#{ESC}[31m"
+GREEN  = "#{ESC}[32m"
+YELLOW = "#{ESC}[33m"
+CHECK  = "#{GREEN}√#{RESET}"
+CROSS  = "#{BOLD}#{RED}×#{RESET}"
 
 SOURCE = no
 VERBOSE = no
