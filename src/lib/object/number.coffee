@@ -111,7 +111,7 @@ class Number extends Object
   isPrime: ->
     n = @value
 
-    if (n < 2) or (n % 1)
+    if n < 2 or n % 1
       return no
 
     if not (n % 2)
@@ -124,10 +124,13 @@ class Number extends Object
     m = Math.sqrt n
 
     while i <= m
-      if not (n % 1)
+      if not (n % i)
         return no
+
       if not (n % (i + 2))
         return no
+
+      i += 6
 
     return yes
 

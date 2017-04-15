@@ -880,6 +880,7 @@
     xiii: -0.prime?
     xiv: 4.23.prime?
     xv: 2.00.prime?
+    xvi: 2017.prime?
   }
   ~~~
 
@@ -900,6 +901,7 @@
     xiii: false;
     xiv: false;
     xv: true;
+    xvi: true;
   }
   ~~~
 
