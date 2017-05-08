@@ -129,11 +129,15 @@ Functions
   ~~~ lay
   NOOP = () {}
 
-  border: NOOP()
+  functions#no-return {
+    border: NOOP()
+  }
   ~~~
 
   ~~~ css
-  border: null;
+  functions#no-return {
+    border: null;
+  }
   ~~~
 
 - Can have default arguments
@@ -143,20 +147,54 @@ Functions
     return a + b
   }
 
-  font-size: (sum())px
-  font-size: sum(12px,1)
-  font-size: sum(12px)
-  font-size: sum(14px,-1px)
+  functions#default-arguments {
+    font-size: (sum())px
+    font-size: sum(12px,1)
+    font-size: sum(12px)
+    font-size: sum(14px,-1px)
+  }
   ~~~
 
   ~~~ css
-  font-size: 1px;
-  font-size: 13px;
-  font-size: 13px;
-  font-size: 13px;
+  functions#default-arguments {
+    font-size: 1px;
+    font-size: 13px;
+    font-size: 13px;
+    font-size: 13px;
+  }
   ~~~
 
-- Arguments can refer to other leftmost arguments for their initialization
+- Can receive "rest" arguments
+
+  ~~~ lay
+  sum = (nums...) {
+    tot = 0
+
+    for n in nums {
+      tot = tot + n
+    }
+
+    return tot
+  }
+
+  functions#rest-arguments {
+    font-size: (sum())px
+    font-size: sum(12px,1)
+    font-size: sum(12px)
+    font-size: sum(14px,-1px)
+  }
+  ~~~
+
+  ~~~ css
+  functions#rest-arguments {
+    font-size: 0;
+    font-size: 13px;
+    font-size: 12px;
+    font-size: 13px;
+  }
+  ~~~
+
+- Arguments are evaluated at call-time
 
   ~~~ lay
   size = (w, h: w) {

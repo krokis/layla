@@ -27,6 +27,7 @@ class Token extends Class
   @PUSH_LEFT       = 'PushLeft'
   @DOUBLE_COLON    = 'DoubleColon'
   @DOUBLE_DOT      = 'DoubleDot'
+  @ELLIPSIS        = 'Ellipsis'
   @EQUAL           = 'Equal'
   @DOT             = 'Dot'
   @ASTERISK        = 'Asterisk'

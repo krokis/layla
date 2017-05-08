@@ -9,40 +9,41 @@ EOTError    = require './error/eot'
 class Tokenizer extends Class
 
   PUNCTUATION =
-    '~=': T.TILDE_EQUAL
-    '^=': T.CARET_EQUAL
-    '$=': T.DOLLAR_EQUAL
-    '*=': T.ASTERISK_EQUAL
-    '<=': T.LT_EQUAL
-    '>=': T.GT_EQUAL
-    '|=': T.PIPE_EQUAL
-    '>>': T.PUSH_RIGHT
-    '<<': T.PUSH_LEFT
-    '::': T.DOUBLE_COLON
-    '..': T.DOUBLE_DOT
-    '=' : T.EQUAL
-    '.' : T.DOT
-    '*' : T.ASTERISK
-    '/' : T.SLASH
-    '+' : T.PLUS
-    '-' : T.MINUS
-    '<' : T.LT
-    '>' : T.GT
-    '~' : T.TILDE
-    ',' : T.COMMA
-    '|':  T.PIPE
-    ':' : T.COLON
-    '|:': T.PIPE_COLON
-    '@' : T.AT_SYMBOL
-    '&' : T.AMPERSAND
-    '%' : T.PERCENT
-    ';' : T.SEMICOLON
-    '(' : T.PAREN_OPEN
-    ')' : T.PAREN_CLOSE
-    '{' : T.CURLY_OPEN
-    '}' : T.CURLY_CLOSE
-    '[' : T.BRACKET_OPEN
-    ']' : T.BRACKET_CLOSE
+    '...': T.ELLIPSIS
+    '~=' : T.TILDE_EQUAL
+    '^=' : T.CARET_EQUAL
+    '$=' : T.DOLLAR_EQUAL
+    '*=' : T.ASTERISK_EQUAL
+    '<=' : T.LT_EQUAL
+    '>=' : T.GT_EQUAL
+    '|=' : T.PIPE_EQUAL
+    '>>' : T.PUSH_RIGHT
+    '<<' : T.PUSH_LEFT
+    '::' : T.DOUBLE_COLON
+    '..' : T.DOUBLE_DOT
+    '='  : T.EQUAL
+    '.'  : T.DOT
+    '*'  : T.ASTERISK
+    '/'  : T.SLASH
+    '+'  : T.PLUS
+    '-'  : T.MINUS
+    '<'  : T.LT
+    '>'  : T.GT
+    '~'  : T.TILDE
+    ','  : T.COMMA
+    '|'  : T.PIPE
+    ':'  : T.COLON
+    '|:' : T.PIPE_COLON
+    '@'  : T.AT_SYMBOL
+    '&'  : T.AMPERSAND
+    '%'  : T.PERCENT
+    ';'  : T.SEMICOLON
+    '('  : T.PAREN_OPEN
+    ')'  : T.PAREN_CLOSE
+    '{'  : T.CURLY_OPEN
+    '}'  : T.CURLY_CLOSE
+    '['  : T.BRACKET_OPEN
+    ']'  : T.BRACKET_CLOSE
 
   RE_HEX_DIGIT      = /[0-9a-fA-F]/
   RE_COLOR          = ///(#{RE_HEX_DIGIT.source})+///
@@ -55,7 +56,7 @@ class Tokenizer extends Class
   RE_IDENT_CHAR     = ///([a-zA-Z\d_\-\\])|(#{RE_NON_ASCII.source})///
   RE_IDENT_END      = /^[\!\?]+/
   RE_PUNC           = ///^
-                        (::|\|?:|\.\.|\.|\(|\)|\{|\}|\[|\]|\&|@|;|%|
+                        (::|\|?:|\.{1,3}|\(|\)|\{|\}|\[|\]|\&|@|;|%|
                         \,|[\|\$~*^]?=|~|\*|\/|
                         \||>>|<<|>=|>|<=|<|
                         ([\+\-](?!#{RE_IDENT_START.source})))

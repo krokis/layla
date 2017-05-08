@@ -13,6 +13,7 @@ PropertyDeclaration   = require './node/statement/property'
 LiteralNumber         = require './node/expression/number'
 Root                  = require './node/root'
 Object                = require './object'
+Enumerable            = require './object/enumerable'
 Document              = require './object/document'
 List                  = require './object/list'
 Block                 = require './object/block'
@@ -181,7 +182,15 @@ class Evaluator extends Class
   ###
   evaluateFunction: (node, context) ->
     body = node.block.body
-    in_args = node.arguments
+
+    in_args = []
+    rest_arg = null
+
+    for arg in node.arguments
+      if arg[2]
+        rest_arg = arg[0]
+      else
+        in_args.push arg
 
     new Function (block, args...) =>
       try
@@ -202,8 +211,13 @@ class Evaluator extends Class
 
           ctx.set in_args[d][0], value
 
+        if rest_arg
+          rest = new List args[in_args.length...]
+          ctx.set rest_arg, rest
+
         @evaluateBody body, ctx
-        return
+
+        return null
 
       catch e
         # TODO should it be:
@@ -420,6 +434,11 @@ class Evaluator extends Class
   ###
   evaluateFor: (node, context) ->
     expression = @evaluateNode node.expression, context
+
+    unless expression instanceof Enumerable
+      @typeError """
+        Cannot traverse over #{expression.repr()}: this object is not enumerable
+        """
 
     expression.each (key, value) =>
       context.set node.value.value, value

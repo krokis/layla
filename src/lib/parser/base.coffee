@@ -515,8 +515,9 @@ class BaseParser extends Parser
           @error 'Expected expression after `:`'
       else
         value = null
+        rest = @eat T.ELLIPSIS
 
-      return [name, value]
+      return [name, value, rest]
 
   ###
   Parse a list of function arguments separated by commas. Each single argument
@@ -546,7 +547,8 @@ class BaseParser extends Parser
         break
 
     @move start
-    return # nothing
+
+    return null
 
   ###
   Parse a literal function definition: `(arg: val,...) { ... }`
@@ -565,7 +567,8 @@ class BaseParser extends Parser
         return func
 
     @move start
-    return # nothing
+
+    return null
 
   ###
   Parse a combinator: `>`, `+`, `~` or horizontal whitespace.
@@ -790,7 +793,7 @@ class BaseParser extends Parser
 
       return selector
 
-    return # nothing
+    return null
 
   ###
   ###
@@ -824,7 +827,7 @@ class BaseParser extends Parser
 
       return selector
 
-    return # nothing
+    return null
 
   ###
   Parse a complex selector, made of a list of compound selectors separated by
