@@ -112,9 +112,9 @@ class Number extends Object
 
   isPure: -> not @unit
 
-  isEmpty: -> @value is 0
-
   isInteger: -> @value % 1 is 0
+
+  isEmpty: -> @value is 0
 
   # http://www.javascripter.net/faq/numberisprime.htm
   isPrime: ->

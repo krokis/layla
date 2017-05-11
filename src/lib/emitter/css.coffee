@@ -168,6 +168,8 @@ class CSSEmitter extends Emitter
   emitRegExp: (regexp) ->
     'regexp(' + @quoteString(regexp.toString()) + ')'
 
+  emitDataURI: (uri) -> @emitURL uri
+
   emitPropertyName: (property) -> property.name
 
   emitPropertyValue: (property) -> @emit property.value

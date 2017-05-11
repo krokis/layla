@@ -437,9 +437,21 @@ class Tokenizer extends Class
     if m = @match /^(url-prefix|url|domain|regexp)\(/i
       call = new Token T.CALL, m.start
       call.name = m[1]
-
       @skipAllWhitespace()
-      call.arguments = @readCallArguments()
+
+      switch call.name.toLowerCase()
+        when 'url', 'url-prefix'
+          uri = @readQuotedString()
+
+          if not uri
+            uri = new Token T.RAW_STRING, @location
+            value = @readSequence /[^\)]/
+            uri.value = value
+
+          call.arguments = [uri]
+        else
+          call.arguments = @readCallArguments()
+
       @skipAllWhitespace()
 
       unless @char is ')'

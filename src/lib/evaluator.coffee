@@ -26,6 +26,7 @@ RawString             = require './object/string/raw'
 Null                  = require './object/null'
 Range                 = require './object/range'
 Function              = require './object/function'
+DataURI               = require './object/data-uri'
 URL                   = require './object/url'
 Color                 = require './object/color'
 Property              = require './object/property'
@@ -145,18 +146,19 @@ class Evaluator extends Class
 
   ###
   ###
-  evaluateURL: (node, context) ->
-    new URL (@getStringValue node, context)
-
-  ###
-  ###
   evaluateCall: (node, context) ->
     name = @getStringValue(node.name, context).toLowerCase()
     args = (@evaluateNode arg, context for arg in node.arguments)
 
     switch name
       when 'url', 'url-prefix'
-        obj = new URL args[0]?.value or null
+        uri = args[0]?.value or ''
+
+        if uri[0...5].trim().toLowerCase() is 'data:'
+          obj = new DataURI uri
+        else
+          obj = new URL uri
+
         obj.name = name
       when 'regexp'
         obj = new RegExp args[0]?.value or null

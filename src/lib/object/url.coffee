@@ -1,59 +1,150 @@
 parseURL     = require 'url'
+Net          = require 'net'
+Path         = require 'path'
 
-Object       = require '../object'
-Boolean      = require './boolean'
+URI          = require './uri'
 Null         = require './null'
+Boolean      = require './boolean'
 String       = require './string'
 QuotedString = require './string/quoted'
 Number       = require './number'
 Error        = require '../error'
 TypeError    = require '../error/type'
 
-
-class URL extends Object
-
+class URL extends URI
   name: 'url'
 
-  @property 'value',
-    get: -> @toString()
-    set: (value) ->
-      value = value.trim()
+  @COMPONENTS = [
+    'scheme'
+    'username'
+    'password'
+    'host'
+    'port'
+    'path'
+    'query'
+    'fragment'
+  ]
 
-      if '//' is value.substr 0, 2
-        value = 'fake:' + value
-        fake_scheme = yes
-      else
-        fake_scheme = no
+  @ALIAS_COMPONENTS =
+    protocol: 'scheme'
+    hash: 'fragment'
 
-      try
-        parsed  = parseURL.parse value
-      catch e
-        throw e # TODO
+  parse: (uri) ->
+    uri = uri.trim()
+    # TODO catch parsing errors
+    @components = parseURL.parse uri, no, yes
+    @components.host = null
 
-      @scheme =
-        if not fake_scheme and parsed.protocol?
-          parsed.protocol.substr 0, parsed.protocol.length - 1
+  @property 'scheme',
+    get: ->
+      @components.protocol and
+      @components.protocol[0...@components.protocol.length - 1]
+
+    set:(value) ->
+      if value
+        value = "#{value}:"
+      @components.protocol = value
+
+  @property 'auth',
+    get: -> @components.auth
+    set: (value) -> @components.auth = value
+
+  makeAuth: (user, pass) ->
+    @auth =
+      if user?
+        if pass?
+          "#{user}:#{pass}"
         else
-          null
+          user
+      else if pass?
+        ":#{pass}"
+      else
+        null
 
-      @host     = parsed.hostname
-      @port     = parsed.port
-      @path     = parsed.pathname
-      @query    = parsed.query
-      @fragment = if parsed.hash? then parsed.hash.substr 1 else null
+  @property 'username',
+    get: ->
+      if @auth?
+        user = (@auth.split ':')[0]
+      user ?= null
+      user
+    set: (value) ->
+      @makeAuth value, @password
 
-  constructor: (@value = '') ->
+  @property 'password',
+    get: ->
+      if @auth
+        pass = (@auth.split ':')[1]
+      pass ?= null
+    set: (value) ->
+      @makeAuth @username, value
 
-  clone: (value = @value) ->
-    obj = super value
-    obj.name = @name
+  @property 'host',
+    get: ->
+      if @components.hostname is null then null else @components.hostname
+    set: (value) ->
+      @components.hostname = value
 
-    return obj
+  @property 'domain',
+    get: ->
+      if @isIP()
+        return null
+      else
+        return @host
 
-  toJSON: ->
-    json = super
-    json.value = @value
-    json
+  @property 'port',
+    get: -> @components.port
+    set: (value) -> @components.port = value
+
+  @property 'path',
+    get: -> @components.pathname
+    set: (value) -> @components.pathname = value
+
+  @property 'query',
+    get: ->  @components.search and @components.search[1..]
+    set: (value) ->
+      if value isnt null
+        value = "?#{value}"
+      @components.search = value
+
+  @property 'fragment',
+    get: -> @components.hash and @components.hash[1..]
+    set: (value) ->
+      if value isnt null
+        value = "##{value}"
+      @components.hash = value
+
+  @property 'dirname',
+    get: ->
+      if @path then Path.dirname @path else null
+    set: (value) ->
+      value = if value? then value else ''
+      @path = Path.join '/', value, @basename
+
+  @property 'basename',
+    get: ->
+      if @path then Path.basename @path else null
+    set: (value) ->
+      value = if value? then value else ''
+      @path = Path.join '/', @dirname, value
+
+  @property 'extname',
+    get: ->
+      if @path then Path.extname @path else null
+    set: (value) ->
+      value = if value? then value else ''
+      basename = @filename + value
+      @path = Path.join '/', @dirname, basename
+
+  @property 'filename',
+    get: ->
+      if @path
+        Path.basename @path, @extname
+
+    set: (value) ->
+      value = if value? then value else ''
+      @path = Path.join '/', @dirname, "#{value}#{@extname}"
+
+  isIP: -> Net.isIP @host
 
   ###
   Resolves another URL or string with this as the base
@@ -64,136 +155,126 @@ class URL extends Object
     else
       super
 
-  '.scheme': -> if @scheme then new QuotedString @scheme
+  ###
+  Sets the `port` component.
+  ###
+  '.port=': (value) ->
+    unless value.isNull()
+      if not (value instanceof Number)
+        try
+          value = value.toNumber()
+        catch
+          throw new TypeError (
+            "Cannot set URL port to non-numeric value: #{value.repr()}"
+          )
 
-  '.scheme=': (sch) ->
-    if sch instanceof Null
-      @scheme = null
-    else if sch instanceof String
-      @scheme = sch.value
-    else
-      throw new Error "Bad URL scheme"
+      unless value.isPure()
+        throw new TypeError (
+          "Cannot set URL port to non-pure number: #{value.reprValue()}"
+        )
 
-  '.protocol': @::['.scheme']
+      unless value.isInteger()
+        throw new TypeError (
+          "Cannot set URL port to non-integer number: #{value.reprValue()}"
+        )
 
-  '.protocol=': @::['.scheme=']
+      unless 0 <= value.value <= 65535
+        throw new TypeError (
+          "Port number out of 1..65535 range: #{value.reprValue()}"
+        )
 
-  '.absolute?': -> Boolean.new @scheme?
+    @port = value.value
 
-  '.relative?': -> Boolean.new not @scheme?
+  ###
+  Batch defines all other getters and setters (`scheme`, `path`, `query`, etc)
+  ###
+  @COMPONENTS.forEach (component) =>
+    @::[".#{component}"] ?= ->
+      value = @[component]
 
-  '.http?': -> Boolean.new @scheme is 'http'
+      if value is null
+        Null.null
+      else
+        new QuotedString value
 
-  '.http': ->
-    http = @clone()
-    http.scheme = 'http'
-    http
+    @::[".#{component}="] ?= (value) ->
+      value = if value.isNull() then null else value.toString()
+      @[component] = value
 
-  '.https?': -> Boolean.new @scheme is 'https'
+  for alias of @ALIAS_COMPONENTS
+    @::[".#{alias}"] ?= @::[".#{@ALIAS_COMPONENTS[alias]}"]
+    @::[".#{alias}?"] ?= @::[".#{@ALIAS_COMPONENTS[alias]}?"]
+    @::[".#{alias}="] ?= @::[".#{@ALIAS_COMPONENTS[alias]}="]
 
-  '.https': ->
-    http = @clone()
-    http.scheme = 'https'
-    http
+  ###
+  Returns `true` if the URL is a fully qualified URL, ie: it has a scheme
+  ###
+  '.absolute?': -> Boolean.new @scheme
 
-  '.host': ->
-    if @host?
-      new QuotedString @host
-    else
-      Null.null
+  ###
+  Returns `true` if the URL is a relative URL, ie: it has no scheme
+  ###
+  '.relative?': -> Boolean.new not @scheme
 
-  '.host=': (host) ->
-    if host instanceof Null
-      @host = null
-    else if host instanceof String
-      @host = host.value
-    else
-      throw new Error "Bad URL host"
+  ###
+  Returns `true` if the host is a v4 IP
+  ###
+  '.ipv4?': -> Boolean.new Net.isIPv4 @host
+
+  ###
+  Returns `true` if the host is a v6 IP
+  ###
+  '.ipv6?': -> Boolean.new Net.isIPv6 @host
+
+  ###
+  Returns `true` if the host is an IP (v4 or v6)
+  ###
+  '.ip?': -> Boolean.new @isIP()
 
   '.domain': ->
-    domain = @host
-    if domain?
-      if domain.match /^www\./i
-        domain = domain.substr 4
+    if domain = @domain
       new QuotedString domain
     else
       Null.null
 
-  '.port': -> if @port? then new QuotedString @port
+  ###
+  Returns a copy of the URL with the scheme set to `http`
+  ###
+  '.http': -> @clone().set scheme: 'http'
 
-  '.port=': (port) ->
-    if port instanceof Null
-      @port = null
-      return
+  ###
+  Returns a copy of the URL with the scheme set to `https`
+  ###
+  '.https': -> @clone().set scheme: 'https'
 
-    if port instanceof String and port.isNumeric()
-      port = port.toNumber()
-    else if not (port instanceof Number)
-      throw new TypeError """
-        Cannot set URL port to non-numeric value: #{port.repr()}
-        """
+  do =>
+    ['dir', 'base', 'ext', 'file'].forEach (comp) =>
+      name = "#{comp}name"
 
-    p = port.value
+      @::[".#{name}"] = ->
+        value = @[name]
 
-    if p % 1 isnt 0
-      throw new TypeError """
-        Cannot set URL port to non integer number: #{port.reprValue()}
-        """
+        if value?
+          new QuotedString value
 
-    if 1 <= p <= 65535
-      @port = p
+      @::[".#{name}="] = (value) ->
+        if not value.isNull()
+          value = value.toString()
+        else
+          value = null
+
+        @[name] = value
+
+  toString: -> parseURL.format @components
+
+do ->
+  supah = String::['.+']
+
+  String::['.+'] = (other, etc...) ->
+    if other instanceof URL
+      other.clone parseURL.resolve @value, other.value
     else
-      throw new TypeError "Port number out of 1..65535 range: #{p}"
-
-  '.path': -> if @path? then new QuotedString @path
-
-  '.query': -> if @query? then new QuotedString @query
-
-  '.query=': (query) ->
-    if query instanceof Null
-      @query = null
-    else if query instanceof String
-      @query = query.value.trim()
-    else
-      throw new Error "Bad URL query"
-
-  '.fragment': -> if @fragment? then new QuotedString @fragment
-
-  '.fragment=': (frag) ->
-    if frag instanceof Null
-      @fragment = null
-    else if frag instanceof String
-      @fragment = frag.value.trim()
-    else
-      throw new Error "Bad URL fragment"
-
-  '.hash': @::['.fragment']
-  '.hash=': @::['.fragment=']
-
-  toString: ->
-    str = ''
-
-    str = "##{@fragment}#{str}" if @fragment?
-    str = "?#{@query}#{str}" if @query?
-    str = "#{@path}#{str}" if @path?
-
-    if @host
-      str = ":#{@port}#{str}" if @port?
-      str = "//#{@host}#{str}"
-      str = "#{@scheme}:#{str}" if @scheme?
-
-    str
-
-  '.string': -> new QuotedString @toString()
-
-  do ->
-    supah = String::['.+']
-
-    String::['.+'] = (other, etc...) ->
-      if other instanceof URL
-        other.clone parseURL.resolve @value, other.value
-      else
-        supah.call @, other, etc...
+      supah.call @, other, etc...
 
 
 module.exports = URL
