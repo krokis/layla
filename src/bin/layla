@@ -20,7 +20,7 @@ USAGE = """
     layla [options] file...|< [>]
 
   Options:
-    -u, --use <plugin>       Use a plugin
+    -u, --use <plugin>      Use a plugin
     -o, --out-file <file>   Write compiled code to a file instead of printing it
     -i, --interactive       Start an interactive console
     -c, --colors            Use colors on the output
