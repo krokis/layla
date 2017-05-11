@@ -1,16 +1,18 @@
-# 3rd party
-parseURL    = require 'url'
+parseURL     = require 'url'
 
-Object      = require '../object'
-Boolean     = require './boolean'
-Null        = require './null'
-String      = require './string'
-Number      = require './number'
+Object       = require '../object'
+Boolean      = require './boolean'
+Null         = require './null'
+String       = require './string'
+QuotedString = require './string/quoted'
+Number       = require './number'
+Error        = require '../error'
+TypeError    = require '../error/type'
 
-Error     = require '../error'
-TypeError = require '../error/type'
 
 class URL extends Object
+
+  name: 'url'
 
   @property 'value',
     get: -> @toString()
@@ -40,15 +42,17 @@ class URL extends Object
       @query    = parsed.query
       @fragment = if parsed.hash? then parsed.hash.substr 1 else null
 
-  constructor: (@value = '', @quote = null) ->
+  constructor: (@value = '') ->
 
-  clone: (value = @value, quote = @quote) ->
-    super value, quote
+  clone: (value = @value) ->
+    obj = super value
+    obj.name = @name
+
+    return obj
 
   toJSON: ->
     json = super
     json.value = @value
-    json.quote = @quote
     json
 
   ###
@@ -60,7 +64,7 @@ class URL extends Object
     else
       super
 
-  '.scheme': -> if @scheme then new String @scheme, @quote
+  '.scheme': -> if @scheme then new QuotedString @scheme
 
   '.scheme=': (sch) ->
     if sch instanceof Null
@@ -94,7 +98,7 @@ class URL extends Object
 
   '.host': ->
     if @host?
-      new String @host, @quote
+      new QuotedString @host
     else
       Null.null
 
@@ -111,11 +115,11 @@ class URL extends Object
     if domain?
       if domain.match /^www\./i
         domain = domain.substr 4
-      new String domain, @quote
+      new QuotedString domain
     else
       Null.null
 
-  '.port': -> if @port? then new String @port, @quote
+  '.port': -> if @port? then new QuotedString @port
 
   '.port=': (port) ->
     if port instanceof Null
@@ -141,9 +145,9 @@ class URL extends Object
     else
       throw new TypeError "Port number out of 1..65535 range: #{p}"
 
-  '.path': -> if @path? then new String @path, @quote
+  '.path': -> if @path? then new QuotedString @path
 
-  '.query': -> if @query? then new String @query, @quote
+  '.query': -> if @query? then new QuotedString @query
 
   '.query=': (query) ->
     if query instanceof Null
@@ -153,7 +157,7 @@ class URL extends Object
     else
       throw new Error "Bad URL query"
 
-  '.fragment': -> if @fragment? then new String @fragment, @quote
+  '.fragment': -> if @fragment? then new QuotedString @fragment
 
   '.fragment=': (frag) ->
     if frag instanceof Null
@@ -180,7 +184,7 @@ class URL extends Object
 
     str
 
-  '.string': -> new String @toString(), @quote
+  '.string': -> new QuotedString @toString()
 
   do ->
     supah = String::['.+']
@@ -190,5 +194,6 @@ class URL extends Object
         other.clone parseURL.resolve @value, other.value
       else
         supah.call @, other, etc...
+
 
 module.exports = URL

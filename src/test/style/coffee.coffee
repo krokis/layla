@@ -1,15 +1,16 @@
 fs         = require 'fs'
 path       = require 'path'
 coffeelint = require 'coffeelint'
-rules      = require '../../coffeelint.json'
 
 describe 'CoffeeScript', ->
   base_dir = fs.realpathSync "#{__dirname}/../.."
+  rules = require "#{base_dir}/coffeelint.json"
 
   doFile = (file) ->
     it (file.substr base_dir.length + 1), ->
       source = fs.readFileSync file, 'utf-8'
       errors = coffeelint.lint source, rules
+
       for err in errors
         if err.level isnt 'ignore'
           throw new Error "#{err.message} @ #{file}:#{err.lineNumber}"

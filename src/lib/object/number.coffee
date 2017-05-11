@@ -3,6 +3,7 @@ Null       = require './null'
 Boolean    = require './boolean'
 TypeError  = require '../error/type'
 
+
 FACTORS = {}
 
 ###
@@ -41,7 +42,9 @@ class Number extends Object
     try
       str = str.toString()
       if match = RE_NUMERIC.exec str
-        return new Number (parseFloat match[1]), match[2]
+        value = parseFloat match[1]
+        unit = match[2]
+        return new Number value, unit
 
     throw new TypeError "Could not convert \"#{str}\" to #{@reprType()}"
 
@@ -53,8 +56,8 @@ class Number extends Object
       return value
     else if not to_unit
       return value
-    else if to_unit of FACTORS
-      if from_unit of FACTORS[from_unit]
+    else if from_unit of FACTORS
+      if to_unit of FACTORS[from_unit]
         return value * FACTORS[from_unit][to_unit]
       else
         stack.push from_unit
@@ -82,6 +85,10 @@ class Number extends Object
 
   ###
   ###
+  negate: -> @clone -1 * @value
+
+  ###
+  ###
   isEqual: (other) ->
     other instanceof Number and
     try (round (other.convert @unit).value, 10) is (round @value, 10)
@@ -98,7 +105,7 @@ class Number extends Object
     else
       throw new TypeError (
         """
-        Cannot compare #{this.repr()} with #{other.repr()}: \
+        Cannot compare #{@repr()} with #{other.repr()}: \
         that's not a [Number]
         """
       )
@@ -106,6 +113,8 @@ class Number extends Object
   isPure: -> not @unit
 
   isEmpty: -> @value is 0
+
+  isInteger: -> @value % 1 is 0
 
   # http://www.javascripter.net/faq/numberisprime.htm
   isPrime: ->
@@ -224,7 +233,7 @@ class Number extends Object
 
   '.zero?': -> Boolean.new @value is 0
 
-  '.integer?': -> Boolean.new @value % 1 is 0
+  '.integer?': -> Boolean.new @isInteger()
 
   '.decimal?': -> Boolean.new @value % 1 isnt 0
 
@@ -259,7 +268,7 @@ class Number extends Object
 
   '.negative': -> @clone -1 * (abs @value)
 
-  '.negate': -> @clone -1 * @value
+  '.negate': -> @negate()
 
   '.negative?': -> Boolean.new @value < 0
 

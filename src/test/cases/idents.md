@@ -6,17 +6,18 @@ Idents
   ~~~ lay
   color: red!
   colour: __light_green!!!
-  colour: $-my-colour-?
+  $-my-colour-! = #f00
+  colour: $-my-colour-!
   colour: --pale-white
-  whisky: !please
+  whisky: !please?
   ~~~
 
   ~~~ css
   color: red!;
   colour: __light_green!!!;
-  colour: $-my-colour-?;
+  colour: #ff0000;
   colour: --pale-white;
-  whisky: !please;
+  whisky: !please?;
   ~~~
 
 - Are case-sensitive
@@ -44,13 +45,13 @@ Idents
   #triangle {
 
     &:before {
-      content: ‣;
+      content: ‣
     }
 
     ‣ = ▷
 
     &:after {
-      content: ‣;
+      content: ‣
     }
   }
 

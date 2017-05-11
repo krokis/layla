@@ -44,7 +44,9 @@ class CLIEmitter extends CSSEmitter
 
   emitColor: (str) -> @format (super str), YELLOW
 
-  emitString: (str) -> @format (super str), YELLOW
+  emitQuotedString: (str) -> @format (super str), YELLOW
+
+  emitUnquotedString: (str) -> @format (super str), YELLOW
 
   emitSelector: (sel) -> @format (super sel), BOLD, GREEN
 

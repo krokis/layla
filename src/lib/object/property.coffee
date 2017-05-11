@@ -1,6 +1,7 @@
-Object = require '../object'
-Null   = require './null'
-String = require './string'
+Object       = require '../object'
+Null         = require './null'
+QuotedString = require './string/quoted'
+
 
 class Property extends Object
 
@@ -24,8 +25,9 @@ class Property extends Object
 
   reprValue: -> "#{@name}: #{@value.repr()}"
 
-  '.name': -> new String @name
+  '.name': -> new QuotedString @name
 
   '.value': -> @value
+
 
 module.exports = Property

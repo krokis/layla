@@ -1,6 +1,6 @@
-Error = require '../error'
+RuntimeError = require './runtime'
 
-class NotImplementedError extends Error
+class NotImplementedError extends RuntimeError
 
   message = "Not implemented"
 

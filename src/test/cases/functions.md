@@ -6,7 +6,7 @@ Functions
   ~~~ lay
   DO-NOTHING = () {};
 
-  size = (w, h = null) {
+  size = (w, h: null) {
     if not h {
       h = w
     }
@@ -34,7 +34,7 @@ Functions
     -box-sizing(border-box)
   }
 
-  -box-sizing_border-box = () { --box-sizing_border-box }
+  -box-sizing_border-box = () { --box-sizing_border-box() }
 
   make-button = (br) {
     round-corners(br)
@@ -45,7 +45,7 @@ Functions
     DO-NOTHING(2px red)
     make-button(5px)
     font-style: (() { return italic })()
-    font-weight: (($weight = 400) { return $weight })(bolder)
+    font-weight: (($weight: 400) { return $weight })(bolder)
   }
   ~~~
 
@@ -110,11 +110,18 @@ Functions
     return
   }
 
-  foo: bar
+  FOO = () {
+    return
+    foo: bar
+  }
+
+  foo: bar()
+  bar: FOO()
   ~~~
 
   ~~~ css
   foo: null;
+  bar: null;
   ~~~
 
 - Return `null` if they don't return anything
@@ -122,7 +129,7 @@ Functions
   ~~~ lay
   NOOP = () {}
 
-  border: NOOP
+  border: NOOP()
   ~~~
 
   ~~~ css
@@ -132,7 +139,7 @@ Functions
 - Can have default arguments
 
   ~~~ lay
-  sum = (a = 0, b = 1) {
+  sum = (a: 0, b: 1) {
     return a + b
   }
 
@@ -152,12 +159,12 @@ Functions
 - Arguments can refer to other leftmost arguments for their initialization
 
   ~~~ lay
-  size = (w, h = w) {
+  size = (w, h: w) {
     width: w
     height: h
   }
 
-  foo = (a = 0, b = a + 1) { return a + b }
+  foo = (a: 0, b: a + 1) { return a + b }
 
   a {
     size(20px)
@@ -214,54 +221,16 @@ Functions
   }
   ~~~
 
-- Parentheses can be omitted when calling with no arguments
-
-  ~~~ lay
-  error = (text = 'error') {
-    error: `{text}!`
-  }
-
-  error('warning')
-  error()
-  error
-  ~~~
-
-  ~~~ css
-  error: warning!;
-  error: error!;
-  error: error!;
-  ~~~
-
 - Can be self-called
 
   ~~~ lay
   (($c) { color: $c })(red)
-  ($i, $c = white) { background: $c $i }(url(background.jpg))
+  ($i, $c: white) { background: $c $i }(url(background.jpg))
   ~~~
 
   ~~~ css
   color: red;
-  background: white url(background.jpg);
-  ~~~
-
-- Trailing `?`  and `!` can me moved to the right of calling parentheses
-
-  ~~~ lay
-  warning = (text) {
-    return `{text}`
-  }
-
-  warning! = (text) {
-    return `{warning(text)} !warning`
-  }
-
-  foo: warning!('bar')
-  foo: warning('bar')!
-  ~~~
-
-  ~~~ css
-  foo: bar !warning;
-  foo: bar !warning;
+  background: white url("background.jpg");
   ~~~
 
 ## Methods

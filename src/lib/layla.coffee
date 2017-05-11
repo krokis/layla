@@ -1,7 +1,5 @@
-VERSION    = require './version'
-
 Class      = require './class'
-Parser     = require './parser'
+Parser     = require './parser/base'
 Context    = require './context'
 Evaluator  = require './evaluator'
 Emitter    = require './emitter'
@@ -12,9 +10,10 @@ Object     = require './object'
 Document   = require './object/document'
 String     = require './object/string'
 Error      = require './error'
-
 Normalizer = require './css/normalizer'
+VERSION    = require './version'
 
+## TODO Remove this entire class?
 class Layla
 
   # Library version
@@ -54,7 +53,7 @@ class Layla
   emit: (node) -> @emitter.emit node
 
   # This is a shortcut subject to deprecation
-  compile: (source) ->
-    @emit @normalize @evaluate @parse source
+  compile: (source, file = null) ->
+    @emit @normalize @evaluate @parse source, file
 
 module.exports = Layla

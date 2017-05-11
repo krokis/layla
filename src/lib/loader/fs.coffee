@@ -8,7 +8,11 @@ class FSLoader extends Loader
 
   canLoad: (uri, context) ->
     url = URL.parse uri
-    url.protocol in ['file', null]
+
+    unless url.protocol in ['file', null]
+      return no
+
+    return fs.existsSync uri
 
   load: (uri, context) ->
     # TODO: Better capture exceptions

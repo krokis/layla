@@ -160,12 +160,80 @@ Loops
   #foo {
     foo: 0 "body";
     foo: 1 "a:hover > span";
-    prop: border, red;
-    prop: background, pink;
+    prop: "border", red;
+    prop: "background", pink;
   }
   ~~~
 
 - Can iterate blocks rules
+
+  ~~~ lay
+  doc = {
+    font-weight: 700
+    body {
+      background: yellow
+    }
+
+    border: red
+    background: pink
+
+    a:hover > span {
+      color: green
+      font-weight: bold
+    }
+
+    color: yellow
+  }
+
+  #foo {
+    for i, rule in doc.rules {
+      rule-#{(i + 1).roman.lower-case}: rule.selector.quoted, rule.length
+    }
+  }
+  ~~~
+
+  ~~~ css
+  #foo {
+    rule-i: "body", 1;
+    rule-ii: "a:hover > span", 2;
+  }
+  ~~~
+
+- Can iterate blocks properties
+
+  ~~~ lay
+  doc = {
+    font-weight: 700
+    body {
+      background: yellow
+    }
+
+    border: red
+    background: pink
+
+    a:hover > span {
+      color: green
+      font-weight: bold
+    }
+
+    color: yellow
+  }
+
+  #foo {
+    for prop in doc.properties {
+      & << prop
+    }
+  }
+  ~~~
+
+  ~~~ css
+  #foo {
+    font-weight: 700;
+    border: red;
+    background: pink;
+    color: yellow;
+  }
+  ~~~
 
 ## `break`
 

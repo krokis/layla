@@ -1,15 +1,16 @@
 Object = require '../object'
 
+
 class Boolean extends Object
 
-  constructor: (@value = no) ->
+  constructor: (@value) ->
     @value = !!@value
 
   @true: new @ yes
 
   @false: new @ no
 
-  @new: (value = no) -> value and @true or @false
+  @new: (value) -> value and @true or @false
 
   isEqual: (other) -> other instanceof Boolean and @value is other.value
 
@@ -27,6 +28,9 @@ class Boolean extends Object
   clone: -> @
 
 Object::toBoolean = -> yes
+
+# TODO should throw an exception ("Cannot compare")?
+Object::isEqual = (other) -> other is @
 
 Object::['.is'] = (other) -> Boolean.new @isEqual other
 
@@ -63,5 +67,6 @@ Object::['.true?'] = Object::['.boolean']
 Object::['.false?'] = -> Boolean.new not @toBoolean()
 
 Object::['.empty?'] = -> Boolean.new @isEmpty()
+
 
 module.exports = Boolean

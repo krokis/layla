@@ -68,6 +68,9 @@ class Normalizer extends Visitor
 
           (if hoist then root else node).items.push child
 
+          if child instanceof RuleSet and node instanceof RuleSet
+            child.selector = child.selector.resolve node.selector
+
           @normalizeBlock child, root
 
           strip =

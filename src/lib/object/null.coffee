@@ -1,6 +1,7 @@
 Object  = require '../object'
 Boolean = require './boolean'
 
+
 class Null extends Object
 
   @null = new @
@@ -9,11 +10,7 @@ class Null extends Object
 
   toString: -> ''
 
-  ifNull: (value) ->
-    if (value is null) or (value instanceof Null)
-      Null.null
-    else
-      value
+  ifNull: (value) -> if value is null then Null.null else value
 
   isEqual: (other) -> other.isNull()
 
@@ -28,5 +25,6 @@ class Null extends Object
 Object::isNull = -> no
 
 Object::['.null?'] = -> Boolean.new @isNull()
+
 
 module.exports = Null

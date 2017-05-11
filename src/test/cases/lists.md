@@ -70,7 +70,7 @@ Lists
     foo: 0;
     bar: 0;
     bar: 2;
-    bar: 'foo' 'bar';
+    bar: "foo" "bar";
   }
   ~~~
 
@@ -81,15 +81,15 @@ Lists
   bar = (0,)
   bar << 1
   body {
-    "foo":foo
-    "foo":foo.length
-    "bar":bar::0 bar.length
+    foo:foo
+    foo:foo.length
+    bar:bar::0 bar.length
   }
   ~~~
 
   ~~~ css
   body {
-    foo: 'foo';
+    foo: "foo";
     foo: 1;
     bar: 0 2;
   }
@@ -253,6 +253,24 @@ Lists
     bar: true 0;
     bar: d;
   }
+  ~~~
+
+### `contains?`
+
+- Returns `true` if the list contains the passed value
+
+  ~~~ lay
+  a = (1 2 3 4 5)
+
+  foo: a.contains?(1)
+  foo: a.contains?(6)
+  foo: a.contains?('2')
+  ~~~
+
+  ~~~ css
+  foo: true;
+  foo: false;
+  foo: false;
   ~~~
 
 ### `first`
@@ -443,18 +461,57 @@ Lists
 - Can be called without arguments
 
   ~~~ lay
-  foo: (1px 2px 3px).slice
+  list.slice {
+    foo: (1px 2px 3px).slice
+  }
   ~~~
 
   ~~~ css
-  foo: 1px 2px 3px;
+  list.slice {
+    foo: 1px 2px 3px;
+  }
   ~~~
 
 - Can be used with negative indices
 
-### `splice`
+  ~~~ lay
+  $list = 1 2 3 4 5
+  list.slice {
+    i: $list.slice(-1)
+    ii: $list.slice(-2)
+    iii: $list.slice(-5)
+    iv: $list.slice(-999)
+  }
+  ~~~
+
+  ~~~ css
+  list.slice {
+    i: 5;
+    ii: 4 5;
+    iii: 1 2 3 4 5;
+    iv: 1 2 3 4 5;
+  }
+  ~~~
 
 ### `flatten`
+
+- Flattens the list and contained lists recursively into one dimension list
+
+  ~~~ lay
+  list.flatten {
+    i: (1 2 3).flatten
+    ii: (1, 2, 3, 4 5).flatten
+    iii: (1, 2, 3, (4, (5, 6))).flatten
+  }
+  ~~~
+
+  ~~~ css
+  list.flatten {
+    i: 1 2 3;
+    ii: 1, 2, 3, 4, 5;
+    iii: 1, 2, 3, 4, 5, 6;
+  }
+  ~~~
 
 ### `max`
 
@@ -552,7 +609,7 @@ Lists
 
 ### `in`
 
-- Is the same of `has`, with switched operands
+- Calls `contains?` on the right operand
 
   ~~~ lay
   a = (1 2 3 4 5)
@@ -770,9 +827,34 @@ Lists
   foo: 3 2 1;
   ~~~
 
-- Fails for indices out of bounds
+- Returns `null` for indices out of bounds
+
+  ~~~ lay
+  $list = 1,2,3
+
+  body {
+    i: $list::3
+  }
+  ~~~
+
+  ~~~ css
+  body {
+    i: null;
+  }
+  ~~~
 
 - Fails for non-numeric indices
+
+  ~~~ lay
+  $list = 1,2,3
+
+  body {
+    i: $list::('foo')
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
 
 ### `<<` and `>>`
 

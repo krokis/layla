@@ -1,1 +1,1 @@
-@cr {  is: ok}
+$foo = "llowed"@cr {  is: $foo.unquoted}

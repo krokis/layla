@@ -2,6 +2,7 @@ Object = require '../object'
 Null   = require './null'
 Number = require './number'
 
+
 class Enumerable extends Object
 
   length: -> @NOT_IMPLEMENTED
@@ -20,6 +21,8 @@ class Enumerable extends Object
 
   lastKey: -> @NOT_IMPLEMENTED
 
+  hasKey: (key) -> @NOT_IMPLEMENTED
+
   randomKey: -> @NOT_IMPLEMENTED
 
   each: -> @NOT_IMPLEMENTED
@@ -34,13 +37,15 @@ class Enumerable extends Object
     min = null
     @each (i, item) ->
       min = item if min is null or (item.compare min) is 1
-    min
+
+    return min
 
   maxValue: ->
     max = null
     @each (i, item) ->
       max = item if max is null or (item.compare max) is -1
-    max
+
+    return max
 
   isEmpty: -> @length() is 0
 
@@ -57,5 +62,6 @@ class Enumerable extends Object
   '.min': -> @minValue() or Null.null
 
   '.max': -> @maxValue() or Null.null
+
 
 module.exports = Enumerable

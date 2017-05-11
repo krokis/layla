@@ -5,6 +5,7 @@ Boolean    = require './boolean'
 String     = require './string'
 Null       = require './null'
 
+
 ###
 ###
 class Block extends Collection
@@ -29,14 +30,15 @@ class Block extends Collection
         if node instanceof Property and node.name is other.value
           val = node.value
 
-      val
-    else
-      super
+      return val
+
+    return super
 
   '.::=': (key, value) ->
     if key instanceof String
       name = key.value
       prop = null
+
       for node in @items
         if node instanceof Property and node.name is name
           prop = node
@@ -45,12 +47,12 @@ class Block extends Collection
         prop.value = value
       else
         @push new Property name, value
-      value
-    else
-      super
 
-  '.properties': ->
-    new Block (@items.filter (obj) -> obj instanceof Property)
+      return value
+
+    return super
+
+  '.properties': -> new Block (@items.filter (obj) -> obj instanceof Property)
 
   '.has-property?': (name) -> Boolean.new @hasProperty name.value
 

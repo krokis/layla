@@ -1,6 +1,6 @@
-Error = require '../error'
+ProgramError = require './program'
 
-class ParseError extends Error
+class ParseError extends ProgramError
 
 module.exports = ParseError
 

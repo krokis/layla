@@ -2,6 +2,7 @@ Enumerable = require './enumerable'
 Null       = require './null'
 Number     = require './number'
 
+
 class Indexed extends Enumerable
 
   reset: -> @index = 0
@@ -9,6 +10,8 @@ class Indexed extends Enumerable
   firstKey: -> if @length() then 0 else null
 
   lastKey: -> if 0 < (length = @length()) then length - 1 else null
+
+  hasKey: (key) -> 0 <= key < @length()
 
   currentKey: ->
     if 0 <= @index < @length()
@@ -60,5 +63,6 @@ class Indexed extends Enumerable
       (@get idx) or Null.null
     else
       throw new TypeError
+
 
 module.exports = Indexed

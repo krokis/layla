@@ -98,6 +98,13 @@ Ranges
 
 - Fail for incompatible units
 
+  ~~~ lay
+  1px..2s
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
 - Can be casted to any unit when they're pure
 
   ~~~ lay

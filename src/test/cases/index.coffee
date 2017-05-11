@@ -38,6 +38,7 @@ describe 'Cases', ->
 
         testListItem = (item) ->
           desc     = null
+          todo     = yes
           cases    = []
           source   = null
           expected = null
@@ -46,11 +47,18 @@ describe 'Cases', ->
 
           for node in item.children
             switch node.t
+              when 'List'
+                if desc
+                  describe desc, ->
+                    testList node
+                else
+                  testList node
+                todo = no
               when 'Paragraph'
                 if desc
                   throw new Error "Unexpected paragraph"
                 desc =  stringContent node
-                source   = null
+                source = null
               when 'FencedCode'
                 if node.info is 'lay'
                   if source?
@@ -90,6 +98,7 @@ describe 'Cases', ->
                 expected: expected
                 err_name: err_name
                 err_msg:  err_msg
+                todo:     todo
               }
 
               source   = null
@@ -113,7 +122,7 @@ describe 'Cases', ->
                     if c.err_msg
                       expect(e.message).to.equal c.err_msg
               ).bind @, cases
-            else
+            else if todo
               it desc
 
         testList = (node) ->

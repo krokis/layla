@@ -1,12 +1,13 @@
 Node = require '../node'
 
 class Root extends Node
-  bom: no
+
+  constructor: (@body = [], bom = no) -> super
 
   toJSON: ->
     json = super
-    json.bom = @bom
     json.body = @body
+    json.bom = @bom
     json
 
 module.exports = Root

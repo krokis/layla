@@ -21,7 +21,7 @@
 - Can have 6 digits
 
   ~~~ lay
-  color[hex=6] {
+  color[hex="6"] {
     six: #000000
     six: #ffffff
     six: #a7cb82
@@ -29,7 +29,7 @@
   ~~~
 
   ~~~ css
-  color[hex=6] {
+  color[hex="6"] {
     six: #000000;
     six: #ffffff;
     six: #a7cb82;
@@ -39,7 +39,7 @@
 - Can have 3 digits
 
   ~~~ lay
-  color[hex=3] {
+  color[hex="3"] {
     three: #000
     three: #fff
     three: #7ab
@@ -47,7 +47,7 @@
   ~~~
 
   ~~~ css
-  color[hex=3] {
+  color[hex="3"] {
     three: #000000;
     three: #ffffff;
     three: #77aabb;
@@ -57,7 +57,7 @@
 - Can have 8 digits
 
   ~~~ lay
-  color[hex=8] {
+  color[hex="8"] {
     eight: #00000000
     eight: #ffffffff
     eight: #a7cb82ab
@@ -65,7 +65,7 @@
   ~~~
 
   ~~~ css
-  color[hex=8] {
+  color[hex="8"] {
     eight: rgba(0, 0, 0, 0);
     eight: #ffffff;
     eight: rgba(167, 203, 130, 0.67);
@@ -75,7 +75,7 @@
 - Can have 4 digits
 
   ~~~ lay
-  color[hex=4] {
+  color[hex="4"] {
     four: #0000
     four: #000a
     four: #ffff
@@ -84,7 +84,7 @@
   ~~~
 
   ~~~ css
-  color[hex=4] {
+  color[hex="4"] {
     four: rgba(0, 0, 0, 0);
     four: rgba(0, 0, 0, 0.67);
     four: #ffffff;
@@ -95,7 +95,7 @@
 - Can have 2 digits
 
   ~~~ lay
-  color[hex=2] {
+  color[hex="2"] {
     two: #00
     two: #ff
     two: #3a
@@ -103,7 +103,7 @@
   ~~~
 
   ~~~ css
-  color[hex=2] {
+  color[hex="2"] {
     two: #000000;
     two: #ffffff;
     two: #3a3a3a;
@@ -113,7 +113,7 @@
 - Can have 1 single digit
 
   ~~~ lay
-  color[hex=1] {
+  color[hex="1"] {
     one: #0
     one: #f
     one: #3
@@ -121,7 +121,7 @@
   ~~~
 
   ~~~ css
-  color[hex=1] {
+  color[hex="1"] {
     one: #000000;
     one: #ffffff;
     one: #333333;

@@ -183,6 +183,10 @@ Rule sets
   form#form#form.hide {
     visibility: hidden
   }
+
+  .hide#form {
+    display: none
+  }
   ~~~
 
   ~~~ css
@@ -197,6 +201,10 @@ Rule sets
   form#form#form.hide {
     visibility: hidden;
   }
+
+  .hide#form {
+    display: none;
+  }
   ~~~
 
 #### Attribute selectors
@@ -208,12 +216,20 @@ Rule sets
     text-decoration: underline
   }
 
+  a[ href ] {
+    text-decoration: underline
+  }
+
   a[href][data-external], a[href].external {
     color: red
   }
   ~~~
 
   ~~~ css
+  a[href] {
+    text-decoration: underline;
+  }
+
   a[href] {
     text-decoration: underline;
   }
@@ -231,7 +247,19 @@ Rule sets
     color: pink
   }
 
+  *[href = "http://disney.es" ] {
+    color: pink
+  }
+
   [target=_blank] {
+    text-decoration: underline
+  }
+
+  [target=   _blank] {
+    text-decoration: underline
+  }
+
+  [target   =_blank] {
     text-decoration: underline
   }
   ~~~
@@ -239,6 +267,18 @@ Rule sets
   ~~~ css
   *[href="http://disney.es"] {
     color: pink;
+  }
+
+  *[href="http://disney.es"] {
+    color: pink;
+  }
+
+  [target=_blank] {
+    text-decoration: underline;
+  }
+
+  [target=_blank] {
+    text-decoration: underline;
   }
 
   [target=_blank] {
@@ -305,13 +345,21 @@ Rule sets
 - Attribute is suffixed by
 
   ~~~ lay
-  [class$="-xl"] {
+  *[class$="-xl"] {
+    font-size: larger
+  }
+
+  *[class $= "-xl"] {
     font-size: larger
   }
   ~~~
 
   ~~~ css
-  [class$="-xl"] {
+  *[class$="-xl"] {
+    font-size: larger;
+  }
+
+  *[class$="-xl"] {
     font-size: larger;
   }
   ~~~
@@ -322,9 +370,17 @@ Rule sets
   [data-foo="bar" i] {
     display: block
   }
+
+  [data-foo="bar"  i  ] {
+    display: block
+  }
   ~~~
 
   ~~~ css
+  [data-foo="bar" i] {
+    display: block;
+  }
+
   [data-foo="bar" i] {
     display: block;
   }
@@ -360,7 +416,7 @@ Rule sets
 
   ~~~ css
   a[ext]::after {
-    content: ' (External) ';
+    content: " (External) ";
   }
 
   ::before {
@@ -393,7 +449,7 @@ Rule sets
   ~~~
 
   ~~~ css
-  tr:nth-child(2n+1) {
+  tr:nth-child(2n + 1) {
     background: silver;
   }
 
@@ -602,7 +658,7 @@ Rule sets
   }
   ~~~
 
-- Can appear anywhere as another elemental selector
+- Can appear anywhere as another complementary selector
 
   ~~~ lay
   div {
@@ -614,7 +670,19 @@ Rule sets
       text-decoration: `underline`
     }
   }
+  ~~~
 
+  ~~~ css
+  span div {
+    display: none;
+  }
+
+  p > div:hover {
+    text-decoration: underline;
+  }
+  ~~~
+
+  ~~~ lay
   h1, h2, h3 {
     a, p {
       &:hover {
@@ -622,9 +690,42 @@ Rule sets
       }
     }
   }
+  ~~~
 
+  ~~~ css
+  h1 a:hover,
+  h2 a:hover,
+  h3 a:hover,
+  h1 p:hover,
+  h2 p:hover,
+  h3 p:hover {
+    color: red;
+  }
+  ~~~
+
+  ~~~ lay
   a { color: red; &:hover { color: blue }; div & { color: green }; p & span { color: yellow }}
+  ~~~
 
+  ~~~ css
+  a {
+    color: red;
+  }
+
+  a:hover {
+    color: blue;
+  }
+
+  div a {
+    color: green;
+  }
+
+  p a span {
+    color: yellow;
+  }
+  ~~~
+
+  ~~~ lay
   .foo {
     .bar, .baz {
       & .qux {
@@ -641,7 +742,31 @@ Rule sets
       }
     }
   }
+  ~~~
 
+  ~~~ css
+  .foo .bar .qux,
+  .foo .baz .qux {
+    display: block;
+  }
+
+  .qux .foo .bar,
+  .qux .foo .baz {
+    display: inline;
+  }
+
+  .foo .qux.bar,
+  .foo .qux.baz {
+    display: inline-block;
+  }
+
+  .qux .foo .bar .biz,
+  .qux .foo .baz .biz {
+    display: none;
+  }
+  ~~~
+
+  ~~~ lay
   .b {
    &.c {
     .a& {
@@ -671,59 +796,6 @@ Rule sets
   ~~~
 
   ~~~ css
-  span div {
-    display: none;
-  }
-
-  p > div:hover {
-    text-decoration: underline;
-  }
-
-  h1 a:hover,
-  h2 a:hover,
-  h3 a:hover,
-  h1 p:hover,
-  h2 p:hover,
-  h3 p:hover {
-    color: red;
-  }
-
-  a {
-    color: red;
-  }
-
-  a:hover {
-    color: blue;
-  }
-
-  div a {
-    color: green;
-  }
-
-  p a span {
-    color: yellow;
-  }
-
-  .foo .bar .qux,
-  .foo .baz .qux {
-    display: block;
-  }
-
-  .qux .foo .bar,
-  .qux .foo .baz {
-    display: inline;
-  }
-
-  .qux.foo .bar,
-  .qux.foo .baz {
-    display: inline-block;
-  }
-
-  .qux .foo .bar .biz,
-  .qux .foo .baz .biz {
-    display: none;
-  }
-
   .a.b.c {
     color: red;
   }
@@ -745,79 +817,148 @@ Rule sets
   }
   ~~~
 
-- Can appear more than once
-
-  ~~~ lay
-  .foo {
-    .foo + & {
-      background: amber;
-    }
-    & + & {
-      background: amber;
-    }
-  }
-
-  .foo, .bar {
-    & + & {
-      background: amber;
-    }
-  }
-
-  .foo, .bar {
-    a, b {
-      & > & {
-        background: amber;
-      }
-    }
-  }
-  ~~~
-
-  ~~~ css
-  .foo + .foo {
-    background: amber;
-  }
-
-  .foo + .foo {
-    background: amber;
-  }
-
-  .foo + .foo,
-  .bar + .bar {
-    background: amber;
-  }
-
-  .foo a > .foo a,
-  .bar a > .bar a,
-  .foo b > .foo b,
-  .bar b > .bar b {
-    background: amber;
-  }
-  ~~~
+- Cannot appear more than once
 
 ### Interpolation
 
 - Is allowed in type selectors
 
+  ~~~ lay
+  doc = 'bod'
+
+  html > #{doc + 'y'}.js {
+    color: white
+  }
+  ~~~
+
+  ~~~ css
+  html > body.js {
+    color: white;
+  }
+  ~~~
+
 - Is allowed in class selectors
+
+  ~~~ lay
+  class = 'mobile'
+
+  body.#{class} {
+    width: 800px
+  }
+  ~~~
+
+  ~~~ css
+  body.mobile {
+    width: 800px;
+  }
+  ~~~
 
 - Is allowed in id selectors
 
+  ~~~ lay
+  id = 'main'
+
+  div##{id} #header {
+    font-size: 48px
+  }
+  ~~~
+
+  ~~~ css
+  div#main #header {
+    font-size: 48px;
+  }
+  ~~~
+
 - Is allowed in attribute names
+
+  ~~~ lay
+  attr = 'target'
+
+  a[#{attr}="_blank"] {
+    after: ' (External) '
+  }
+
+  a[#{attr}=_blank] {
+    after: ' (External) '
+  }
+  ~~~
+
+  ~~~ css
+  a[target="_blank"] {
+    after: " (External) ";
+  }
+
+  a[target=_blank] {
+    after: " (External) ";
+  }
+  ~~~
 
 - Is allowed in pseudo-selectors names
 
+  ~~~ lay
+  body a[target]:#{'after'} {
+    content: '(EXT)'
+  }
+
+  body a:hov#{'e' + 'r'} {
+    text-decoration: underline
+  }
+  ~~~
+
+  ~~~ css
+  body a[target]:after {
+    content: "(EXT)";
+  }
+
+  body a:hover {
+    text-decoration: underline;
+  }
+  ~~~
+
 - Is allowed in attribute values
+
+  ~~~ lay
+  ext-target = '_blank'
+
+  a[target=#{ext-target}] {
+    after: ' (External) '
+  }
+
+  a[target="#{ext-target}"] {
+    after: ' (External) '
+  }
+  ~~~
+
+  ~~~ css
+  a[target=_blank] {
+    after: " (External) ";
+  }
+
+  a[target="_blank"] {
+    after: " (External) ";
+  }
+  ~~~
 
 - Is allowed in namespaces
 
-## Operators
+  ~~~ lay
+  ns = 'svg'
 
-## Methods
+  #{ns}|circle {
+    border: 2px solid red
+  }
 
-- `selector`
+  #{"*"}|*[#{ns}|stroke] {
+    border: none
+  }
+  ~~~
 
-- `selector=`
+  ~~~ css
+  svg|circle {
+    border: 2px solid red;
+  }
 
-- `block`
-
-- `block=`
+  *|*[svg|stroke] {
+    border: none;
+  }
+  ~~~

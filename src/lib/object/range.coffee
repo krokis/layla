@@ -1,10 +1,12 @@
-Indexed   = require './indexed'
-Null      = require './null'
-Boolean   = require './boolean'
-List      = require './list'
-Number    = require './number'
-String    = require './string'
-TypeError = require '../error/type'
+Indexed        = require './indexed'
+Null           = require './null'
+Boolean        = require './boolean'
+List           = require './list'
+Number         = require './number'
+String         = require './string'
+UnquotedString = require './string/unquoted'
+TypeError      = require '../error/type'
+
 
 class Range extends Indexed
 
@@ -13,6 +15,7 @@ class Range extends Indexed
   @property 'items',
     get: ->
       items = []
+
       for i in [0...@length()]
         items.push new Number (@getByIndex i), @unit
 
@@ -32,7 +35,7 @@ class Range extends Indexed
     if @isReverse()
       step *= -1
 
-    new Number @first + index * step
+    return new Number @first + index * step
 
   constructor: (@first = 0, @last = 0, @unit = null, @step = 1) ->
     super
@@ -47,7 +50,7 @@ class Range extends Indexed
     else
       unit = ''
 
-    @clone first, last, unit, step
+    return @clone first, last, unit, step
 
   ###
   TODO this is buggy
@@ -55,9 +58,9 @@ class Range extends Indexed
   contains: (other) ->
     try
       other = other.convert @unit
-      @minValue() <= other.value <= @maxValue()
-    catch
-      no
+      return @minValue() <= other.value <= @maxValue()
+
+    return no
 
   isPure: -> not @unit
 
@@ -68,10 +71,9 @@ class Range extends Indexed
 
   './': (step) ->
     if step instanceof Number
-      step = (step.convert @unit).value
-      @clone null, null, null, step
-    else
-      throw new TypeError "Cannot divide a range by #{step.repr()}"
+      return @clone null, null, null, (step.convert @unit).value
+
+    throw new TypeError "Cannot divide a range by #{step.repr()}"
 
   ###
   TODO this is buggy
@@ -95,7 +97,7 @@ class Range extends Indexed
 
     return @
 
-  '.unit': -> if @unit then new String @unit else Null.null
+  '.unit': -> if @unit then new UnquotedString @unit else Null.null
 
   '.unit?': -> Boolean.new @unit
 
@@ -170,5 +172,6 @@ do ->
       @clone str
     else
       supah.call @, other, etc...
+
 
 module.exports = Range

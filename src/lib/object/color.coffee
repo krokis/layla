@@ -6,6 +6,7 @@ String     = require './string'
 TypeError  = require '../error/type'
 ValueError = require '../error/value'
 
+
 class Color extends Object
 
   {round, max, min, abs, sqrt, pow} = Math
@@ -176,8 +177,8 @@ class Color extends Object
     The source color is multiplied by the backdrop.
 
     The result color is always at least as dark as either the source or backdrop
-    color. Multiplying any color with black produces black. Multiplying any color
-    with white leaves the color unchanged.
+    color. Multiplying any color with black produces black. Multiplying any
+    color with white leaves the color unchanged.
     ###
     'multiply': (source,  backdrop) ->
       source * backdrop
@@ -186,10 +187,10 @@ class Color extends Object
     Multiplies the complements of the backdrop and source color values, then
     complements the result.
 
-    The result color is always at least as light as either of the two constituent
-    colors. Screening any color with white produces white; screening with black
-    leaves the original color unchanged. The effect is similar to projecting
-    multiple photographic slides simultaneously onto a single screen.
+    The result color is always at least as light as either of the two
+    constituent colors. Screening any color with white produces white; screening
+    with black leaves the original color unchanged. The effect is similar to
+    projecting multiple photographic slides simultaneously onto a single screen.
     ###
     'screen': (source,  backdrop) ->
       backdrop + source - backdrop * source
@@ -259,8 +260,8 @@ class Color extends Object
 
     ###
     Produces an effect similar to that of the `difference` mode but lower in
-    contrast. Painting with white inverts the backdrop color; painting with black
-    produces no change.
+    contrast. Painting with white inverts the backdrop color; painting with
+    black produces no change.
     ###
     'exclusion': (source,  backdrop) ->
       source + backdrop - 2 * source * backdrop
@@ -344,13 +345,15 @@ class Color extends Object
       else
         throw new Error "Bad color space: #{space}"
 
-  constructor: (color = '#0000') ->
-    @spaces = {}
-    @alpha = 1
-
+  parseColor: (color) ->
     @parseHexString(color) or
     @parseFuncString(color) or
     throw new Error "Bad color string: #{color}"
+
+  constructor: (color = '#0000') ->
+    @spaces = {}
+    @alpha = 1
+    @parseColor(color)
 
   do =>
     make_space_accessors = (space) =>
@@ -664,5 +667,6 @@ class Color extends Object
     for space of SPACES
       for channel, index in SPACES[space]
         make_accessors space, index, channel
+
 
 module.exports = Color

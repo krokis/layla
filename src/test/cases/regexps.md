@@ -12,7 +12,57 @@ Regular expressions
 
 - Cannot be empty
 
-- Cannot contain only whitespace
+  ~~~ lay
+  regexp[empty] {
+    i: foo // This is interpreted as a comment
+  }
+  ~~~
+
+  ~~~ css
+  regexp[empty] {
+    i: foo;
+  }
+  ~~~
+
+- Cannot start with whitespace
+
+  ~~~ lay
+  $re = /  /
+  ~~~
+
+  ~~~ SyntaxError
+  ~~~
+
+  ~~~ lay
+  $re = /  .*/
+  ~~~
+
+  ~~~ SyntaxError
+  ~~~
+
+  ~~~ lay
+  $re = /.*
+  /
+  ~~~
+
+  ~~~ SyntaxError
+  ~~~
+
+  ~~~ lay
+  foo = 1
+
+  regexp::whitespace{
+    i: 3 / foo/ 2
+    ii: 3 /foo/ 2
+  }
+  ~~~
+
+  ~~~ css
+  regexp::whitespace {
+    i: 1.5;
+    ii: 3 regexp("foo") 2;
+  }
+  ~~~
 
 - Must have a correct syntax
 
@@ -158,7 +208,7 @@ Regular expressions
 
   ~~~ css
   regexp.string {
-    bar: "^[a-zA-Z-_\d]+$";
+    bar: "^[a-zA-Z-_\\d]+$";
   }
   ~~~
 
@@ -319,7 +369,33 @@ Regular expressions
   ~~~ css
   regexp.multiline {
     i: null;
-    ii: 'lorem';
+    ii: "lorem";
+  }
+  ~~~
+
+### `flags`
+
+- Returns the regular expression flags as a sequence of characters
+
+  ~~~ lay
+  regexp.flags {
+    i: /.*/.flags
+    ii: /.*/i.flags
+    iii: /.*/mgi.flags
+    iv: /.*/mi.flags
+    v: /.*/gm.flags
+    vi: /.*/iiimmgmgi.flags
+  }
+  ~~~
+
+  ~~~ css
+  regexp.flags {
+    i: "";
+    ii: "i";
+    iii: "img";
+    iv: "im";
+    v: "mg";
+    vi: "img";
   }
   ~~~
 
@@ -351,16 +427,16 @@ Regular expressions
 
   ~~~ lay
   regexp[operator="~"] {
-      `i`: /\d+/ ~ '123px' /\d+/ ~ 'abc'
-     `ii`: /(\d+)(px|rem)/ ~ `100px`
-    `iii`: /(\d+)(px|rem)/ ~ "99rem"
-     `iv`: border-color ~ /([a-z]+)-([a-z]+)/
+      i: /\d+/ ~ '123px' /\d+/ ~ 'abc'
+    ii: /(\d+)(px|rem)/ ~ `100px`
+    iii: /(\d+)(px|rem)/ ~ "99rem"
+    iv: border-color ~ /([a-z]+)-([a-z]+)/
   }
   ~~~
 
   ~~~ css
   regexp[operator="~"] {
-    i: '123' null;
+    i: "123" null;
     ii: 100px 100 px;
     iii: "99rem" "99" "rem";
     iv: border-color border color;

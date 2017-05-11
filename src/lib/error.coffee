@@ -10,19 +10,20 @@ class Error extends Class
 
   @property 'line', get: -> @location?.line
 
-  @property 'column', get: -> @location?.line
+  @property 'column', get: -> @location?.column
 
   constructor: (@message, @location = null, @stack = null) ->
 
   toString: ->
-    str = "#{@type} - #{@message}"
+    str = "[#{@type}] #{@message}"
 
     if @file?
-      str += " at #{@file}"
-      if @line?
-        str += ":#{@line}"
-        str += ",#{column}" if @column?
+      str += " @ #{@file}"
 
-    str
+    if @line?
+      str += ":#{@line}"
+      str += ",#{@column}" if @column?
+
+    return str
 
 module.exports = Error

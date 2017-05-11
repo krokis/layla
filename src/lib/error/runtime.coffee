@@ -1,6 +1,6 @@
-Error = require '../error'
+ProgramError = require './program'
 
-class RuntimeError extends Error
+class RuntimeError extends ProgramError
 
 module.exports = RuntimeError
 

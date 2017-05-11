@@ -2,20 +2,13 @@ Class = require './class'
 
 class Node extends Class
 
-  parent: null
-
-  @property 'root',
-    get: ->
-      p = @
-      while p.parent
-        p = p.parent
-      p
-
   start: null
   end: null
+  block: no
 
   toJSON: ->
     json = super
+    json.kind = @type
     json.start = @start
     json.end = @end
     json

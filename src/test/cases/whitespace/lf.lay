@@ -1,3 +1,6 @@
+$foo = "
+llowed"
+
 @lf {
-  is: ok
+  is: $foo.unquoted
 }

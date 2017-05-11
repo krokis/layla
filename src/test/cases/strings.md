@@ -6,18 +6,24 @@ Strings
 - Are declared with 'single' or "double" quotes
 
   ~~~ lay
-  foo: 'Bar'
-  foo: "Bar"
+  string[quoted] {
+    foo: 'Bar'
+    foo: "Bar"
+  }
   ~~~
 
   ~~~ css
-  foo: 'Bar';
-  foo: "Bar";
+  string[quoted] {
+    foo: "Bar";
+    foo: "Bar";
+  }
   ~~~
 
 - Can have escaped new lines (`\n`), tabs (`\t`) and carriage returns (`\r`)
 
   ~~~ lay
+  string[quoted][escaped]
+  {
   foo: "Lorem\n\n\nIpsum\tdolor\t\tsit\r"
   bar: "\nDolor\r\n\nSit\n"
   baz: '\
@@ -36,177 +42,250 @@ Strings
   foo: '\nLorem\n'
   foo: '\rLorem\r'
   foo: '\r\nLorem\r\n'
+  }
   ~~~
 
   ~~~ css
-  foo: "Lorem\A\A\AIpsum\9dolor\9\9sit\A";
-  bar: "\ADolor\A\ASit\A";
-  baz: 'LoremIpsumDolorSit';
-  baz: 'Lorem Ipsum Dolor Sit';
-  foo: '\9Lorem\9';
-  foo: '\ALorem\A';
-  foo: '\ALorem\A';
-  foo: '\ALorem\A';
+  string[quoted][escaped] {
+    foo: "Lorem\A\A\AIpsum\9dolor\9\9sit\A";
+    bar: "\ADolor\A\ASit\A";
+    baz: "LoremIpsumDolorSit";
+    baz: "Lorem Ipsum Dolor Sit";
+    foo: "\9Lorem\9";
+    foo: "\ALorem\A";
+    foo: "\ALorem\A";
+    foo: "\ALorem\A";
+  }
   ~~~
 
 - Can have escaped unicode characters
 
   ~~~ lay
-  foo: "\20\9"
-  foo: "\2660 \2663 \2665 \2666 "
+  string.quoted[escaped=unicode] {
+    i: "\20\9"
+    ii: "\2660 \2663 \2665 \2666 "
+  }
   ~~~
 
   ~~~ css
-  foo: " \9";
-  foo: "♠♣♥♦";
+  string.quoted[escaped=unicode] {
+    i: " \9";
+    ii: "♠♣♥♦";
+  }
   ~~~
 
-- Can have quotes and other characters escaped
+- Can contain escaped quotes
 
   ~~~ lay
-  i: "This\.is\ not necessary\!"
-  ii: 'This\.is\ not necessary\!'
-  iii: "These are \"double quotes\""
-  iv: &::iii.unquoted.quoted
-  v: 'These are \'single quotes\''
-  vi: &::v.unquoted.quoted
+  string[quoted][escaped=quotes] {
+    i: "These are \"double quotes\""
+    ii: &::i.unquoted.quoted
+    iii: 'These are \'single quotes\''
+    iv: &::iii.unquoted.quoted
+  }
   ~~~
 
   ~~~ css
-  i: "This.is not necessary!";
-  ii: 'This.is not necessary!';
-  iii: "These are \"double quotes\"";
-  iv: "These are \"double quotes\"";
-  v: 'These are \'single quotes\'';
-  vi: "These are 'single quotes'";
+  string[quoted][escaped=quotes] {
+    i: "These are \"double quotes\"";
+    ii: "These are \"double quotes\"";
+    iii: "These are 'single quotes'";
+    iv: "These are 'single quotes'";
+  }
+  ~~~
+
+- Can contain escaped backslashes
+
+  ~~~ lay
+  string[quoted][escaped=back-slashes] {
+    win-path: "C:\\Program Files\\"
+  }
+  ~~~
+
+  ~~~ css
+  string[quoted][escaped=back-slashes] {
+    win-path: "C:\\Program Files\\";
+  }
   ~~~
 
 - Support interpolation
 
   ~~~ lay
 
-  $say-hi = ($who = 'world') {
+  $say-hi = ($who: 'world') {
     return 'Hello, world'
   }
 
-  body {
+  string::interpolation {
     $you = 'world'
-    foo: '{$say-hi($you) + ','} how are you?'
+    i: '#{$say-hi($you) + ','} how are you?'
   }
   ~~~
 
   ~~~ css
-  body {
-    foo: 'Hello, world, how are you?';
+  string::interpolation {
+    i: "Hello, world, how are you?";
   }
   ~~~
 
 - Are always trueish
 
   ~~~ lay
-  foo: "".true? "  ".true? "0".boolean "false".true?
-  ~~~
-
-  ~~~ css
-  foo: true true true true;
-  ~~~
-
-## Unquoted strings
-
-- Can be made out of unresolved idents
-
-  ~~~ lay
-  background: light-green
-  background: red
-  red = "#f00"
-  background: red
-  ~~~
-
-  ~~~ css
-  background: light-green;
-  background: red;
-  background: "#f00";
-  ~~~
-
-- Can be made with backticks
-
-  ~~~ lay
-  background: `light-green`
-  margin: `0`
-  background: red
-  red = `#f00`
-  background: `red`
-  background: red
-  ~~~
-
-  ~~~ css
-  background: light-green;
-  margin: 0;
-  background: red;
-  background: red;
-  background: #f00;
-  ~~~
-
-- Support interpolation between backticks
-
-  ~~~ lay
-  body {
-    $you = 'world'
-    foo: `Hello, {$you}`
+  string.true {
+    i: "".true? "  ".true? "0".boolean "false".true?
   }
   ~~~
 
   ~~~ css
-  body {
-    foo: Hello, world;
+  string.true {
+    i: true true true true;
+  }
+  ~~~
+
+## Unquoted strings
+
+- Are made without quotes
+
+  ~~~ lay
+  string.unquoted {
+    background: light-green
+    background: red
+    red = "#f00"
+    background: red
+  }
+  ~~~
+
+  ~~~ css
+  string.unquoted {
+    background: light-green;
+    background: red;
+    background: "#f00";
   }
   ~~~
 
 - Can have escaped unicode characters
 
   ~~~ lay
-  #this {
+  string.unquoted[escaped=unicode] {
     is: Espa\f1ist\e1n, se\f1oras\20y\20se\f1ores!
   }
   ~~~
 
   ~~~ css
-  #this {
-    is: Españistán, señoras y señores!;
+  string.unquoted[escaped=unicode] {
+    is: Españistán, señoras\20y\20señores!;
   }
   ~~~
 
 - Can have escaped new lines (`\n`), tabs (`\t`), and carriage returns (`\r`)
 
   ~~~ lay
-  foo: Lorem\nipsum\tdolor\rsit\r\namet
+  string.unquoted[escaped=whitespace] {
+    i: Lorem\nipsum\tdolor\rsit\r\namet
+  }
   ~~~
 
   ~~~ css
-  foo: Lorem\Aipsum\9dolor\Asit\Aamet;
+  string.unquoted[escaped=whitespace] {
+    i: Lorem\Aipsum\9dolor\Asit\Aamet;
+  }
   ~~~
 
 - Can have escaped quotes
 
   ~~~ lay
-  foo: Lorem\"ipsum\"
+  string.unquoted[escaped=quoted] {
+    i: Lorem\"ipsum\"
+  }
   ~~~
 
   ~~~ css
-  foo: Lorem\"ipsum\";
+  string.unquoted[escaped=quoted] {
+    i: Lorem\"ipsum\";
+  }
   ~~~
 
 - Are always trueish
 
   ~~~ lay
-  bar {
-    foo: ``.true? `  `.true? yes.true? -moz-border-radius.true? not !important.false?
+  string.unquoted.true {
+    i: -moz-border-radius.true? not !important.false? yes.true?
   }
   ~~~
 
   ~~~ css
-  bar {
-    foo: true true true true true;
+  string.unquoted.true {
+    i: true true true;
+  }
+  ~~~
+
+## Raw strings
+
+- Can be made with backticks
+
+  ~~~ lay
+  string[raw] {
+    background: `light-green`
+    margin: `0`
+    background: red
+    red = `#f00`
+    background: `red`
+    background: red
+  }
+  ~~~
+
+  ~~~ css
+  string[raw] {
+    background: light-green;
+    margin: 0;
+    background: red;
+    background: red;
+    background: #f00;
+  }
+  ~~~
+
+- Can have escaped unicode characters
+
+  ~~~ lay
+  string.raw[escaped=unicode] {
+    i: `\2660 \2663 \2665 \2666 `
+    ii: `Hello\20World`
+  }
+  ~~~
+
+  ~~~ css
+  string.raw[escaped=unicode] {
+    i: ♠♣♥♦;
+    ii: Hello World;
+  }
+  ~~~
+
+- Support interpolation
+
+  ~~~ lay
+  string[raw]::interpolation {
+    $you = 'world'
+    foo: `Hello, #{$you}`
+  }
+  ~~~
+
+  ~~~ css
+  string[raw]::interpolation {
+    foo: Hello, world;
+  }
+  ~~~
+
+- Are always trueish
+
+  ~~~ lay
+  string[raw].true {
+    foo: ``.true? `  `.true?
+  }
+  ~~~
+
+  ~~~ css
+  string[raw].true {
+    foo: true true;
   }
   ~~~
 
@@ -217,29 +296,33 @@ Strings
 - Returns `true` only if the right side is a string with the same value
 
   ~~~ lay
-  a: 'black' is 'black'
-  b: 'black' is "black"
-  c: 'black' isnt " black"
-  d: 'Black' isnt "black"
-  e: 'foo' is foo
-  f: '' is ``
-  g: '' isnt false
-  h: '' isnt null
-  i: '0' isnt 0
-  j: 'google.com' isnt url('google.com')
+  string is string {
+    a: 'black' is 'black'
+    b: 'black' is "black"
+    c: 'black' isnt " black"
+    d: 'Black' isnt "black"
+    e: 'foo' is foo
+    f: '' is ``
+    g: '' isnt false
+    h: '' isnt null
+    i: '0' isnt 0
+    j: 'google.com' isnt url('google.com')
+  }
   ~~~
 
   ~~~ css
-  a: true;
-  b: true;
-  c: true;
-  d: true;
-  e: true;
-  f: true;
-  g: true;
-  h: true;
-  i: true;
-  j: true;
+  string is string {
+    a: true;
+    b: true;
+    c: true;
+    d: true;
+    e: true;
+    f: true;
+    g: true;
+    h: true;
+    i: true;
+    j: true;
+  }
   ~~~
 
 ### `has`
@@ -277,13 +360,17 @@ Strings
 - Joins strings
 
   ~~~ lay
-  a: 'Hello' + "," + ' ' + world
-  b: hello + ' world'
+  String[op="+"] {
+    a: 'Hello' + "," + ' ' + world
+    b: hello + '-world'
+  }
   ~~~
 
   ~~~ css
-  a: 'Hello, world';
-  b: 'hello world';
+  String[op="+"] {
+    a: "Hello, world";
+    b: hello-world;
+  }
   ~~~
 
 ### `*`
@@ -324,7 +411,7 @@ Strings
 
   ~~~ css
   body {
-    foo: 'Lorem', 'ipsum', 'dolor', 'sit', 'amet';
+    foo: "Lorem", "ipsum", "dolor", "sit", "amet";
   }
   ~~~
 
@@ -340,7 +427,7 @@ Strings
 
   ~~~ css
   body {
-    foo: 'Lorem' 'ipsum' 'dolor' 'sit' 'amet';
+    foo: "Lorem" "ipsum" "dolor" "sit" "amet";
   }
   ~~~
 
@@ -359,8 +446,8 @@ Strings
 
   ~~~ css
   body {
-    foo: 'Lorem' 'ipsum' 'dolor' 'sit' 'amet';
-    foo: 'Lorem' 'ipsum' 'dolor' 'sit' 'amet';
+    foo: "Lorem" "ipsum" "dolor" "sit" "amet";
+    foo: "Lorem" "ipsum" "dolor" "sit" "amet";
   }
   ~~~
 
@@ -394,7 +481,7 @@ Strings
   ~~~
 
   ~~~ css
-  i: null, '123';
+  i: null, "123";
   ii: 100px 100 px;
   iii: "99rem" "99" "rem";
   iv: border-color border color;
@@ -411,8 +498,8 @@ Strings
   ~~~
 
   ~~~ css
-  foo: 'I';
-  bar: 'L';
+  foo: "I";
+  bar: "L";
   ~~~
 
 - Accepts negative indices
@@ -423,7 +510,7 @@ Strings
   ~~~
 
   ~~~ css
-  foo: 'T';
+  foo: "T";
   ~~~
 
 - Returns `null` if the passed index is out of bounds
@@ -453,7 +540,7 @@ Strings
   ~~~
 
   ~~~ css
-  foo: 'Lorem';
+  foo: "Lorem";
   ~~~
 
 ### `<<` and `>>`
@@ -471,7 +558,7 @@ Strings
   ~~~
 
   ~~~ css
-  foo: 'Lorem ipsum dolor';
+  foo: "Lorem ipsum dolor";
   ~~~
 
 - Always return the resulting string
@@ -482,8 +569,8 @@ Strings
   ~~~
 
   ~~~ css
-  foo: 'lorem ipsum dolor';
-  foo: 'dolor ipsum lorem';
+  foo: "lorem ipsum dolor";
+  foo: "dolor ipsum lorem";
   ~~~
 
 ## Methods
@@ -533,24 +620,48 @@ Strings
   }
   ~~~
 
+### `contains?`
+
+- Returns `true` if the string contains the given substring
+
+  ~~~ lay
+  string.contains {
+    i: 'Lorem ipsum dolor sit'.contains?('ipsum')
+    ii: `Lorem ipsum dolor sit`.contains?(ipsum)
+    iii: 'Lorem ipsum dolor sit'.contains?('Ipsum')
+  }
+  ~~~
+
+  ~~~ css
+  string.contains {
+    i: true;
+    ii: true;
+    iii: false;
+  }
+  ~~~
+
 ### `blank?`
 
 - Returns `true` if the string is empty or has only whitespace
 
   ~~~ lay
-  foo: "hello world".blank?
-  foo: ' '.blank? "  \n\t ".blank? " \n\t  ".trim.blank?
-  foo: ``.blank?
-  a = "\
+  string.blank {
+    foo: "hello world".blank?
+    foo: ' '.blank? "  \n\t ".blank? " \n\t  ".trim.blank?
+    foo: ``.blank?
+    a = "\
   "
-  foo: a.length a.blank?
+    foo: a.length a.blank?
+  }
   ~~~
 
   ~~~ css
-  foo: false;
-  foo: true true true;
-  foo: true;
-  foo: 0 true;
+  string.blank {
+    foo: false;
+    foo: true true true;
+    foo: true;
+    foo: 0 true;
+  }
   ~~~
 
 ### `trim`
@@ -558,24 +669,32 @@ Strings
 - Returns a copy of the string without leading or trailing whitespace
 
   ~~~ lay
-  foo: " hello world ".trim
-  bar: " \t \r \n \
+  string.trim {
+    i: " hello world ".trim
+    ii: " \t \r \n \
   \t\9\20".trim
+  }
   ~~~
 
   ~~~ css
-  foo: "hello world";
-  bar: "";
+  string.trim {
+    i: "hello world";
+    ii: "";
+  }
   ~~~
 
 - Accepts a parameter with the characters to be trimmed
 
   ~~~ lay
-  baz: '(hey there] '.trim('(] h')
+  string.trim {
+    baz: '(hey there] '.trim('(] h')
+  }
   ~~~
 
   ~~~ css
-  baz: 'ey there';
+  string.trim {
+    baz: "ey there";
+  }
   ~~~
 
 ### `ltrim`
@@ -583,24 +702,32 @@ Strings
 - Returns a copy of the string without leading whitespace
 
   ~~~ lay
-  foo: " hello world ".ltrim
-  bar: " \t \r \n \
+  string.ltrim {
+    foo: " hello world ".ltrim
+    bar: " \t \r \n \
   \9\20\t".ltrim
+  }
   ~~~
 
   ~~~ css
-  foo: "hello world ";
-  bar: "";
+  string.ltrim {
+    foo: "hello world ";
+    bar: "";
+  }
   ~~~
 
 - Accepts a parameter with the characters to be trimmed
 
   ~~~ lay
-  baz: '(hey there] '.ltrim('(] h')
+  string.ltrim {
+    baz: '(hey there] '.ltrim('(] h')
+  }
   ~~~
 
   ~~~ css
-  baz: 'ey there] ';
+  string.ltrim {
+    baz: "ey there] ";
+  }
   ~~~
 
 ### `rtrim`
@@ -608,24 +735,32 @@ Strings
 - Returns a copy of the string without trailing whitespace
 
   ~~~ lay
-  foo: " hello world ".rtrim
-  bar: " \t \9\20 \r \n \
+  string.rtrim {
+    foo: " hello world ".rtrim
+    bar: " \t \9\20 \r \n \
   \t".rtrim
+  }
   ~~~
 
   ~~~ css
-  foo: " hello world";
-  bar: "";
+  string.rtrim {
+    foo: " hello world";
+    bar: "";
+  }
   ~~~
 
 - Accepts a parameter with the characters to be trimmed
 
   ~~~ lay
-  baz: '(hey there] '.rtrim('(] h')
+  string.rtrim {
+    baz: '(hey there] '.rtrim('(] h')
+  }
   ~~~
 
   ~~~ css
-  baz: '(hey there';
+  string.rtrim {
+    baz: "(hey there";
+  }
   ~~~
 
 ### `append`
@@ -639,13 +774,17 @@ Strings
   $a.append('ipsum' + ' ' + 'dolor')
   $a.append(' ', 'sit', ' ', 'amet')
 
-  foo: $a
-  foo: $a.append()
+  string.append {
+    i: $a
+    ii: $a.append()
+  }
   ~~~
 
   ~~~ css
-  foo: 'Lorem ipsum dolor sit amet';
-  foo: 'Lorem ipsum dolor sit amet';
+  string.append {
+    i: "Lorem ipsum dolor sit amet";
+    ii: "Lorem ipsum dolor sit amet";
+  }
   ~~~
 
 ### `reverse`
@@ -653,15 +792,19 @@ Strings
 - Returns a copy of the string, reversed
 
   ~~~ lay
-  foo: ''.reverse()
-  foo: "roma".reverse
-  foo: "España ".reverse
+  string.reverse {
+    i: ''.reverse()
+    ii: "roma".reverse
+    iii: "España ".reverse
+  }
   ~~~
 
   ~~~ css
-  foo: '';
-  foo: "amor";
-  foo: " añapsE";
+  string.reverse {
+    i: "";
+    ii: "amor";
+    iii: " añapsE";
+  }
   ~~~
 
 ### `palindrome?`
@@ -669,19 +812,23 @@ Strings
 - Checks if the string is a palindrome
 
   ~~~ lay
-  i: 'Lorem'.palindrome?
-  ii: 'Eva, can I stab bats in a cave?'.palindrome?
-  iii: "Dammit, I'm mad!".palindrome?
-  iv: '   \naha\r '.palindrome?
-  v: 'Anna?'.palindrome?
+  string.palindrome {
+    i: 'Lorem'.palindrome?
+    ii: 'Eva, can I stab bats in a cave?'.palindrome?
+    iii: "Dammit, I'm mad!".palindrome?
+    iv: '   \naha\r '.palindrome?
+    v: 'Anna?'.palindrome?
+  }
   ~~~
 
   ~~~ css
-  i: false;
-  ii: true;
-  iii: true;
-  iv: true;
-  v: true;
+  string.palindrome {
+    i: false;
+    ii: true;
+    iii: true;
+    iv: true;
+    v: true;
+  }
   ~~~
 
 ### `lower-case`
@@ -689,11 +836,15 @@ Strings
 - Returns a "lower case" copy of the string
 
   ~~~ lay
-  foo: 'Lorem Ipsum Dolor Sit Amet'.lower-case
+  string.lower-case {
+    i: 'Lorem Ipsum Dolor Sit Amet'.lower-case
+  }
   ~~~
 
   ~~~ css
-  foo: 'lorem ipsum dolor sit amet';
+  string.lower-case {
+    i: "lorem ipsum dolor sit amet";
+  }
   ~~~
 
 ### `upper-case`
@@ -701,11 +852,15 @@ Strings
 - Returns an "UPPER CASE" copy of the string
 
   ~~~ lay
-  foo: 'Lorem Ipsum Dolor Sit Amet'.upper-case
+  string.upper-case {
+    foo: 'Lorem Ipsum Dolor Sit Amet'.upper-case
+  }
   ~~~
 
   ~~~ css
-  foo: 'LOREM IPSUM DOLOR SIT AMET';
+  string.upper-case {
+    foo: "LOREM IPSUM DOLOR SIT AMET";
+  }
   ~~~
 
 ### `quoted?`
@@ -713,27 +868,31 @@ Strings
 - Tells if the string is quoted
 
   ~~~ lay
-  say-hello = ($who = "you") {
+  say-hello = ($who: "you") {
     return hello + $who
   }
 
-  a: not hello-world.quoted?
-  b: "hello world".quoted?, "hello world".trim.quoted?
-  c: (hello + " world").quoted?
-  d: say-hello('world').quoted?
-  e: not say-hello(world).quoted?
-  f: say-hello().quoted?
-  g: hello-world.unquoted?
+  string.quoted {
+    a: not hello-world.quoted?
+    b: "hello world".quoted?, "hello world".trim.quoted?
+    c: (hello + " world").quoted?
+    d: say-hello('world').quoted?
+    e: not say-hello(world).quoted?
+    f: say-hello().quoted?
+    g: hello-world.unquoted?
+  }
   ~~~
 
   ~~~ css
-  a: true;
-  b: true, true;
-  c: true;
-  d: true;
-  e: true;
-  f: true;
-  g: true;
+  string.quoted {
+    a: true;
+    b: true, true;
+    c: false;
+    d: false;
+    e: true;
+    f: false;
+    g: true;
+  }
   ~~~
 
 ### `unquoted?`
@@ -741,23 +900,51 @@ Strings
 - Tells if the string is unquoted
 
   ~~~ lay
-  say-hello = ($who = "you") {
+  say-hello = ($who: "you") {
     return hello + $who
   }
 
-  h: not "hello world".unquoted?, not "hello world".trim.unquoted?
-  i: not (hello + " world").unquoted?
-  j: not say-hello('world').unquoted?
-  k: say-hello(world).unquoted?
-  l: not say-hello().unquoted?
+  string.unquoted {
+    h: not "hello world".unquoted?, not "hello world".trim.unquoted?
+    i: not (hello + " world").unquoted?
+    j: not say-hello('world').unquoted?
+    k: say-hello(world).unquoted?
+    l: not say-hello().unquoted?
+  }
   ~~~
 
   ~~~ css
-  h: true, true;
-  i: true;
-  j: true;
-  k: true;
-  l: true;
+  string.unquoted {
+    h: true, true;
+    i: false;
+    j: false;
+    k: true;
+    l: false;
+  }
+  ~~~
+
+### `raw?`
+
+- Tells if the string is a raw string
+
+  ~~~ lay
+  string.raw {
+    i: "you".raw?
+    ii: you.raw?
+    iii: 'you'.raw?
+    iv: ''.raw?
+    v: `yo man`.raw?
+  }
+  ~~~
+
+  ~~~ css
+  string.raw {
+    i: false;
+    ii: false;
+    iii: false;
+    iv: false;
+    v: true;
+  }
   ~~~
 
 ### `quoted`
@@ -765,11 +952,31 @@ Strings
 - Returns a quoted copy of the string
 
   ~~~ lay
-  background: "background.jpg".quoted no-repeat.quoted
+  string.quoted {
+    background: "background.jpg".quoted no-repeat.quoted
+  }
   ~~~
 
   ~~~ css
-  background: "background.jpg" "no-repeat";
+  string.quoted {
+    background: "background.jpg" "no-repeat";
+  }
+  ~~~
+
+### `quote`
+
+- Is an alias of `quoted`
+
+  ~~~ lay
+  string.quote {
+    background: "background.jpg".quote no-repeat.quote
+  }
+  ~~~
+
+  ~~~ css
+  string.quote {
+    background: "background.jpg" "no-repeat";
+  }
   ~~~
 
 ### `unquoted`
@@ -777,11 +984,15 @@ Strings
 - Returns an unquoted copy of the string
 
   ~~~ lay
-  background: "background.jpg".unquoted no-repeat.unquoted `top`.unquoted 'center'.unquoted
+  string.unquoted {
+    background: "background.jpg".unquoted no-repeat.unquoted `top`.unquoted 'center'.unquoted
+  }
   ~~~
 
   ~~~ css
-  background: background.jpg no-repeat top center;
+  string.unquoted {
+    background: background\.jpg no-repeat top center;
+  }
   ~~~
 
 ### `unquote`
@@ -789,11 +1000,35 @@ Strings
 - Is an alias of `.unquoted`
 
   ~~~ lay
-  background: "background.jpg".unquote no-repeat.unquote `top`.unquote
+  string.unquote {
+    background: "background.jpg".unquote no-repeat.unquote `top`.unquote
+  }
   ~~~
 
   ~~~ css
-  background: background.jpg no-repeat top;
+  string.unquote {
+    background: background\.jpg no-repeat top;
+  }
+  ~~~
+
+### `raw`
+
+- Returns a raw copy of the string
+
+  ~~~ lay
+  string.raw {
+    i: foo.raw
+    ii: "foo/bar".raw
+    iii: 'foo\'bar'.raw
+  }
+  ~~~
+
+  ~~~ css
+  string.raw {
+    i: foo;
+    ii: foo/bar;
+    iii: foo'bar;
+  }
   ~~~
 
 ### `starts-with?`
@@ -801,17 +1036,21 @@ Strings
 - Tells if the string starts with given substring
 
   ~~~ lay
-  foo: not "Hello world".starts-with?('hello')
-  foo: "Hello world".starts-with('Hello')?
-  foo: not " Hello world".starts-with?('Hello')
-  foo: "Hello world".starts-with(``)?
+  string.starts-with {
+    i: not "Hello world".starts-with?('hello')
+    ii: "Hello world".starts-with?('Hello')
+    iii: not " Hello world".starts-with?('Hello')
+    iv: "Hello world".starts-with?(``)
+  }
   ~~~
 
   ~~~ css
-  foo: true;
-  foo: true;
-  foo: true;
-  foo: true;
+  string.starts-with {
+    i: true;
+    ii: true;
+    iii: true;
+    iv: true;
+  }
   ~~~
 
 ### `ends-with?`
@@ -819,17 +1058,21 @@ Strings
 - Tells if the string ends with given substring
 
   ~~~ lay
-  foo: not "Hello world".ends-with?('world ')
-  foo: "Hello world".ends-with('world')?
-  foo: not "Hello world ".ends-with?('world')
-  foo: "Hello world".ends-with?('')
+  string.ends-with {
+    i: not "Hello world".ends-with?('world ')
+    ii: "Hello world".ends-with?('world')
+    iii: not "Hello world ".ends-with?('world')
+    iv: "Hello world".ends-with?('')
+  }
   ~~~
 
   ~~~ css
-  foo: true;
-  foo: true;
-  foo: true;
-  foo: true;
+  string.ends-with {
+    i: true;
+    ii: true;
+    iii: true;
+    iv: true;
+  }
   ~~~
 
 ### `split`
@@ -837,14 +1080,14 @@ Strings
 - Splits a string by another string
 
   ~~~ lay
-  body {
-    foo: ('Lorem ipsum dolor sit amet' / ' ').commas
+  string.split {
+    i: ('Lorem ipsum dolor sit amet' / ' ').commas
   }
   ~~~
 
   ~~~ css
-  body {
-    foo: 'Lorem', 'ipsum', 'dolor', 'sit', 'amet';
+  string.split {
+    i: "Lorem", "ipsum", "dolor", "sit", "amet";
   }
   ~~~
 
@@ -852,15 +1095,16 @@ Strings
 
   ~~~ lay
   sp = /\s+/
-  body {
+
+  string.split {
     foo: 'Lorem    ipsum   \n\t \r\n dolor \
     sit amet' / sp
   }
   ~~~
 
   ~~~ css
-  body {
-    foo: 'Lorem' 'ipsum' 'dolor' 'sit' 'amet';
+  string.split {
+    foo: "Lorem" "ipsum" "dolor" "sit" "amet";
   }
   ~~~
 
@@ -868,15 +1112,19 @@ Strings
 
   ~~~ lay
   $str = 'Lorem ipsum dolor sit amet'
-  foo: $str.split(/\s+/, 2)
-  bar: $str.split(/\s+/, 0).length
-  baz: $str.split(/\s+/, null)
+  string.split {
+    i: $str.split(/\s+/, 2)
+    ii: $str.split(/\s+/, 0).length
+    iii: $str.split(/\s+/, null)
+  }
   ~~~
 
   ~~~ css
-  foo: 'Lorem' 'ipsum';
-  bar: 0;
-  baz: 'Lorem' 'ipsum' 'dolor' 'sit' 'amet';
+  string.split {
+    i: "Lorem" "ipsum";
+    ii: 0;
+    iii: "Lorem" "ipsum" "dolor" "sit" "amet";
+  }
   ~~~
 
 ### `characters`
@@ -884,25 +1132,69 @@ Strings
 - Splits the string in characters and returns them as a list
 
   ~~~ lay
-  foo: 'Lorem'.characters
-  foo: ipsum.characters
-  foo: "España".characters
+  string.characters {
+    i: 'Lorem'.characters
+    ii: ipsum.characters
+    iii: "España".characters
+  }
   ~~~
 
   ~~~ css
-  foo: 'L' 'o' 'r' 'e' 'm';
-  foo: i p s u m;
-  foo: "E" "s" "p" "a" "ñ" "a";
+  string.characters {
+    i: "L" "o" "r" "e" "m";
+    ii: i p s u m;
+    iii: "E" "s" "p" "a" "ñ" "a";
+  }
+  ~~~
+
+  ~~~ lay
+  string.characters {
+    for char in 'ipsum'.characters {
+      char: char
+    }
+  }
+  ~~~
+
+  ~~~ css
+  string.characters {
+    char: "i";
+    char: "p";
+    char: "s";
+    char: "u";
+    char: "m";
+  }
+  ~~~
+
+  ~~~ lay
+  string.characters {
+    for i, char in "ipsum".characters {
+      char-#{i}: char
+    }
+  }
+  ~~~
+
+  ~~~ css
+  string.characters {
+    char-0: "i";
+    char-1: "p";
+    char-2: "s";
+    char-3: "u";
+    char-4: "m";
+  }
   ~~~
 
 - Returns an empty list for empty strings
 
   ~~~ lay
-  foo: ''.characters.length
+  string.characters {
+    i: ''.characters.length
+  }
   ~~~
 
   ~~~ css
-  foo: 0;
+  string.characters {
+    i: 0;
+  }
   ~~~
 
 ### `lines`
@@ -910,55 +1202,75 @@ Strings
 - Splits the string in lines and returns them as a list
 
   ~~~ lay
-  foo: 'Lorem ipsum\ndolor sit\namet\nconsectetur \
+  string.lines {
+    foo: 'Lorem ipsum\ndolor sit\namet\nconsectetur \
   adipiscing \
   elit'.lines
+  }
   ~~~
 
   ~~~ css
-  foo: 'Lorem ipsum' 'dolor sit' 'amet' 'consectetur adipiscing elit';
+  string.lines {
+    foo: "Lorem ipsum" "dolor sit" "amet" "consectetur adipiscing elit";
+  }
   ~~~
 
 - Works with any line ending
 
   ~~~ lay
-  foo: 'Lorem\nipsum\rdolor\r\nsit'.lines
+  string.lines {
+    i: 'Lorem\nipsum\rdolor\r\nsit'.lines
+  }
   ~~~
 
   ~~~ css
-  foo: 'Lorem' 'ipsum' 'dolor' 'sit';
+  string.lines {
+    i: "Lorem" "ipsum" "dolor" "sit";
+  }
   ~~~
 
 - Does not create empty chunks
 
   ~~~ lay
-  foo: '\nLorem\n\nipsum\ndolor\nsit\n'.lines
+  string.lines {
+    i: '\nLorem\n\nipsum\ndolor\nsit\n'.lines
+  }
   ~~~
 
   ~~~ css
-  foo: 'Lorem' 'ipsum' 'dolor' 'sit';
+  string.lines {
+    i: "Lorem" "ipsum" "dolor" "sit";
+  }
   ~~~
 
 - Trims the lines
 
   ~~~ lay
-  foo: '  Lorem\nipsum   \r   dolor   \r\n sit\n\n   amet\n'.lines
+  string.lines {
+    i: '  Lorem\nipsum   \r   dolor   \r\n sit\n\n   amet\n'.lines
+  }
   ~~~
 
   ~~~ css
-  foo: 'Lorem' 'ipsum' 'dolor' 'sit' 'amet';
+  string.lines {
+    i: "Lorem" "ipsum" "dolor" "sit" "amet";
+  }
   ~~~
 
 - Returns an empty list for blank strings
 
   ~~~ lay
-  foo: ''.lines.length
-  foo: ' \n \r \t '.lines.length
+  string.lines {
+    i: ''.lines.length
+    ii: ' \n \r \t '.lines.length
+  }
   ~~~
 
   ~~~ css
-  foo: 0;
-  foo: 0;
+  string.lines {
+    i: 0;
+    ii: 0;
+  }
   ~~~
 
 ### `words`
@@ -966,51 +1278,67 @@ Strings
 - Splits the string in words and returns them as a list
 
   ~~~ lay
-  foo: `Lorem`.words
-  foo: 'Lorem ipsum dolor'.words
+  string.words {
+    i: `Lorem`.words
+    ii: 'Lorem ipsum dolor'.words
+  }
   ~~~
 
   ~~~ css
-  foo: Lorem;
-  foo: 'Lorem' 'ipsum' 'dolor';
+  string.words {
+    i: Lorem;
+    ii: "Lorem" "ipsum" "dolor";
+  }
   ~~~
 
 - Works with any line ending
 
   ~~~ lay
-  foo: `Lorem\nipsum\r\ndolor\n\rsit\ramet`.words
+  string.words {
+    i: `Lorem\nipsum\r\ndolor\n\rsit\ramet`.words
+  }
   ~~~
 
   ~~~ css
-  foo: Lorem ipsum dolor sit amet;
+  string.words {
+    i: Lorem ipsum dolor sit amet;
+  }
   ~~~
 
 - Does not create empty chunks
 
   ~~~ lay
-  for i, wd in `  Lorem . ipsum    dolor.  .  `.words {
-    `word-{i}`: wd
+  string.words {
+    for i, wd in `  Lorem . ipsum    dolor.  .  `.words {
+      word-#{i}: wd
+    }
   }
   ~~~
 
   ~~~ css
-  word-0: Lorem;
-  word-1: ipsum;
-  word-2: dolor;
+  string.words {
+    word-0: Lorem;
+    word-1: ipsum;
+    word-2: dolor;
+  }
   ~~~
 
 - Returns an empty list for blank strings
 
   ~~~ lay
-  foo: ''.words.length
-  foo: '   '.words.length
-  foo: '  \t \r \n  '.words.length
+  string.words {
+    i: ''.words.length
+    ii: '   '.words.length
+    iii: '  \t \r \n  '.words.length
+  }
   ~~~
 
   ~~~ css
-  foo: 0;
-  foo: 0;
-  foo: 0;
+  string.words {
+    i: 0;
+    ii: 0;
+    iii: 0;
+  }
   ~~~
 
 ### `numeric?`
@@ -1018,23 +1346,27 @@ Strings
 - Tells if the string looks like a number
 
   ~~~ lay
-  foo: '10'.numeric?
-  foo: not 'px'.numeric?
-  foo: not 'a10'.numeric?
-  foo: '10px'.numeric?
-  foo: ' 10px '.numeric?
-  foo: '0'.numeric?
-  foo: `5.5px`.numeric?
+  string.numeric {
+    foo: '10'.numeric?
+    foo: not 'px'.numeric?
+    foo: not 'a10'.numeric?
+    foo: '10px'.numeric?
+    foo: ' 10px '.numeric?
+    foo: '0'.numeric?
+    foo: `5.5px`.numeric?
+  }
   ~~~
 
   ~~~ css
-  foo: true;
-  foo: true;
-  foo: true;
-  foo: true;
-  foo: true;
-  foo: true;
-  foo: true;
+  string.numeric {
+    foo: true;
+    foo: true;
+    foo: true;
+    foo: true;
+    foo: true;
+    foo: true;
+    foo: true;
+  }
   ~~~
 
 ### `replace`
@@ -1042,17 +1374,21 @@ Strings
 - Searches for the given string or regular expression and replaces with another string
 
   ~~~ lay
-  foo: "Mr Blue has a blue house and a blue car".replace('blue', 'red')
-  foo: "Mr Blue has a blue house and a blue car".replace(/blue/g, 'green')
-  foo: 'Mr Blue has a blue house and a blue car'.replace(/blue/gi, 'pink')
-  foo: 'Mr Blue has a blue house and a blue car'.replace(/green/gi, 'pink')
+  string.replace {
+    foo: "Mr Blue has a blue house and a blue car".replace('blue', 'red')
+    foo: "Mr Blue has a blue house and a blue car".replace(/blue/g, 'green')
+    foo: 'Mr Blue has a blue house and a blue car'.replace(/blue/gi, 'pink')
+    foo: 'Mr Blue has a blue house and a blue car'.replace(/green/gi, 'pink')
+  }
   ~~~
 
   ~~~ css
-  foo: "Mr Blue has a red house and a red car";
-  foo: "Mr Blue has a green house and a green car";
-  foo: 'Mr pink has a pink house and a pink car';
-  foo: 'Mr Blue has a blue house and a blue car';
+  string.replace {
+    foo: "Mr Blue has a red house and a red car";
+    foo: "Mr Blue has a green house and a green car";
+    foo: "Mr pink has a pink house and a pink car";
+    foo: "Mr Blue has a blue house and a blue car";
+  }
   ~~~
 
 ### `number`
@@ -1060,17 +1396,21 @@ Strings
 - Makes a number from the string, if it is numeric
 
   ~~~ lay
-  foo: "12px".number
-  foo: `3.14pt`.number
-  foo: `-17%`.number
-  foo: `000`.number
+  string.number {
+    foo: "12px".number
+    foo: `3.14pt`.number
+    foo: `-17%`.number
+    foo: `000`.number
+  }
   ~~~
 
   ~~~ css
-  foo: 12px;
-  foo: 3.14pt;
-  foo: -17%;
-  foo: 0;
+  string.number {
+    foo: 12px;
+    foo: 3.14pt;
+    foo: -17%;
+    foo: 0;
+  }
   ~~~
 
 - Fails for non-numeric strings
@@ -1122,11 +1462,15 @@ Strings
 - Returns a copy of the string, encoded as Base64
 
   ~~~ lay
-  foo: "I have 1€ and £1".base64
+  string.base64 {
+    i: "I have 1€ and £1".base64
+  }
   ~~~
 
   ~~~ css
-  foo: "SSBoYXZlIDHigqwgYW5kIMKjMQ==";
+  string.base64 {
+    i: "SSBoYXZlIDHigqwgYW5kIMKjMQ==";
+  }
   ~~~
 
 ### `copy`
@@ -1134,19 +1478,23 @@ Strings
 - Creates a copy of the string
 
   ~~~ lay
-  orig = "Hello world"
-  str = orig.copy
-  val: str
-  quote: str.quoted?
-  diff: str isnt orig
+  string.copy {
+    orig = "Hello world"
+    str = orig.copy
+    val: str
+    quote: str.quoted?
+    diff: str isnt orig
 
-  if str.copy.copy.copy isnt orig {
-    god: damn!
+    if str.copy.copy.copy isnt orig {
+      god: damn!
+    }
   }
   ~~~
 
   ~~~ css
-  val: "Hello world";
-  quote: true;
-  diff: false;
+  string.copy {
+    val: "Hello world";
+    quote: true;
+    diff: false;
+  }
   ~~~

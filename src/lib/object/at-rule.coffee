@@ -1,11 +1,10 @@
-Rule   = require './rule'
-String = require './string'
+Rule         = require './rule'
+QuotedString = require './string/quoted'
+
 
 class AtRule extends Rule
 
-  constructor: (@name) ->
-    super
-    @arguments = []
+  constructor: (@name, @arguments = []) -> super
 
   clone: ->
     that = super
@@ -13,6 +12,9 @@ class AtRule extends Rule
     that.arguments = @arguments
     that
 
-  '.name': -> new String @name
+  # TODO
+  # clone: (name = @name, args = @arguments, etc...) -> super name, args, etc...
+
+  '.name': -> new QuotedString @name
 
 module.exports = AtRule

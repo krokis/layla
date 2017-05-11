@@ -27,60 +27,29 @@ At-rules
   }
   ~~~
 
-- Can be a quoted string
-
-  ~~~ lay
-  @"foo" {
-    i: 1
-  }
-
-  @'-o-keyframes' {
-    ii: 2
-  }
-
-  @`-webkit-keyframes` {
-    iii: 3
-  }
-  ~~~
-
-  ~~~ css
-  @foo {
-    i: 1;
-  }
-
-  @-o-keyframes {
-    ii: 2;
-  }
-
-  @-webkit-keyframes {
-    iii: 3;
-  }
-  ~~~
-
 - Can contain interpolation
 
   ~~~ lay
   vendors = webkit, moz
   for vendor in vendors {
-    @`-{vendor}-supports` (border-radius) {
+    @-#{vendor}-supports (border-radius) {
       body {
         border-radius: 1px
       }
     }
 
-    @"-{vendor}-supports" (border-radius) {
+    @-#{vendor}-supports (border-radius) {
       body {
         border-radius: 2px
       }
     }
 
-    @'-{vendor}-supports' (border-radius) {
+    @-#{vendor}-supports (border-radius) {
       body {
         border-radius: 3px
       }
     }
   }
-
   ~~~
 
   ~~~ css
@@ -130,7 +99,7 @@ At-rules
   ~~~
 
   ~~~ css
-  @charset 'iso-8859-1';
+  @charset "iso-8859-1";
   ~~~
 
 - Can be empty
@@ -168,7 +137,7 @@ At-rules
   ~~~
 
   ~~~ css
-  @foo "lorem ipsum" 'lorem \'ipsum\'' {
+  @foo "lorem ipsum" "lorem 'ipsum'" {
     border: red;
   }
   ~~~
@@ -230,13 +199,13 @@ At-rules
 - URLs
 
   ~~~ lay
-  @lorem url(http://example.org) url('http://disney.es') {
+  @lorem url(http://example.org/home) url('http://disney.es/movies/#pixar') {
     foo: bar
   }
   ~~~
 
   ~~~ css
-  @lorem url(http://example.org) url('http://disney.es') {
+  @lorem url("http://example.org/home") url("http://disney.es/movies/#pixar") {
     foo: bar;
   }
   ~~~
@@ -258,13 +227,13 @@ At-rules
 - Parentheses
 
   ~~~ lay
-  @foo --foo(bar "baz" foo('baz')) {
+  @foo --foo(bar, "baz", foo('baz')) {
     margin: 0
   }
   ~~~
 
   ~~~ css
-  @foo --foo(bar "baz" foo('baz')) {
+  @foo --foo(bar, "baz", foo("baz")) {
     margin: 0;
   }
   ~~~
@@ -273,13 +242,13 @@ At-rules
 
   ~~~ lay
   @media screen and (max-width: 768px) and (min-width: 480px) {
-    foo: ?bar
+    foo: bar
   }
   ~~~
 
   ~~~ css
   @media screen and (max-width: 768px) and (min-width: 480px) {
-    foo: ?bar;
+    foo: bar;
   }
   ~~~
 
@@ -299,6 +268,30 @@ At-rules
 
 - Interpolation
 
+  ~~~ lay
+  $media = "screen"
+
+  @media #{$media} and (max-#{'width'}: 768px) {
+    foo: bar
+  }
+
+  $path = '/home'
+
+  @lorem url(http://example.org#{$path}) {
+    foo: bar;
+  }
+  ~~~
+
+  ~~~ css
+  @media screen and (max-width: 768px) {
+    foo: bar;
+  }
+
+  @lorem url("http://example.org/home") {
+    foo: bar;
+  }
+  ~~~
+
 ## `@charset` rules
 
 - Are supported
@@ -311,10 +304,8 @@ At-rules
   ~~~ css
   @charset "UTF-8";
 
-  @charset 'iso-8859-15';
+  @charset "iso-8859-15";
   ~~~
-
-- Are used to determine the charset of the document
 
 ## `@import` rules
 
@@ -333,8 +324,6 @@ At-rules
 
   @import "layout" screen;
   ~~~
-
-- Are hoisted to the root block
 
 ## `@media` rules
 
@@ -372,8 +361,6 @@ At-rules
   }
   ~~~
 
-- Are hoisted to the root block
-
 - Can be nested in a ruleset
 
 - Can be nested in another `@media`
@@ -395,10 +382,7 @@ At-rules
   ~~~
 
   ~~~ css
-  @document url(http://www.w3.org/),
-            url-prefix(http://www.w3.org/Style/),
-            domain(mozilla.org),
-            regexp("https:.*") {
+  @document url("http://www.w3.org/"), url-prefix("http://www.w3.org/Style/"), domain(mozilla.org), regexp("https:.*") {
     foo: bar!;
   }
   ~~~
@@ -529,24 +513,50 @@ At-rules
   ~~~
 
   ~~~ css
-  @supports (display: table-cell) and (display: list-item) and (display:run-in) {
+  @supports (display: table-cell) and (display: list-item) and (display: run-in) {
     table {
       visibility: visible;
     }
   }
 
-  @supports ( transform-style: preserve ) or ( -moz-transform-style: preserve ) {
+  @supports (transform-style: preserve) or (-moz-transform-style: preserve) {
     foo: bar;
   }
 
-  @supports ( not ((text-align-last:justify) or (-moz-text-align-last:justify) )) {
+  @supports (not ((text-align-last: justify) or (-moz-text-align-last: justify))) {
     body,
     p {
       text-align: left;
     }
   }
 
-  @supports ( (perspective: 10px) or (-moz-perspective: 10px) or (-webkit-perspective: 10px) or (-ms-perspective: 10px) or (-o-perspective: 10px) ) {
-    foo: 'baz';
+  @supports ((perspective: 10px) or (-moz-perspective: 10px) or (-webkit-perspective: 10px) or (-ms-perspective: 10px) or (-o-perspective: 10px)) {
+    foo: "baz";
+  }
+  ~~~
+
+## Methods
+
+### `name`
+
+- Returns the name of the at-rule as a quoted string
+
+  ~~~ lay
+  $rules = {
+    @media print {}
+    @charset 'latin1';
+  }.rules
+
+  at-rule.name {
+    for $i, $rule in $rules {
+      #{($i + 1).roman.lower-case}: $rule.name
+    }
+  }
+  ~~~
+
+  ~~~ css
+  at-rule.name {
+    i: "media";
+    ii: "charset";
   }
   ~~~

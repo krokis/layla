@@ -29,15 +29,15 @@ Assignments
 
   ~~~ css
   body {
-    font-family: 'Helvetica';
+    font-family: "Helvetica";
   }
 
   p {
-    font-family: 'Helvetica';
+    font-family: "Helvetica";
   }
 
   p {
-    font-family: 'Helvetica, Arial';
+    font-family: "Helvetica, Arial";
     font-size: 22px;
   }
   ~~~
@@ -95,9 +95,9 @@ Assignments
 
   ~~~ css
   body {
-    font: 'Helvetica';
-    font: 'Comic Sans';
-    font: 'Monospaced';
+    font: "Helvetica";
+    font: "Comic Sans";
+    font: "Monospaced";
     font-size: large;
   }
   ~~~

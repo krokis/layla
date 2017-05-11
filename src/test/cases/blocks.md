@@ -27,7 +27,7 @@ Blocks
   a = { p { color: white } }
 
   bar {
-    foo: {}.true? { border: red}.true? (not a.false?) a::0.true? a.empty.true?
+    foo: {}.true? ({ border: red}).true? (not a.false?) a::0.true? a.empty.true?
   }
   ~~~
 
@@ -53,42 +53,6 @@ Blocks
   }
   ~~~
 
-- Accept any kind of string as their name
-
-  ~~~ lay
-  #hey {
-    been: "tryin' to meet you!"
-
-    hey {
-      'must': 'be a devil'
-
-      between ~ us {
-        or {
-          "whores": 'in my head'
-          `whores`: "at the door"
-          but: hey!
-        }
-      }
-    }
-  }
-  ~~~
-
-  ~~~ css
-  #hey {
-    been: "tryin' to meet you!";
-  }
-
-  #hey hey {
-    must: 'be a devil';
-  }
-
-  #hey hey between ~ us or {
-    whores: 'in my head';
-    whores: "at the door";
-    but: hey!;
-  }
-  ~~~
-
 - Support interpolation on the name
 
   ~~~ lay
@@ -105,12 +69,12 @@ Blocks
     $prop = 'border'
 
     for $p in $border.properties {
-      $name = "{$prop}-{$p.name}"
+      $name = "#{$prop}-#{$p.name}"
 
       for $v in $vendors {
-        `{$v}{$name}`: $p.value
+        #{$v}#{$name}: $p.value
       }
-      `{$name}`: $p.value
+      #{$name}: $p.value
     }
   }
   ~~~
@@ -135,12 +99,13 @@ Blocks
 - Can be used to set multiple properties at once
 
   ~~~ lay
+  $border-color = 'border-color'
   body {
     margin, padding: 0
-    `background-color`,
-    "color",
-    border-color: black
-    "width",'height': 20px
+    background-color,
+    color,
+    #{$border-color}: black
+    width,height: 20px
 
     p { background-color: white; color, border-color, decoration-color: #666 }
   }
@@ -179,7 +144,7 @@ Blocks
     hey: {
       been: "tryin'"
       to: {
-        "meet": you!
+        meet: you!
       }
     }
     {
@@ -219,7 +184,7 @@ Blocks
   ~~~~ css
   body {
     background-color: white;
-    background-image: url('/back.png');
+    background-image: url("/back.png");
     margin-left: 1px;
     margin-top: 2px;
     margin-right: 3px;
@@ -238,6 +203,8 @@ Blocks
     border-left-width|: 2px
     border-top-width|: 2px
     font|: 'Arial'
+    margin: 0
+    margin, padding|: 20px
   }
   ~~~
 
@@ -248,7 +215,9 @@ Blocks
     border-right-width: 1px;
     font: null;
     border-top-width: 2px;
-    font: 'Arial';
+    font: "Arial";
+    margin: 0;
+    padding: 20px;
   }
   ~~~
 
@@ -279,12 +248,12 @@ Blocks
 
   body {
     for $p in $b.properties {
-      `-foo-{$p.name}`: $p.value
+      -foo-#{$p.name}: $p.value
     }
 
     .unique {
       for $p in $b.properties.unique {
-        `-foo-{$p.name}`: $p.value
+        -foo-#{$p.name}: $p.value
       }
     }
   }
@@ -412,7 +381,7 @@ Blocks
   ~~~ css
   #hey {
     been: "tryin' to meet you!";
-    must: 'be a devil between us';
+    must: "be a devil between us";
   }
   ~~~
 
@@ -441,7 +410,7 @@ Blocks
   ~~~ css
   #hey {
     been: "tryin' to meet you!";
-    must: 'be a devil between us';
+    must: "be a devil between us";
   }
 
   color: red;
@@ -459,8 +428,8 @@ Blocks
     must: 'be a devil between us'
     but: hey
     or: {
-      'whores': 'in my head'
-      'whores': 'at the door'
+      whores: 'in my head'
+      whores: 'at the door'
     }
     but: hey?
     but: hey!
@@ -469,8 +438,8 @@ Blocks
   #hey {
     been: $hey::been
     must: $hey::`must`
-    or: `whores` $hey::or::whores
-    or: `whores` $hey::or::0.value
+    or: whores $hey::or::whores
+    or: whores $hey::or::0.value
     but: $hey::(but)
   }
   ~~~
@@ -478,9 +447,9 @@ Blocks
   ~~~ css
   #hey {
     been: "tryin' to meet you!";
-    must: 'be a devil between us';
-    or: whores 'at the door';
-    or: whores 'in my head';
+    must: "be a devil between us";
+    or: whores "at the door";
+    or: whores "in my head";
     but: hey!;
   }
   ~~~

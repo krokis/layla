@@ -1,10 +1,12 @@
-Object    = require '../object'
-Boolean   = require './boolean'
-Null      = require './null'
-String    = require './string'
-Number    = require './number'
-List      = require './list'
-TypeError = require '../error/type'
+Object       = require '../object'
+Boolean      = require './boolean'
+Null         = require './null'
+String       = require './string'
+QuotedString = require './string/quoted'
+Number       = require './number'
+List         = require './list'
+TypeError    = require '../error/type'
+
 
 class RegExp extends Object
 
@@ -25,20 +27,20 @@ class RegExp extends Object
                       @_value.ignoreCase is @insensitive and
                       @_value.global is @global and
                       @_value.multiline is @multiline
-      @_value
+
+      return @_value
 
   @property 'flags',
     get: ->
       flags = ''
-      flags += 'm' if @multiline
       flags += 'i' if @insensitive
+      flags += 'm' if @multiline
       flags += 'g' if @global
-      flags
+
+      return flags
 
     set: (flags) ->
-      @multiline = no
-      @global = no
-      @insensitive = no
+      @multiline = @global = @insensitive = no
 
       if flags?.length
         @setFlag flag, yes for flag in flags
@@ -81,9 +83,12 @@ class RegExp extends Object
     if other instanceof String
       if m = other.value.match @value
         return new List m.map (str) -> other.clone str
+
       return Null.null
 
-    throw new Error "Cannot match that!"
+    throw new TypeError "Cannot match that!"
+
+  '.flags': -> new QuotedString @flags
 
   '.global?': -> Boolean.new @global
 
@@ -111,11 +116,16 @@ do ->
       supah.call @, other, etc...
 
 String::['.split'] = (separator, limit = Null.null) ->
-  if separator instanceof RegExp
+  if not separator
+    reg = null
+  else if separator instanceof RegExp
     reg = separator.value
   else if separator instanceof String
-    reg = RegExp.escape separator.value
-    reg = new global.RegExp "#{reg}+"
+    if separator.isEmpty()
+      reg = ''
+    else
+      reg = RegExp.escape separator.value
+      reg = new global.RegExp "#{reg}+"
   else
     throw new TypeError 'Bad `separator` argument for `String.split`'
 
@@ -131,11 +141,9 @@ String::['.split'] = (separator, limit = Null.null) ->
     .filter (str) -> str isnt ''
     .map (str) => @clone str
 
-  new List chunks
+  return new List chunks
 
 do ->
-  supah = String::['./']
-
   String::['./'] = (separator) ->
     if separator instanceof RegExp
       reg = separator.value
@@ -143,9 +151,9 @@ do ->
       reg = RegExp.escape separator.value
       reg = new global.RegExp "#{reg}+"
     else
-      return supah.apply this, arguments
+      throw new TypeError "Cannot divide string by a [#{separator.reprType()}]"
 
-    @['.split'] separator
+    return @['.split'] separator
 
 String::['.characters'] = (limit = Null.null) ->
   new List (@value.split '').map (char) => @clone char
@@ -156,7 +164,6 @@ String::['.words'] = ->
 String::['.lines'] = ->
   new List ((@value.match /[^\s](.+)[^\s]/g) or []).map (line) => @clone line
 
-
 String::['.replace'] = (search, replacement) ->
   if search instanceof RegExp
     search = search.value
@@ -166,5 +173,6 @@ String::['.replace'] = (search, replacement) ->
   replacement = replacement.toString()
 
   @clone (@value.replace search, replacement)
+
 
 module.exports = RegExp

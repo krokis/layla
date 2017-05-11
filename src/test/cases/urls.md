@@ -11,61 +11,49 @@ URLs
 
   ~~~ css
   body {
-    background: url(back.png);
+    background: url("back.png");
   }
   ~~~
 
 - Can be quoted
 
   ~~~ lay
-  body {
-    background: url('background.jpg') no-repeat
-    background: url("http://example.org/background.jpg") center
-  }
-
-  @font-face {
-    src: url('roboto.eot?&#iefix')
-    src: url('fonts.svg#roboto')
+  string.quoted {
+    i: url('background.jpg') no-repeat
+    ii: url("http://example.org/background.jpg") center
+    iii: url('roboto.eot?&#iefix')
+    iv: url('fonts.svg#roboto')
   }
   ~~~
 
   ~~~ css
-  body {
-    background: url('background.jpg') no-repeat;
-    background: url("http://example.org/background.jpg") center;
-  }
-
-  @font-face {
-    src: url('roboto.eot?&#iefix');
-    src: url('fonts.svg#roboto');
+  string.quoted {
+    i: url("background.jpg") no-repeat;
+    ii: url("http://example.org/background.jpg") center;
+    iii: url("roboto.eot?&#iefix");
+    iv: url("fonts.svg#roboto");
   }
   ~~~
 
 - Can be unquoted
 
   ~~~ lay
-  body {
-    background: url(http://example.org/background.jpg) center
-    background: url(/background.jpg?v=123&c=0) center
-    background: url(`//example.org/background.jpg`) center
-  }
-
-  @font-face {
-    src: url(/fonts/roboto.eot?#iefix)
-    src: url(/fonts/fonts.svg#roboto)
+  string.unquoted {
+    i: url(http://example.org/background.jpg) center
+    ii: url(/background.jpg?v=123&c=0) center
+    iii: url(`//example.org/background.jpg`) center
+    iv: url(/fonts/roboto.eot?#iefix)
+    v: url(/fonts/fonts.svg#roboto)
   }
   ~~~
 
   ~~~ css
-  body {
-    background: url(http://example.org/background.jpg) center;
-    background: url(/background.jpg?v=123&c=0) center;
-    background: url(//example.org/background.jpg) center;
-  }
-
-  @font-face {
-    src: url(/fonts/roboto.eot?#iefix);
-    src: url(/fonts/fonts.svg#roboto);
+  string.unquoted {
+    i: url("http://example.org/background.jpg") center;
+    ii: url("/background.jpg?v=123&c=0") center;
+    iii: url("//example.org/background.jpg") center;
+    iv: url("/fonts/roboto.eot?#iefix");
+    v: url("/fonts/fonts.svg#roboto");
   }
   ~~~
 
@@ -79,7 +67,7 @@ URLs
 
   ~~~ css
   body {
-    background: url(//localhost/backdrop.png?q=foo);
+    background: url("//localhost/backdrop.png?q=foo");
   }
   ~~~
 
@@ -94,8 +82,8 @@ URLs
 
   ~~~ css
   body {
-    background: url(/backdrop.png?q=foo);
-    background: url(img/backdrop.png?q=foo);
+    background: url("/backdrop.png?q=foo");
+    background: url("img/backdrop.png?q=foo");
   }
   ~~~
 
@@ -109,7 +97,7 @@ URLs
 
   ~~~ css
   body {
-    background: url(?q=foo&r=bar);
+    background: url("?q=foo&r=bar");
   }
   ~~~
 
@@ -123,7 +111,7 @@ URLs
 
   ~~~ css
   body {
-    background: url(#foobar);
+    background: url("#foobar");
   }
   ~~~
 
@@ -135,8 +123,8 @@ URLs
   ~~~
 
   ~~~ css
-  background: url();
-  background: url('');
+  background: url("");
+  background: url("");
   ~~~
 
 - Does not add trailing slashes
@@ -166,14 +154,14 @@ URLs
     $query = 'princess=beauty'
     $scheme = 'http'
 
-    foo: url(`{$scheme + 's'}://{$host}{'/path' * 2}`)
-    foo: url("{$scheme + 's'}://{$host}/?{$query}")
+    foo: url(`#{$scheme + 's'}://#{$host}#{'/path' * 2}`)
+    foo: url("#{$scheme + 's'}://#{$host}/?#{$query}")
   }
   ~~~
 
   ~~~ css
   body {
-    foo: url(https://disney.com/path/path);
+    foo: url("https://disney.com/path/path");
     foo: url("https://disney.com/?princess=beauty");
   }
   ~~~
@@ -194,9 +182,9 @@ URLs
 
   ~~~ css
   #foo {
-    bar: 'http';
+    bar: "http";
     bar: null;
-    bar: file;
+    bar: "file";
   }
   ~~~
 
@@ -212,8 +200,8 @@ URLs
   ~~~
 
   ~~~ css
-  foo: url('http://www.disney.com:8080/movies/?id=245#characters');
-  foo: url('https://www.disney.com:8080/movies/?id=245#characters');
+  foo: url("http://www.disney.com:8080/movies/?id=245#characters");
+  foo: url("https://www.disney.com:8080/movies/?id=245#characters");
   ~~~
 
 - Fails for invalid schemes
@@ -227,7 +215,7 @@ URLs
   ~~~
 
   ~~~ css
-  foo: url('//www.disney.com/');
+  foo: url("//www.disney.com/");
   ~~~
 
 ### `protocol`
@@ -244,9 +232,9 @@ URLs
 
   ~~~ css
   #foo {
-    bar: 'ftp';
+    bar: "ftp";
     bar: null;
-    bar: mailto;
+    bar: "mailto";
   }
   ~~~
 
@@ -263,8 +251,8 @@ URLs
   ~~~
 
   ~~~ css
-  foo: url(gopher://disney.com/);
-  foo: url(//disney.com/);
+  foo: url("gopher://disney.com/");
+  foo: url("//disney.com/");
   ~~~
 
 ### `host`
@@ -281,9 +269,9 @@ URLs
 
   ~~~ css
   #foo {
-    bar: 'disney.com';
-    bar: disney.com;
-    bar: 127.0.0.1;
+    bar: "disney.com";
+    bar: "disney.com";
+    bar: "127.0.0.1";
   }
   ~~~
 
@@ -298,7 +286,7 @@ URLs
   ~~~
 
   ~~~ css
-  foo: url('http://disney.org/');
+  foo: url("http://disney.org/");
   ~~~
 
 - Accepts TLD's
@@ -311,8 +299,8 @@ URLs
   ~~~
 
   ~~~ css
-  foo: url('http://localhost/phpMyAdmin');
-  foo: url('http://com/phpMyAdmin');
+  foo: url("http://localhost/phpMyAdmin");
+  foo: url("http://com/phpMyAdmin");
   ~~~
 
 - Accepts IP addresses
@@ -324,7 +312,7 @@ URLs
   ~~~
 
   ~~~ css
-  foo: url('http://192.168.1.1/pixar');
+  foo: url("http://192.168.1.1/pixar");
   ~~~
 
 - Accepts IPv6 addresses
@@ -356,9 +344,9 @@ URLs
   ~~~
 
   ~~~ css
-  foo: url('http://www.disney.com:8080/movies/');
-  foo: url('/movies/');
-  foo: url('/movies/');
+  foo: url("http://www.disney.com:8080/movies/");
+  foo: url("/movies/");
+  foo: url("/movies/");
   ~~~
 
 ### `domain`
@@ -376,9 +364,9 @@ URLs
 
   ~~~ css
   url.domain {
-    i: 'disney.com';
-    ii: disney.com;
-    iii: disney.com;
+    i: "disney.com";
+    ii: "disney.com";
+    iii: "disney.com";
     iv: "disney.com";
   }
   ~~~
@@ -426,7 +414,7 @@ URLs
   ~~~
 
   ~~~ css
-  foo: url('http://disney.es/foo');
+  foo: url("http://disney.es/foo");
   ~~~
 
 ### `https?`
@@ -472,7 +460,7 @@ URLs
   ~~~
 
   ~~~ css
-  foo: url('https://disney.es/index.aspx');
+  foo: url("https://disney.es/index.aspx");
   ~~~
 
 ### `port`
@@ -489,7 +477,7 @@ URLs
   ~~~ css
   #foo {
     bar: null;
-    bar: 8080;
+    bar: "8080";
   }
   ~~~
 
@@ -504,7 +492,7 @@ URLs
   ~~~
 
   ~~~ css
-  foo: url('http://disney.com:8080/');
+  foo: url("http://disney.com:8080/");
   ~~~
 
 - Fails for non-numeric values
@@ -522,7 +510,7 @@ URLs
   ~~~
 
   ~~~ TypeError
-  Cannot set URL port to non-numeric value: [String ""]
+  Cannot set URL port to non-numeric value: [QuotedString ""]
   ~~~
 
 - Fails for non-integer numbers
@@ -542,7 +530,7 @@ URLs
   ~~~
 
   ~~~ css
-  background: url('http://disney.com:80/');
+  background: url("http://disney.com:80/");
   ~~~
 
 - Fails for numbers not in the 1..65535 range
@@ -582,8 +570,8 @@ URLs
   ~~~
 
   ~~~ css
-  foo: url('http://disney.com:8080/');
-  foo: url('http://disney.com/');
+  foo: url("http://disney.com:8080/");
+  foo: url("http://disney.com/");
   ~~~
 
 ### `query`
@@ -600,7 +588,7 @@ URLs
   ~~~ css
   a: null;
   b: "";
-  c: q=google;
+  c: "q=google";
   d: "q=google";
   ~~~
 
@@ -616,7 +604,7 @@ URLs
   ~~~
 
   ~~~ css
-  foo: url(http://google.com/?hey=Joe);
+  foo: url("http://google.com/?hey=Joe");
   ~~~
 
 - Gets properly encoded
@@ -633,9 +621,9 @@ URLs
   ~~~
 
   ~~~ css
-  foo: url(http://google.com/?q=Lebowski);
-  foo: url(http://google.com/?);
-  foo: url(http://google.com/);
+  foo: url("http://google.com/?q=Lebowski");
+  foo: url("http://google.com/?");
+  foo: url("http://google.com/");
   ~~~
 
 ### `fragment`
@@ -652,8 +640,8 @@ URLs
 
   ~~~ css
   #foo {
-    bar: start;
-    bar: '';
+    bar: "start";
+    bar: "";
     bar: null;
   }
   ~~~
@@ -669,7 +657,7 @@ URLs
   ~~~
 
   ~~~ css
-  foo: url('http://disney.com/#footer');
+  foo: url("http://disney.com/#footer");
   ~~~
 
 - Gets properly encoded
@@ -686,9 +674,9 @@ URLs
   ~~~
 
   ~~~ css
-  foo: url(http://google.com/#images);
-  foo: url(http://google.com/#);
-  foo: url(http://google.com/);
+  foo: url("http://google.com/#images");
+  foo: url("http://google.com/#");
+  foo: url("http://google.com/");
   ~~~
 
 ### `hash`
@@ -705,8 +693,8 @@ URLs
 
   ~~~ css
   #foo {
-    bar: start;
-    bar: '';
+    bar: "start";
+    bar: "";
     bar: null;
   }
   ~~~
@@ -724,8 +712,8 @@ URLs
   ~~~
 
   ~~~ css
-  foo: url('http://disney.org/#footer');
-  foo: url('http://disney.org/');
+  foo: url("http://disney.org/#footer");
+  foo: url("http://disney.org/");
   ~~~
 
 ### `absolute?`
@@ -794,18 +782,18 @@ URLs
   ~~~
 
   ~~~ css
-  foo: url('/one/two/three/four.php');
-  foo: url('/one/two/five.php');
-  foo: url('/five.php');
-  foo: url(http://example.com/one);
-  foo: url(//example.com/one);
-  foo: url(//example.com/one/);
-  foo: url(//example.com/one);
-  foo: url(//example.com/one);
-  foo: url(//example.com/one);
-  foo: url(//example.org/three);
-  foo: url(http://disney.com/?princess=ariel);
-  foo: url(https://example.com/);
-  foo: url(https://example.com/path);
-  foo: url(http://example.com/two);
+  foo: url("/one/two/three/four.php");
+  foo: url("/one/two/five.php");
+  foo: url("/five.php");
+  foo: url("http://example.com/one");
+  foo: url("//example.com/one");
+  foo: url("//example.com/one/");
+  foo: url("//example.com/one");
+  foo: url("//example.com/one");
+  foo: url("//example.com/one");
+  foo: url("//example.org/three");
+  foo: url("http://disney.com/?princess=ariel");
+  foo: url("https://example.com/");
+  foo: url("https://example.com/path");
+  foo: url("http://example.com/two");
   ~~~

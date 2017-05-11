@@ -64,7 +64,7 @@ Booleans
   foo: not ({})
   foo: not #666
   foo: not (not null)
-  foo: not ((foo=null) { return false })
+  foo: not ((foo: null) { return false })
   ~~~
 
   ~~~ css
@@ -198,7 +198,7 @@ Booleans
     foo: 2;
     foo: 2;
     foo: 2;
-    foo: 'bar';
+    foo: "bar";
   }
   ~~~
 

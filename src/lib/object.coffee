@@ -1,7 +1,6 @@
-Class = require './class'
+Class     = require './class'
 
-TypeError           = require './error/type'
-NotImplementedError = require './error/not-implemented'
+TypeError = require './error/type'
 
 class Object extends Class
 

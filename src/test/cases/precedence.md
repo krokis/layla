@@ -87,7 +87,7 @@
   body {
     foo: 13;
     bar: 9px;
-    baz: 'nanana...';
+    baz: "nanana...";
   }
 
   body {
@@ -112,7 +112,7 @@
 
 ## `+` and `-`
 
-- Have precedence over `.`
+- Have precedence over `..`
 
   ~~~ lay
   body {
@@ -149,20 +149,20 @@
 - Have left associativity
 
   ~~~ lay
-  left: (15 - 7) - 11
-  right: 15 - (7 - 11)
-  actual: 15 - 7 - 11
+  body {
+    left: (15 - 7) - 11
+    right: 15 - (7 - 11)
+    actual: 15 - 7 - 11
+  }
   ~~~
 
   ~~~ css
-  left: -3;
-  right: 19;
-  actual: -3;
+  body {
+    left: -3;
+    right: 19;
+    actual: -3;
+  }
   ~~~
-
-## `.`
-
-- Has precedence over `>`, `>=`, `<` and `<=`
 
 ## `>`, `>=`, `<` and `<=`
 
@@ -194,13 +194,48 @@
   }
   ~~~
 
-- Have left associativity
-
 ## `is` and `isnt`
 
 - Have precedence over `~`
 
+  ~~~ lay
+  body {
+    foo: /hey/ ~ hello is null
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  body {
+    foo: (/hey/ ~ hello) is null
+  }
+  ~~~
+
+  ~~~ css
+  body {
+    foo: true;
+  }
+  ~~~
+
 - Have left associativity
+
+  ~~~ lay
+  body {
+    i: (true is 'bar') isnt false
+    ii: true is ('bar' isnt false)
+    iii: true is 'bar' isnt false
+  }
+  ~~~
+
+  ~~~ css
+  body {
+    i: false;
+    ii: true;
+    iii: false;
+  }
+  ~~~
 
 ## `~`
 
@@ -215,8 +250,8 @@
 
   ~~~ css
   [op="~"] {
-    foo: 'abc';
-    foo: 'abc';
+    foo: "abc";
+    foo: "abc";
   }
   ~~~
 
@@ -282,6 +317,42 @@
 
 - Has precedence over `=` and `|=`
 
+  ~~~ lay
+  $bar = null
+
+  body {
+    foo: ("foo" and $bar) = 2
+  }
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  $bar = null
+
+  body {
+    foo: "foo" and ($bar = 2)
+  }
+  ~~~
+
+  ~~~ css
+  body {
+    foo: 2;
+  }
+  ~~~
+
+  ~~~ lay
+  $bar = null
+
+  body {
+    foo: "foo" and $bar = 2
+  }
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
 ## `or`
 
 - Has precedence over `<<` and `>>`
@@ -299,6 +370,42 @@
   ~~~
 
 - Has precedence over `=` and `|=`
+
+  ~~~ lay
+  $bar = null
+
+  body {
+    foo: ("foo" or $bar) = 2
+  }
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  $bar = null
+
+  body {
+    foo: "foo" or ($bar = 2)
+  }
+  ~~~
+
+  ~~~ css
+  body {
+    foo: "foo";
+  }
+  ~~~
+
+  ~~~ lay
+  $bar = null
+
+  body {
+    foo: "foo" or $bar = 2
+  }
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
 
 ## `not`
 

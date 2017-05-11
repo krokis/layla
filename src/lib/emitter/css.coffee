@@ -2,7 +2,7 @@ Emitter      = require '../emitter'
 Block        = require '../object/block'
 Rule         = require '../object/rule'
 Property     = require '../object/property'
-Comment      = require '../node/comment'
+RawString    = require '../object/string/raw'
 
 class CSSEmitter extends Emitter
 
@@ -14,7 +14,6 @@ class CSSEmitter extends Emitter
       new_line:                    '\n'
       final_newline:               yes
       tab:                         '  '
-      comments:                    yes # Also: block only, banged only
       before_opening_brace:        ' '
       after_opening_brace:         '\n'
       before_statement:            '\t'
@@ -27,6 +26,7 @@ class CSSEmitter extends Emitter
       preferred_string_quote:      null # original, ", '
       force_string_quote:          null # same
       decimal_places:              2
+      url_quote:                   '"'
 
     for name of defaults
       @options[name] = defaults[name] unless name of @options
@@ -47,14 +47,14 @@ class CSSEmitter extends Emitter
           (@emit stmt) + (if stmt.items?.length then '' else ';') + '\n'
         when stmt instanceof Property
           (@emitProperty stmt) + ';'
-        when stmt instanceof Comment
-          @emitComment stmt
         else
           throw new Error "Cannot emit a (#{stmt.type}) as CSS"
 
     str = lines.join '\n'
+
     if '\n' is str.substr -1
       str = str.substr 0, (str.length - 1)
+
     return str
 
   emitList: (list) ->
@@ -68,37 +68,58 @@ class CSSEmitter extends Emitter
     css = "{\n#{@indent (@emitBody block.items)}\n}"
     return css
 
-  escapeString: (val, quotes = '\'"') ->
+  escapeCharacters: (val, chars) ->
+    return val.replace ///(^|[^\\]|(?:\\(?:\\\\)*))([#{chars}])///gm, '$1\\$2'
+
+  escapeRegex: (val, reg) ->
+    val.replace ///(^|[^\\]|(?:\\(?:\\\\)*))(#{reg.source})///gm, '$1\\$2'
+
+  escapeWhitespace: (val) ->
     # Escape new lines to \A
-    val = val.replace /(^|(?:[^\\])|(?:(?:\\\\)+))(\r\n|\r|\n)/gm, '$1\\A'
+    val = val.replace /(^|[^\\]|(?:\\\\)+)(\r\n|\r|\n)/gm, '$1\\A'
 
     # Translate `\t` to \9
-    val = val.replace /(|[^\\]|(\\\\)+)\t/g, '$1\\9'
+    val = val.replace /\t/gm, '\\9'
 
-    # Escape unescaped quotes. TODO: escape whitespace and other non-legal
-    # ident chars too?
-    val = val.replace ///(^|[^\\]|(?:\\(?:\\\\)*))([#{quotes}])///gm, '$1\\$2'
+    return val
 
-  quoteString: (str) ->
-    if str.quote is null
-      if str.value.match /(^|[^\\]|(\\(\\\\)*))'/
+  escapeQuotedString: (val, quotes = '\'"') ->
+    val = @escapeCharacters val, '\\\\'
+    val = @escapeWhitespace val
+    val = @escapeCharacters val, quotes
+
+    return val
+
+  # TODO What about `?`, `!` and `$`?
+  escapeUnquotedString: (val) ->
+    val = @escapeCharacters val, '\\\\'
+    val = @escapeWhitespace val
+    # Translate spaces to \20
+    val = val.replace /\x20/gm, '\\20'
+    val = @escapeRegex val, /[^a-zA-Z_0-9!\?\$\\\-\x80-\uFFFF]/
+
+  quoteString: (value, quote = '"') ->
+    if not quote?
+      if value.match /(^|[^\\]|(\\(\\\\)*))'/
         quote = '"'
       else
         quote = "'"
     else
-      quote = str.quote
+      quote = quote
 
-    "#{quote}#{@escapeString str.value, quote}#{quote}"
+    return "#{quote}#{@escapeQuotedString value, quote}#{quote}"
 
   ###
   ###
-  emitString: (str, quoted = str.quote?) ->
-    val = str.value
+  emitUnquotedString: (str) ->
+    # TODO This is not correct (same escping as quoted strings)
+    @escapeUnquotedString str.value
 
-    if quoted
-      @quoteString str
-    else
-      @escapeString str.value
+  emitQuotedString: (str, quote = null) ->
+    @quoteString str.value, quote
+
+  emitRawString: (str) ->
+    str.value
 
   emitNumberValue: (num) ->
     value = num.value
@@ -127,7 +148,25 @@ class CSSEmitter extends Emitter
     color.toString()
 
   emitURL: (url) ->
-    "url(#{@emitString url, url.quote?})"
+    str = url.name
+    str += '('
+
+    if @options.url_quote
+      str += @emitQuotedString url, @options.url_quote
+    else
+      # TODO Escape something? Parens?
+      str += url.value
+
+    str += ')'
+
+    return str
+
+  emitCall: (call) ->
+    args = (@emit arg for arg in call.arguments)
+    return "#{call.name}(#{args.join ', '})"
+
+  emitRegExp: (regexp) ->
+    'regexp(' + @quoteString(regexp.toString()) + ')'
 
   emitPropertyName: (property) -> property.name
 
@@ -138,10 +177,16 @@ class CSSEmitter extends Emitter
     #{@emitPropertyName property}: #{@emitPropertyValue property}
     """
 
-  emitSelector: (selector) -> selector
+  emitSelector: (selector) ->
+    # TODO Trim should not be necessary, but currently a trailing descendant
+    # combinator (whitespace) is added if there's whitespace between selector
+    # and `{`. See TODO at the parser.
+    selector.toString().trim()
+
+  emitPseudoClassSelector: @::emitSelector
 
   emitSelectorList: (rule) ->
-    (rule.selector.map (sel) => @emitSelector sel).join ',\n'
+    (rule.selector.children.map (sel) => @emitSelector sel).join ',\n'
 
   emitRuleSet: (rule) ->
     """
@@ -150,13 +195,27 @@ class CSSEmitter extends Emitter
 
   emitAtRuleName: (rule) -> "@#{rule.name}"
 
-  emitAtRuleArguments: (rule) -> rule.arguments
+  emitAtRuleArguments: (args) ->
+    str = ''
+
+    for arg in args
+      unless (str is '') or (arg instanceof RawString) and arg.value is ','
+        str += ' '
+
+      if arg instanceof Array
+        str += '('
+        str += @emitAtRuleArguments(arg)
+        str += ')'
+      else
+        str += @emit arg
+
+    return str
 
   emitAtRule: (rule) ->
     css = @emitAtRuleName rule
 
     if rule.arguments?
-      css += " #{@emitAtRuleArguments rule}"
+      css += " #{@emitAtRuleArguments rule.arguments}"
 
     if rule.items?.length
       css += " #{@emitBlock rule}"

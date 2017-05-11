@@ -9,10 +9,27 @@ colorSupport    = require 'color-support'
 
 SUPPORTS_COLORS = colorSupport()
 
-Layla       = require '../lib'
-NodeContext = require '../lib/context/node'
-CLIEmitter  = require '../lib/emitter/cli'
-EOTError    = require '../lib/error/eot'
+Layla         = require '../lib'
+NodeContext   = require '../lib/context/node'
+CLIEmitter    = require '../lib/emitter/cli'
+EOTError      = require '../lib/error/eot'
+CSSNormalizer = require '../lib/css/normalizer'
+
+USAGE = """
+  Usage:
+    layla [options] file...|< [>]
+
+  Options:
+    -u, -use <plugin>       Use a plugin
+    -o, --out-file <file>   Write compiled code to a file instead of printing it
+    -i, --interactive       Start an interactive console
+    -c, --colors            Use colors on the output
+    -C, --no-colors         Don't use colors on the output
+    -v, --version           Print out Layla version
+    -h, --help              Show this help
+  """
+
+EOL = os.EOL
 
 class UsageError
   constructor: (@message) ->
@@ -32,22 +49,6 @@ class CLIContext extends NodeContext
   constructor: (args...) ->
     super args...
     @pushPath process.cwd()
-
-USAGE = """
-  Usage:
-    layla [options] file...|< [>]
-
-  Options:
-    -u, -use <plugin>       Use a plugin
-    -o, --out-file <file>   Write compiled code to a file instead of printing it
-    -i, --interactive       Start an interactive console
-    -c, --colors            Use colors on the output
-    -C, --no-colors         Don't use colors on the output
-    -v, --version           Print out Layla version
-    -h, --help              Show this help
-  """
-
-EOL = os.EOL
 
 # "Global" options
 $interactive = no
@@ -98,6 +99,9 @@ help = -> stdout USAGE
 Emit and print or write to file a Layla node.
 ###
 emit = (node, new_line = no) ->
+  normalizer = new CSSNormalizer
+  node = normalizer.normalize node
+
   emitter = new CLIEmitter colors: $colors
   res = emitter.emit node
 
@@ -110,7 +114,7 @@ emit = (node, new_line = no) ->
 Start interactive (REPL) console.
 ###
 repl = (context) ->
-  buffer = null
+  buffer = ''
 
   repl = readline.createInterface process.stdin, process.stdout, autocomplete
 
@@ -148,11 +152,14 @@ repl = (context) ->
 
       try
         res = null
-        $layla.parser.prepare "#{buffer}\n#{text}"
+        text = "#{buffer}\n#{text}" if buffer isnt ''
 
-        for stmt in $layla.parser.parseBody()
+        block = $layla.parser.parse text, '<stdin>'
+
+        for stmt in block.body
           if stmt?
             res = context.evaluate stmt
+
         if res
           emit res
           stdout()
@@ -162,12 +169,19 @@ repl = (context) ->
       catch e
         if e instanceof Layla.Error
           if e instanceof EOTError
-            buffer += "\n" + text
+            buffer = text
             repl.setPrompt '| '
             repl.prompt()
-          else
-            err e.toString()
-            reset()
+            return
+
+
+          msg = e.toString()
+
+          if e.line? and e.column?
+            msg += ' @ ' + e.line + ':' + e.column
+
+          err msg
+          reset()
         else
           throw e
 
@@ -283,7 +297,7 @@ try
 
   if $interactive
     repl $layla.context
-  else if  $files.length
+  else if $files.length
     emit $layla.context.block
     exit 0
   else
@@ -306,5 +320,6 @@ catch e
     stderr USAGE
   else
     err e.toString()
+    throw e
 
   exit 1

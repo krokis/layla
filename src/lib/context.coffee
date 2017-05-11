@@ -9,20 +9,42 @@ Evaluator = require './evaluator'
 
 ImportError = require './error/import'
 
+MAX_IMPORT_STACK = 100
+MAX_CALL_STACK = 999
+
+###
+###
 class Context extends Class
 
-  uri: null
-
+  ###
+  ###
   constructor: (@_parent = null, @block = new Document) ->
     @_scope = {}
     @_plugins = []
     @_importers = []
+    @_imports = []
+    @_calls = []
     @_loaders = []
     @_paths = []
     @_visitors = []
 
   @property 'parent',
     get: -> @_parent
+
+  @property 'root',
+    get: ->
+      if @parent
+        @parent.root
+      else
+        @
+
+  @property 'calls',
+    get: ->
+      (if @parent then @parent.calls else []).concat @_calls
+
+  @property 'imports',
+    get: ->
+      (if @parent then @parent.imports else []).concat @_imports
 
   @property 'plugins',
     get: ->
@@ -85,18 +107,23 @@ class Context extends Class
 
   import: (uri) ->
     for path in @paths by -1
-      auri = URL.resolve path, uri
+      abs_uri = URL.resolve path, uri
 
       for importer in @importers
-        if importer.canImport auri, @
+        if importer.canImport abs_uri, @
+          if abs_uri in @imports
+            throw new ImportError (
+              "Circular import detected")
 
-          try
-            return importer.import auri, @
-          catch e
-            if e instanceof ImportError
-              continue
+          @_imports.push abs_uri
 
-            throw e
+          if @imports.length > MAX_IMPORT_STACK
+            throw new ImportError (
+              "Max import stack size (#{MAX_IMPORT_STACK}) exceeded")
+
+          res = importer.import abs_uri, @
+          @_imports.pop()
+          return res
 
       break # We don't allow more than one path where to look for at the moment
 
@@ -104,6 +131,8 @@ class Context extends Class
 
   useVisitor: (visitor) ->
     @_visitors.push visitor
+
+  visit: (node) ->
 
   uses: (plugin) ->
     (plugin in @_plugins) or (@parent and @parent.uses plugin) or no
@@ -117,7 +146,7 @@ class Context extends Class
   evaluate: (node, context = @) ->
     (new Evaluator).evaluateNode node, context
 
-  fork: (block = @block) ->
-    @clone @, block
+  child: (block = @block) ->
+    new Context @, block
 
 module.exports = Context

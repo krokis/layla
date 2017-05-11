@@ -21,8 +21,8 @@ class Class
     desc.enumerable ?= yes
     desc.configurable ?= yes
 
-    # If the `name` property already existed for this prototype, inherit
-    # its descriptor, so properties can be partially overloaded.
+    # If the property already existed for this prototype, inherit its
+    # descriptor, so properties can be partially overloaded.
     if target.hasOwnProperty name
       current = getOwnPropertyDescriptor target,  name
       desc[k] ?= v for k, v of current
@@ -33,11 +33,10 @@ class Class
     get: -> @constructor
 
   @property 'type',
-    get: -> @constructor.name
+    get: -> @class.name
 
-  clone: (etc...) -> new @constructor etc...
+  clone: (etc...) -> new @class etc...
 
-  toJSON: ->
-    type: @type
+  toJSON: -> {}
 
 module.exports = Class

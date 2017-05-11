@@ -1,20 +1,43 @@
-Object     = require '../object'
-Null       = require './null'
-Boolean    = require './boolean'
-Number     = require './number'
+Object    = require '../object'
+Null      = require './null'
+Boolean   = require './boolean'
+Number    = require './number'
 
-TypeError  = require '../error/type'
+TypeError = require '../error/type'
 
 class String extends Object
 
   QUOTE_REGEXP = (str) -> str.replace /[.?*+^$[\]\\(){}|-]/g, "\\$&"
 
-  constructor: (@value = '', @quote = null) ->
+  @empty: new @ ''
+
+  @escapeWhitespace: (value) ->
+    # Escape new lines to \A
+    value = value.replace /(^|[^\\]|(?:\\\\)+)(\r\n|\r|\n)/gm, '$1\\A'
+
+    # Translate `\t` to \9
+    value = value.replace /\t/gm, '\\9'
+
+    return value
+
+  @escapeBackslashes: (value) -> value
+
+  @escapeCharacters: (value, chars) ->
+    value.replace ///(^|[^\\]|(?:\\(?:\\\\)*))([#{chars}])///gm, '$1\\$2'
+
+  @escapeRegex: (value, reg) ->
+    value.replace ///(^|[^\\]|(?:\\(?:\\\\)*))([#{reg.source}])///gm, '$1\\$2'
+
+  @escape: (value) -> value
+
+  constructor: (@value = '') ->
 
   @property 'length',
     get: -> @value.length
 
   isEmpty: -> @length is 0
+
+  isBlank: -> @value.trim() is ''
 
   isEqual: (other) -> other instanceof String and other.value is @value
 
@@ -28,13 +51,15 @@ class String extends Object
 
   toBase64: -> new Buffer(@value).toString 'base64'
 
+  escape: -> @class.escape @value
+
   toString: -> @value
 
+  # TODO Deprecate
   append: (others...) ->
     for other in others
       if other instanceof String
         @value += other.value
-        @quote ||= other.quote
       else
         throw new TypeError "Cannot append that to a string"
 
@@ -57,19 +82,16 @@ class String extends Object
 
   toJSON: ->
     json = super
-    json.quote = @quote
     json.value = @value
     json
 
-  clone: (value = @value, quote = @quote) ->
-    super value, quote
+  clone: (value = @value) -> super value
 
-  # TODO: escape double quotes
-  reprValue: -> '"' + @value + '"'
+  reprValue: -> @escape()
 
   '.+': (other) ->
     if other instanceof String
-      return new String "#{@value}#{other.value}", @quote or other.quote
+      return @clone "#{@value}#{other.value}"
     else
       throw new TypeError (
         """
@@ -86,7 +108,7 @@ class String extends Object
         else
           throw new TypeError (
             """
-            Cannot perform #{this.repr()} * #{other.repr()}: \
+            Cannot perform #{@repr()} * #{other.repr()}: \
             that's not a [Number]
             """
           )
@@ -96,11 +118,12 @@ class String extends Object
     else
       throw new TypeError (
         """
-        Cannot perform #{this.repr()} * #{other.repr()}: \
+        Cannot perform #{@repr()} * #{other.repr()}: \
         that's not a [Number]
         """
       )
 
+  # TODO Deprecate
   '.<<': @::append
 
   '.::': (other) ->
@@ -113,29 +136,21 @@ class String extends Object
       if char is ''
         return Null.null
       else
-        return new String char, @quote
+        return @clone char
     else
       throw new TypeError
 
   '.length': -> new Number @length
 
-  '.blank?': -> Boolean.new @value.trim() is ''
+  '.empty?': -> new Boolean @isEmpty()
 
-  '.quoted?': -> Boolean.new @quote?
+  '.blank?': -> new Boolean @isBlank()
 
-  '.quote': -> new String @value, '"'
-
-  '.quoted': @::['.quote']
-
-  '.unquote': -> new String @value, null
-
-  '.unquoted': @::['.unquote']
-
-  '.unquoted?': -> Boolean.new not @quote?
-
+  # TODO Deprecate
   '.append': @::append
 
   '.trim': (chars) ->
+    # TODO check bad args
     if chars instanceof String
       chars = QUOTE_REGEXP chars.value
     else
@@ -144,6 +159,7 @@ class String extends Object
     @clone (@value.replace ///^[#{chars}]+|[#{chars}]+$///g, '')
 
   '.ltrim': (chars) ->
+    # TODO check bad args
     if chars instanceof String
       chars = QUOTE_REGEXP chars.value
     else
@@ -152,6 +168,7 @@ class String extends Object
     @clone (@value.replace ///^[#{chars}]+///g, '')
 
   '.rtrim': (chars) ->
+    # TODO check bad args
     if chars instanceof String
       chars = QUOTE_REGEXP chars.value
     else
@@ -163,7 +180,7 @@ class String extends Object
     Boolean.new (
       str instanceof String and
       (@value.length >= str.value.length) and
-      (@value.substr 0, str.value.length) is str.value
+      (@value[0...str.value.length] is str.value)
     )
 
   '.ends-with?': (str) ->
@@ -187,55 +204,7 @@ class String extends Object
 
   '.base64': -> @clone @toBase64()
 
-Number::['.base'] = (base = Number.TEN) ->
-  base = base.toNumber()
-
-  if base.value isnt Math.round base.value
-    throw new TypeError """
-      Cannot convert number to base `#{base.value}`: base must be integer
-      """
-
-  unless 2 <= base.value <= 16
-    throw new TypeError """
-      Cannot convert number to base `#{base.value}`: base must be \
-      between 2 and 16
-      """
-
-  str = @value.toString base.value
-  str += @unit if @unit
-  new String str
-
-do ->
-  ###
-  http://blog.stevenlevithan.com/archives/javascript-roman-numeral-converter#comment-16107
-  ###
-  ROMANS =
-    M:  1000
-    CM:  900
-    D:   500
-    CD:  400
-    C:   100
-    XC:   90
-    L:    50
-    XL:   40
-    X:    10
-    IX:    9
-    V:     5
-    IV:    4
-    I:     1
-
-  Number::['.roman'] = ->
-    if not @unit and @value % 1 is 0 and 0 < @value <= 3000
-      val = @value
-      roman = ''
-
-      for i of ROMANS
-        while val >= ROMANS[i]
-          roman += i
-          val -= ROMANS[i]
-      new String roman
-    else
-      throw new TypeError
+  '.repr': -> @clone @repr()
 
 do ->
   supah = Number::['.*']
@@ -245,15 +214,5 @@ do ->
       other['.*'] @
     else
       supah.call @, other, etc...
-
-Number::['.unit'] = -> if @unit then new String @unit else Null.null
-
-Object::['.unquoted'] = -> new String @toString()
-
-Object::['.quoted'] = -> new String @toString(), '"'
-
-Object::['.string'] = Object::['.quoted']
-
-Object::['.repr'] = -> new String @repr(), '"'
 
 module.exports = String

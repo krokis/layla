@@ -3,16 +3,16 @@ Indexed   = require './indexed'
 Boolean   = require './boolean'
 Number    = require './number'
 Null      = require './null'
-
 TypeError = require '../error/type'
 
+
 class Collection extends Indexed
+
+  constructor: (@items = []) -> super
 
   length: -> @items.length
 
   getByIndex: (index) -> @items[index]
-
-  constructor: (@items = []) -> super
 
   push: (objs...) ->
     @items.push obj.clone() for obj in objs
@@ -133,5 +133,6 @@ class Collection extends Indexed
 
 # TODO I don't think this belongs here
 Object::['.>>'] = (other) -> other['.<<'] @
+
 
 module.exports = Collection

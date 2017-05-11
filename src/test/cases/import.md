@@ -9,7 +9,7 @@
 
   ~~~ css
   body p {
-    font-family: 'Helvetica';
+    font-family: "Helvetica";
     font-size: 12px;
   }
 
@@ -28,7 +28,7 @@
 
   ~~~ css
   html body p {
-    font-family: 'Helvetica';
+    font-family: "Helvetica";
     font-size: 12px;
   }
   ~~~
@@ -44,12 +44,12 @@
 
   ~~~ css
   html body p {
-    font-family: 'Helvetica';
+    font-family: "Helvetica";
     font-size: 12px;
   }
 
   html body p {
-    font-family: 'Helvetica';
+    font-family: "Helvetica";
     font-size: 12px;
   }
   ~~~
@@ -68,12 +68,12 @@
 
   ~~~ css
   html body p {
-    font-family: 'Helvetica';
+    font-family: "Helvetica";
     font-size: 12px;
   }
 
   html a {
-    font: 'Helvetica';
+    font: "Helvetica";
   }
   ~~~
 
@@ -108,7 +108,7 @@
 
   ~~~ css
   html body p {
-    font-family: 'Futura';
+    font-family: "Futura";
     font-size: 12px;
   }
 
@@ -128,7 +128,7 @@
   path = './import/'
   base = 'base.lay'
 
-  import ("{path}layout.css"), path + base
+  import ("#{path}layout.css"), path + base
   ~~~
 
   ~~~ css
@@ -142,7 +142,7 @@
   }
 
   body p {
-    font-family: 'Helvetica';
+    font-family: "Helvetica";
     font-size: 12px;
   }
   ~~~
@@ -157,7 +157,7 @@
 
   ~~~ css
   html body p {
-    font-family: 'Comic Sans';
+    font-family: "Comic Sans";
     font-size: 12px;
   }
   ~~~
@@ -198,14 +198,14 @@
 
   ~~~ css
   body p {
-    font-family: 'Helvetica';
+    font-family: "Helvetica";
     font-size: 12px;
   }
 
   body {
     background-color: white;
-    font: 'Helvetica';
-    font-family: 'Helvetica';
+    font: "Helvetica";
+    font-family: "Helvetica";
     foo: null;
   }
   ~~~
@@ -224,7 +224,7 @@
 
   ~~~ css
   html body p {
-    font-family: 'Helvetica';
+    font-family: "Helvetica";
     font-size: 12px;
   }
 
@@ -249,3 +249,12 @@
   ~~~
 
 - Fails for unreadable files
+
+- Throws an error when a circular import is detected
+
+  ~~~ lay
+  import './import/circular-1.lay'
+  ~~~
+
+  ~~~ ImportError
+  ~~~

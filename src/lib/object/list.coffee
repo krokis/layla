@@ -4,19 +4,21 @@ Boolean    = require './boolean'
 String     = require './string'
 Number     = require './number'
 
+
 class List extends Collection
 
   constructor: (items, @separator = ' ') -> super items
 
   flatten: ->
     flat = []
+
     for item in @items
       if item instanceof List
         flat.push item.flatten()...
       else
         flat.push item
 
-    flat
+    return flat
 
   clone: (items, separator = @separator, etc...) ->
     super items, separator, etc...
@@ -30,7 +32,7 @@ class List extends Collection
 
   '.spaces': -> @clone null, ' '
 
-  '.list': -> @
+  '.list': -> @clone()
 
   '.flatten': -> @clone @flatten()
 
@@ -39,5 +41,6 @@ Object::['.list'] = ->
     new List @items
   else
     new List [@]
+
 
 module.exports = List
