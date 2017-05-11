@@ -6,13 +6,13 @@ Functions
   ~~~ lay
   DO-NOTHING = () {};
 
-  size = (w, h: null) {
-    if not h {
-      h = w
+  size = ($w, $h: null) {
+    if not $h {
+      $h = $w
     }
 
-    width: w
-    height: h
+    width: $w
+    height: $h
   }
 
   div {
@@ -167,14 +167,14 @@ Functions
 - Can receive "rest" arguments
 
   ~~~ lay
-  sum = (nums...) {
-    tot = 0
+  sum = ($nums...) {
+    $sum = 0
 
-    for n in nums {
-      tot = tot + n
+    for $n in $nums {
+      $sum = $sum + $n
     }
 
-    return tot
+    return $sum
   }
 
   functions#rest-arguments {

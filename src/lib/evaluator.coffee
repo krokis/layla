@@ -119,22 +119,14 @@ class Evaluator extends Class
     else if node.raw
       str = new RawString
     else
-      switch value
-        when 'true'
-          return Boolean.true
-        when 'false'
-          return Boolean.false
-        when 'null'
-          return Null.null
-        else
-          dollar = value[0] is '$'
+      dollar = value[0] is '$'
 
-          if context.has value
-            return context.get value
-          else if dollar
-            @referenceError "Undefined variable: `#{value}`"
-          else
-            str = new UnquotedString
+      if context.has value
+        return context.get value
+      else if dollar
+        @referenceError "Undefined variable: `#{value}`"
+      else
+        str = new UnquotedString
 
     str.value = value
 
@@ -352,8 +344,10 @@ class Evaluator extends Class
     if left instanceof LiteralString
       name = @getStringValue left, context
 
-      if name in ['true', 'false', 'null']
-        @referenceError "Cannot reassing constant `#{name}`"
+      if name[0] isnt '$'
+        if context.has(name)
+          if node.operator is '=' or context.get(name).isNull()
+            @referenceError "Cannot overwrite constant `#{name}`"
 
       getter = context.get.bind context, name
       setter = context.set.bind context, name

@@ -205,10 +205,10 @@
     foo: 999.positive?
     foo: 0.5.positive?
     foo: ( 0 ).positive?
-    a = 0.001
-    foo: a.positive?
-    a = a * (-1)
-    foo: not a.positive?
+    $a = 0.001
+    foo: $a.positive?
+    $a = $a * (-1)
+    foo: not $a.positive?
   }
   ~~~
 
@@ -231,10 +231,10 @@
     foo: 0.5.negative?
     foo: 0.negative?
     foo: 0.0000.negative?
-    a = 0.001
-    foo: a.negative?
-    a = a * (-1)
-    foo: not a.negative?
+    $a = 0.001
+    foo: $a.negative?
+    $a = $a * (-1)
+    foo: not $a.negative?
   }
   ~~~
 

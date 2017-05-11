@@ -19,6 +19,22 @@ Null
   }
   ~~~
 
+- Cannot be overwritten
+
+  ~~~ lay
+  null = true
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  null = true
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
 ## Operators
 
 ### `is`

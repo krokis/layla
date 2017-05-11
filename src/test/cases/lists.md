@@ -105,22 +105,22 @@ Lists
     font: (14px "Helvetica", "Arial", sans-serif #666).flatten
   }
 
-  nums = (1 2 3), (a b c), (I II III)
+  $nums = (1 2 3), (a b c), (I II III)
 
   #bar {
-    all: nums
-    len: nums.length
-    one: nums::0::0 nums::1::0 nums::2::0
-    two: nums::0::1 nums::1::1 nums::2::1
-    three: nums::0::2 nums::1::2 nums::2::2
+    all: $nums
+    len: $nums.length
+    one: $nums::0::0 $nums::1::0 $nums::2::0
+    two: $nums::0::1 $nums::1::1 $nums::2::1
+    three: $nums::0::2 $nums::1::2 $nums::2::2
 
     &.baz {
-      nums = 1 2 3, a b c, I II III
-      all: nums
-      len: nums.length
-      one: nums::0::0 nums::1::0 nums::2::0
-      two: nums::0::1 nums::1::1 nums::2::1
-      three: nums::0::2 nums::1::2 nums::2::2
+      $nums = 1 2 3, a b c, I II III
+      all: $nums
+      len: $nums.length
+      one: $nums::0::0 $nums::1::0 $nums::2::0
+      two: $nums::0::1 $nums::1::1 $nums::2::1
+      three: $nums::0::2 $nums::1::2 $nums::2::2
     }
   }
 
@@ -518,13 +518,17 @@ Lists
 - Returns the maximum value in the list
 
   ~~~ lay
-  foo: (1, +71, 2, 3, -1, 5).max
-  foo: (b 'a' `d` "c" ).max.quoted
+  list.max {
+    foo: (1, +71, 2, 3, -1, 5).max
+    foo: (b 'a' `d` "c" ).max.quoted
+  }
   ~~~
 
   ~~~ css
-  foo: 71;
-  foo: "d";
+  list.max {
+    foo: 71;
+    foo: "d";
+  }
   ~~~
 
 ### `min`
@@ -532,13 +536,17 @@ Lists
 - Returns the minimum value in the list
 
   ~~~ lay
-  foo: (1, +71, 2, 3, -1, 5).min
-  foo: (b 'a' `d` "c" ).min.quoted
+  list.min {
+    foo: (1, +71, 2, 3, -1, 5).min
+    foo: (b 'a' `d` "c" ).min.quoted
+  }
   ~~~
 
   ~~~ css
-  foo: -1;
-  foo: "a";
+  list.min {
+    foo: -1;
+    foo: "a";
+  }
   ~~~
 
 ## Operators
@@ -548,27 +556,31 @@ Lists
 - Returns `true` only if the other operand is a collection and has equal elements, in the same order.
 
   ~~~ lay
-  a: (1 2 3) is (1, 2, 3)
-  b: (1 2 3) isnt (1, 2)
-  c: (1 2) isnt (1, 2, 3)
-  d: (1 2 2 3) isnt (1, 2, 3)
-  e: () is ()
-  f: (0,) is (() << 0)
-  g: (a b c) is ('a' `b` "c")
-  h: (1 2 3) isnt (1 `2` 3)
-  i: (1 2 3) isnt (2 1 3)
+  list[operator="is"] {
+    a: (1 2 3) is (1, 2, 3)
+    b: (1 2 3) isnt (1, 2)
+    c: (1 2) isnt (1, 2, 3)
+    d: (1 2 2 3) isnt (1, 2, 3)
+    e: () is ()
+    f: (0,) is (() << 0)
+    g: (a b c) is ('a' `b` "c")
+    h: (1 2 3) isnt (1 `2` 3)
+    i: (1 2 3) isnt (2 1 3)
+  }
   ~~~
 
   ~~~ css
-  a: true;
-  b: true;
-  c: true;
-  d: true;
-  e: true;
-  f: true;
-  g: true;
-  h: true;
-  i: true;
+  list[operator="is"] {
+    a: true;
+    b: true;
+    c: true;
+    d: true;
+    e: true;
+    f: true;
+    g: true;
+    h: true;
+    i: true;
+  }
   ~~~
 
 ### `has`
@@ -576,17 +588,21 @@ Lists
 - Returns `true` if the collection has an object equal to the passed
 
   ~~~ lay
-  a = (1 2 3 4 5)
+  list[operator="has"] {
+    a = (1 2 3 4 5)
 
-  foo: a has 1
-  foo: a has 6
-  foo: a has '2'
+    i: a has 1
+    ii: a has 6
+    iii: a has '2'
+  }
   ~~~
 
   ~~~ css
-  foo: true;
-  foo: false;
-  foo: false;
+  list[operator="has"] {
+    i: true;
+    ii: false;
+    iii: false;
+  }
   ~~~
 
 ### `hasnt`
@@ -596,15 +612,19 @@ Lists
   ~~~ lay
   a = (1 2 3 4 5)
 
-  foo: a hasnt 1
-  foo: a hasnt 6
-  foo: a hasnt '2'
+  list[operator="hasnt"] {
+    i: a hasnt 1
+    ii: a hasnt 6
+    iii: a hasnt '2'
+  }
   ~~~
 
   ~~~ css
-  foo: false;
-  foo: true;
-  foo: true;
+  list[operator="hasnt"] {
+    i: false;
+    ii: true;
+    iii: true;
+  }
   ~~~
 
 ### `in`
@@ -614,15 +634,19 @@ Lists
   ~~~ lay
   a = (1 2 3 4 5)
 
-  foo: 1 in a
-  foo: 6 in a
-  foo: '2' in a
+  list[operator="contains"] {
+    i: 1 in a
+    ii: 6 in a
+    iii: '2' in a
+  }
   ~~~
 
   ~~~ css
-  foo: true;
-  foo: false;
-  foo: false;
+  list[operator="contains"] {
+    i: true;
+    ii: false;
+    iii: false;
+  }
   ~~~
 
 ### `+`
@@ -630,21 +654,21 @@ Lists
 - Concatenates lists
 
   ~~~ lay
-  a = 1 2
+  $a = 1 2
 
-  body {
-    foo: a
-    foo: a + (3 4)
-    a = a + (5,)
-    foo: a
+  list[operator="+"] {
+    i: $a
+    ii: $a + (3 4)
+    $a = $a + (5,)
+    iii: $a
   }
   ~~~
 
   ~~~ css
-  body {
-    foo: 1 2;
-    foo: 1 2 3 4;
-    foo: 1 2 5;
+  list[operator="+"] {
+    i: 1 2;
+    ii: 1 2 3 4;
+    iii: 1 2 5;
   }
   ~~~
 
@@ -653,14 +677,14 @@ Lists
 - Accesses the items of the list by their numeric index
 
   ~~~ lay
-  body {
+  list[operator="::"] {
     border: 1px solid red
     box-shadow: (((2px 2px (4px) #000)))
   }
 
   lipsum = (lorem ipsum dolor sit)
 
-  lipsum {
+  list[operator="::"] {
     all: lipsum
     foo: lipsum::0
     bar: lipsum::(2 + 1)
@@ -668,12 +692,12 @@ Lists
   ~~~
 
   ~~~ css
-  body {
+  list[operator="::"] {
     border: 1px solid red;
     box-shadow: 2px 2px 4px #000000;
   }
 
-  lipsum {
+  list[operator="::"] {
     all: lorem ipsum dolor sit;
     foo: lorem;
     bar: sit;
@@ -685,7 +709,7 @@ Lists
   ~~~ lay
   a = 1 2 3 4
 
-  body {
+  list[operator="::"] {
     len: a.length
     foo: a::-1
     foo: a::(-2)
@@ -695,7 +719,7 @@ Lists
   ~~~
 
   ~~~ css
-  body {
+  list[operator="::"] {
     len: 4;
     foo: 4;
     foo: 3;
@@ -709,7 +733,7 @@ Lists
   ~~~ lay
   a = null 2 3 4
 
-  body {
+  list[operator="::"] {
     foo: a::0
     foo: a::1
     foo: a::5
@@ -718,7 +742,7 @@ Lists
   ~~~
 
   ~~~ css
-  body {
+  list[operator="::"] {
     foo: null;
     foo: 2;
     foo: null;
@@ -731,13 +755,13 @@ Lists
   ~~~ lay
   a = 1 2 3 4 5 6 7
 
-  body {
+  list[operator="::"] {
     foo: a::(0, 2, 4, 12, -1, -8)
   }
   ~~~
 
   ~~~ css
-  body {
+  list[operator="::"] {
     foo: 1 3 5 null 7 null;
   }
   ~~~
@@ -747,7 +771,7 @@ Lists
   ~~~ lay
   a = 1 2 3 4 5 6 7
 
-  body {
+  list[operator="::"] {
     bar: a::(0..2)
     bar: a::(0..-1)
     bar: a::(-5..-3)
@@ -758,7 +782,7 @@ Lists
   ~~~
 
   ~~~ css
-  body {
+  list[operator="::"] {
     bar: 1 2 3;
     bar: 1 7;
     bar: 3 4 5;
@@ -773,14 +797,14 @@ Lists
   ~~~ lay
   a = 1 2 3 4 5 6 7
 
-  body {
+  list[operator="::"] {
     prime: a::(0..2, 4, 6)
     bar: a::(-9..-5, 9, -1, 1 0..2)
   }
   ~~~
 
   ~~~ css
-  body {
+  list[operator="::"] {
     prime: 1 2 3 5 7;
     bar: null null 1 2 3 null 7 2 1 2 3;
   }
@@ -793,11 +817,15 @@ Lists
   ~~~ lay
   a = 1 2 3
   a::0 = 2
-  foo: a
+  list[operator="::="] {
+    foo: a
+  }
   ~~~
 
   ~~~ css
-  foo: 2 2 3;
+  list[operator="::="] {
+    foo: 2 2 3;
+  }
   ~~~
 
 - Adds items at the end of the list
@@ -805,26 +833,34 @@ Lists
   ~~~ lay
   a = 1 2 3
   a::3 = 4
-  foo: a
+  list[operator="::="] {
+    foo: a
+  }
   ~~~
 
   ~~~ css
-  foo: 1 2 3 4;
+  list[operator="::="] {
+    foo: 1 2 3 4;
+  }
   ~~~
 
 - Accepts negative indices
 
   ~~~ lay
-  a = 1 2 3
-  a::(-1) = 1
-  foo: a
-  a::(-3) = 3
-  foo: a
+  list[operator="::="] {
+    a = 1 2 3
+    a::(-1) = 1
+    foo: a
+    a::(-3) = 3
+    foo: a
+  }
   ~~~
 
   ~~~ css
-  foo: 1 2 1;
-  foo: 3 2 1;
+  list[operator="::="] {
+    foo: 1 2 1;
+    foo: 3 2 1;
+  }
   ~~~
 
 - Returns `null` for indices out of bounds
@@ -832,13 +868,13 @@ Lists
   ~~~ lay
   $list = 1,2,3
 
-  body {
+  list[operator="::="] {
     i: $list::3
   }
   ~~~
 
   ~~~ css
-  body {
+  list[operator="::="] {
     i: null;
   }
   ~~~
@@ -848,7 +884,7 @@ Lists
   ~~~ lay
   $list = 1,2,3
 
-  body {
+  list[operator="::="] {
     i: $list::('foo')
   }
   ~~~
@@ -861,7 +897,7 @@ Lists
 - Pushes objects to a list
 
   ~~~ lay
-  #list {
+  list[operator="<<"], list[operator=">>"] {
     foo: () << 1
     foo: (1, 2, 3, 4) << 5
     l = (0,)
@@ -872,7 +908,8 @@ Lists
   ~~~
 
   ~~~ css
-  #list {
+  list[operator="<<"],
+  list[operator=">>"] {
     foo: 1;
     foo: 1, 2, 3, 4, 5;
     bar: 0, 1px, 2rm;

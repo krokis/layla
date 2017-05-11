@@ -6,11 +6,36 @@ Booleans
 - Is case sensitive
 
   ~~~ lay
-  foo: true, not true, True, TRUE
+  boolean#true {
+    i: true, not true, True, TRUE
+  }
   ~~~
 
   ~~~ css
-  foo: true, false, True, TRUE;
+  boolean#true {
+    i: true, false, True, TRUE;
+  }
+  ~~~
+
+- Cannot be overwritten
+
+  ~~~ lay
+  true = false
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  boolean#false:not-overwritable {
+     i: true |= false
+  }
+  ~~~
+
+  ~~~ css
+  boolean#false:not-overwritable {
+    i: true;
+  }
   ~~~
 
 ## `false`
@@ -18,17 +43,41 @@ Booleans
 - Is case sensitive
 
   ~~~ lay
-  foo: false, not false
-  foo: False, not False
-  foo: FALSE, not FALSE
+  boolean#true {
+    i: false, not false
+    ii: False, not False
+    iii: FALSE, not FALSE
+  }
   ~~~
 
   ~~~ css
-  foo: false, true;
-  foo: False, false;
-  foo: FALSE, false;
+  boolean#true {
+    i: false, true;
+    ii: False, false;
+    iii: FALSE, false;
+  }
   ~~~
 
+- Cannot be overwritten
+
+  ~~~ lay
+  false = false
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  boolean#false:not-overwritable {
+    i: false |= null
+  }
+  ~~~
+
+  ~~~ css
+  boolean#false:not-overwritable {
+    i: false;
+  }
+  ~~~
 ## Operators
 
 ### Unary

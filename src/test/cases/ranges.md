@@ -169,20 +169,20 @@ Ranges
 - Tells if a number is in the range
 
   ~~~ lay
-  r = 1..2
+  $r = 1..2
 
   range.has, range.in {
-    foo: r has 1
-    foo: 2 in r
-    foo: r hasnt 3
-    foo: not 0 in r
-    r = 2..-1
-    bar: r has 1
-    bar: r has -1
-    bar: r has 2
-    bar: r has -2
-    bar: r has 3
-    bar: r has 0
+    foo: $r has 1
+    foo: 2 in $r
+    foo: $r hasnt 3
+    foo: not 0 in $r
+    $r = 2..-1
+    bar: $r has 1
+    bar: $r has -1
+    bar: $r has 2
+    bar: $r has -2
+    bar: $r has 3
+    bar: $r has 0
   }
   ~~~
 

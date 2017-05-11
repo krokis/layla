@@ -45,21 +45,35 @@ Assignments
 - `|=` performs the assignment only if the left side is undefined or is `null`
 
   ~~~ lay
-  body {
-    a |= 1
-    a |= 2
-    b = null
-    b |= 1
-    foo: a
-    bar: b
+  conditional-assignments {
+    $a |= 1
+    $a |= 2
+    $b = null
+    $b |= 1
+    c = 1
+    c |= false
+    foo: $a
+    bar: $b
+    baz: c
   }
   ~~~
 
   ~~~ css
-  body {
+  conditional-assignments {
     foo: 1;
     bar: 1;
+    baz: 1;
   }
+  ~~~
+
+  ~~~ lay
+  conditional-assignments {
+    a = null
+    a |= #f00
+  }
+  ~~~
+
+  ~~~ ReferenceError
   ~~~
 
 - Return the final left side value
@@ -81,8 +95,9 @@ Assignments
       font: serif
     }
 
-    big = null
-    if big |= true {
+    $big = null
+
+    if $big |= true {
       font-size: large
     }
 
