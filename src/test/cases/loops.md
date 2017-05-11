@@ -221,7 +221,7 @@ Loops
 
   #foo {
     for prop in doc.properties {
-      & << prop
+      &.push(prop)
     }
   }
   ~~~

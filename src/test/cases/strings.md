@@ -543,36 +543,6 @@ Strings
   foo: "Lorem";
   ~~~
 
-### `<<` and `>>`
-
-- Appends strings to strings
-
-  ~~~ lay
-  $a = 'Lorem'
-
-  $a << ' '
-  $a << 'ipsum' + ' '
-  'dolor' >> $a
-
-  foo: $a
-  ~~~
-
-  ~~~ css
-  foo: "Lorem ipsum dolor";
-  ~~~
-
-- Always return the resulting string
-
-  ~~~ lay
-  foo: 'lorem' << ' ' << 'ipsum' << ' ' << 'dolor'
-  foo: 'lorem' >> ' ' >> 'ipsum' >> ' ' >> 'dolor'
-  ~~~
-
-  ~~~ css
-  foo: "lorem ipsum dolor";
-  foo: "dolor ipsum lorem";
-  ~~~
-
 ## Methods
 
 ### `length`

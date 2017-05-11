@@ -23,8 +23,6 @@ class Token extends Class
   @GT_EQUAL        = 'GTEqual'
   @PIPE            = 'Pipe'
   @PIPE_EQUAL      = 'PipeEqual'
-  @PUSH_RIGHT      = 'PushRight'
-  @PUSH_LEFT       = 'PushLeft'
   @DOUBLE_COLON    = 'DoubleColon'
   @DOUBLE_DOT      = 'DoubleDot'
   @ELLIPSIS        = 'Ellipsis'

@@ -123,9 +123,6 @@ class String extends Object
         """
       )
 
-  # TODO Deprecate
-  '.<<': @::append
-
   '.::': (other) ->
     if other instanceof Number
       len = @length

@@ -1,4 +1,3 @@
-Object    = require '../object'
 Indexed   = require './indexed'
 Boolean   = require './boolean'
 Number    = require './number'
@@ -67,8 +66,6 @@ class Collection extends Indexed
       return @clone @items.concat other.items
     throw new TypeError "Cannot sum collection with that"
 
-  '.<<': (other) -> @push other; @
-
   '.::': (other) ->
     if other instanceof Number
       idx = other.value
@@ -130,9 +127,6 @@ class Collection extends Indexed
       return yes
 
     @clone unique, @separator
-
-# TODO I don't think this belongs here
-Object::['.>>'] = (other) -> other['.<<'] @
 
 
 module.exports = Collection

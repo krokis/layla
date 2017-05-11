@@ -273,8 +273,6 @@
 
 ## `=` and `|=`
 
-- Have precedence over `<<` and `>>`
-
 - Have right associativity
 
   ~~~ lay
@@ -354,20 +352,6 @@
   ~~~
 
 ## `or`
-
-- Has precedence over `<<` and `>>`
-
-  ~~~ lay
-  foo {
-    bar: ((1,) << a = 2) << b |= 3
-  }
-  ~~~
-
-  ~~~ css
-  foo {
-    bar: 1, 2, 3;
-  }
-  ~~~
 
 - Has precedence over `=` and `|=`
 
@@ -495,43 +479,5 @@
   ~~~ css
   foo {
     foo: 1, 2, 3;
-  }
-  ~~~
-
-## `>>` and `<<`
-
-- Have left associativity
-
-  ~~~ lay
-  foo {
-    bar: ((0, 1) << (1 2)) << 3
-    bar: (0,1) << ((1 2) << 3)
-    bar: (0, 1) << (1 2) << 3
-  }
-
-  bar {
-    $a = (0,)
-    (3 >> (2 1)) >> $a
-    foo: $a
-    $a = (0,)
-    3 >> ((2 1) >> $a)
-    foo: $a
-    $a = (0,)
-    3 >> (2 1) >> $a
-    foo: $a
-  }
-  ~~~
-
-  ~~~ css
-  foo {
-    bar: 0, 1, 1 2, 3;
-    bar: 0, 1, 1 2 3;
-    bar: 0, 1, 1 2, 3;
-  }
-
-  bar {
-    foo: 0, 2 1 3;
-    foo: 0, 2 1, 3;
-    foo: 0, 2 1 3;
   }
   ~~~

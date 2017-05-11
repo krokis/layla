@@ -17,8 +17,6 @@ class Tokenizer extends Class
     '<=' : T.LT_EQUAL
     '>=' : T.GT_EQUAL
     '|=' : T.PIPE_EQUAL
-    '>>' : T.PUSH_RIGHT
-    '<<' : T.PUSH_LEFT
     '::' : T.DOUBLE_COLON
     '..' : T.DOUBLE_DOT
     '='  : T.EQUAL
@@ -58,7 +56,7 @@ class Tokenizer extends Class
   RE_PUNC           = ///^
                         (::|\|?:|\.{1,3}|\(|\)|\{|\}|\[|\]|\&|@|;|%|
                         \,|[\|\$~*^]?=|~|\*|\/|
-                        \||>>|<<|>=|>|<=|<|
+                        \||>=|>|<=|<|
                         ([\+\-](?!#{RE_IDENT_START.source})))
                       ///
   RE_NUMBER         = ///

@@ -75,28 +75,6 @@ class Range extends Indexed
 
     throw new TypeError "Cannot divide a range by #{step.repr()}"
 
-  ###
-  TODO this is buggy
-  ###
-  '.<<': (args...) ->
-    # TODO check units
-    vals = []
-    for arg in args
-      unless arg instanceof Number
-        throw new TypeError "Cannot add that to a range"
-
-      if arg.unit and not @unit
-        @unit = arg.unit
-      else
-        arg = arg.convert @unit
-
-      vals.push arg.value
-
-    @first = Math.min @first, vals...
-    @last = Math.max @last, vals...
-
-    return @
-
   '.unit': -> if @unit then new UnquotedString @unit else Null.null
 
   '.unit?': -> Boolean.new @unit

@@ -64,8 +64,6 @@ class BaseParser extends Parser
     ','     # List separator
     '='     # Assignment
     '|='    # Conditional assignment
-    '>>'    # Push right
-    '<<'    # Push left
   ]
 
   UNARY_OPERATORS = [
@@ -103,8 +101,6 @@ class BaseParser extends Parser
     ','     :   60
     '='     :   50
     '|='    :   50
-    '>>'    :   20
-    '<<'    :   20
     # '!important' :    0
 
   # Operators with right-to-left associativity.

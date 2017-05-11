@@ -58,8 +58,8 @@ Lists
   body {
     foo: foo.length
     bar: bar.length
-    bar << 'foo'
-    bar << 'bar'
+    bar.push('foo')
+    bar.push('bar')
     bar: bar.length
     bar: bar
   }
@@ -79,7 +79,7 @@ Lists
   ~~~ lay
   foo = ('foo',)
   bar = (0,)
-  bar << 1
+  bar.push(1)
   body {
     foo:foo
     foo:foo.length
@@ -244,7 +244,7 @@ Lists
 
   .foo {
     bar: foo.empty? foo.length
-    bar: (a b c).empty << d
+    bar: (a b c).empty.push(d)
   }
   ~~~
 
@@ -330,10 +330,9 @@ Lists
     all: a.push(2)
     all: a.push(3)
     all: a.push(4)
-    all: a << 5
-    last = 6 >> a
+    all: a.push(5)
+    last = a.push(6)
     all: a
-    last: last
   }
   ~~~
 
@@ -347,7 +346,6 @@ Lists
     all: 0 1 2 3 4;
     all: 0 1 2 3 4 5;
     all: 0 1 2 3 4 5 6;
-    last: 6;
   }
   ~~~
 
@@ -562,7 +560,7 @@ Lists
     c: (1 2) isnt (1, 2, 3)
     d: (1 2 2 3) isnt (1, 2, 3)
     e: () is ()
-    f: (0,) is (() << 0)
+    f: (0,) is (().push(0))
     g: (a b c) is ('a' `b` "c")
     h: (1 2 3) isnt (1 `2` 3)
     i: (1 2 3) isnt (2 1 3)
@@ -890,40 +888,4 @@ Lists
   ~~~
 
   ~~~ TypeError
-  ~~~
-
-### `<<` and `>>`
-
-- Pushes objects to a list
-
-  ~~~ lay
-  list[operator="<<"], list[operator=">>"] {
-    foo: () << 1
-    foo: (1, 2, 3, 4) << 5
-    l = (0,)
-    1px >> l
-    2rm >> l
-    bar: l
-  }
-  ~~~
-
-  ~~~ css
-  list[operator="<<"],
-  list[operator=">>"] {
-    foo: 1;
-    foo: 1, 2, 3, 4, 5;
-    bar: 0, 1px, 2rm;
-  }
-  ~~~
-
-- Always returns the receiver
-
-  ~~~ lay
-  foo: (0,) << 1px << 2px
-  bar: 1px >> (0,) >> (1 2)
-  ~~~
-
-  ~~~ css
-  foo: 0, 1px, 2px;
-  bar: 1 2 0, 1px;
   ~~~

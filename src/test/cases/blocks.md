@@ -335,12 +335,12 @@ Blocks
 
   * {
     for prop in $b.properties {
-      & << prop
+      &.push(prop)
     }
   }
 
   for rule in $b.rules {
-    & << rule
+    &.push(rule)
   }
   ~~~~
 
@@ -538,33 +538,3 @@ Blocks
     margin: 0;
   }
   ~~~
-
-#### `<<` and `>>`
-
-- Push properties to a block
-
-  ~~~ lay
-  $props = {
-    color: red
-    padding: 0
-    margin: 0
-  }
-
-  body {
-    & << $props.first
-    background: white
-    $props.last >> &
-  }
-  ~~~
-
-  ~~~ css
-  body {
-    color: red;
-    background: white;
-    margin: 0;
-  }
-  ~~~
-
-- Push other blocks to a block
-
-- Fail for other types

@@ -76,26 +76,6 @@ Ranges
   }
   ~~~
 
-- Converts units of added objects as necessary
-
-  ~~~ lay
-  $r = 1..5mm
-
-  range[unit] {
-    foo: $r
-    foo: $r << 1cm
-    foo: $r << .5in
-  }
-  ~~~
-
-  ~~~ css
-  range[unit] {
-    foo: 1mm 2mm 3mm 4mm 5mm;
-    foo: 1mm 2mm 3mm 4mm 5mm 6mm 7mm 8mm 9mm 10mm;
-    foo: 1mm 2mm 3mm 4mm 5mm 6mm 7mm 8mm 9mm 10mm 11mm 12mm;
-  }
-  ~~~
-
 - Fail for incompatible units
 
   ~~~ lay
@@ -256,69 +236,6 @@ Ranges
   range[op="/"] {
     i: 1 3 5;
     ii: 1mm 0.74mm 0.47mm 0.21mm -0.06mm -0.32mm -0.59mm -0.85mm;
-  }
-  ~~~
-
-#### `<<` and `>>`
-
-- Extend a range with a number
-
-  ~~~ lay
-  range[op="<<"], range[op=">>"] {
-    $r = 1..3
-    foo: $r
-    2 >> $r
-    foo: $r
-    0 >> $r
-    foo: $r
-    $r << 5
-    foo: $r
-  }
-  ~~~
-
-  ~~~ css
-  range[op="<<"],
-  range[op=">>"] {
-    foo: 1 2 3;
-    foo: 1 2 3;
-    foo: 0 1 2 3;
-    foo: 0 1 2 3 4 5;
-  }
-  ~~~
-
-- Adds units to pure ranges when a dimension is passed
-
-  ~~~ lay
-  range[op="<<"], range[op=">>"] {
-    foo: 1..3 << 1px
-    foo: 0 >> 1..3 << 4% << 5
-  }
-  ~~~
-
-  ~~~ css
-  range[op="<<"],
-  range[op=">>"] {
-    foo: 1px 2px 3px;
-    foo: 0 1% 2% 3% 4% 5%;
-  }
-  ~~~
-
-- Check units are compatible
-
-- Always return the receiver
-
-  ~~~ lay
-  range[op="<<"], range[op=">>"] {
-    foo: (1..3) << 1px
-    foo: 1px >> 1..3
-  }
-  ~~~
-
-  ~~~ css
-  range[op="<<"],
-  range[op=">>"] {
-    foo: 1px 2px 3px;
-    foo: 1px 2px 3px;
   }
   ~~~
 
