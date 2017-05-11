@@ -47,6 +47,7 @@ KeyframeSelector      = require './object/selector/keyframe'
 CompoundSelector      = require './object/selector/compound'
 ComplexSelector       = require './object/selector/complex'
 SelectorList          = require './object/selector/list'
+RuntimeError          = require './error/runtime'
 TypeError             = require './error/type'
 ReferenceError        = require './error/reference'
 InternalError         = require './error/internal'
@@ -57,6 +58,9 @@ class Evaluator extends Class
 
   error: (cls, msg, location) ->
     throw new cls msg, location
+
+  runtimeError: (msg, location) ->
+    @error RuntimeError, msg, location
 
   typeError: (msg, location) ->
     @error TypeError, msg, location
@@ -220,10 +224,8 @@ class Evaluator extends Class
         return null
 
       catch e
-        # TODO should it be:
-        # `if (e instanceof Directive) and (e.name is 'return')?
-        if e instanceof Object
-          return e
+        if (e instanceof Directive) and (e.name is 'return')
+          return e.value
         else
           throw e
 
@@ -406,8 +408,14 @@ class Evaluator extends Class
         depth = 1
       when 1
         depth = @evaluateNode node.arguments[0], context
-        unless (depth instanceof Number) and depth > 0
-          @typeError "Bad argument for a `#{node.name}`"
+
+        if depth instanceof Number
+          unless depth.isInteger() and depth.isPositive()
+            @typeError """
+              Bad value for `#{node.name}` depth: #{depth.reprValue()}"""
+        else
+          @typeError "Bad argument for a `#{node.name}`: #{depth.reprType()}"
+
         depth = parseInt depth.value, 10
       else
         @typeError "Too many arguments for a `#{node.name}`"
@@ -423,12 +431,15 @@ class Evaluator extends Class
     @evaluateControlFlowDirective node, context
 
   evaluateReturn: (node, context) ->
-    if node.arguments.length is 0
-      throw Null.null
-    else if node.arguments.length > 1
-      @typeError "Too many arguments for a `return`"
+    switch node.arguments.length
+      when 0
+        node.value = Null.null
+      when 1
+        node.value = @evaluateNode node.arguments[0], context
+      else
+        @typeError "Too many arguments for a `return`"
 
-    throw @evaluateNode node.arguments[0], context
+    throw node
 
   ###
   ###
@@ -738,5 +749,14 @@ class Evaluator extends Class
   evaluateRoot: (node, context = new Context) ->
     @evaluateBody node.body, context
     return context.block
+
+  evaluate: (node, context = new Context) ->
+    try
+      return @evaluateNode node, context
+    catch err
+      if err instanceof Directive
+        @runtimeError "Uncaught `#{err.name}`"
+      else
+        throw err
 
 module.exports = Evaluator

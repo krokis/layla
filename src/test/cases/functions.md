@@ -271,6 +271,77 @@ Functions
   background: white url("background.jpg");
   ~~~
 
+## `return`
+
+- Can be used inside a function to return a value
+
+  ~~~ lay
+  sum = ((a, b) {
+    return a + b
+  })
+
+  font-size: sum(12px, 15px)
+  ~~~
+
+  ~~~ css
+  font-size: 27px;
+  ~~~
+
+- Can be called with no arguments
+
+  ~~~ lay
+  bar = () {
+    return
+  }
+
+  FOO = () {
+    return
+    foo: bar
+  }
+
+  foo: bar()
+  bar: FOO()
+  ~~~
+
+  ~~~ css
+  foo: null;
+  bar: null;
+  ~~~
+
+- Defaults to `null` when it's not present
+
+  ~~~ lay
+  NOOP = () {}
+
+  border: NOOP()
+  ~~~
+
+  ~~~ css
+  border: null;
+  ~~~
+
+- Cannot be called outside a function
+
+  ~~~ lay
+  return
+  ~~~
+
+  ~~~ RuntimeError
+  Uncaught `return`
+  ~~~
+
+  ~~~ lay
+  @media print {
+    body .foo {
+      return 2
+    }
+  }
+  ~~~
+
+  ~~~ RuntimeError
+  Uncaught `return`
+  ~~~
+
 ## Methods
 
 ### `invoke`

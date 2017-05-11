@@ -144,7 +144,7 @@ class Context extends Class
         plugin.use @
 
   evaluate: (node, context = @) ->
-    (new Evaluator).evaluateNode node, context
+    (new Evaluator).evaluate node, context
 
   child: (block = @block) ->
     new Context @, block

@@ -46,7 +46,7 @@ class Layla
 
   evaluate: (node, context = @context) ->
     node = @parse node unless node instanceof Node
-    @evaluator.evaluateRoot node, context
+    @evaluator.evaluate node, context
 
   normalize: (node) -> @normalizer.normalize node
 

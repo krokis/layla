@@ -326,7 +326,131 @@ Loops
   }
   ~~~
 
-- `depth` must be a number
+- Fails for non-numeric `depth`s
+
+  ~~~ lay
+  for $i in 1..10 {
+    break "foo"
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  for $i in 1..10 {
+    break null
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  for $i in 1..10 {
+    break true
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  for $i in 1..10 {
+    break url('http://example.org')
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+- Fails for non-positive `depth`s
+
+  ~~~ lay
+  for $i in 1..10 {
+    break 0
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  while true {
+    until false {
+      break -1
+    }
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+- Fails for non-integer `depth`s
+
+  ~~~ lay
+  for $i in 1..10 {
+    break .1
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  while true {
+    until false {
+      break 2.0
+    }
+  }
+  ~~~
+
+  ~~~ css
+  ~~~
+
+- Fails for too high `depth`s
+
+  ~~~ lay
+  for $i in 1..10 {
+    break 2
+  }
+  ~~~
+
+  ~~~ RuntimeError
+  Uncaught `break`
+  ~~~
+
+  ~~~ lay
+  while true {
+    until false {
+      break 3
+    }
+  }
+  ~~~
+
+  ~~~ RuntimeError
+  Uncaught `break`
+  ~~~
+
+- Cannot be used outside a loop
+
+  ~~~ lay
+  break 2
+  ~~~
+
+  ~~~ RuntimeError
+  Uncaught `break`
+  ~~~
+
+  ~~~ lay
+  .break[illegal] {
+    break
+  }
+  ~~~
+
+  ~~~ RuntimeError
+  Uncaught `break`
+  ~~~
 
 ## `continue`
 
@@ -399,4 +523,136 @@ Loops
     foo: 3, 2;
     foo: 3, 3;
   }
+  ~~~
+
+- Fails for non-numeric `depth`s
+
+  ~~~ lay
+  for $i in 1..10 {
+    continue "foo"
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  for $i in 1..10 {
+    continue null
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  for $i in 1..10 {
+    continue true
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  for $i in 1..10 {
+    continue url('http://example.org')
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+- Fails for too high `depth`s
+
+  ~~~ lay
+  for $i in 1..10 {
+    continue 2
+  }
+  ~~~
+
+  ~~~ RuntimeError
+  Uncaught `continue`
+  ~~~
+
+  ~~~ lay
+  while true {
+    until false {
+      continue 3
+    }
+  }
+  ~~~
+
+  ~~~ RuntimeError
+  Uncaught `continue`
+  ~~~
+
+- Fails for non-positive `depth`s
+
+  ~~~ lay
+  for $i in 1..10 {
+    continue 0
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  while true {
+    until false {
+      continue -1
+    }
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+- Fails for non-integer `depth`s
+
+  ~~~ lay
+  for $i in 1..10 {
+    continue .1
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  $i = 0
+
+  while $i < 100 {
+    $i = $i + 1
+
+    until false {
+      continue 2.0
+    }
+
+    foo: bar
+  }
+  ~~~
+
+  ~~~ css
+  ~~~
+
+- Cannot be used outside a loop
+
+  ~~~ lay
+  continue 2
+  ~~~
+
+  ~~~ RuntimeError
+  Uncaught `continue`
+  ~~~
+
+  ~~~ lay
+  .continue[illegal] {
+    continue
+  }
+  ~~~
+
+  ~~~ RuntimeError
+  Uncaught `continue`
   ~~~

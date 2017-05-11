@@ -116,6 +116,8 @@ class Number extends Object
 
   isEmpty: -> @value is 0
 
+  isPositive: -> @value > 0
+
   # http://www.javascripter.net/faq/numberisprime.htm
   isPrime: ->
     n = @value
@@ -262,7 +264,7 @@ class Number extends Object
 
     return new @class sign
 
-  '.positive?': -> Boolean.new @value > 0
+  '.positive?': -> Boolean.new @isPositive()
 
   '.positive': -> @clone abs @value
 
