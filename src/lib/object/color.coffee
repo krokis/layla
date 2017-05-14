@@ -1,10 +1,11 @@
-Object        = require '../object'
-Null          = require './null'
-Boolean       = require './boolean'
-Number        = require './number'
-String        = require './string'
-ValueError    = require '../error/value'
-InternalError = require '../error/value'
+Object         = require '../object'
+Null           = require './null'
+Boolean        = require './boolean'
+Number         = require './number'
+String         = require './string'
+ValueError     = require '../error/value'
+ReferenceError = require '../error/reference'
+InternalError  = require '../error/internal'
 
 
 ###
@@ -270,7 +271,7 @@ class Color extends Object
 
   @blend: (source, backdrop, mode = 'normal') ->
     if not mode of BLEND_METHODS
-      throw new ValueError "Bad mode for Color.blend: #{mode}"
+      throw new ValueError "Bad mode for #{reprMethod 'blend'}: #{mode}"
 
     srgb = source.rgb.map (ch) -> ch / 255
     brgb = backdrop.rgb.map (ch) -> ch / 255
@@ -311,7 +312,7 @@ class Color extends Object
           if l > 6
             alpha = (parseInt str[6..7], 16) / 255
         else
-          throw new Error "Bad hex color: #{str}"
+          throw new ValueError "Bad hex color: #{str}"
 
       return new @('rgb', [red, green, blue], alpha)
 
@@ -337,16 +338,16 @@ class Color extends Object
           alpha = 1
 
         if args.length
-          throw new Error "Too many values passed to `#{space}()`"
+          throw new ReferenceError "Too many values passed to `#{space}()`"
 
         return new @(space, channels, alpha)
       else
-        throw new Error "Bad color space: #{space}"
+        throw new ValueError "Invalid color space: `#{space}`"
 
   @parse: (color) ->
     @parseHexString(color) or
     @parseFuncString(color) or
-    throw new Error "Bad color string: #{color}"
+    throw new ValueError "Invalid color string: #{color}"
 
   constructor: (@space, channels, @alpha = 1) ->
     super()
@@ -527,6 +528,9 @@ class Color extends Object
   ###
   toString: (space = @space) ->
     if space of SPACES
+      if space is 'rgb' and @alpha is 1
+        return @toHexString()
+
       channels = @[space].map (c) -> round c
 
       str = space
@@ -667,7 +671,7 @@ class Color extends Object
 
   '.safe': ->
     if @alpha < 1
-      throw new Error "Cannot make safe a non-opaque color"
+      throw new ValueError "Cannot make safe a non-opaque color"
 
     channels = @rgb.map (channel) -> 51 * round(channel / 51)
 
@@ -679,14 +683,20 @@ class Color extends Object
       return new Number @alpha
 
     unless value instanceof Number
-      throw new Error "Bad alpha value: #{value}"
+      throw new ValueError """
+        Invalid alpha value: #{value.repr()}. \
+        Expected a pure number or a percentage
+        """
 
     if value.unit is '%'
       value = value.value / 100
     else if value.isPure()
       value = value.value
     else
-      throw new Error "Bad alpha value: #{value}"
+      throw new ValueError """
+        Invalid alpha value: #{value.repr()}. \
+        Expected a pure number or a percentage
+        """
 
     value = min(1, max(value, 0))
 
@@ -701,7 +711,10 @@ class Color extends Object
           return new Number @[space][index], channel.unit
 
         unless value instanceof Number
-          throw new Error "Bad `#{name}` channel value: #{value.repr()}"
+          throw new ValueError """
+            Invalid value for `#{name}` channel: #{value.repr()}. \
+            Expected a number
+            """
 
         if value.unit is '%'
           value = channel.max * value.value / 100

@@ -1,6 +1,7 @@
-Object     = require '../object'
-Boolean    = require './boolean'
-ValueError = require '../error/value'
+Object         = require '../object'
+Boolean        = require './boolean'
+ValueError     = require '../error/value'
+ReferenceError = require '../error/reference'
 
 
 FACTORS = {}
@@ -49,7 +50,7 @@ class Number extends Object
         unit = match[2]
         return new Number value, unit
 
-    throw new ValueError "Could not convert \"#{str}\" to #{@reprType()}"
+    throw new ValueError "Could not convert \"#{str}\" to #{@repr()}"
 
   constructor: (value = 0, @unit = null) ->
     super()
@@ -108,12 +109,7 @@ class Number extends Object
       else
         return -1
 
-    throw new ValueError (
-      """
-      Cannot compare #{@repr()} with #{other.repr()}: \
-      that's not a [Number]
-      """
-    )
+    throw new ValueError "Cannot compare #{@repr()} with #{other.repr()}"
 
   isPure: -> not @unit
 
@@ -182,23 +178,13 @@ class Number extends Object
     if other instanceof Number
       return @copy @convert(other.unit).value + other.value, other.unit or @unit
 
-    throw new ValueError (
-      """
-      Cannot perform #{@repr()} + #{other.repr()}: \
-      right side must be a #{Number.repr()}
-      """
-    )
+    return super context, other
 
   '.-': (context, other) ->
     if other instanceof Number
       return @copy @convert(other.unit).value - other.value, other.unit or @unit
 
-    throw new ValueError (
-      """
-      Cannot perform #{@repr()} - #{other.repr()}: \
-      right side must be a #{Number.repr()}
-      """
-    )
+    return super context, other
 
   '.*': (context, other) ->
 
@@ -207,14 +193,9 @@ class Number extends Object
         # TODO should fail for incompatible units
         return @copy other.value * @value, other.unit or @unit
 
-      throw new ValueError """
-        Cannot perform #{@repr()} * #{other.repr()}
-        """
+      throw new ValueError # TODO
 
-    throw new ValueError """
-      Cannot perform #{@repr()} * #{other.repr()}: \
-      right side must be a #{Number.repr()}
-      """
+    return super context, other
 
   './': (context, other) ->
     if other instanceof Number
@@ -225,12 +206,7 @@ class Number extends Object
       else
         return @copy @value / other.value, @unit or other.unit
 
-    throw new ValueError (
-      """
-      Cannot perform #{@repr()} / #{other.repr()}: \
-      right side must be a #{Number.repr()}
-      """
-    )
+    return super context, other
 
   '.unit?': -> Boolean.new @unit
 
@@ -297,14 +273,16 @@ class Number extends Object
       throw new ValueError """
       Cannot make #{deg.value}th root of #{@repr()}: Base cannot be negative
       """
-    @copy pow(@value, 1 / (deg.value))
+
+    return @copy pow(@value, 1 / (deg.value))
 
   '.sqrt': -> @['.root'] TWO
 
   '.mod': (context, other) ->
     if other.value is 0
       throw new ValueError 'Cannot divide by 0'
-    @copy @value % other.value
+
+    return @copy @value % other.value
 
   '.sin': -> @copy sin(@value)
 
@@ -328,9 +306,13 @@ class Number extends Object
 
     @convert unit
 
-Object::toNumber = -> throw new Error "Cannot convert #{@repr()} to number"
+  '.)': @::['.convert']
 
-Boolean::toNumber = -> new Number (if @value then 1 else 0)
+Object::toNumber = ->
+  throw new ReferenceError "Cannot convert #{@repr()} to #{Number.repr()}"
+
+Boolean::toNumber = ->
+  new Number(if @value then 1 else 0)
 
 Object::['.number'] = -> @toNumber()
 

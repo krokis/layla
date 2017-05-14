@@ -178,7 +178,7 @@ Functions
   }
   ~~~
 
-- Can call themselves
+- Can be called recursively
 
   ~~~ lay
   factorial = (n) {
@@ -305,12 +305,12 @@ Functions
 
 ## Methods
 
-### `invoke`
+### `call`
 
 - Calls the function with given arguments
 
   ~~~ lay
-  foo: ((a,b) { return a + b}).invoke(2,3)
+  foo: ((a,b) { return a + b}).call(2,3)
   ~~~
 
   ~~~ css

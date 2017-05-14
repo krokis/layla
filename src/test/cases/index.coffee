@@ -1,11 +1,12 @@
 # 3rd party
-fs       = require 'fs'
-path     = require 'path'
-mark     = require 'commonmark'
-{expect} = require 'chai'
+fs           = require 'fs'
+path         = require 'path'
+mark         = require 'commonmark'
+{expect}     = require 'chai'
+escape_regex = require 'escape-string-regexp'
 
-Layla       = require '../../lib'
-NodeContext = require '../../lib/context/node'
+Layla        = require '../../lib'
+NodeContext  = require '../../lib/context/node'
 
 describe 'Cases', ->
   json = (obj, indent = 4) ->
@@ -117,14 +118,25 @@ describe 'Cases', ->
                     actual = layla.compile c.source
                     expect(actual).to.equal c.expected
                   catch e
+                    unless e instanceof Layla.Error
+                      throw e
+
                     unless c.err_name or c.err_msg
                       throw e
 
-                    if c.err_name
-                      expect(e.name).to.equal c.err_name
+                    expect(e.name).to.equal c.err_name
 
                     if c.err_msg
-                      expect(e.message).to.equal c.err_msg
+                      err_msg = c.err_msg.trim()
+
+                      if err_msg.match /^\/.*\//
+                        err_msg = err_msg[1...-1]
+                      else
+                        err_msg = "^#{escape_regex err_msg}$"
+
+                      err_msg = ///#{err_msg}///
+
+                      expect(e.message).to.match err_msg
 
               ).bind @, cases
             else if todo

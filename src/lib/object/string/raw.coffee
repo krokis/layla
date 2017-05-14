@@ -68,7 +68,13 @@ do ->
     I:     1
 
   Number::['.roman'] = ->
-    if @isPure() and @isInteger() and 0 < @value <= 3000
+    if not @isPure()
+      error = "number cannot have unit"
+    else if not @isInteger()
+      error = "number must be integer"
+    else if not (0 < @value <= 3000)
+      error = "number must be higher than 0 and lower or equal to 3000"
+    else
       val = @value
       roman = ''
 
@@ -79,7 +85,9 @@ do ->
 
       return new RawString roman
 
-    throw new ValueError
+    throw new ValueError """
+      Cannot convert #{@repr()} to roman notation: #{error}
+      """
 
 
 module.exports = RawString

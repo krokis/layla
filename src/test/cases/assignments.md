@@ -116,3 +116,22 @@ Assignments
     font-size: large;
   }
   ~~~
+
+- Work with any string type as identifier
+
+  ~~~ lay
+  font-family = "Arial"
+  "font-size" = 12px
+  'font-spacing' = normal
+  `$font-weight` = bold
+
+  body {
+    font: font-family font-size font-spacing $font-weight
+  }
+  ~~~
+
+  ~~~ css
+  body {
+    font: "Arial" 12px normal bold;
+  }
+  ~~~

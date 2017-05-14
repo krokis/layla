@@ -1859,10 +1859,10 @@
   ~~~
 
   ~~~ lay
-  10 .  2px
+  10 .  2px // Will try to call method `2px` on `10`
   ~~~
 
-  ~~~ ValueError
+  ~~~ ReferenceError
   ~~~
 
 #### Between value and unit

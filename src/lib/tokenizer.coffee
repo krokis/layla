@@ -81,7 +81,7 @@ class Tokenizer extends Class
   RE_WHITESPACE     = /^(\r\n|[\x20\n\r\t\f])+/
 
   ###
-  Return current location, which includes file, line and column information.
+  Contains current location, which includes file, line and column information.
   ###
   @property 'location', -> new Location @file, @line, @column
 
@@ -96,23 +96,45 @@ class Tokenizer extends Class
     @position = 0
     @move 0
 
-  syntaxError: (msg) ->
+  ###
+  Throw a `SyntaxError` exception, adding optional `message`.
+
+  This method will construct a `SyntaxError` with current location information,
+  and will generate a "Unexpected <TOKEN>" message.
+
+  If no token can be read at current point, the message will contain the next
+  character. If a custom `message` is passed, it will be appended to the
+  generated message, with a dot between them. When at the end of text, an
+  `EOTError` exception will be thrown
+  ###
+  error: (message) ->
+    location = @location
+
     if @isEndOfFile()
       unexpected = 'end of file'
       Err = EOTError
     else
-      unexpected = "`#{@char}`"
+      token = try @readToken()
+
+      if token
+        unexpected = token.toString()
+        unexpected += "(#{token.kind})"
+      else
+        unexpected = JSON.stringify @char
+
       Err = SyntaxError
 
-    message = "Unexpected #{unexpected}"
+    final_message = "Unexpected #{unexpected}"
 
-    if msg
-      message += '. ' + msg
+    if message
+      final_message += '. ' + message
 
-    throw new Err message, @location
+    throw new Err final_message, @location
 
   ###
-  Move cursor by `n` characters. You *cannot* move backwards.
+  Move cursor by `n` characters.
+
+  You *cannot* move backwards.
   ###
   move: (n = 1) ->
     @position += n
@@ -128,10 +150,18 @@ class Tokenizer extends Class
     @char = @buffer[0] || ''
 
   ###
+  Return `true` when at end of text.
   ###
   isEndOfFile: -> @position >= @length
 
   ###
+  Try to match remaining buffer against given pattern.
+
+  If the pattern is found, this method advances to the end of the match, and
+  returns an object containing the match as an object with added location
+  informacion.
+
+  If a match is not found, returns `null`.
   ###
   match: (reg) ->
     if m = reg.exec @buffer
@@ -171,7 +201,7 @@ class Tokenizer extends Class
       hash.value = @readSequence RE_IDENT_CHAR
 
       unless hash.value
-        @syntaxError "Expected ident or hex color"
+        @error "Expected ident or hex color after `#`"
 
       hash.end = @location
       hash.isColor = RE_COLOR.test hash.value
@@ -179,6 +209,7 @@ class Tokenizer extends Class
       return hash
 
   ###
+  Read an escape sequence.
   ###
   readEscape: ->
     val = ''
@@ -199,7 +230,7 @@ class Tokenizer extends Class
       when '\n' # TODO what about other line endings?
         val = ''
       when undefined # end of text
-        @syntaxError 'Unterminated escape'
+        @error 'Unterminated escape'
       else
         code = ''
         while 7 > code.length && @char.match RE_HEX_DIGIT
@@ -303,6 +334,7 @@ class Tokenizer extends Class
     return pieces
 
   ###
+  Try to read a a literal unquoted string.
   ###
   readUnquotedString: ->
     if @buffer.match RE_IDENT_START
@@ -313,6 +345,7 @@ class Tokenizer extends Class
       return str
 
   ###
+  Try to read a a literal quoted string.
   ###
   readQuotedString: ->
     if @char in ['"',"'", '`']
@@ -324,7 +357,7 @@ class Tokenizer extends Class
       str.value = @readSequence ///[^#{str.quote}]///
 
       if @isEndOfFile()
-        @syntaxError "Unterminated string"
+        @error "Unterminated string"
 
       @move() # Skip closing quote
       str.end = @location
@@ -332,15 +365,16 @@ class Tokenizer extends Class
       return str
 
   ###
+  Try to read a a literal regular expression.
   ###
   readRegExp: ->
     if m = @match RE_REGEXP
-      regexp = new Token T.REGEXP, m.start, m.end
-      regexp.value = m[1]
+      regexp = new Token T.REGEXP, m.start, m.end, m[1]
       regexp.flags = m[2]
       return regexp
 
   ###
+  Try to read a `UNICODE_RANGE` token.
   ###
   readUnicodeRange: ->
     if m = @match RE_UNICODE_RANGE
@@ -370,6 +404,7 @@ class Tokenizer extends Class
     @readVerticalWhitespace()
 
   ###
+  Read the list of arguments of a `CALL`.
   ###
   skipAllWhitespace: -> @match RE_WHITESPACE
 
@@ -386,9 +421,7 @@ class Tokenizer extends Class
         value = @readSequence ///[^#{separator}\)]///
 
         if value
-          str = new Token T.RAW_STRING, start
-          str.value = value
-          str.end = @location
+          str = new Token T.RAW_STRING, start, @location, value
 
       break if not str
 
@@ -466,23 +499,29 @@ class Tokenizer extends Class
       @skipAllWhitespace()
 
       unless @char is ')'
-        @syntaxError "Expected `)`"
+        @error "Expected `)`"
 
       @move()
+
+      call.end = @location
 
       return call
 
   ###
+  Try to read a UTF-8 `BOM` token.
   ###
   readBOM: ->
     if @position is 0 and @char is '\uFEFF'
+      bom = new Token T.BOM, @location
+      bom.value = @char
       @move()
+      bom.end = @location
 
-      return new Token T.BOM, 0, 1, @char
+      return bom
 
   ###
-  Try to read any kind of token (except BOM), starting at current position. The
-  order in which these readers are called is essential.
+  Try to read any kind of token (except `BOM`), starting at current position.
+  The order in which these readers are called is essential.
   ###
   readToken: (prev) ->
     token = @readWhitespace() or
@@ -506,12 +545,14 @@ class Tokenizer extends Class
     return token
 
   ###
+  Tokenize a string of source code, located at given `file`
   ###
   tokenize: (source, file) ->
     @prepare source, file
 
     tokens = []
 
+    # Only try to read UTF-8 BOM at the very beginning
     if token = @readBOM()
       tokens.push token
 
@@ -519,7 +560,7 @@ class Tokenizer extends Class
       tokens.push token
 
     unless @isEndOfFile()
-      @syntaxError "Unrecognized syntax"
+      @error "Unrecognized syntax"
 
     eof = new Token T.EOF, @location, @location
 

@@ -1,6 +1,7 @@
 Class               = require './class'
-ValueError          = require './error/value'
 NotImplementedError = require './error/not-implemented'
+ReferenceError      = require './error/reference'
+ValueError          = require './error/value'
 
 
 ###
@@ -14,9 +15,9 @@ class Object extends Class
   @new: (args...) ->
     new (@bind.apply @, args)
 
-  @reprType: -> @name
+  @repr: -> "<#{@reprType()}>"
 
-  @repr: -> "[#{@reprType()}]"
+  @reprType: -> @name
 
   copy: (etc...) ->
     copy = super etc...
@@ -25,23 +26,6 @@ class Object extends Class
     return copy
 
   hasMethod: (name) -> typeof @[".#{name}"] is 'function'
-
-  operate: (context, operator, other, etc...) ->
-    if @hasMethod operator
-      @['.'] context, operator, other, etc...
-    else
-      repr =
-        if other
-          "#{@repr()} #{operator} #{other.repr()}"
-        else
-          "#{operator}#{@repr()}"
-
-      throw new ValueError (
-        """
-        Cannot perform #{repr}: \
-        #{@class.repr()} has no method [.#{operator}]
-        """
-      )
 
   set: (properties) ->
     for k of properties
@@ -64,21 +48,66 @@ class Object extends Class
 
   reprValue: -> ''
 
-  reprType: -> @class.reprType()
+  reprType: -> @class.repr()
 
-  repr: -> "<#{"#{@reprType()} #{@reprValue()}".trim()}>"
+  repr: -> "<#{"#{@class.reprType()} #{@reprValue()}".trim()}>"
 
-  toString: -> throw new Error "Cannot convert #{@repr()} to string"
+  reprMethod: (method) -> "#{@class.name}.#{method}"
+
+  @reprOp: (self, op, other = null) ->
+    repr = ''
+
+    if '@' in op
+      repr += op.replace '@', self
+    else
+      repr += self + ' ' + op
+      repr += ' ' + other if other
+
+    return repr
+
+  reprOpType: (op, other) ->
+    @class.reprOp @reprType(), op, other?.reprType()
+
+  reprOp: (op, other) ->
+    @class.reprOp @.repr(), op, other?.repr()
+
+  toString: -> throw new ValueError "Cannot convert #{@repr()} to string"
 
   '.': (context, name, etc...) ->
     method = @[".#{name}"]
 
-    if typeof method is 'function'
-      method.call this, context, etc...
-    else
-      throw new ValueError "Call to undefined method: [#{@type}.#{name}]"
+    unless typeof method is 'function'
+      throw new ReferenceError "Call to undefined method #{@reprMethod(name)}"
+
+    return method.call this, context, etc...
 
   '.=': (context, name, etc...) -> @['.'] context, "#{name}=", etc...
+
+  do ->
+    UNDEFINED_OPERATIONS = [
+      '::'
+      '::='
+      '..'
+      '*'
+      '/'
+      '+'
+      '-'
+      '<'
+      '<='
+      '>'
+      '>='
+      '~'
+      'and'
+      'or'
+      '!'
+      '+@'
+      '-@'
+      'not@'
+    ]
+
+    UNDEFINED_OPERATIONS.forEach (op) ->
+      Object::[".#{op}"] = (context, other = null) ->
+        throw new ValueError "Undefined operation: `#{@reprOpType op, other}`"
 
   '.!important': -> @toImportant()
 
@@ -89,5 +118,6 @@ class Object extends Class
   '.unimportant': -> @toUnimportant()
 
   '.copy': -> @clone()
+
 
 module.exports = Object

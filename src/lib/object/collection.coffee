@@ -23,12 +23,18 @@ class Collection extends Indexed
     unless start?
       start = 0
     else unless start instanceof Number and start.isPure()
-      throw new Error "Bad arguments for `.slice`"
+      throw new ValueError """
+        Invalid `start` argument for #{@reprMethod('slice')}: #{start.repr()}. \
+        Expected a pure number
+        """
       start = start.value
 
     if end?
       unless end instanceof Number and end.isPure()
-        throw new Error "Bad arguments for `.slice`"
+        throw new ValueError """
+          Invalid `end` argument for #{@reprMethod('slice')}: #{end.repr()}. \
+          Expected a pure number
+          """
       end = end.value
     else
       end = @items.length
@@ -63,7 +69,7 @@ class Collection extends Indexed
     if other instanceof Collection
       return @copy @items.concat(other.items)
 
-    throw new ValueError "Cannot sum collection with that"
+    return super context, other
 
   '.::': (context, other) ->
     if other instanceof Number
@@ -80,16 +86,19 @@ class Collection extends Indexed
         slice.items.push @['.::'](context, idx)
       return slice
 
-    throw new ValueError "Bad member: #{other.type}"
+    return super context, other
 
   '.::=': (context, key, value) ->
     if key instanceof Number
       idx = key.value
       idx += @items.length if idx < 0
+
       if 0 <= idx <= @items.length
         return @items[idx] = value
+      else
+        return Null.null
 
-    throw new ValueError
+    return super context, key, value
 
   '.length': -> new Number @length()
 

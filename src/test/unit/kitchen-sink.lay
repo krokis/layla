@@ -1,1 +1,58 @@
+// Literal strings
 
+""
+"Quoted string"
+''
+'Quoted string'
+UnquotedString
+`RawString`
+``
+
+// Literal numbers
+1
+1.9
+0.8
+.123
+12px
+1.9cm
+.1x
+
+// Literal colors
+#fff
+#ffffffff
+
+//
+
+// Every operator
+
+/*
+'::'    # Subscript
+  '.'     # Method
+  '('     # Arguments
+  '..'    # Range
+  '*'     # Multiplication
+  '/'     # Division
+  '+'     # Addition
+  '-'     # Substraction
+  '<'     # Less than
+  '<='    # Less than or equal
+  '>'     # Greater than
+  '>='    # Greater than or equal
+  '=='    # Equality
+  '!='    # Negated equality
+  '~'     # String/RegExp matching
+  'and'   # Logical "and"
+  'or'    # Logical "or"
+  ' '     # List separator
+  ','     # List separator
+  '!'     # As in `!important`
+  '='     # Assignment
+  '|='    # Conditional assignment
+]
+
+UNARY_OPERATORS = [
+  '+@'   # Plus
+  '-@'   # Minus
+  'not@' # Boolean negation
+]
+*/

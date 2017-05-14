@@ -1,5 +1,8 @@
 Parser                = require '../parser'
 T = Token             = require '../token'
+T                     = require '../token'
+Root                  = require '../node/root'
+Operator              = require '../node/operator'
 Expression            = require '../node/expression'
 Operation             = require '../node/expression/operation'
 Group                 = require '../node/expression/group'
@@ -34,10 +37,12 @@ For                   = require '../node/statement/for'
 Property              = require '../node/statement/property'
 AtRule                = require '../node/statement/at-rule'
 RuleSet               = require '../node/statement/rule-set'
-Root                  = require '../node/root'
 SyntaxError           = require '../error/syntax'
 EOTError              = require '../error/eot'
 
+
+###
+###
 class BaseParser extends Parser
 
   BINARY_OPERATORS = [
@@ -215,7 +220,7 @@ class BaseParser extends Parser
       unexpected = 'end of file'
       Err = EOTError
     else
-      unexpected = "`#{@token.value}` (#{@token.kind})"
+      unexpected = "`#{@token.value}`"
       Err = SyntaxError
 
     message = "Unexpected #{unexpected}"
@@ -223,7 +228,7 @@ class BaseParser extends Parser
     if msg
       message += ': ' + msg
 
-    throw new Err message, @token.location
+    throw new Err message, @token.start
 
   ###
   Expect current token to be of given `kind` and move to next, or throw a
@@ -233,7 +238,15 @@ class BaseParser extends Parser
     if token = @eat kind, value
       return token
 
-    @error "Expected #{kind}"
+    err = "Expected "
+
+    if value
+      err += "\"#{value}\""
+    else
+      err += "<#{kind}>"
+
+    @error err
+
 
   ###
   Return `yes` if next token is a line break or end of text.
@@ -337,11 +350,11 @@ class BaseParser extends Parser
 
     value = @parseSequence @token.value
 
-    str = new String value, quote, raw
-    str.start = @token.start
-    str.end = @token.end
-
-    @next()
+    return @node String, (str) =>
+      str.value = value
+      str.quote = quote
+      str.raw = raw
+      @next()
 
     return str
 
@@ -355,14 +368,19 @@ class BaseParser extends Parser
   ###
   ###
   parseNumber: ->
-    if token = @eat(T.NUMBER)
-      return new Number token.value, token.unit
+    if @token.is T.NUMBER
+      return @node Number, (num) =>
+        num.value = @token.value
+        num.unit = @token.unit
+        @next()
 
   ###
   ###
   parseColor: ->
     if @token.is(T.HASH) and @token.isColor
       color = new Color "##{@token.value}"
+      color.start = @token.start
+      color.end = @token.end
       @next()
       return color
 
@@ -405,9 +423,14 @@ class BaseParser extends Parser
   parseCall: ->
     if @token.is T.CALL
       name = new String @token.name
+      name.start = @token.start
+      name.end = @token.end
+
       args = @parseCallArguments @token
       node = new Call name, args
+      node.start = name.start
       @next()
+      node.end = @location
       return node
 
   ###
@@ -415,6 +438,8 @@ class BaseParser extends Parser
   parseUnicodeRange: ->
     if @token.is T.UNICODE_RANGE
       urange = new UnicodeRange @parseSequence @token.value
+      urange.start = @token.start
+      urange.end = @token.end
       @next()
       return urange
 
@@ -423,6 +448,8 @@ class BaseParser extends Parser
   parseAmpersand: ->
     if @token.is T.AMPERSAND
       ths = new This
+      ths.start = @token.start
+      ths.end = @token.end
       @next()
       return ths
 
@@ -431,6 +458,8 @@ class BaseParser extends Parser
   parseRegExp: ->
     if @token.is T.REGEXP
       regexp = new RegExp @token.value, @token.flags
+      regexp.start = @token.start
+      regexp.end = @token.end
       @next()
       return regexp
 
@@ -451,9 +480,13 @@ class BaseParser extends Parser
 
         pieces = [left, '/', right]
 
-        return new String pieces, null, yes, left.start, right.end
+        node = new String pieces, null, yes, left.start, right.end
+        node.start = left.start
+        node.end = right.end
 
-      return number
+        return node
+      else
+        return number
 
     node = @parseString() or
            @parseColor() or
@@ -500,7 +533,7 @@ class BaseParser extends Parser
         node = new List
 
       @skipAllWhitespace()
-      @expect T.PAREN_CLOSE
+      op = @expect T.PAREN_CLOSE
       @parens--
 
       if perc = @eat T.PERCENT
@@ -511,7 +544,10 @@ class BaseParser extends Parser
         unit = null
 
       if unit
-        node = new Operation 'convert', node, unit
+        operator = new Operator op.value
+        operator.start = op.start
+        operator.end = op.end
+        node = new Operation operator, node, unit
 
       node.start = start
       node.end = @location
@@ -531,7 +567,7 @@ class BaseParser extends Parser
         @skipAllWhitespace()
 
         unless value = @parseExpression 0, no, no
-          @error 'Expected expression after `:`'
+          @error 'Expected function argument value'
       else
         value = null
         rest = @eat T.ELLIPSIS
@@ -594,7 +630,7 @@ class BaseParser extends Parser
     return null
 
   ###
-  Parse a combinator: `>`, `+`, `~` or horizontal whitespace.
+  Parse a combinator: `>`, `+`, `~` or ' ' (or other horizontal whitespace).
   ###
   parseCombinator: ->
     start = @token
@@ -699,14 +735,17 @@ class BaseParser extends Parser
 
     loop
       if @token.kind in PSEUDO_ARGS_PUNCTUATION
-        punc = @token.value
+        op = @token
         @next()
 
-        if @token.is(T.NUMBER) and allow_unary and (punc in ['+', '-'])
+        if @token.is(T.NUMBER) and allow_unary and (op.value in ['+', '-'])
           number = @parseNumber()
-          arg = new Operation punc, null, number
+          operator = new Operator op.value
+          operator.start = op.start
+          operator.end = op.end
+          arg = new Operation operator, null, number
         else
-          arg = new String punc, null, yes
+          arg = new String op.value, null, yes
       else
         arg = @parseCompoundSelector()
 
@@ -784,12 +823,11 @@ class BaseParser extends Parser
     @parsePseudoElementSelector()
 
   ###
-  Parse one of the possible complementary selectors.
+  Parse a `&` (parent) selector.
   ###
   parseParentSelector: ->
     if @token.is T.AMPERSAND
-      return @node ParentSelector, ->
-        @next()
+      return @node ParentSelector, -> @next()
 
   ###
   Parse one of the possible complementary selectors.
@@ -1027,7 +1065,7 @@ class BaseParser extends Parser
     return args
 
   ###
-  Parse an at-rule statement. Is't made of an at-ident optionally followed by a
+  Parse an at-rule statement. It's made of an at-ident optionally followed by a
   list of arguments and/or a block.
   ###
   parseAtRule: ->
@@ -1056,7 +1094,8 @@ class BaseParser extends Parser
   parsePropertyName: -> @parseUnquotedString()
 
   ###
-  Parse a comma separated list names at the left side of a property declaration.
+  Parse a comma separated list of names at the left side of a property
+  declaration.
 
   TODO: Trailing comma should be disallowed. Write tests.
   ###
@@ -1100,7 +1139,7 @@ class BaseParser extends Parser
 
           return prop
         else
-          @error "Expected property value expression"
+          @error "Expected property value"
 
     @move start
     return
@@ -1116,14 +1155,14 @@ class BaseParser extends Parser
   ###
   Parse the predicate of an `if` statement.
   ###
-  parseConditionalPredicate: (cond) ->
+  parseIfPredicate: (cond) ->
     unless cond.condition = @parseExpression 0, no
-      @error 'Expected expression after conditional'
+      @error 'Expected `if` expression'
 
     @skipAllWhitespace()
 
     unless cond.block = @parseBlock()
-      @error 'Expected block after conditional'
+      @error 'Expected `if` block'
 
     # Parse additional `else (if)`s
     elses = []
@@ -1142,12 +1181,12 @@ class BaseParser extends Parser
         @skipHorizontalWhitespace()
 
         unless els.condition = @parseExpression 0, no
-          @error "Expected expression after `else if`"
+          @error "Expected `else if` expression"
 
       @skipAllWhitespace()
 
       unless els.block = @parseBlock()
-        @error 'Expected block after `else`'
+        @error 'Expected `else` block'
 
       elses.push els
 
@@ -1165,19 +1204,21 @@ class BaseParser extends Parser
   ###
   Parse an `if ... [[else if...]... [else]]` block.
   ###
-  parseConditional: ->
+  parseIf: ->
     if @token.is T.UNQUOTED_STRING, 'if'
       return @node Conditional, (cond) ->
         @next()
         @skipHorizontalWhitespace()
-        @parseConditionalPredicate cond
-    else if @token.is T.UNQUOTED_STRING, 'else'
-      @error "Unexpected `else`"
+        @parseIfPredicate cond
+
+    # Try to detect errors. Kind of rreat `else` as a keyword.
+    if @token.is T.UNQUOTED_STRING, 'else'
+      @error() # Unexpected `else`
 
   ###
   Parse a `while ...` block.
   ###
-  parseLoop: ->
+  parseWhile: ->
     if @token.is T.UNQUOTED_STRING, 'while'
       return @node Loop, (lp) ->
         lp.start = @token.start
@@ -1185,12 +1226,12 @@ class BaseParser extends Parser
         @skipHorizontalWhitespace()
 
         unless lp.condition = @parseExpression 0, no
-          @error "Expected expression after `#{@token.value}`"
+          @error "Expected `while` condition"
 
         @skipAllWhitespace()
 
         unless lp.block = @parseBlock()
-          @error "Expected block after `#{@token.value}` expression"
+          @error "Expected `while` block"
 
   ###
   Parse a `for .. in ...` block.
@@ -1201,13 +1242,17 @@ class BaseParser extends Parser
         @next()
         @skipHorizontalWhitespace()
 
-        arg = @expect T.UNQUOTED_STRING
+        unless arg = @parseUnquotedString()
+          @error "Expected name after `for`"
+
         @skipHorizontalWhitespace()
 
         if @eat T.COMMA
           fr.key = arg
           @skipAllWhitespace()
-          fr.value = @expect T.UNQUOTED_STRING
+
+          unless fr.value = @parseUnquotedString()
+            @error "Expected key name"
         else
           fr.value = arg
 
@@ -1218,10 +1263,10 @@ class BaseParser extends Parser
         @skipHorizontalWhitespace()
 
         unless fr.expression = @parseExpression 0, no
-          @error "Expected expression after for ... in"
+          @error "Expected `for...in` expression"
 
         unless fr.block = @parseBlock()
-          @error "Expected block after for ... in expression"
+          @error "Expected `for...in` block"
 
 
   ###
@@ -1254,19 +1299,27 @@ class BaseParser extends Parser
         dir.arguments = @parseArguments()
 
   ###
+  Return the precedence of given token which acts as a unary or binary operator.
   ###
   precedence: (op, unary = no) ->
-    value = if op.is T.H_WHITESPACE then ' ' else op.value
+    value = if op.is(T.H_WHITESPACE) then ' ' else op.value
     value += '@' if unary
+
     return OPERATOR_PRECEDENCE[value]
 
   ###
+  Return next token if it's a unary operator, but do not consume it.
   ###
   peekUnaryOperator: ->
     if "#{@token.value}@" in UNARY_OPERATORS
       return @token
 
   ###
+  Try to find and return a binary operator, without actually consuming it.
+
+  Horizontal whitespace is ignored unless there's not a valid binary operator
+  after it. In this case, the whitespace token is returned (which could be a
+  list separator).
   ###
   peekBinaryOperator: ->
     if @parens
@@ -1284,19 +1337,27 @@ class BaseParser extends Parser
       next = token.next
 
       if next.value in BINARY_OPERATORS
-        if next.kind in [T.PLUS, T.MINUS]
-          if next.next.kind in [T.H_WHITESPACE, T.V_WHITESPACE]
+        switch next.kind
+          when T.PLUS, T.MINUS
+            if next.next.kind in [T.H_WHITESPACE, T.V_WHITESPACE]
+              return next
+          when T.PAREN_OPEN
+            break
+          else
             return next
-        else if not next.is T.PAREN_OPEN
-          return next
 
       return token
     else if @token.value in BINARY_OPERATORS
       return @token
 
   ###
-  With given `left` expression, try parse a binary operation with a higher
-  precedence than passed `left` (or same, with right associativity).
+  With given `left` expression, try to parse a binary operation with a higher
+  precedence than passed `prec` (or same, with right associativity).
+
+  By default, block literals and lists (both comma and space separated) are
+  ignored at the right side of the operation. The `blocks`, `commas` and
+  `spaces` arguments can be individually set to `true` to enable these kind of
+  expressions.
   ###
   parseRightOperation: (left, prec, blocks, commas, spaces) ->
     next_op = @peekBinaryOperator()
@@ -1361,24 +1422,37 @@ class BaseParser extends Parser
         else
           left = new List [left, right], sep
       else
-        left = new Operation op.value, left, right
+        operator = new Operator op.value
+        operator.start = op.start
+        operator.end = op.end
+        left = new Operation operator, left, right
 
     return left
 
   ###
+  Parse a (left only) unary operation.
   ###
   parseUnaryOperation: (prec, blocks) ->
     if op = @peekUnaryOperator()
       if @precedence(op, yes) >= prec
         return @node Operation, (expr) ->
-          expr.operator = op.value
           @next()
           @skipHorizontalWhitespace()
           expr.right = @parseExpression(@precedence(op, yes), blocks, no, no)
 
           return no unless expr.right
 
+          operator = new Operator op.value
+          operator.start = op.start
+          operator.end = op.end
+          expr.operator = operator
+
   ###
+  Parse a primary expression, which can be:
+
+  - A literal
+  - A unary operation
+  - A parenthesised expression
   ###
   parsePrimaryExpression: (prec = 0, blocks = yes) ->
     @parseUnaryOperation(prec, blocks) or
@@ -1386,18 +1460,24 @@ class BaseParser extends Parser
     @parseParens()
 
   ###
+  Parse any valid expression, which can be:
+
+  - A literal
+  - A unary operation
+  - A binary operation
+  - A parenthesised expression
   ###
   parseExpression: (prec = 0, blocks = yes, commas = yes, spaces = yes) ->
     if left = @parsePrimaryExpression prec, blocks
       return @parseRightOperation left, prec, blocks, commas, spaces
 
   ###
-  Inside a block body or at root, any of the valid statements, delimited by new
-  lines or semicolons.
+  Inside a block body or at root, parse one of the valid statements, delimited
+  by new lines or semicolons.
   ###
   parseStatement: ->
-    @parseConditional() or
-    @parseLoop() or
+    @parseIf() or
+    @parseWhile() or
     @parseFor() or
     @parseDirective() or
     @parseDeclaration() or
@@ -1445,5 +1525,6 @@ class BaseParser extends Parser
   prepare: (program) ->
     super program
     @parens = 0
+
 
 module.exports = BaseParser

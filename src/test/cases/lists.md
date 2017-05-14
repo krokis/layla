@@ -486,6 +486,7 @@ Lists
 
   ~~~ lay
   $list = 1 2 3 4 5
+
   list.slice {
     i: $list.slice(-1)
     ii: $list.slice(-2)
@@ -502,6 +503,18 @@ Lists
     iv: 1 2 3 4 5;
   }
   ~~~
+
+- Throws an error if `start` argument is a dimension
+
+- Throws an error if `start` argument is a decimal number
+
+- Throws an error if `start` argument is not a number
+
+- Throws an error if `end` argument is a dimension
+
+- Throws an error if `end` argument is a decimal number
+
+- Throws an error if `end` argument is not a number
 
 ### `flatten`
 
@@ -860,9 +873,7 @@ Lists
   ~~~ lay
   $list = 1,2,3
 
-  list[operator="::="] {
-    i: $list::('foo')
-  }
+  $list::('foo')
   ~~~
 
   ~~~ ValueError

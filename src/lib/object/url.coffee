@@ -167,28 +167,24 @@ class URL extends URI
   ###
   '.port=': (context, port) ->
     unless port.isNull()
-      if not (port instanceof Number)
-        try
-          port = port.toNumber()
-        catch
-          throw new ValueError (
-            "Cannot set URL port to non-numeric value: #{port.repr()}"
-          )
+      try
+        port = port.toNumber()
 
-      unless port.isPure()
-        throw new ValueError (
-          "Cannot set URL port to non-pure number: #{port.reprValue()}"
-        )
+        if not port.isPure()
+          err = "Port must be a pure number"
+        else if not port.isInteger()
+          err = "Port must be an integer number"
+        else unless 0 <= port.value <= 65535
+          err = "Port must be in the 0..65535 range"
+        else
+          err = null
+      catch
+        err = "Port must be numeric"
 
-      unless port.isInteger()
-        throw new ValueError (
-          "Cannot set URL port to non-integer number: #{port.reprValue()}"
-        )
-
-      unless 0 <= port.value <= 65535
-        throw new ValueError (
-          "Port number out of 1..65535 range: #{port.reprValue()}"
-        )
+      if err
+        throw new ValueError """
+          Cannot set URL port to #{port.repr()}: #{err}
+          """
 
     @port = port.value
 

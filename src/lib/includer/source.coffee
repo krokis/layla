@@ -11,7 +11,7 @@ class SourceIncluder extends Includer
 
   @EXTENSIONS: []
 
-  parse: (source) ->
+  parse: (source, uri) ->
     throw new IncludeError "Don't know how to parse"
 
   canInclude: (uri, context) ->
@@ -28,7 +28,7 @@ class SourceIncluder extends Includer
 
   include: (uri, context) ->
     source = context.load uri
-    ast = @parse source
+    ast = @parse source, uri
     context.pushPath Path.dirname uri
     context.evaluate ast, context
     context.popPath()

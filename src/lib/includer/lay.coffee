@@ -6,7 +6,7 @@ class LayIncluder extends SourceIncluder
 
   @EXTENSIONS: ['lay', '']
 
-  parse: (source) ->
-    (new LayParser).parse source
+  parse: (source, uri) ->
+    (new LayParser).parse source, uri
 
 module.exports = LayIncluder

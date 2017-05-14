@@ -52,8 +52,6 @@ class Enumerable extends Object
 
   isEnumerable: -> yes
 
-  '.::': @::get
-
   '.length': -> new Number @length()
 
   '.first': -> @firstValue() or Null.null

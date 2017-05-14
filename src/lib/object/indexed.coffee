@@ -37,9 +37,9 @@ class Indexed extends Enumerable
 
   get: (key) ->
     if ('number' is typeof (key + 0)) and (0 <= key < @length())
-      @getByIndex key
+      return @getByIndex key
     else
-      null
+      return null
 
   each: (cb) ->
     @reset()
@@ -62,9 +62,9 @@ class Indexed extends Enumerable
       idx = other.value
       idx += len if idx < 0
 
-      (@get idx) or Null.null
-    else
-      throw new ValueError
+      return @get(idx) or Null.null
+
+    return super context, other
 
 
 module.exports = Indexed

@@ -68,4 +68,6 @@ class Token extends Class
   is: (kind, value) -> (kind is @kind) and (not value or @value is value)
 
 
+  toString: -> @value
+
 module.exports = Token

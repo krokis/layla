@@ -28,21 +28,21 @@ SUPPORTS_COLORS = colorSupport()
 
 USAGE = """
   Usage:
-    layla [options] file...|< [>]
+    layla [options] [<file>...]
 
   Options:
-    -u, --use <plugin>      Use a plugin
-    -o, --out-file <file>   Write compiled code to a file instead of printing it
-    -i, --interactive       Start an interactive console
-    -c, --colors            Use colors on the output
-    -C, --no-colors         Don't use colors on the output
-    -v, --version           Print out Layla version
-    -h, --help              Show this help
+    -u, --use <plugin>,...    Use one or more plugins
+    -o, --out-file <file>     Write compiled code to a file
+    -i, --interactive         Start an interactive console
+    -c, --colors              Use colors on the output
+    -C, --no-colors           Don't use colors on the output
+    -v, --version             Print out Layla version
+    -h, --help                Show this help
   """
 
 
 class CLIError
-  constructor: (@message) ->
+  constructor: (@message = '') ->
   toString: -> @message
 
 class UsageError extends CLIError
@@ -84,15 +84,48 @@ stderr = (text = '', new_line = yes) ->
 Write a warning line to stderr.
 ###
 warn = (text) ->
-  text = "\x1b[33m#{text}\x1b[0m" if SUPPORTS_COLORS
+  text = "\x1b[33m#{text}\x1b[0m" if $colors
   stderr text
 
 ###
 Write an error line to stderr.
 ###
-err = (text) ->
-  text = "\x1b[31m#{text}\x1b[0m" if SUPPORTS_COLORS
+err = (e) ->
+  text = e.constructor.name
+  text = "\x1b[30m\x1b[41m#{text}\x1b[0m" if $colors
+  stderr text + ' ', no
+
+  text = e.message
+  text = "\x1b[1m#{text}\x1b[0m" if $colors
   stderr text
+
+  if e.start?
+    stderr "at #{e.start}"
+
+trace = (e) ->
+  err e
+
+  if e.stack?.length
+    stderr()
+    stderr 'Stack trace:'
+
+    i_pad = "#{e.stack.length}".length + 2
+    n_pad = 0
+
+    for frame in e.stack
+      n_pad = Math.max(n_pad, frame.name.length)
+
+    l = e.stack.length
+
+    for frame, i in e.stack by -1
+      text = ' '.repeat(i_pad - "#{l - i}".length)
+      text += "#{l - i}. "
+      text += frame.name + ' '.repeat(n_pad - frame.name.length)
+
+      if frame.start
+        text += " at #{frame.start}"
+
+      stderr text
 
 ###
 Exit with given `code`.
@@ -201,12 +234,7 @@ repl = (context) ->
             repl.prompt()
             return
 
-          msg = e.toString()
-
-          if e.line? and e.column?
-            msg += ' @ ' + e.line + ':' + e.column
-
-          err msg
+          trace e
           reset()
         else
           throw e
@@ -280,7 +308,7 @@ try
       when 'i', 'interactive', 'repl'
         # Set interactive mode
         $interactive = opt.bool()
-        $colors or= SUPPORTS_COLORS
+        $colors ?= SUPPORTS_COLORS
       when 'o', 'out-file'
         if opt.value
           file = opt
@@ -302,7 +330,7 @@ try
 
         $plugins.push plugin
       else
-        throw new UnknownOptionError "Unkown option: `#{opt.name}`"
+        throw new UsageError "Unkown option: `#{opt.name}`"
 
   # Iterate parsed arguments
   loop
@@ -356,8 +384,11 @@ catch e
       ex = EX_ERROR_USAGE
     else if e instanceof IOError
       ex = EX_ERROR_IOERR
+
+    err e
+
   else if e instanceof ProgramError
     ex = EX_ERROR_DATAERR
+    trace e
 
-  err e.toString()
   exit ex

@@ -1,5 +1,6 @@
 ProgramError = require './program'
 
+
 ###
 ###
 class RuntimeError extends ProgramError

@@ -8,7 +8,6 @@ Function     = require './object/function'
 Evaluator    = require './evaluator'
 IncludeError = require './error/include'
 
-MAX_CALL_STACK = 999
 
 
 ###
@@ -26,13 +25,11 @@ class Context extends Class
     @_loaders = []
     @_paths = []
     @_visitors = []
+    @stack = @_parent?.stack or []
 
   @property 'parent', -> @_parent
 
   @property 'root', -> if @parent then @parent.root else @
-
-  @property 'calls', ->
-    (if @parent then @parent.calls else []).concat @_calls
 
   @property 'plugins', ->
     (if @parent then @parent.plugins else []).concat @_plugins

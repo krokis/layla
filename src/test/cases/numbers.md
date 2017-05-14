@@ -669,7 +669,6 @@
   ~~~
 
   ~~~ ValueError
-  Cannot divide by 0
   ~~~
 
 ### `pow`
@@ -839,15 +838,17 @@
   ~~~
 
   ~~~ ValueError
+  /base must be integer/
   ~~~
 
 - Fails for any base lower than 2
 
   ~~~ lay
-  27.base(-1.6)
+  27.base(-1)
   ~~~
 
   ~~~ ValueError
+  /base must be between 2 and 16/
   ~~~
 
   ~~~ lay
@@ -855,6 +856,7 @@
   ~~~
 
   ~~~ ValueError
+  /base must be between 2 and 16/
   ~~~
 
   ~~~ lay
@@ -862,6 +864,7 @@
   ~~~
 
   ~~~ ValueError
+  /base must be between 2 and 16/
   ~~~
 
 - Fails for any base higher than 16
@@ -871,6 +874,7 @@
   ~~~
 
   ~~~ ValueError
+  /base must be between 2 and 16/
   ~~~
 
 ### `prime?`
@@ -1355,6 +1359,7 @@
   ~~~
 
   ~~~ ValueError
+  /Cannot convert 1mm to kHz/
   ~~~
 
   ~~~ lay
@@ -1362,6 +1367,7 @@
   ~~~
 
   ~~~ ValueError
+  /Cannot convert 1deg to ms/
   ~~~
 
   ~~~ lay
@@ -1369,6 +1375,7 @@
   ~~~
 
   ~~~ ValueError
+  /Cannot convert 1dpcm to cm/
   ~~~
 
   ~~~ lay
@@ -1376,6 +1383,7 @@
   ~~~
 
   ~~~ ValueError
+  /Cannot convert 1foo to bar/
   ~~~
 
 ### `roman`
@@ -1458,6 +1466,7 @@
   ~~~
 
   ~~~ ValueError
+  /number must be higher than 0 and lower or equal to 3000/
   ~~~
 
 - Fails for negative numbers
@@ -1467,6 +1476,7 @@
   ~~~
 
   ~~~ ValueError
+  /number must be higher than 0 and lower or equal to 3000/
   ~~~
 
 - Fails for non integers
@@ -1488,6 +1498,7 @@
   ~~~
 
   ~~~ ValueError
+  /number must be integer/
   ~~~
 
 - Fails for numbers over 3000
@@ -1497,6 +1508,7 @@
   ~~~
 
   ~~~ ValueError
+  /number must be higher than 0 and lower or equal to 3000/
   ~~~
 
   ~~~ lay
@@ -1518,6 +1530,7 @@
   ~~~
 
   ~~~ ValueError
+  /number cannot have unit/
   ~~~
 
 ## Operators
@@ -2054,7 +2067,6 @@
   ~~~
 
   ~~~ ValueError
-  Cannot divide by 0
   ~~~
 
   ~~~ lay
@@ -2062,7 +2074,6 @@
   ~~~
 
   ~~~ ValueError
-  Cannot divide by 0
   ~~~
 
   ~~~ lay
@@ -2070,7 +2081,6 @@
   ~~~
 
   ~~~ ValueError
-  Cannot divide by 0
   ~~~
 
 #### `*`

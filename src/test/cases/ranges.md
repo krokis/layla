@@ -220,7 +220,7 @@ Ranges
 
 #### `/`
 
-- Make a copy of the range with a different `step`
+- Makes a copy of the range with a different `step`
 
   ~~~ lay
   range[op="/"] {

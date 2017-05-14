@@ -1,6 +1,7 @@
 fs       = require 'fs'
 {expect} = require 'chai'
 
+Node     = require '../../../lib/node'
 RootNode = require '../../../lib/node/root'
 Parser   = require '../../../lib/parser/lay'
 
@@ -28,3 +29,23 @@ describe 'The Parser', ->
     for lay in ['', '   ', '\n  \r\r  \n \n  \t\n\r\n  \t']
       output = testParse lay
       expect(output.body).to.be.empty
+
+  it 'adds location info to every node', ->
+    testLocations = (node, source) ->
+      if node instanceof Node
+        expect(node).to.have.property 'start'
+        expect(node).to.have.property 'end'
+
+        for prop of node
+          childNode = node[prop]
+
+          if Array.isArray(childNode)
+            childNode.map testLocations
+          else
+            testLocations childNode
+
+    lay = fs.readFileSync "#{__dirname}/../kitchen-sink.lay"
+
+    root = testParse lay
+
+    testLocations root, lay

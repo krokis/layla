@@ -5,7 +5,7 @@ Class = require './class'
 ###
 class Location extends Class
 
-  constructor: (@file = null, @line = 1, @column = 1) ->
+  constructor: (@file = null, @line = null, @column = null) ->
     super()
 
   copy: (file = @file, line = @line, column = @column, etc...) ->

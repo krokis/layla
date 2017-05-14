@@ -30,21 +30,22 @@ At-rules
 - Can contain interpolation
 
   ~~~ lay
-  vendors = webkit, moz
-  for vendor in vendors {
-    @-#{vendor}-supports (border-radius) {
+  $vendors = webkit, moz
+
+  for $vendor in $vendors {
+    @-#{$vendor}-supports (border-radius) {
       body {
         border-radius: 1px
       }
     }
 
-    @-#{vendor}-supports (border-radius) {
+    @-#{$vendor}-supports (border-radius) {
       body {
         border-radius: 2px
       }
     }
 
-    @-#{vendor}-supports (border-radius) {
+    @-#{$vendor}-supports (border-radius) {
       body {
         border-radius: 3px
       }

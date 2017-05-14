@@ -70,7 +70,7 @@ class RegExp extends Object
 
       return Null.null
 
-    throw new ValueError "Cannot match that!"
+    return super context, other
 
   '.flags': -> new QuotedString @flags
 
@@ -111,14 +111,14 @@ String::['.split'] = (context, separator, limit = Null.null) ->
       reg = RegExp.escape separator.value
       reg = new JSRegExp "#{reg}+"
   else
-    throw new ValueError 'Bad `separator` argument for `String.split`'
+    throw new ValueError "Cannot split string by a #{separator.reprType()}"
 
   if limit instanceof Null
     limit = -1
   else if limit instanceof Number
     limit = limit.value
   else
-    throw new ValueError 'Bad `limit` argument for `String.split`'
+    throw new ValueError "Invalid `limit` argument for #{@reprMethod 'split'}"
 
   chunks =
     (@value.split reg, limit)
@@ -128,6 +128,8 @@ String::['.split'] = (context, separator, limit = Null.null) ->
   return new List chunks
 
 do ->
+  supah = String::['./']
+
   String::['./'] = (context, separator) ->
     if separator instanceof RegExp
       reg = separator.value
@@ -135,7 +137,7 @@ do ->
       reg = RegExp.escape separator.value
       reg = new JSRegExp "#{reg}+"
     else
-      throw new ValueError "Cannot divide string by a [#{separator.reprType()}]"
+      return supah.call @, context, separator
 
     return @['.split'] context, separator
 

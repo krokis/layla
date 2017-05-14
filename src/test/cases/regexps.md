@@ -1,7 +1,7 @@
 Regular expressions
 ===================
 
-- Are made with `/.../`
+- Are declared with `/.../`
 
   ~~~ lay
   a = /[a-z]+/
@@ -71,7 +71,7 @@ Regular expressions
   ~~~
 
   ~~~ ValueError
-  Invalid regular expression: /(.*/: Unterminated group
+  /Invalid regular expression/
   ~~~
 
 - Are always trueish

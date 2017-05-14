@@ -76,7 +76,7 @@ class Range extends Indexed
     if step instanceof Number
       return @copy undefined, undefined, undefined, (step.convert @unit).value
 
-    throw new ValueError "Cannot divide a range by #{step.repr()}"
+    return super context, step
 
   '.unit': -> if @unit then new UnquotedString @unit else Null.null
 
@@ -90,25 +90,31 @@ class Range extends Indexed
 
   '.convert': (context, args...) -> @convert args...
 
+  '.)': @::['.convert']
+
   '.reverse?': -> Boolean.new @isReverse()
 
   '.reverse': -> @copy @last, @first
 
   '.list': -> new List @items
 
-Number::['...'] = (context, other) ->
-  if other instanceof Number
-    if @unit
-      other = other.convert @unit
-      unit = @unit
-    else if other.unit
-      unit = other.unit
-    else
-      unit = null
 
-    return new Range @value, other.value, unit
+do ->
+  supah = Number::['...']
 
-  throw new ValueError "Cannot make a range with that: #{other.type}"
+  Number::['...'] = (context, other) ->
+    if other instanceof Number
+      if @unit
+        other = other.convert @unit
+        unit = @unit
+      else if other.unit
+        unit = other.unit
+      else
+        unit = null
+
+      return new Range @value, other.value, unit
+
+    return supah context, other
 
 do ->
   supah = List::['.::']

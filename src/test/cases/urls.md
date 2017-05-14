@@ -708,6 +708,7 @@
   ~~~
 
   ~~~ ValueError
+  /Port must be numeric/
   ~~~
 
   ~~~ lay
@@ -715,6 +716,7 @@
   ~~~
 
   ~~~ ValueError
+  /Port must be numeric/
   ~~~
 
 - Fails for non-integer numbers

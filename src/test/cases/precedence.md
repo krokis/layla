@@ -5,11 +5,15 @@
 - Have the highest precedence
 
   ~~~ lay
-  foo: -2.negative?
+  :operators {
+    foo: -2.negative?
+  }
   ~~~
 
   ~~~ css
-  foo: true;
+  :operators {
+    foo: true;
+  }
   ~~~
 
   ~~~ lay
@@ -20,11 +24,15 @@
   ~~~
 
   ~~~ lay
-  foo: +('a'.length)
+  :operators {
+    foo: +('a'.length)
+  }
   ~~~
 
   ~~~ css
-  foo: 1;
+  :operators {
+    foo: 1;
+  }
   ~~~
 
 ## `.`, `::` and `()`

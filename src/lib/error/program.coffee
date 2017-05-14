@@ -14,7 +14,9 @@ class ProgramError extends Error
 
   @property 'column', -> @start?.column or null
 
-  @property 'location', -> @start? or null
+  @property 'location',
+    get: -> @start? or null
+    set: (@start) ->
 
 
 module.exports = ProgramError

@@ -10,7 +10,7 @@ class Function extends Object
     super()
 
   invoke: (context, args...) ->
-    (@func.call this, context.block, args...) or Null.null
+    (@func.call this, context, args...) or Null.null
 
   toString: -> 'function'
 
@@ -23,9 +23,7 @@ class Function extends Object
 
   clone: -> @
 
-  # TODO this should not use @block by default; instead, this should be executed
-  # bound to the *calling block*.
-  '.invoke': (context, args...) -> @invoke context, args...
+  '.call': (context, args...) -> @invoke context, args...
 
 
 module.exports = Function

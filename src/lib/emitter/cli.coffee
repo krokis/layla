@@ -47,6 +47,12 @@ class CLIEmitter extends CSSEmitter
 
   emitRegExp: (reg) -> @format "/#{reg.source}/#{reg.flags}", YELLOW
 
+  emitList: (lst) ->
+    if lst.isEmpty()
+      return '()'
+
+    return @format super(lst), YELLOW
+
   emitColor: (str) -> @format super(str), YELLOW
 
   emitQuotedString: (str) -> @format super(str), YELLOW

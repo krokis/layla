@@ -1,6 +1,7 @@
 fs   = require 'fs'
 path = require 'path'
 
+
 ###
 Note not all of these classes are being actually used here. But many of them
 monkey-patche others (so they can live in separate files without circular
@@ -71,25 +72,32 @@ InternalError         = require './error/internal'
 ###
 class Evaluator extends Class
 
-  error: (cls, msg, location) ->
-    throw new cls msg, location
+  error: (cls, msg, node, context, stack = context.stack) ->
+    throw new cls msg, node.start, node.end, stack.slice()
 
-  runtimeError: (msg, location) ->
-    @error RuntimeError, msg, location
+  runtimeError: (msg, node, context) ->
+    @error RuntimeError, msg, node, context
 
-  valueError: (msg, location) ->
-    @error ValueError, msg, location
+  valueError: (msg, node, context) ->
+    @error ValueError, msg, node, context
 
-  referenceError: (msg, location) ->
-    @error ReferenceError, msg, location
+  referenceError: (msg, node, context) ->
+    @error ReferenceError, msg, node, context
 
   ###
   ###
   evaluateNode: (node, context) ->
     if node
       method = "evaluate#{node.type}"
+
       if method of @
-        return @[method] node, context
+        try
+          return @[method] node, context
+        catch e
+          e.location or= node.start
+          e.stack ?= [].concat context.stack
+
+          throw e
 
     unless node instanceof Object
       throw new InternalError "Don't know how to evaluate node #{node.type}"
@@ -139,7 +147,7 @@ class Evaluator extends Class
       if context.has value
         return context.get value
       else if dollar
-        @referenceError "Undefined variable: `#{value}`"
+        @referenceError "Undefined variable: `#{value}`", node, context
       else
         str = new UnquotedString
 
@@ -250,9 +258,9 @@ class Evaluator extends Class
       else
         in_args.push arg
 
-    return new Function (block, args...) =>
+    return new Function (caller, args...) =>
       try
-        ctx = context.child block
+        ctx = context.child caller.block
         l = in_args.length
 
         for arg, i in args
@@ -298,13 +306,39 @@ class Evaluator extends Class
   ###
   ###
   evaluateUnaryOperation: (node, context) ->
-    @evaluateNode(node.right, context).operate context, "#{node.operator}@"
+    right = @evaluateNode node.right, context
+    op = "#{node.operator.value}@"
+
+    try
+      return @call context, right, op, [], node.operator.start
+    catch e
+      message = "Cannot perform `#{right.reprOp op}`"
+      message += ". #{e.message}" if e.message
+      @error e.class, message, node, context
+
+  call: (context, obj, method, args = [], start = null, end = null) ->
+    method = method.toString()
+
+    context.stack.push {
+      start: start,
+      end: end,
+      name: obj.reprMethod(method)
+    }
+
+    try
+      res = obj["."](context, method, args...) or Null.null
+    catch e
+      throw e
+    finally
+      context.stack.pop()
+
+    return res
 
   ###
   TODO Reimplement this mess as a Node methods
   ###
   evaluateBinaryOperation: (node, context) ->
-    switch node.operator
+    switch node.operator.value
       when '=', '|='
         @evaluateAssignment node, context
 
@@ -312,41 +346,35 @@ class Evaluator extends Class
         left = @evaluateNode node.left, context
         name = @getStringValue node.right, context
 
-        # TODO add to call stack
-
-        return left[".!#{name}"](context) or Null.null
+        return @call context, left, "!#{name}", [], node.operator.start
 
       when '.', '::'
         left = @evaluateNode node.left, context
         right = node.right
 
         if right instanceof LiteralString
-          right = new UnquotedString @getStringValue right, context
+          right = new UnquotedString @getStringValue(right, context)
         else
           right = @evaluateNode right, context
 
-        method = if node.operator is '.' then '.' else '.::'
-
-        # TODO add to call stack
-
-        return left[method](context, right) or Null.null
+        if node.operator.value is '.'
+          return @call context, left, right, [], node.operator.start
+        else
+          return @call context, left, '::', [right], node.operator.start
 
       when '('
         left = node.left
         args = (@evaluateNode arg, context for arg in node.right)
 
-        if (left instanceof Operation) and (left.operator in ['.', '::'])
+        if (left instanceof Operation) and (left.operator.value in ['.', '::'])
           if left.right instanceof LiteralString
             name = new UnquotedString @getStringValue left.right
             obj = @evaluateNode left.left, context
+            method = if left.operator.value is '.' then '' else '::'
+            args.unshift name
 
-            if left.operator is '.'
-              method = '.'
-            else
-              method = '.::'
+            return @call context, obj, method, args, left.operator.start
 
-            # TODO add to call stack
-            return obj[method](context, name, args...) or Null.null
         else if left instanceof LiteralString
           name = @getStringValue left
 
@@ -358,18 +386,25 @@ class Evaluator extends Class
         left = @evaluateNode left, context
 
         unless left instanceof Function
-          @referenceError "Call to non-function"
+          @referenceError(
+            "Cannot call #{left.repr()}(): this object is not callable",
+            node.operator,
+            context
+          )
 
-        # TODO add to call stack
-
-        return left.invoke.call(left, context, args...) or Null.null
+        return @call context, left, 'call', args, node.operator.start
 
       else
         left = @evaluateNode node.left, context
         right = @evaluateNode node.right, context
+        op = node.operator.value
 
-        # TODO add to call stack
-        return left.operate context, node.operator, right
+        try
+          return @call context, left, op, [right], node.operator.start
+        catch e
+          message = "Cannot perform #{left.reprOp(op, right)}"
+          message += ". #{e.message}" if e.message
+          @error e.constructor, message, node.operator, context
 
   evaluateOperation: (node, context) ->
     if node.binary
@@ -384,21 +419,22 @@ class Evaluator extends Class
   ###
   evaluateUnitAssignment: (node, context) ->
     value = parseFloat node.left.value
-    unit = node.left.unit.value
+    unit = node.left.unit?.value
 
     unless unit and value isnt 0
-      @referenceError "Bad unit definition"
+      @referenceError "Bad unit definition", node.left, context
 
     unless node.operator is '|=' and Number.isDefined unit
       right = (@evaluateNode node.right, context)
 
       unless right.unit and right.value isnt 0
-        @referenceError "Bad unit definition"
+        @referenceError "Bad unit definition", right, context
 
       # TODO This is a temporary hack, because units are not scoped yet
       left = new Number value
       left.unit = unit
 
+      # TODO scope this
       Number.define left, right, yes
 
     return @evaluateNode node.left, context
@@ -418,28 +454,27 @@ class Evaluator extends Class
 
       if name[0] isnt '$'
         if context.has(name)
-          if node.operator is '=' or context.get(name).isNull()
-            @referenceError "Cannot overwrite constant `#{name}`"
+          if node.operator.value is '=' or context.get(name).isNull()
+            @referenceError "Cannot overwrite constant `#{name}`", left, context
 
       getter = context.get.bind context, name
       setter = context.set.bind context, name
 
-    else if left instanceof Operation and left.operator in ['.', '::']
+    else if left instanceof Operation and left.operator.value in ['.', '::']
       name = @evaluateNode left.right, context
-
       ref = @evaluateNode left.left, context
 
-      if left.operator is '.'
+      if left.operator.value is '.'
         getter = ref['.'].bind ref, context, name
         setter = ref['.='].bind ref, context, name
       else
-        getter = ref['.::'].bind ref, context, name
-        setter = ref['.::='].bind ref, context, name
+        getter = ref['.'].bind ref, context, '::', name
+        setter = ref['.'].bind ref, context, '::=', name
 
     unless setter
-      @referenceError "Bad left side of assignment"
+      @referenceError "Bad left side of assignment", left, context
 
-    if node.operator is '|='
+    if node.operator.value is '|='
       if getter
         curr = getter()
         return curr if not curr.isNull()
@@ -477,14 +512,19 @@ class Evaluator extends Class
 
         if depth instanceof Number
           unless depth.isInteger() and depth.isPositive()
-            @valueError """
-              Bad value for `#{node.name}` depth: #{depth.reprValue()}"""
+            @valueError(
+              "Bad argument for `#{node.name}` depth: #{depth.reprValue()}:",
+              depth, context
+            )
         else
-          @valueError "Bad argument for a `#{node.name}`: #{depth.reprType()}"
+          @valueError(
+            "Bad argument for `#{node.name}`: #{depth.class.repr()}",
+            depth, context
+          )
 
         depth = parseInt depth.value, 10
       else
-        @valueError "Too many arguments for a `#{node.name}`"
+        @valueError "Too many arguments for `#{node.name}`", node, context
 
     node.depth = depth
 
@@ -503,7 +543,7 @@ class Evaluator extends Class
       when 1
         node.value = @evaluateNode node.arguments[0], context
       else
-        @valueError "Too many arguments for a `return`"
+        @valueError "Too many arguments for `return`", node, context
 
     throw node
 
@@ -514,8 +554,9 @@ class Evaluator extends Class
 
     unless expression.isEnumerable()
       @valueError """
-        Cannot traverse over #{expression.repr()}: this object is not enumerable
-        """
+        Cannot traverse over #{expression.class.repr()}: \
+        this object is not enumerable
+        """, node, context
 
     expression.each (key, value) =>
       context.set node.value.value, value
@@ -557,15 +598,29 @@ class Evaluator extends Class
   ###
   ###
   evaluateInclude: (node, context) ->
-    for arg in node.arguments
-      file = @evaluateNode arg, context
+    if node.arguments.length
+      for arg in node.arguments
+        file = @evaluateNode arg, context
 
-      unless file instanceof URL or file instanceof String
-        @valueError "Bad argument for `include`"
+        unless file instanceof URL or file instanceof String
+          @valueError(
+            "Bad argument for `include`: #{file.class.repr()}", args, context
+          )
 
-      path = file.value
+        uri = file.value
 
-      context.include path
+        context.stack.push {
+          start: arg.start,
+          end: arg.end,
+          name: '<include>'
+        }
+
+        try
+          context.include uri
+        catch e
+          throw e
+        finally
+          context.stack.pop()
 
     return Null.null
 
@@ -574,8 +629,9 @@ class Evaluator extends Class
   evaluateUse: (node, context) ->
     for arg in node.arguments
       name = @evaluateNode arg
+
       unless name instanceof String
-        @valueError "Bad argument for `use`"
+        @valueError "Bad argument for `use`: #{name.class.repr()}", arg, context
       @layla.use name.value
 
     return Null.null
@@ -823,10 +879,11 @@ class Evaluator extends Class
       program = @parse program
 
     try
-      return @evaluateNode program, context
+      ret = @evaluateNode program, context
+      return ret
     catch err
       if err instanceof Directive
-        @runtimeError "Uncaught `#{err.name}`"
+        @runtimeError "Uncaught `#{err.name}`", err, context
       else
         throw err
 

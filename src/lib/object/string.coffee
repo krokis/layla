@@ -83,7 +83,9 @@ class String extends Object
       else
         -1
     else
-      throw new Error "Cannot compare #{@reprType()} with #{other.reprType()}"
+      throw new ValueError """
+        Cannot compare #{@reprType()} with #{other.reprType()}
+        """
 
   contains: (other) ->
     # TODO should throw an error when other is not an string?
@@ -100,12 +102,7 @@ class String extends Object
     if other instanceof String
       return @copy "#{@value}#{other.value}"
 
-    throw new ValueError (
-      """
-      Cannot perform #{@repr()} + #{other.repr()}: \
-      right side must be a #{String.repr()}
-      """
-    )
+    return super context, other
 
   '.*': (context, other) ->
     if other instanceof Number
@@ -122,6 +119,8 @@ class String extends Object
 
       return @copy str
 
+    return super context, other
+
   '.::': (context, other) ->
     if other instanceof Number
       len = @length
@@ -134,7 +133,7 @@ class String extends Object
       else
         return @copy char
 
-    throw new ValueError
+    return super context, other
 
   '.length': -> new Number @length
 

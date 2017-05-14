@@ -3,5 +3,6 @@
   "cases/include/*",
   "cases/whitespace/*",
   "bin/*.css",
-  "bin/*.lay"
+  "bin/*.lay",
+  "unit/kitchen-sink.lay"
 ]
