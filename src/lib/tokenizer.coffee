@@ -379,29 +379,6 @@ class Tokenizer extends Class
   ###
   skipAllWhitespace: -> @match RE_WHITESPACE
 
-  ###
-  TODO Should this be case-insensitive?
-  ###
-  readURL: ->
-    # TODO toLowerCase() will fail if we're at last position.
-    if 'url(' is @buffer[0..3].toLowerCase()
-      url = new Token T.URL, @location
-      @move 4
-      @skipAllWhitespace()
-
-      if str = @readQuotedString()
-        url.value = str.value
-      else
-        url.value = @readSequence /[^\)]/
-
-      @skipAllWhitespace()
-
-      unless @char is ')'
-        @syntaxError 'Unterminated url()'
-
-      @move()
-      return url
-
   readCallArguments: ->
     args = []
 
