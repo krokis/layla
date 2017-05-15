@@ -331,17 +331,33 @@ Ranges
 
   ~~~ lay
   range.min {
-    foo: (1..5).min
-    bar: (-5..0).min
-    baz: (5..-1).min
+    i: (1..5).min
+    ii: (-5..0).min
+    iii: (5..-1).min
   }
   ~~~
 
   ~~~ css
   range.min {
-    foo: 1;
-    bar: -5;
-    baz: -1;
+    i: 1;
+    ii: -5;
+    iii: -1;
+  }
+  ~~~
+
+- Works with units
+
+  ~~~ lay
+  range.min {
+    i: (1cm..50mm).min
+    ii: (50mm..0.2cm).min
+  }
+  ~~~
+
+  ~~~ css
+  range.min {
+    i: 1cm;
+    ii: 2mm;
   }
   ~~~
 

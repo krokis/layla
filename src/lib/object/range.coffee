@@ -25,7 +25,7 @@ class Range extends Indexed
 
   length: -> 1 + floor (abs @last - @first) / @step
 
-  minValue: -> new Number min @first, @last
+  minValue: -> new Number min(@first, @last), @unit
 
   maxValue: -> new Number max @first, @last
 
@@ -58,7 +58,7 @@ class Range extends Indexed
   contains: (other) ->
     try
       other = other.convert @unit
-      return @minValue() <= other.value <= @maxValue()
+      return min(@first, @last) <= other.value <= max(@first, @last)
 
     return no
 

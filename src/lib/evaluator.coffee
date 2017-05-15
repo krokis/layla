@@ -1,6 +1,15 @@
 fs   = require 'fs'
 path = require 'path'
 
+###
+Note not all of these classes are being actually used here. But many of them
+monkey-patches others (so they can live in separate files without the need of
+circular imports), so they all need to be `require`d in order to register all
+their methods.
+
+TODO We should define somewhere else  "stdlib" (a list of all built-in
+classes)
+###
 Class                 = require './class'
 Parser                = require './parser'
 Plugin                = require './plugin'
