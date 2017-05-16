@@ -42,7 +42,7 @@ class Object extends Class
 
   reprType: -> @class.reprType()
 
-  repr: -> "[#{"#{@reprType()} #{@reprValue()}".trim()}]"
+  repr: -> "<#{"#{@reprType()} #{@reprValue()}".trim()}>"
 
   toString: -> throw new Error "Cannot convert #{@repr()} to string"
 
