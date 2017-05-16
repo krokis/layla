@@ -9,12 +9,12 @@ class List extends Collection
 
   constructor: (items, @separator = ' ') -> super items
 
-  flatten: ->
+  flattenItems: ->
     flat = []
 
     for item in @items
       if item instanceof List
-        flat.push item.flatten()...
+        flat.push item.flattenItems()...
       else
         flat.push item
 
@@ -34,7 +34,7 @@ class List extends Collection
 
   '.list': -> @clone()
 
-  '.flatten': -> @clone @flatten()
+  '.flatten': -> @clone @flattenItems()
 
 Object::['.list'] = ->
   if @ instanceof Collection

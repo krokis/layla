@@ -706,7 +706,6 @@
   ~~~
 
   ~~~ TypeError
-  Cannot set URL port to non-numeric value: [Color]
   ~~~
 
   ~~~ lay
@@ -714,7 +713,6 @@
   ~~~
 
   ~~~ TypeError
-  Cannot set URL port to non-numeric value: [QuotedString ""]
   ~~~
 
 - Fails for non-integer numbers
@@ -1028,13 +1026,24 @@
   $url.query = 'hey=John Doe&q=foo bar'
 
   url.query {
-    foo: $url
+    i: $url
+    /*
+    TODO I think maybe `?` should be encoded to `%3F`, but Node
+    `url.format()` implementation does not.
+    https://tools.ietf.org/html/rfc2396#section-3.4
+    */
+    $url.query = '?hey=yo'
+    ii: $url
+    $url.query = '#hey=yo'
+    iii: $url
   }
   ~~~
 
   ~~~ css
   url.query {
-    foo: url("http://google.com/?hey=John%20Doe&q=foo%20bar");
+    i: url("http://google.com/?hey=John%20Doe&q=foo%20bar");
+    ii: url("http://google.com/??hey=yo");
+    iii: url("http://google.com/?%23hey=yo");
   }
   ~~~
 

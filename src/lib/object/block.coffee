@@ -56,4 +56,5 @@ class Block extends Collection
 
   '.has-property?': (name) -> Boolean.new @hasProperty name.value
 
+
 module.exports = Block

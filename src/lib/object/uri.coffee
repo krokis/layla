@@ -3,13 +3,17 @@ Null         = require './null'
 Boolean      = require './boolean'
 QuotedString = require './string/quoted'
 
+
+###
+###
 class URI extends Object
 
   name = 'url'
 
+  # TODO add more? (`ftp`, `file`...)
   COMMON_SCHEMES = ['http', 'https', 'data']
 
-  constructor: (@value = '', @quote = null) ->
+  constructor: (@value) ->
 
   parse: (uri) ->
     # scheme = alpha *( alpha | digit | "+" | "-" | "." )
@@ -41,9 +45,11 @@ class URI extends Object
     else
       new QuotedString @scheme, @quote or '"'
 
+  # TODO move these methods to the `URL` and `DataURI` classes?
   COMMON_SCHEMES.forEach (scheme) =>
     @::[".#{scheme}?"] = -> Boolean.new @scheme is scheme
 
   '.string': -> new QuotedString @toString(), @quote or '"'
+
 
 module.exports = URI

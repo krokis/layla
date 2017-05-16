@@ -121,15 +121,15 @@ class CSSEmitter extends Emitter
   emitRawString: (str) ->
     str.value
 
-  emitNumberValue: (num) ->
-    value = num.value
-
-    if value % 1 isnt 0
+  formatNumber: (num) ->
+    if num % 1 isnt 0
       if @options.decimal_places >= 0
         m = Math.pow 10, @options.decimal_places
-        value = (Math.round value * m) / m
+        num = (Math.round num * m) / m
 
-    '' + value
+    return num
+
+  emitNumberValue: (num) -> "#{@formatNumber num.value}"
 
   emitNumberUnit: (num) -> num.unit or ''
 
@@ -145,7 +145,11 @@ class CSSEmitter extends Emitter
   emitNull: (node) -> 'null'
 
   emitColor: (color) ->
-    color.toString()
+    # Super meh. Done to pass 59 tests. TODO Allow to customize this.
+    if @formatNumber(color.alpha) >= 1
+      color.toHexString()
+    else
+      color.toString('rgb')
 
   emitURL: (url) ->
     str = url.name

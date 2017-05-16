@@ -1,19 +1,22 @@
-Object     = require '../object'
-Null       = require './null'
-Boolean    = require './boolean'
-Number     = require './number'
-String     = require './string'
-TypeError  = require '../error/type'
-ValueError = require '../error/value'
+Object        = require '../object'
+Null          = require './null'
+Boolean       = require './boolean'
+Number        = require './number'
+String        = require './string'
+TypeError     = require '../error/type'
+ValueError    = require '../error/value'
+InternalError = require '../error/value'
 
 
+###
+###
 class Color extends Object
 
   {round, max, min, abs, sqrt, pow} = Math
 
-  RED         = name: 'red', max: 255, unit: null
-  GREEN       = name: 'green', max: 255, unit: null
-  BLUE        = name: 'blue', max: 255, unit: null
+  RED         = name: 'red', max: 255
+  GREEN       = name: 'green', max: 255
+  BLUE        = name: 'blue', max: 255
   HUE         = name: 'hue', max: 360, unit: 'deg'
   SATURATION  = name: 'saturation', max: 100, unit: '%'
   LIGHTNESS   = name: 'lightness', max: 100, unit: '%'
@@ -315,7 +318,7 @@ class Color extends Object
 
       @space = 'rgb'
 
-      return @spaces['rgb'] = [ red, green, blue ]
+      return @spaces['rgb'] = [red, green, blue]
 
   parseFuncString: (str) ->
     if m = str.match RE_FUNC_COLOR
@@ -340,15 +343,19 @@ class Color extends Object
           throw new Error "Too many values passed to `#{space}()`"
 
         @space = space
+
         return @spaces[space] = channels
 
       else
         throw new Error "Bad color space: #{space}"
 
   parseColor: (color) ->
-    @parseHexString(color) or
-    @parseFuncString(color) or
-    throw new Error "Bad color string: #{color}"
+    if not color.trim()
+      @spaces = { rgb: [0, 0, 0] }
+    else
+      @parseHexString(color) or
+      @parseFuncString(color) or
+      throw new Error "Bad color string: #{color}"
 
   constructor: (color = '#0000') ->
     @spaces = {}
@@ -381,8 +388,7 @@ class Color extends Object
 
         set: (values) ->
           @space = space
-          @spaces = {}
-          @spaces[space] = values
+          @spaces = "#{space}": values
 
     make_channel_accessors = (space, index, name) =>
       unless name of @::
@@ -417,15 +423,16 @@ class Color extends Object
     channels[channel] = @clampChannel space, channel, value
     @[space] = channels
 
+    return @
+
   adjustChannel: (space, channel, amount, unit) ->
     if unit is '%'
       amount = SPACES[space][channel].max * amount / 100
     else if unit and unit isnt SPACES[space][channel].unit
       throw new Error "Bad value for #{space} #{channel}: #{amount}#{unit}"
 
-    @setChannel space, channel, amount + @getChannel space, channel
-
-    return @
+    return @clone().setChannel(
+      space, channel, amount + @getChannel(space, channel))
 
   # https://drafts.csswg.org/css-color-4/#luminance
   @property 'luminance',
@@ -451,7 +458,11 @@ class Color extends Object
 
     return no
 
-  isEmpty: -> @alpha is 0
+  isTransparent: -> @alpha is 0
+
+  isOpaque: -> @alpha >= 1
+
+  isEmpty: @::isTransparent
 
   toRGBAString: ->
     comps = @['rgb'].map (c) -> round c
@@ -464,13 +475,16 @@ class Color extends Object
   toHexString: ->
     comps = [].concat @['rgb']
 
-    if @alpha < 1
-      comps.push @alpha * 255
+    alpha = @alpha * 255
+
+    if round(alpha) < 255
+      comps.push alpha
 
     hex = '#'
 
     for c in comps
       c = (round c).toString 16
+
       if c.length < 2
         hex += '0'
 
@@ -478,23 +492,65 @@ class Color extends Object
 
     return hex
 
-  toString: ->
-    if @alpha < 1
-      @toRGBAString()
-    else
-      @toHexString()
+  ###
+  TODO Wow. I defaulted to 'rgb' color space not to break the tests, but I think
+  it should default to current color space (`@space`), which should be the "most
+  accurate" when a color has been converted through color spaces. It affects
+  cloning the colors.
 
-  clone: (color = @toString(), etc...) ->
-    super color, etc...
+  But it breaks the tests. For instance, with 'space = rgb':
 
-  '.transparent?': -> Boolean.new @isEmpty()
+    `#bf406a.rotate(40)` is `#bf6b40`
+
+  While, with `space = @space`:
+
+    `#bf406a.rotate(40)` is `#bf6a40`
+
+  The first result **matches** Stylus and Less results, but even it could be
+  wrong.
+
+  PS: Note this does not break tests anymore because cloning is doing properly
+  -better-, but it's still relevant.
+
+  TODO Output channel decimals?
+  ###
+  toString: (space = @space) ->
+    if space of SPACES
+      channels = @[space].map (c) -> round c
+
+      str = space
+      str += 'a' if @alpha < 1
+      str += '('
+      str += channels.join ', '
+      str += ", #{(round @alpha * 100) / 100}"
+      str += ')'
+
+      return str
+
+    throw new InternalError
+
+  reprValue: @::toString
+
+  ###
+  TODO WRONG! Don't transform to RGB! Carry current color space
+  ###
+  clone: (color = null, etc...) ->
+    clone = super color, etc...
+
+    if not color
+      clone.alpha = @alpha
+      clone[@space] = @spaces[@space]
+
+    return clone
+
+  '.transparent?': -> Boolean.new @isTransparent()
 
   '.transparent': ->
     that = @clone()
     that.alpha = 0
     that
 
-  '.opaque?': -> Boolean.new @alpha is 1
+  '.opaque?': -> Boolean.new @isOpaque()
 
   '.opaque': ->
     that = @clone()
@@ -503,13 +559,13 @@ class Color extends Object
 
   '.saturate': (amount) ->
     if amount instanceof Number
-      @clone().adjustChannel 'hsl', 1, amount.value, amount.unit
+      @adjustChannel 'hsl', 1, amount.value, amount.unit
     else
       throw new TypeError "Bad argument for #{@reprType()}.saturate"
 
   '.desaturate': (amount = Number.ONE_HUNDRED_PERCENT) ->
     if amount instanceof Number
-      @clone().adjustChannel 'hsl', 1, -1 * amount.value, amount.unit
+      @adjustChannel 'hsl', 1, -1 * amount.value, amount.unit
     else
       throw new TypeError "Bad argument for #{@reprType()}.saturate"
 
@@ -517,25 +573,25 @@ class Color extends Object
 
   '.whiten': (amount = Number.FIFTY_PERCENT) ->
     if amount instanceof Number
-      @clone().adjustChannel 'hwb', 1, amount.value, amount.unit
+      @adjustChannel 'hwb', 1, amount.value, amount.unit
     else
       throw new TypeError "Bad argument for #{@reprType()}.whiten"
 
   '.blacken': (amount = Number.FIFTY_PERCENT) ->
     if amount instanceof Number
-      @clone().adjustChannel 'hwb', 2, amount.value, amount.unit
+      @adjustChannel 'hwb', 2, amount.value, amount.unit
     else
       throw new TypeError "Bad argument for #{@reprType()}.blacken"
 
   '.darken': (amount = Number.TEN_PERCENT) ->
     if amount instanceof Number
-      @clone().adjustChannel 'hsl', 2, -1 * amount.value, amount.unit
+      @adjustChannel 'hsl', 2, -1 * amount.value, amount.unit
     else
       throw new TypeError "Bad argument for #{@reprType()}.darken"
 
   '.lighten': (amount = Number.TEN_PERCENT) ->
     if amount instanceof Number
-      @clone().adjustChannel 'hsl', 2, amount.value, amount.unit
+      @adjustChannel 'hsl', 2, amount.value, amount.unit
     else
       throw new TypeError "Bad argument for #{@reprType()}.lighten"
 
@@ -556,14 +612,13 @@ class Color extends Object
   '.rotate': (amount) ->
     if amount instanceof Number
       amount = amount.convert('deg')
-      @clone().adjustChannel 'hsl', 0, amount.value, amount.unit
+      @adjustChannel 'hsl', 0, amount.value, amount.unit
     else
       throw new TypeError "Bad argument for #{@reprType()}.rotate"
 
   @::['.spin'] = @::['.rotate']
 
-  '.opposite': ->
-    @clone().adjustChannel 'hsl', 0, 180
+  '.opposite': -> @adjustChannel 'hsl', 0, 180
 
   # https://www.w3.org/TR/WCAG20/#relativeluminancedef
   '.luminance': -> new Number 100 * @luminance, '%'

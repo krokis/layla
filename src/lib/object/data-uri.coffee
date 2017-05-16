@@ -4,6 +4,9 @@ Boolean      = require './boolean'
 QuotedString = require './string/quoted'
 URI          = require './uri'
 
+
+###
+###
 class DataURI extends URI
 
   DEFAULT_MIME    = 'text/plain'
@@ -33,21 +36,22 @@ class DataURI extends URI
       data = m[8]
 
       if @base64
+        # TODO We should pre-check this is valid BASE64 data. Otherwise, errors
+        # could raise when calling `DataURI.data` (which uses `Buffer`
+        # implementation)
+        # https://tools.ietf.org/html/rfc4648
         @encoded = data.replace /\s+/g, ''
       else
         @decoded = data
 
   @property 'data',
-    get: -> @decoded or @decoded = @class.decode @encoded
+    get: -> @decoded or= @class.decode @encoded
 
   toString: ->
     str = 'data:'
 
-    if @mime isnt DEFAULT_MIME
-      str += @mime
-
-    if @charset isnt DEFAULT_CHARSET
-      str += ";charset=#{@charset}"
+    str += @mime if @mime isnt DEFAULT_MIME
+    str += ";charset=#{@charset}" if @charset isnt DEFAULT_CHARSET
 
     if @base64
       str += ";base64"
@@ -55,7 +59,7 @@ class DataURI extends URI
     else
       data = @decoded
 
-    str += ',' + data
+    str += ",#{data}"
 
     return str
 
@@ -71,5 +75,6 @@ class DataURI extends URI
   '.base64?': -> Boolean.new @base64
 
   '.data': -> new QuotedString @data
+
 
 module.exports = DataURI

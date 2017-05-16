@@ -33,28 +33,28 @@ class Collection extends Indexed
     @items.slice start, end
 
   contains: (other) ->
-    for value in @items
-      return yes if value.isEqual other
-    return no
+    @items.some other.isEqual.bind other
 
   isUnique: ->
     for a in @items
       for b in @items
         if a isnt b and a.isEqual b
           return no
-    yes
+
+    return yes
 
   isEqual: (other) ->
     if other instanceof Collection
       if other.items.length is @items.length
         for i in [0...@items.length]
           return no unless @items[i].isEqual other.items[i]
+
         return yes
+
     return no
 
   toJSON: ->
     json = super
-    json.separator = @separator
     json.items = @items
     json
 
@@ -64,6 +64,7 @@ class Collection extends Indexed
   '.+': (other) ->
     if other instanceof Collection
       return @clone @items.concat other.items
+
     throw new TypeError "Cannot sum collection with that"
 
   '.::': (other) ->
@@ -71,27 +72,25 @@ class Collection extends Indexed
       idx = other.value
       idx += @items.length if idx < 0
       if 0 <= idx < @items.length
-        @items[idx]
+        return @items[idx]
       else
-        Null.null
+        return Null.null
     else if other instanceof Collection
       slice = @clone []
       for idx in other.items
         slice.items.push @['.::'] idx
-      slice
-    else
-      throw new TypeError "Bad member: #{other.type}"
+      return slice
+
+    throw new TypeError "Bad member: #{other.type}"
 
   '.::=': (key, value) ->
     if key instanceof Number
       idx = key.value
       idx += @items.length if idx < 0
       if 0 <= idx <= @items.length
-        @items[idx] = value
-      else
-        throw new TypeError
-    else
-      throw new TypeError
+        return @items[idx] = value
+
+    throw new TypeError
 
   '.length': -> new Number @length()
 
@@ -126,7 +125,7 @@ class Collection extends Indexed
       unique.push item
       return yes
 
-    @clone unique, @separator
+    return @clone unique
 
 
 module.exports = Collection

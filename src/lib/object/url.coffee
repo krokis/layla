@@ -11,6 +11,8 @@ Number       = require './number'
 Error        = require '../error'
 TypeError    = require '../error/type'
 
+###
+###
 class URL extends URI
   name: 'url'
 
@@ -102,7 +104,7 @@ class URL extends URI
   @property 'query',
     get: ->  @components.search and @components.search[1..]
     set: (value) ->
-      if value isnt null
+      if value?
         value = "?#{value}"
       @components.search = value
 
@@ -156,34 +158,34 @@ class URL extends URI
       super
 
   ###
-  Sets the `port` component.
+  Sets the `port` component
   ###
-  '.port=': (value) ->
-    unless value.isNull()
-      if not (value instanceof Number)
+  '.port=': (port) ->
+    unless port.isNull()
+      if not (port instanceof Number)
         try
-          value = value.toNumber()
+          port = port.toNumber()
         catch
           throw new TypeError (
-            "Cannot set URL port to non-numeric value: #{value.repr()}"
+            "Cannot set URL port to non-numeric value: #{port.repr()}"
           )
 
-      unless value.isPure()
+      unless port.isPure()
         throw new TypeError (
-          "Cannot set URL port to non-pure number: #{value.reprValue()}"
+          "Cannot set URL port to non-pure number: #{port.reprValue()}"
         )
 
-      unless value.isInteger()
+      unless port.isInteger()
         throw new TypeError (
-          "Cannot set URL port to non-integer number: #{value.reprValue()}"
+          "Cannot set URL port to non-integer number: #{port.reprValue()}"
         )
 
-      unless 0 <= value.value <= 65535
+      unless 0 <= port.value <= 65535
         throw new TypeError (
-          "Port number out of 1..65535 range: #{value.reprValue()}"
+          "Port number out of 1..65535 range: #{port.reprValue()}"
         )
 
-    @port = value.value
+    @port = port.value
 
   ###
   Batch defines all other getters and setters (`scheme`, `path`, `query`, etc)
@@ -231,6 +233,9 @@ class URL extends URI
   ###
   '.ip?': -> Boolean.new @isIP()
 
+  ###
+  Returns `true` if the URL has a host and it's not an IP address.
+  ###
   '.domain': ->
     if domain = @domain
       new QuotedString domain
