@@ -2,7 +2,8 @@ Object = require '../object'
 Null   = require './null'
 Number = require './number'
 
-
+###
+###
 class Enumerable extends Object
 
   length: -> @NOT_IMPLEMENTED
@@ -49,6 +50,8 @@ class Enumerable extends Object
 
   isEmpty: -> @length() is 0
 
+  isEnumerable: -> yes
+
   '.::': @::get
 
   '.length': -> new Number @length()
@@ -62,6 +65,8 @@ class Enumerable extends Object
   '.min': -> @minValue() or Null.null
 
   '.max': -> @maxValue() or Null.null
+
+Object::isEnumerable = -> no
 
 
 module.exports = Enumerable

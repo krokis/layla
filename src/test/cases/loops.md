@@ -1,7 +1,7 @@
 Loops
 =====
 
-## `While` loops
+## `while` loops
 
 - Repeat their body while the condition is falsy
 
@@ -38,7 +38,7 @@ Loops
   }
   ~~~
 
-## `Until` loops
+## `until` loops
 
 - Repeat their body until the condition is trueish
 
@@ -165,6 +165,8 @@ Loops
   }
   ~~~
 
+- Can iterate the document
+
 - Can iterate blocks rules
 
   ~~~ lay
@@ -233,6 +235,170 @@ Loops
     background: pink;
     color: yellow;
   }
+  ~~~
+
+### Cannot iterate non-enumerable objects
+
+- Numbers
+
+  ~~~ lay
+  for $i in 5 {
+    foo: $i
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+- Strings
+
+  ~~~ lay
+  for $i in "Lorem ipsum" {
+    foo: $i
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  for $i in LoremIpsum {
+    foo: $i
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  for $i in `Lorem ipsum` {
+    foo: $i
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  for $i in "" {
+    foo: $i
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+- URLs
+
+  ~~~ lay
+  for $i in url(example.org) {
+    foo: $i
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  for $i in url("http://www.example.org") {
+    foo: $i
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+- Data URIs
+
+  ~~~ lay
+  for $i in url(data:text/html,<h1>Hello%20World</h1>) {
+    foo: $i
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  for $i in url("data:text/plain,Hello%20World") {
+    foo: $i
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+- Booleans
+
+  ~~~ lay
+  for $i in true {
+    foo: $i
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  for $i in false {
+    foo: $i
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+- Null
+
+  ~~~ lay
+  for $i in null {
+    foo: $i
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+- Colors
+
+  ~~~ lay
+  for $i in #f00 {
+    foo: $i
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+  ~~~ lay
+  for $i in #fffa {
+    foo: $i
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+- Functions
+
+  ~~~ lay
+  for $i in (() {}) {
+    foo: $i
+  }
+  ~~~
+
+  ~~~ TypeError
+  ~~~
+
+- Regular expressions
+
+  ~~~ lay
+  for $i in /.*/ {
+    foo: $i
+  }
+  ~~~
+
+  ~~~ TypeError
   ~~~
 
 ## `break`

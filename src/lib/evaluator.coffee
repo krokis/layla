@@ -3,12 +3,12 @@ path = require 'path'
 
 ###
 Note not all of these classes are being actually used here. But many of them
-monkey-patches others (so they can live in separate files without the need of
-circular imports), so they all need to be `require`d in order to register all
-their methods.
+monkey-patche others (so they can live in separate files without circular
+imports), so they all need to be `require`d in order to have the chance to
+"register" their methods.
 
-TODO We should define somewhere else  "stdlib" (a list of all built-in
-classes)
+TODO Should we define this "stdlib" somewhere else (as a list of all built-in
+classes -- or a plugin)?
 ###
 Class                 = require './class'
 Parser                = require './parser'
@@ -449,7 +449,7 @@ class Evaluator extends Class
   evaluateFor: (node, context) ->
     expression = @evaluateNode node.expression, context
 
-    unless expression instanceof Enumerable
+    unless expression.isEnumerable()
       @typeError """
         Cannot traverse over #{expression.repr()}: this object is not enumerable
         """

@@ -19,8 +19,8 @@
   ~~~ lay
   #data-uri[mime] {
     i: url(data:text/html,<h1>Hello%20World</h1>)
-    ii: url(data:text/plain,Hello%20World)
-    iii: url(data:Text/Plain,Hello%20World)
+    ii: url("data:text/plain,Hello%20World")
+    iii: url("data:Text/Plain,Hello%20World")
     iv: url(data:TEXT/Html,<strong>Hey</strong>)
   }
   ~~~
