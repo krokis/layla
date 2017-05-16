@@ -74,7 +74,7 @@ class RegExp extends Object
   clone: (source = @source, flags = @flags, etc...) ->
     super source, flags, etc...
 
-  reprValue: -> "/#{@class.escape @source}/#{@flags}"
+  reprValue: -> "/#{@source}/#{@flags}"
 
   ###
   TODO: convert any object to string with `.string`?
