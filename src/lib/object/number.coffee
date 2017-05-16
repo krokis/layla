@@ -1,5 +1,4 @@
 Object     = require '../object'
-Null       = require './null'
 Boolean    = require './boolean'
 TypeError  = require '../error/type'
 
