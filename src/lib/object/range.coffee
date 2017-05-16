@@ -7,7 +7,8 @@ String         = require './string'
 UnquotedString = require './string/unquoted'
 TypeError      = require '../error/type'
 
-
+###
+###
 class Range extends Indexed
 
   { min, max, abs, floor } = Math
@@ -19,7 +20,7 @@ class Range extends Indexed
       for i in [0...@length()]
         items.push new Number (@getByIndex i), @unit
 
-      items
+      return items
 
   isReverse: -> @first > @last
 
@@ -27,7 +28,7 @@ class Range extends Indexed
 
   minValue: -> new Number min(@first, @last), @unit
 
-  maxValue: -> new Number max @first, @last
+  maxValue: -> new Number max(@first, @last), @unit
 
   getByIndex: (index) ->
     step = @step
@@ -35,7 +36,7 @@ class Range extends Indexed
     if @isReverse()
       step *= -1
 
-    return new Number @first + index * step
+    return new Number @first + index * step, @unit
 
   constructor: (@first = 0, @last = 0, @unit = null, @step = 1) ->
     super

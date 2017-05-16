@@ -361,6 +361,42 @@ Ranges
   }
   ~~~
 
+### `max`
+
+- Returns the maximum value in the range
+
+  ~~~ lay
+  range.min {
+    i: (1..5).max
+    ii: (-5..0).max
+    iii: (5..-1).max
+  }
+  ~~~
+
+  ~~~ css
+  range.min {
+    i: 5;
+    ii: 0;
+    iii: 5;
+  }
+  ~~~
+
+- Works with units
+
+  ~~~ lay
+  range.min {
+    i: (1cm..50mm).max
+    ii: (50mm..0.2cm).max
+  }
+  ~~~
+
+  ~~~ css
+  range.min {
+    i: 5cm;
+    ii: 50mm;
+  }
+  ~~~
+
 ### `reverse?`
 
 - Returns `true` if the range is reversed.
