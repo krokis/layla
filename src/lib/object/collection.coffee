@@ -19,12 +19,12 @@ class Collection extends Indexed
   slice: (start, end) ->
     unless start?
       start = 0
-    else unless start instanceof Number
+    else unless start instanceof Number and start.isPure()
       throw new Error "Bad arguments for `.slice`"
       start = start.value
 
     if end?
-      unless end instanceof Number
+      unless end instanceof Number and end.isPure()
         throw new Error "Bad arguments for `.slice`"
       end = end.value
     else
