@@ -19,10 +19,27 @@ YELLOW = "#{ESC}[33m"
 CHECK  = "#{GREEN}√#{RESET}"
 CROSS  = "#{BOLD}#{RED}×#{RESET}"
 
-SOURCE = no
-VERBOSE = no
-
 ERRORS = 0
+
+SOURCE  = no
+VERBOSE = no
+WATCH   = no
+
+# Cheating a bit to get "global" options in this Cakefile
+_task = global.task
+
+global.task = (name, description, action) ->
+  _task name, description, (options) ->
+    if options.verbose
+      VERBOSE = yes
+
+    if options.source
+      SOURCE = yes
+
+    if options.watch
+      WATCH = yes
+
+    action options
 
 log = (type = '', text = '') ->
   if type is 'task'
@@ -151,27 +168,19 @@ test = (path, source = SOURCE, callback = done) ->
     '--reporter ' + (if VERBOSE then 'spec' else 'base')
   ]
 
+  args.push '--watch' if WATCH
+
   if source
     path = "src/#{path}"
     args.push '--compilers coffee:coffee-script/register'
 
   exec "mocha #{args.join ' '} #{path}", callback
 
-# Cheating a bit to get "global" options in this Cakefile
-_task = global.task
-
-global.task = (name, description, action) ->
-  _task name, description, (options) ->
-    if options.verbose
-      VERBOSE = yes
-    if options.source
-      SOURCE = yes
-
-    action options
-
 option '-v', '--verbose', 'Be verbose'
 
 option '-s', '--source', 'Run tests against source coffee'
+
+option '-w', '--watch', 'Whatch sources for changes and re-run tasks'
 
 task 'clean', 'Remove all built files and directories', ->
   queue ->
@@ -216,7 +225,9 @@ task 'build:lib', 'Build library', ->
   queue ->
     log 'task', 'Building lib'
     mkdir 'lib', ->
-      exec "coffee --compile --no-header --output lib/ src/lib"
+      args = ['--compile', '--no-header']
+      args.push '--watch' if WATCH
+      exec "coffee #{args.join ' '} --output lib/ src/lib"
 
 task 'build:license', 'Build license file', ->
   queue ->
