@@ -18,7 +18,7 @@ class Context extends Class
 
   ###
   ###
-  constructor: (@_parent = null, @block = new Document) ->
+  constructor: (@block = new Document, @_parent = null) ->
     @_scope = {}
     @_plugins = []
     @_importers = []
@@ -147,6 +147,6 @@ class Context extends Class
     (new Evaluator).evaluate node, context
 
   child: (block = @block) ->
-    new Context @, block
+    new Context block, @
 
 module.exports = Context
