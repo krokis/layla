@@ -6,8 +6,8 @@ class Function extends Object
 
   constructor: (@func = ->) ->
 
-  invoke: (block, args...) ->
-    (@func.call this, block, args...) or Null.null
+  invoke: (context, args...) ->
+    (@func.call this, context.block, args...) or Null.null
 
   toString: -> 'function'
 
@@ -20,7 +20,7 @@ class Function extends Object
 
   # TODO this should not use @block by default; instead, this should be executed
   # bound to the *calling block*.
-  '.invoke': (args...) -> @invoke @block, args...
+  '.invoke': (context, args...) -> @invoke context, args...
 
 
 module.exports = Function

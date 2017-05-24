@@ -244,7 +244,7 @@ class Evaluator extends Class
   ###
   ###
   evaluateUnaryOperation: (node, context) ->
-    (@evaluateNode node.right, context).operate "#{node.operator}@"
+    (@evaluateNode node.right, context).operate context, "#{node.operator}@"
 
   ###
   TODO Reimplement this mess as a Node methods
@@ -267,7 +267,7 @@ class Evaluator extends Class
 
         # TODO add to call stack
 
-        return left[method](right) or Null.null
+        return left[method](context, right) or Null.null
 
       when '('
         left = node.left
@@ -284,7 +284,7 @@ class Evaluator extends Class
               method = '.::'
 
             # TODO add to call stack
-            return obj[method](name, args...) or Null.null
+            return obj[method](context, name, args...) or Null.null
         else if left instanceof LiteralString
           name = @getStringValue left
 
@@ -299,14 +299,14 @@ class Evaluator extends Class
 
         # TODO add to call stack
 
-        return left.invoke.call(left, context.block, args...) or Null.null
+        return left.invoke.call(left, context, args...) or Null.null
 
       else
         left = @evaluateNode node.left, context
         right = @evaluateNode node.right, context
 
         # TODO add to call stack
-        return left.operate node.operator, right
+        return left.operate context, node.operator, right
 
   evaluateOperation: (node, context) ->
     if node.binary
@@ -367,11 +367,11 @@ class Evaluator extends Class
       ref = @evaluateNode left.left, context
 
       if left.operator is '.'
-        getter = ref['.'].bind ref, name
-        setter = ref['.='].bind ref, name
+        getter = ref['.'].bind ref, context, name
+        setter = ref['.='].bind ref, context, name
       else
-        getter = ref['.::'].bind ref, name
-        setter = ref['.::='].bind ref, name
+        getter = ref['.::'].bind ref, context, name
+        setter = ref['.::='].bind ref, context, name
 
     unless setter
       @referenceError "Bad left side of assignment"

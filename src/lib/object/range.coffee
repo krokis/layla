@@ -70,7 +70,7 @@ class Range extends Indexed
 
   reprValue: -> "#{@first}..#{@last}"
 
-  './': (step) ->
+  './': (context, step) ->
     if step instanceof Number
       return @clone null, null, null, (step.convert @unit).value
 
@@ -86,13 +86,13 @@ class Range extends Indexed
 
   '.step': -> new Number @step, @unit
 
-  '.step=': (step) ->
+  '.step=': (context, step) ->
     if step instanceof Number
       @step = (step.convert @unit).value
     else
       throw new TypeError "Bad `step` value for a range: #{step.repr()}"
 
-  '.convert': (args...) -> @convert args...
+  '.convert': (context, args...) -> @convert args...
 
   '.reverse?': -> Boolean.new @isReverse()
 
@@ -100,7 +100,7 @@ class Range extends Indexed
 
   '.list': -> new List @items
 
-Number::['...'] = (other) ->
+Number::['...'] = (context, other) ->
   if other instanceof Number
     if @unit
       other = other.convert @unit
@@ -117,21 +117,21 @@ Number::['...'] = (other) ->
 do ->
   supah = List::['.::']
 
-  List::['.::'] = (other, etc...) ->
+  List::['.::'] = (context, other, etc...) ->
     if other instanceof Range
       slice = @clone []
       for idx in other.items
-        slice.items.push @['.::'] idx
+        slice.items.push @['.::'] context, idx
       slice
     else
-      supah.call @, other, etc...
+      supah.call @, context, other, etc...
 
 do ->
   { min, max } = Math
 
   supah = String::['.::']
 
-  String::['.::'] = (other, etc...) ->
+  String::['.::'] = (context, other, etc...) ->
     if other instanceof Range
       str = ''
       if @value isnt ''
@@ -150,7 +150,7 @@ do ->
           idx = (idx + 1) % len
       @clone str
     else
-      supah.call @, other, etc...
+      supah.call @, context, other, etc...
 
 
 module.exports = Range

@@ -79,7 +79,7 @@ class RegExp extends Object
   ###
   TODO: convert any object to string with `.string`?
   ###
-  '.~': (other) ->
+  '.~': (context, other) ->
     if other instanceof String
       if m = other.value.match @value
         return new List m.map (str) -> other.clone str
@@ -109,13 +109,13 @@ class RegExp extends Object
 do ->
   supah = String::match
 
-  String::['.~'] = (other, etc...) ->
+  String::['.~'] = (context, other, etc...) ->
     if other instanceof RegExp
-      other['.~'] this
+      other['.~'] context, this
     else
-      supah.call @, other, etc...
+      supah.call @, context, other, etc...
 
-String::['.split'] = (separator, limit = Null.null) ->
+String::['.split'] = (context, separator, limit = Null.null) ->
   if not separator
     reg = null
   else if separator instanceof RegExp
@@ -144,7 +144,7 @@ String::['.split'] = (separator, limit = Null.null) ->
   return new List chunks
 
 do ->
-  String::['./'] = (separator) ->
+  String::['./'] = (context, separator) ->
     if separator instanceof RegExp
       reg = separator.value
     else if separator instanceof String
@@ -153,9 +153,9 @@ do ->
     else
       throw new TypeError "Cannot divide string by a [#{separator.reprType()}]"
 
-    return @['.split'] separator
+    return @['.split'] context, separator
 
-String::['.characters'] = (limit = Null.null) ->
+String::['.characters'] = (context, limit = Null.null) ->
   new List (@value.split '').map (char) => @clone char
 
 String::['.words'] = ->
@@ -164,7 +164,7 @@ String::['.words'] = ->
 String::['.lines'] = ->
   new List ((@value.match /[^\s](.+)[^\s]/g) or []).map (line) => @clone line
 
-String::['.replace'] = (search, replacement) ->
+String::['.replace'] = (context, search, replacement) ->
   if search instanceof RegExp
     search = search.value
   else

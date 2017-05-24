@@ -32,31 +32,31 @@ Object::toBoolean = -> yes
 # TODO should throw an exception ("Cannot compare")?
 Object::isEqual = (other) -> other is @
 
-Object::['.is'] = (other) -> Boolean.new @isEqual other
+Object::['.is'] = (context, other) -> Boolean.new @isEqual other
 
-Object::['.isnt'] = (other) -> Boolean.new not @isEqual other
+Object::['.isnt'] = (context, other) -> Boolean.new not @isEqual other
 
-Object::['.not@'] = (other) -> Boolean.new not @toBoolean()
+Object::['.not@'] = (context, other) -> Boolean.new not @toBoolean()
 
-Object::['.and'] = (other) -> if @toBoolean() then other else @
+Object::['.and'] = (context, other) -> if @toBoolean() then other else @
 
-Object::['.or'] = (other) -> if @toBoolean() then @ else other
+Object::['.or'] = (context, other) -> if @toBoolean() then @ else other
 
-Object::['.>'] = (other) -> Boolean.new @compare(other) < 0
+Object::['.>'] = (context, other) -> Boolean.new @compare(other) < 0
 
-Object::['.>='] = (other) -> Boolean.new @compare(other) <= 0
+Object::['.>='] = (context, other) -> Boolean.new @compare(other) <= 0
 
-Object::['.<'] = (other) -> Boolean.new @compare(other) > 0
+Object::['.<'] = (context, other) -> Boolean.new @compare(other) > 0
 
-Object::['.<='] = (other) -> Boolean.new @compare(other) >= 0
+Object::['.<='] = (context, other) -> Boolean.new @compare(other) >= 0
 
-Object::['.contains?'] = (other) -> Boolean.new @contains(other)
+Object::['.contains?'] = (context, other) -> Boolean.new @contains(other)
 
-Object::['.has'] = (other) -> Boolean.new @contains(other)
+Object::['.has'] = (context, other) -> Boolean.new @contains(other)
 
-Object::['.hasnt'] = (other) -> Boolean.new not @contains(other)
+Object::['.hasnt'] = (context, other) -> Boolean.new not @contains(other)
 
-Object::['.in'] = (other) -> Boolean.new other.contains(@)
+Object::['.in'] = (context, other) -> Boolean.new other.contains(@)
 
 Object::['.enumerable?'] = -> Boolean.new @isEnumerable()
 

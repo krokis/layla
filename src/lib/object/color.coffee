@@ -557,13 +557,13 @@ class Color extends Object
     that.alpha = 1
     that
 
-  '.saturate': (amount) ->
+  '.saturate': (context, amount) ->
     if amount instanceof Number
       @adjustChannel 'hsl', 1, amount.value, amount.unit
     else
       throw new TypeError "Bad argument for #{@reprType()}.saturate"
 
-  '.desaturate': (amount = Number.ONE_HUNDRED_PERCENT) ->
+  '.desaturate': (context, amount = Number.ONE_HUNDRED_PERCENT) ->
     if amount instanceof Number
       @adjustChannel 'hsl', 1, -1 * amount.value, amount.unit
     else
@@ -571,25 +571,25 @@ class Color extends Object
 
   '.grey': -> @['.desaturate']()
 
-  '.whiten': (amount = Number.FIFTY_PERCENT) ->
+  '.whiten': (context, amount = Number.FIFTY_PERCENT) ->
     if amount instanceof Number
       @adjustChannel 'hwb', 1, amount.value, amount.unit
     else
       throw new TypeError "Bad argument for #{@reprType()}.whiten"
 
-  '.blacken': (amount = Number.FIFTY_PERCENT) ->
+  '.blacken': (context, amount = Number.FIFTY_PERCENT) ->
     if amount instanceof Number
       @adjustChannel 'hwb', 2, amount.value, amount.unit
     else
       throw new TypeError "Bad argument for #{@reprType()}.blacken"
 
-  '.darken': (amount = Number.TEN_PERCENT) ->
+  '.darken': (context, amount = Number.TEN_PERCENT) ->
     if amount instanceof Number
       @adjustChannel 'hsl', 2, -1 * amount.value, amount.unit
     else
       throw new TypeError "Bad argument for #{@reprType()}.darken"
 
-  '.lighten': (amount = Number.TEN_PERCENT) ->
+  '.lighten': (context, amount = Number.TEN_PERCENT) ->
     if amount instanceof Number
       @adjustChannel 'hsl', 2, amount.value, amount.unit
     else
@@ -609,7 +609,7 @@ class Color extends Object
 
   @::['.gray?'] = @::['.grey?']
 
-  '.rotate': (amount) ->
+  '.rotate': (context, amount) ->
     if amount instanceof Number
       amount = amount.convert('deg')
       @adjustChannel 'hsl', 0, amount.value, amount.unit
@@ -631,19 +631,19 @@ class Color extends Object
     that
 
   # http://dev.w3.org/csswg/css-color/#tint-shade-adjusters
-  '.tint': (amount = Number.FIFTY_PERCENT) ->
+  '.tint': (context, amount = Number.FIFTY_PERCENT) ->
     white = new Color '#fff'
     white.alpha = amount.value / 100
     white.blend @
 
-  '.shade': (amount = Number.FIFTY_PERCENT) ->
+  '.shade': (context, amount = Number.FIFTY_PERCENT) ->
     black = new Color '#000'
     black.alpha = amount.value / 100
     black.blend @
 
-  '.contrast': (another) ->
+  '.contrast': (context, another) ->
 
-  '.blend': (backdrop, mode = null) ->
+  '.blend': (context, backdrop, mode = null) ->
     if mode isnt null
       if mode instanceof String
         mode = mode.value
@@ -682,7 +682,7 @@ class Color extends Object
   # Individual channel accessors
   '.alpha': -> new Number @alpha
 
-  '.alpha=': (value) ->
+  '.alpha=': (context, value) ->
     if value instanceof Number
       if value.unit is '%'
         value = value.value / 100
@@ -703,7 +703,7 @@ class Color extends Object
       @::[".#{name}"] ?= ->
         new Number @[space][index], channel.unit
 
-      @::[".#{name}="] ?= (value) ->
+      @::[".#{name}="] ?= (context, value) ->
         if value instanceof Number
           if value.unit is '%'
             value = channel.max * value.value / 100

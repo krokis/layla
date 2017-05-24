@@ -54,7 +54,7 @@ class Indexed extends Enumerable
 
   '.last-index': -> Null.ifNull @lastKey()
 
-  '.::': (other) ->
+  '.::': (context, other) ->
     if other instanceof Number
       len = @length()
       idx = other.value

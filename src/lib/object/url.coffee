@@ -151,7 +151,7 @@ class URL extends URI
   ###
   Resolves another URL or string with this as the base
   ###
-  '.+': (other) ->
+  '.+': (context, other) ->
     if other instanceof URL or other instanceof String
       @clone (parseURL.resolve @value, other.value)
     else
@@ -160,7 +160,7 @@ class URL extends URI
   ###
   Sets the `port` component
   ###
-  '.port=': (port) ->
+  '.port=': (context, port) ->
     unless port.isNull()
       if not (port instanceof Number)
         try
@@ -199,7 +199,7 @@ class URL extends URI
       else
         new QuotedString value
 
-    @::[".#{component}="] ?= (value) ->
+    @::[".#{component}="] ?= (context, value) ->
       value = if value.isNull() then null else value.toString()
       @[component] = value
 
@@ -262,7 +262,7 @@ class URL extends URI
         if value?
           new QuotedString value
 
-      @::[".#{name}="] = (value) ->
+      @::[".#{name}="] = (context, value) ->
         if not value.isNull()
           value = value.toString()
         else
@@ -275,11 +275,11 @@ class URL extends URI
 do ->
   supah = String::['.+']
 
-  String::['.+'] = (other, etc...) ->
+  String::['.+'] = (context, other, etc...) ->
     if other instanceof URL
       other.clone parseURL.resolve @value, other.value
     else
-      supah.call @, other, etc...
+      supah.call @, context, other, etc...
 
 
 module.exports = URL

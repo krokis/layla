@@ -89,7 +89,7 @@ class String extends Object
 
   reprValue: -> @escape()
 
-  '.+': (other) ->
+  '.+': (context, other) ->
     if other instanceof String
       return @clone "#{@value}#{other.value}"
     else
@@ -100,7 +100,7 @@ class String extends Object
         """
       )
 
-  '.*': (other) ->
+  '.*': (context, other) ->
     if other instanceof Number
       if other.value >= 0
         unless other.unit
@@ -123,7 +123,7 @@ class String extends Object
         """
       )
 
-  '.::': (other) ->
+  '.::': (context, other) ->
     if other instanceof Number
       len = @length
       idx = other.value
@@ -144,9 +144,9 @@ class String extends Object
   '.blank?': -> new Boolean @isBlank()
 
   # TODO Deprecate
-  '.append': @::append
+  '.append': (context, others...) -> @append others...
 
-  '.trim': (chars) ->
+  '.trim': (context, chars) ->
     # TODO check bad args
     if chars instanceof String
       chars = QUOTE_REGEXP chars.value
@@ -155,7 +155,7 @@ class String extends Object
 
     @clone (@value.replace ///^[#{chars}]+|[#{chars}]+$///g, '')
 
-  '.ltrim': (chars) ->
+  '.ltrim': (context, chars) ->
     # TODO check bad args
     if chars instanceof String
       chars = QUOTE_REGEXP chars.value
@@ -164,7 +164,7 @@ class String extends Object
 
     @clone (@value.replace ///^[#{chars}]+///g, '')
 
-  '.rtrim': (chars) ->
+  '.rtrim': (context, chars) ->
     # TODO check bad args
     if chars instanceof String
       chars = QUOTE_REGEXP chars.value
@@ -173,14 +173,14 @@ class String extends Object
 
     @clone (@value.replace ///[#{chars}]+$///g, '')
 
-  '.starts-with?': (str) ->
+  '.starts-with?': (context, str) ->
     Boolean.new (
       str instanceof String and
       (@value.length >= str.value.length) and
       (@value[0...str.value.length] is str.value)
     )
 
-  '.ends-with?': (str) ->
+  '.ends-with?': (context, str) ->
     Boolean.new (
       str instanceof String and
       (@value.length >= str.value.length) and
@@ -206,10 +206,10 @@ class String extends Object
 do ->
   supah = Number::['.*']
 
-  Number::['.*'] = (other, etc...) ->
+  Number::['.*'] = (context, other, etc...) ->
     if other instanceof String
-      other['.*'] @
+      other['.*'] context, @
     else
-      supah.call @, other, etc...
+      supah.call @, context, other, etc...
 
 module.exports = String

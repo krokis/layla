@@ -15,9 +15,9 @@ class Object extends Class
 
   hasMethod: (name) -> typeof @[".#{name}"] is 'function'
 
-  operate: (operator, other, etc...) ->
+  operate: (context, operator, other, etc...) ->
     if @hasMethod operator
-      @['.'] operator, other, etc...
+      @['.'] context, operator, other, etc...
     else
       repr =
         if other
@@ -46,15 +46,15 @@ class Object extends Class
 
   toString: -> throw new Error "Cannot convert #{@repr()} to string"
 
-  '.': (name, etc...) ->
+  '.': (context, name, etc...) ->
     method = @[".#{name}"]
 
     if typeof method is 'function'
-      method.call this, etc...
+      method.call this, context, etc...
     else
       throw new TypeError "Call to undefined method: [#{@type}.#{name}]"
 
-  '.=': (name, etc...) -> @['.'] "#{name}=", etc...
+  '.=': (context, name, etc...) -> @['.'] context, "#{name}=", etc...
 
   '.copy': -> @clone()
 

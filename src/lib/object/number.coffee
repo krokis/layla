@@ -172,7 +172,7 @@ class Number extends Object
 
   '.-@': -> @clone -@value
 
-  '.+': (other) ->
+  '.+': (context, other) ->
     if other instanceof Number
       @clone (@convert other.unit).value + other.value, other.unit or @unit
     else
@@ -183,7 +183,7 @@ class Number extends Object
         """
       )
 
-  '.-': (other) ->
+  '.-': (context, other) ->
     if other instanceof Number
       @clone (@convert other.unit).value - other.value, other.unit or @unit
     else
@@ -194,7 +194,7 @@ class Number extends Object
         """
       )
 
-  '.*': (other) ->
+  '.*': (context, other) ->
 
     if other instanceof Number
       if @isPure() or other.isPure()
@@ -210,7 +210,7 @@ class Number extends Object
         right side must be a #{Number.repr()}
         """
 
-  './': (other) ->
+  './': (context, other) ->
     if other instanceof Number
       if other.value is 0
         throw new TypeError 'Cannot divide by 0'
@@ -238,7 +238,7 @@ class Number extends Object
 
   '.decimal?': -> Boolean.new @value % 1 isnt 0
 
-  '.divisible-by?': (other) ->
+  '.divisible-by?': (context, other) ->
     unless other.isPure()
       try
         other = other.convert @unit
@@ -273,7 +273,7 @@ class Number extends Object
 
   '.negative?': -> Boolean.new @value < 0
 
-  '.round': (places = ZERO) ->
+  '.round': (context, places = ZERO) ->
     m = pow 10, places.value
     @clone (round (@value * m)) / m
 
@@ -283,11 +283,11 @@ class Number extends Object
 
   '.abs': -> @clone abs @value
 
-  '.pow': (exp = TWO) -> @clone pow @value, exp.value
+  '.pow': (context, exp = TWO) -> @clone pow @value, exp.value
 
   '.sq': -> @['.pow'] TWO
 
-  '.root': (deg = TWO) ->
+  '.root': (context, deg = TWO) ->
     if @value < 0
       throw new TypeError """
       Cannot make #{deg.value}th root of #{@repr()}: Base cannot be negative
@@ -296,7 +296,7 @@ class Number extends Object
 
   '.sqrt': -> @['.root'] TWO
 
-  '.mod': (other) ->
+  '.mod': (context, other) ->
     if other.value is 0
       throw new TypeError 'Cannot divide by 0'
     @clone @value % other.value
@@ -315,7 +315,7 @@ class Number extends Object
 
   '.prime?': -> Boolean.new @isPrime()
 
-  '.convert': (unit) ->
+  '.convert': (context, unit) ->
     if unit.isNull()
       unit = null
     else

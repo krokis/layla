@@ -22,7 +22,7 @@ class Block extends Collection
       (item.name is name) and
       (not item.value.isNull())
 
-  '.::': (other) ->
+  '.::': (context, other) ->
     if other instanceof String
       val = Null.null
 
@@ -34,7 +34,7 @@ class Block extends Collection
 
     return super
 
-  '.::=': (key, value) ->
+  '.::=': (context, key, value) ->
     if key instanceof String
       name = key.value
       prop = null
@@ -54,7 +54,7 @@ class Block extends Collection
 
   '.properties': -> new Block (@items.filter (obj) -> obj instanceof Property)
 
-  '.has-property?': (name) -> Boolean.new @hasProperty name.value
+  '.has-property?': (context, name) -> Boolean.new @hasProperty name.value
 
 
 module.exports = Block

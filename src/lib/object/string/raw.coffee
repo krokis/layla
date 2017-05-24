@@ -16,7 +16,7 @@ class RawString extends String
 
 Number::['.unit'] = -> if @unit then new RawString @unit else Null.null
 
-Number::['.base'] = (base = Number.TEN) ->
+Number::['.base'] = (context, base = Number.TEN) ->
   base = base.toNumber()
 
   unless base.isInteger()
