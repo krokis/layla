@@ -149,17 +149,17 @@ Strings
   ~~~ lay
   string.unquoted {
     background: light-green
-    background: red
-    red = "#f00"
-    background: red
+    background: green
+    $green = green
+    background: $green
   }
   ~~~
 
   ~~~ css
   string.unquoted {
     background: light-green;
-    background: red;
-    background: "#f00";
+    background: #008000;
+    background: #008000;
   }
   ~~~
 
@@ -227,10 +227,10 @@ Strings
   string[raw] {
     background: `light-green`
     margin: `0`
-    background: red
-    red = `#f00`
-    background: `red`
-    background: red
+    background: #f00
+    `redish` = #f00
+    background: `redish`
+    background: #f00
   }
   ~~~
 
@@ -238,8 +238,8 @@ Strings
   string[raw] {
     background: light-green;
     margin: 0;
-    background: red;
-    background: red;
+    background: #f00;
+    background: redish;
     background: #f00;
   }
   ~~~
@@ -1425,13 +1425,13 @@ Strings
 
   ~~~ lay
   string.eval {
-    'color: red'.eval
+    'color: #f00'.eval
   }
   ~~~
 
   ~~~ css
   string.eval {
-    color: red;
+    color: #f00;
   }
   ~~~
 
@@ -1453,7 +1453,7 @@ Strings
 
   ~~~ css
   string.eval > div {
-    background-color: #ffffff;
+    background-color: #fff;
   }
   ~~~
 
@@ -1470,7 +1470,7 @@ Strings
   ~~~ css
   string.eval {
     i: "Yo!";
-    ii: #ff0000;
+    ii: #f00;
   }
   ~~~
 

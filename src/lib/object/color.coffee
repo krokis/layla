@@ -513,7 +513,7 @@ class Color extends Object
     return "rgba(" + (comps.join ', ') + ')'
 
   toHexString: ->
-    comps = [].concat @['rgb']
+    comps = @['rgb'].map round
 
     alpha = @alpha * 255
 
@@ -522,13 +522,16 @@ class Color extends Object
 
     hex = '#'
 
-    for c in comps
-      c = (round c).toString 16
+    if comps.every((c) -> 0 is c % 17)
+      hex += (comps.map((c) -> (c / 17).toString 16)).join ''
+    else
+      for c in comps
+        c = (round c).toString 16
 
-      if c.length < 2
-        hex += '0'
+        if c.length < 2
+          hex += '0'
 
-      hex += c
+        hex += c
 
     return hex
 

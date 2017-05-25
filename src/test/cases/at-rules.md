@@ -158,13 +158,13 @@ At-rules
 
   ~~~ lay
   @foo "lorem ipsum" 'lorem \'ipsum\'' {
-    border: red
+    border: #f00
   }
   ~~~
 
   ~~~ css
   @foo "lorem ipsum" "lorem 'ipsum'" {
-    border: red;
+    border: #f00;
   }
   ~~~
 
@@ -178,7 +178,7 @@ At-rules
 
   ~~~ css
   @foo lorem ipsum dolor sit-amet {
-    border: #0000ff;
+    border: #00f;
   }
   ~~~
 
@@ -218,7 +218,7 @@ At-rules
 
   ~~~ css
   @foo-bar lorem :ipsum :sit-amet {
-    border: #00ff00;
+    border: #0f0;
   }
   ~~~
 

@@ -5,7 +5,7 @@ Lists
 
   ~~~ lay
   lipsum = (lorem ipsum)
-  border = 1px solid red
+  border = 1px solid #f00
   $-shadow = ((((2px) (2px) 2 * 2 + 0px #000)))
 
   body {
@@ -21,8 +21,8 @@ Lists
 
   ~~~ css
   body {
-    border: 1px solid red;
-    box-shadow: 2px 2px 4px #000000;
+    border: 1px solid #f00;
+    box-shadow: 2px 2px 4px #000;
     lorem: lorem ipsum;
     ipsum: dolor, sit;
   }
@@ -45,7 +45,7 @@ Lists
 - Can be made with commas
 
   ~~~ lay
-  $border = 1px, solid, red
+  $border = 1px, solid, #f00
   $l = (1,2,3,)
 
   body {
@@ -56,7 +56,7 @@ Lists
 
   ~~~ css
   body {
-    border: 1px, solid, red;
+    border: 1px, solid, #f00;
     content: 1, 2, 3;
   }
   ~~~
@@ -153,10 +153,10 @@ Lists
   ~~~ css
   body,
   html {
-    font: 14px "Helvetica", "Arial", sans-serif #666666;
-    font: 14px "Helvetica", "Arial", sans-serif #666666;
-    font: 14px "Helvetica", "Arial", sans-serif #666666;
-    font: 14px, "Helvetica", "Arial", sans-serif, #666666;
+    font: 14px "Helvetica", "Arial", sans-serif #666;
+    font: 14px "Helvetica", "Arial", sans-serif #666;
+    font: 14px "Helvetica", "Arial", sans-serif #666;
+    font: 14px, "Helvetica", "Arial", sans-serif, #666;
   }
 
   #bar {
@@ -371,7 +371,7 @@ Lists
   c: (1,"2",#fff).unique?
   d: (1,2,1).unique?
   e: (1,1,2,1).unique?
-  f: (#f,#ffffff,red).unique?
+  f: (#f,#ffffff,#f00).unique?
   ~~~~
 
   ~~~ css
@@ -688,7 +688,7 @@ Lists
 
   ~~~ lay
   list[operator="::"] {
-    border: 1px solid red
+    border: 1px solid #f00
     box-shadow: (((2px 2px (4px) #000)))
   }
 
@@ -703,8 +703,8 @@ Lists
 
   ~~~ css
   list[operator="::"] {
-    border: 1px solid red;
-    box-shadow: 2px 2px 4px #000000;
+    border: 1px solid #f00;
+    box-shadow: 2px 2px 4px #000;
   }
 
   list[operator="::"] {

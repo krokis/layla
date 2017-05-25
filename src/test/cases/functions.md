@@ -42,7 +42,7 @@ Functions
   }
 
   button {
-    DO-NOTHING(2px red)
+    DO-NOTHING(2px #f00)
     make-button(5px)
     font-style: (() { return italic })()
     font-weight: (($weight: 400) { return $weight })(bolder)
@@ -262,13 +262,13 @@ Functions
 - Can be self-called
 
   ~~~ lay
-  (($c) { color: $c })(red)
-  ($i, $c: white) { background: $c $i }(url(background.jpg))
+  (($c) { color: $c })(#f00)
+  ($i, $c: #fff) { background: $c $i }(url(background.jpg))
   ~~~
 
   ~~~ css
-  color: red;
-  background: white url("background.jpg");
+  color: #f00;
+  background: #fff url("background.jpg");
   ~~~
 
 ## `return`

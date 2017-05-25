@@ -14,7 +14,7 @@
   ~~~ css
   important {
     i: 1px 2px 3px !important;
-    ii: #ff0000 !important;
+    ii: #f00 !important;
     iii: "Helvetica" !important;
     iv: url("google.com") !important;
   }
@@ -89,7 +89,7 @@
 
   ~~~ css
   important.important {
-    i: #ff0000 !important;
+    i: #f00 !important;
   }
   ~~~
 
@@ -106,7 +106,7 @@
 
   ~~~ css
   important.important {
-    i: #ff0000;
+    i: #f00;
     ii: 2px;
   }
   ~~~

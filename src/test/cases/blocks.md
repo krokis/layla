@@ -24,10 +24,10 @@ Blocks
 - Are always trueish
 
   ~~~ lay
-  a = { p { color: white } }
+  a = { p { color: #fff } }
 
   bar {
-    foo: {}.true? ({ border: red}).true? (not a.false?) a::0.true? a.empty.true?
+    foo: {}.true? ({ border: #f00}).true? (not a.false?) a::0.true? a.empty.true?
   }
   ~~~
 
@@ -58,7 +58,7 @@ Blocks
   ~~~ lay
   $border = {
     radius: 4px
-    color: red
+    color: #f00
     width: 1px
     style: solid
   }
@@ -84,9 +84,9 @@ Blocks
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     border-radius: 4px;
-    -moz-border-color: red;
-    -webkit-border-color: red;
-    border-color: red;
+    -moz-border-color: #f00;
+    -webkit-border-color: #f00;
+    border-color: #f00;
     -moz-border-width: 1px;
     -webkit-border-width: 1px;
     border-width: 1px;
@@ -104,10 +104,10 @@ Blocks
     margin, padding: 0
     background-color,
     color,
-    #{$border-color}: black
+    #{$border-color}: #000
     width,height: 20px
 
-    p { background-color: white; color, border-color, decoration-color: #666 }
+    p { background-color: #fff; color, border-color, decoration-color: #666 }
   }
   ~~~
 
@@ -115,18 +115,18 @@ Blocks
   body {
     margin: 0;
     padding: 0;
-    background-color: black;
-    color: black;
-    border-color: black;
+    background-color: #000;
+    color: #000;
+    border-color: #000;
     width: 20px;
     height: 20px;
   }
 
   body p {
-    background-color: white;
-    color: #666666;
-    border-color: #666666;
-    decoration-color: #666666;
+    background-color: #fff;
+    color: #666;
+    border-color: #666;
+    decoration-color: #666;
   }
   ~~~
 
@@ -168,7 +168,7 @@ Blocks
   ~~~~ lay
   body {
     background: {
-      color: white
+      color: #fff
       image: url('/back.png')
     }
 
@@ -183,7 +183,7 @@ Blocks
 
   ~~~~ css
   body {
-    background-color: white;
+    background-color: #fff;
     background-image: url("/back.png");
     margin-left: 1px;
     margin-top: 2px;
@@ -196,10 +196,10 @@ Blocks
 
   ~~~ lay
   body {
-    color: red
+    color: #f00
     border-left-width, border-right-width|: 1px
     font|: null
-    color|: blue
+    color|: #00f
     border-left-width|: 2px
     border-top-width|: 2px
     font|: 'Arial'
@@ -210,7 +210,7 @@ Blocks
 
   ~~~ css
   body {
-    color: red;
+    color: #f00;
     border-left-width: 1px;
     border-right-width: 1px;
     font: null;
@@ -231,10 +231,10 @@ Blocks
 
   ~~~ lay
   $b = {
-    border: 1px solid red
+    border: 1px solid #f00
 
     p {
-      color: white
+      color: #fff
       border: none
     }
     color: #666
@@ -242,7 +242,7 @@ Blocks
     font-size: 14px
 
     @media screen {
-      color: white
+      color: #fff
     }
   }
 
@@ -261,15 +261,15 @@ Blocks
 
   ~~~ css
   body {
-    -foo-border: 1px solid red;
-    -foo-color: #666666;
+    -foo-border: 1px solid #f00;
+    -foo-color: #666;
     -foo-font-size: 14px;
     -foo-font-size: 14px;
   }
 
   body .unique {
-    -foo-border: 1px solid red;
-    -foo-color: #666666;
+    -foo-border: 1px solid #f00;
+    -foo-color: #666;
     -foo-font-size: 14px;
   }
   ~~~
@@ -280,20 +280,20 @@ Blocks
 
   ~~~~ lay
   body {
-    color: red
+    color: #f00
     has-color: &.has-property?(color)
     has-background-color: &.has-property?(background-color)
-    background-color: white
+    background-color: #fff
     has-background-color: &.has-property?(background-color)
   }
   ~~~~
 
   ~~~~ css
   body {
-    color: red;
+    color: #f00;
     has-color: true;
     has-background-color: false;
-    background-color: white;
+    background-color: #fff;
     has-background-color: true;
   }
   ~~~~
@@ -302,7 +302,7 @@ Blocks
 
   ~~~~ lay
   body {
-    color: red
+    color: #f00
     has-color: &.has-property?(color)
     has-Color: &.has-property?(Color)
   }
@@ -310,7 +310,7 @@ Blocks
 
   ~~~~ css
   body {
-    color: red;
+    color: #f00;
     has-color: true;
     has-Color: false;
   }
@@ -346,13 +346,13 @@ Blocks
 
   ~~~~ css
   * {
-    color: #666666;
+    color: #666;
     font-family: Helvetica;
     font-size: 14px;
   }
 
   a {
-    color: #0000ff;
+    color: #00f;
   }
 
   b {
@@ -398,11 +398,11 @@ Blocks
     must: $hey::(`must`)
   }
 
-  foo = { color: red }
+  foo = { color: #f00 }
 
   color: foo::color
   color: foo::`color`
-  color = white
+  color = #fff
   color: foo::color
   color: foo::`color`
   ~~~
@@ -413,10 +413,10 @@ Blocks
     must: "be a devil between us";
   }
 
-  color: red;
-  color: red;
-  color: red;
-  color: red;
+  color: #f00;
+  color: #f00;
+  color: #f00;
+  color: #f00;
   ~~~
 
 - If the passed property name has been defined more than once, returns the latest value
@@ -458,9 +458,9 @@ Blocks
 
   ~~~ lay
   obj = {
-    border: red
+    border: #f00
     div {
-      color: white
+      color: #fff
     }
   }
 
@@ -493,12 +493,12 @@ Blocks
 
   ~~~ lay
   $b = {
-    color: red
-    background-color: white
+    color: #f00
+    background-color: #fff
   }
 
   $b::color = $b::`background-color`
-  $b::"background-color" = red
+  $b::"background-color" = #f00
 
   body {
     color: $b::color
@@ -508,20 +508,20 @@ Blocks
 
   ~~~ css
   body {
-    color: white;
-    background-color: red;
+    color: #fff;
+    background-color: #f00;
   }
   ~~~
 
 - Adds properties to the block
 
   ~~~ lay
-   $b = {
+  $b = {
     color: #666
   }
 
-  $b::color |= red
-  $b::background-color |= white
+  $b::color |= #f00
+  $b::background-color |= #fff
   $b::margin = 0px
 
   body {
@@ -533,8 +533,8 @@ Blocks
 
   ~~~ css
   body {
-    color: #666666;
-    background-color: white;
+    color: #666;
+    background-color: #fff;
     margin: 0;
   }
   ~~~

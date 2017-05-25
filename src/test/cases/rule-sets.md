@@ -8,7 +8,7 @@ Rule sets
   {
     if not true
     {
-      border-color: red
+      border-color: #f00
     }
   }
   ;body{} ; ; ; div {};
@@ -24,7 +24,7 @@ Rule sets
     color: #000;
 
     div {
-      border: red
+      border: #f00
       padding: 20px
 
       b {
@@ -36,11 +36,11 @@ Rule sets
 
   ~~~ css
   body {
-    color: #000000;
+    color: #000;
   }
 
   body div {
-    border: red;
+    border: #f00;
     padding: 20px;
   }
 
@@ -101,7 +101,7 @@ Rule sets
 
   ~~~ lay
   * {
-    color: red
+    color: #f00
   }
   html * * {
     color: grey
@@ -110,11 +110,11 @@ Rule sets
 
   ~~~ css
   * {
-    color: red;
+    color: #f00;
   }
 
   html * * {
-    color: grey;
+    color: #808080;
   }
   ~~~
 
@@ -124,14 +124,14 @@ Rule sets
 
   ~~~ lay
   body, div_2 {
-    color: black
+    color: #000
   }
   ~~~
 
   ~~~ css
   body,
   div_2 {
-    color: black;
+    color: #000;
   }
   ~~~
 
@@ -145,29 +145,15 @@ Rule sets
 
   ~~~ css
   foo|body {
-    color: white;
+    color: #fff;
   }
 
   *|body {
-    color: white;
+    color: #fff;
   }
 
   |body {
-    color: white;
-  }
-  ~~~
-
-  ~~~ css
-  foo|* {
-    color: white;
-  }
-
-  *|* {
-    color: white;
-  }
-
-  |* {
-    color: white;
+    color: #fff;
   }
   ~~~
 
@@ -219,7 +205,7 @@ Rule sets
 
   ~~~ css
   html > body.js {
-    color: white;
+    color: #fff;
   }
   ~~~
 
@@ -233,7 +219,7 @@ Rule sets
 
   ~~~ css
   svg|circle {
-    border: 2px solid red;
+    border: 2px solid #f00;
   }
   ~~~
 
@@ -437,7 +423,7 @@ Rule sets
   }
 
   a[href][data-external], a[href].external {
-    color: red
+    color: #f00
   }
   ~~~
 
@@ -452,7 +438,7 @@ Rule sets
 
   a[href][data-external],
   a[href].external {
-    color: red;
+    color: #f00;
   }
   ~~~
 
@@ -482,11 +468,11 @@ Rule sets
 
   ~~~ css
   *[href="http://disney.es"] {
-    color: pink;
+    color: #ffc0cb;
   }
 
   *[href="http://disney.es"] {
-    color: pink;
+    color: #ffc0cb;
   }
 
   [target=_blank] {
@@ -781,15 +767,15 @@ Rule sets
 
   ~~~ lay
   tr:nth-child(2n+1) {
-    background: silver
+    background: #c0c0c0
   }
 
   tr:nth-of-type(odd) {
-    background: silver
+    background: #c0c0c0
   }
 
   html:lang(it) {
-    background: yellow
+    background: #ff0
   }
 
   p:not(.par[imp=yes]#foo) {
@@ -803,15 +789,15 @@ Rule sets
 
   ~~~ css
   tr:nth-child(2n + 1) {
-    background: silver;
+    background: #c0c0c0;
   }
 
   tr:nth-of-type(odd) {
-    background: silver;
+    background: #c0c0c0;
   }
 
   html:lang(it) {
-    background: yellow;
+    background: #ff0;
   }
 
   p:not(.par[imp=yes]#foo) {
@@ -944,28 +930,28 @@ Rule sets
 
   ~~~ lay
   + div {
-    color: green
+    color: #0f0
   }
 
   ~ b {
-    color: black
+    color: #000
   }
   > div {
-    color: red
+    color: #f00
   }
   ~~~
 
   ~~~ css
   + div {
-    color: green;
+    color: #0f0;
   }
 
   ~ b {
-    color: black;
+    color: #000;
   }
 
   > div {
-    color: red;
+    color: #f00;
   }
   ~~~
 
@@ -977,19 +963,19 @@ Rule sets
   body {
     div {
       b {
-        border: red
+        border: #f00
       }
     }
   }
 
   h1, h2, h3 {
-    a, p { color: red }
+    a, p { color: #f00 }
   }
   ~~~
 
   ~~~ css
   body div b {
-    border: red;
+    border: #f00;
   }
 
   h1 a,
@@ -998,7 +984,7 @@ Rule sets
   h1 p,
   h2 p,
   h3 p {
-    color: red;
+    color: #f00;
   }
   ~~~
 
@@ -1030,7 +1016,7 @@ Rule sets
   h1, h2, h3 {
     a, p {
       &:hover {
-        color: red
+        color: #f00
       }
     }
   }
@@ -1043,29 +1029,29 @@ Rule sets
   h1 p:hover,
   h2 p:hover,
   h3 p:hover {
-    color: red;
+    color: #f00;
   }
   ~~~
 
   ~~~ lay
-  a { color: red; &:hover { color: blue }; div & { color: green }; p & span { color: yellow }}
+  a { color: #f00; &:hover { color: #00f }; div & { color: #0f0 }; p & span { color: #ff0 }}
   ~~~
 
   ~~~ css
   a {
-    color: red;
+    color: #f00;
   }
 
   a:hover {
-    color: blue;
+    color: #00f;
   }
 
   div a {
-    color: green;
+    color: #0f0;
   }
 
   p a span {
-    color: yellow;
+    color: #ff0;
   }
   ~~~
 
@@ -1114,7 +1100,7 @@ Rule sets
   .b {
    &.c {
     .a& {
-     color: red
+     color: #f00
     }
    }
   }
@@ -1122,42 +1108,42 @@ Rule sets
   .b {
    .c & {
     &.a {
-     color: red
+     color: #f00
     }
    }
   }
 
   .p {
     .foo&.bar {
-      color: red
+      color: #f00
     }
   }
 
   ;.other {
-    ::bnord { color: red };
-    &::bnord { color: red };
+    ::bnord { color: #f00 };
+    &::bnord { color: #f00 };
   };
   ~~~
 
   ~~~ css
   .a.b.c {
-    color: red;
+    color: #f00;
   }
 
   .c .b.a {
-    color: red;
+    color: #f00;
   }
 
   .foo.p.bar {
-    color: red;
+    color: #f00;
   }
 
   .other ::bnord {
-    color: red;
+    color: #f00;
   }
 
   .other::bnord {
-    color: red;
+    color: #f00;
   }
   ~~~
 

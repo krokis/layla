@@ -366,7 +366,10 @@ class Evaluator extends Class
       setter = context.set.bind context, name
 
     else if left instanceof Operation and left.operator in ['.', '::']
-      name = @evaluateNode left.right, context
+      if left.right instanceof LiteralString
+        name = new UnquotedString @getStringValue(left.right, context)
+      else
+        name = @evaluateNode left.right, context
 
       ref = @evaluateNode left.left, context
 

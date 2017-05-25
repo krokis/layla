@@ -15,7 +15,7 @@ Idents
   ~~~ css
   color: red\!;
   colour: __light_green\!\!\!;
-  colour: #ff0000;
+  colour: #f00;
   colour: --pale-white;
   whisky: please\?;
   ~~~

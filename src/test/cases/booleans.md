@@ -109,7 +109,7 @@ Booleans
   foo: not (1..2)
   foo: not (1 - 1)
   foo: not bar
-  foo: not ({ color: red; })
+  foo: not ({ color: #f00; })
   foo: not ({})
   foo: not #666
   foo: not (not null)

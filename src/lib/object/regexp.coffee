@@ -20,7 +20,9 @@ class RegExp extends Object
 
   @escape: (str) -> str.replace /[-\/\\^$*+?.()|[\]{}]/g, '\\$&'
 
-  constructor: (@source, @flags) -> @build()
+  constructor: (@source, @flags) ->
+    @source = @source.toString()
+    @build()
 
   @property 'value',
     get: ->
