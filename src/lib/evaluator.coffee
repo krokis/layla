@@ -199,38 +199,32 @@ class Evaluator extends Class
       else
         in_args.push arg
 
-    new Function (block, args...) =>
-      try
-        ctx = context.child block
-        l = in_args.length
+    return new Function (ctx, args...) =>
+      ctx = ctx.child()
 
-        for arg, i in args
-          if i < l
-            ctx.set in_args[i][0], arg
-          else
-            break
+      l = in_args.length
 
-        for d in [i...in_args.length]
-          if in_args[d][1]
-            value = @evaluateNode in_args[d][1], ctx
-          else
-            value = Null.null
-
-          ctx.set in_args[d][0], value
-
-        if rest_arg
-          rest = new List args[in_args.length...]
-          ctx.set rest_arg, rest
-
-        @evaluateBody body, ctx
-
-        return null
-
-      catch e
-        if (e instanceof Directive) and (e.name is 'return')
-          return e.value
+      for arg, i in args
+        if i < l
+          ctx.set in_args[i][0], arg
         else
-          throw e
+          break
+
+      for d in [i...in_args.length]
+        if in_args[d][1]
+          value = @evaluateNode in_args[d][1], ctx
+        else
+          value = Null.null
+
+        ctx.set in_args[d][0], value
+
+      if rest_arg
+        rest = new List args[in_args.length...]
+        ctx.set rest_arg, rest
+
+      @evaluateBody body, ctx
+
+      return Null.null
 
   ###
   ###
@@ -452,7 +446,7 @@ class Evaluator extends Class
       else
         @valueError "Too many arguments for a `return`"
 
-    throw node
+    throw node.value
 
   ###
   ###
@@ -772,6 +766,8 @@ class Evaluator extends Class
     catch err
       if err instanceof Directive
         @runtimeError "Uncaught `#{err.name}`"
+      else if err instanceof Object
+        @runtimeError "Uncaught `return`"
       else
         throw err
 

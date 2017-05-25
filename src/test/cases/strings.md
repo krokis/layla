@@ -825,7 +825,7 @@ Strings
     d: say-hello('world').quoted?
     e: not say-hello(world).quoted?
     f: say-hello().quoted?
-    g: hello-world.unquoted?
+    g: hello-world.quoted?
   }
   ~~~
 
@@ -837,7 +837,7 @@ Strings
     d: false;
     e: true;
     f: false;
-    g: true;
+    g: false;
   }
   ~~~
 

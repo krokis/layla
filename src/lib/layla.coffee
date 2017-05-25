@@ -10,6 +10,7 @@ Object     = require './object'
 Document   = require './object/document'
 String     = require './object/string'
 Error      = require './error'
+CSS        = require './css'
 Normalizer = require './css/normalizer'
 VERSION    = require './version'
 
@@ -39,6 +40,7 @@ class Layla
     @evaluator = new Evaluator
     @normalizer = new Normalizer
     @emitter = new CSSEmitter
+    @context.use new CSS
 
   # Core methods
   parse: (source) ->

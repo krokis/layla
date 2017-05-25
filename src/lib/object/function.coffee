@@ -7,7 +7,13 @@ class Function extends Object
   constructor: (@func = ->) ->
 
   invoke: (context, args...) ->
-    (@func.call this, context.block, args...) or Null.null
+    try
+      return (@func.call this, context, args...) or Null.null
+    catch e
+      if e instanceof Object
+        return e
+
+      throw e
 
   toString: -> 'function'
 

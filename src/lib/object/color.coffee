@@ -26,7 +26,7 @@ class Color extends Object
   YELLOW      = name: 'yellow', max: 100, unit: '%'
   BLACK       = name: 'black', max: 100, unit: '%'
 
-  SPACES =
+  @SPACES = SPACES =
     rgb:  [ RED, GREEN, BLUE ]
     hsl:  [ HUE, SATURATION, LIGHTNESS ]
     hwb:  [ HUE, WHITENESS, BLACKNESS ]
