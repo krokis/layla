@@ -168,10 +168,14 @@ class Evaluator extends Class
           obj = new URL uri
 
         obj.name = name
-      when 'regexp'
-        obj = new RegExp args[0]?.value or null
       else
-        obj = new Call name, args
+        # TODO Temporary
+        func = context.get(name)
+
+        if func instanceof Function
+          obj = func.invoke.call(func, context, args...) or Null.null
+        else
+          obj = new Call name, args
 
     return obj
 

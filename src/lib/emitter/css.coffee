@@ -32,6 +32,7 @@ class CSSEmitter extends Emitter
       preferred_string_quote:      null # original, ", '
       force_string_quote:          null # same
       decimal_places:              2
+      color_format:                'shortest'
       url_quote:                   '"'
 
     for name of defaults

@@ -411,6 +411,10 @@ class Tokenizer extends Class
   ###
   ###
   readCall: ->
+    # TODO: `regexp()` should match parens:
+    # > regexp(.*cdd(-) ~ ''
+    # [TypeError] Invalid regular expression: /.*cdd(-/: Unterminated group
+    # That should be an "Unexpected EOF" syntax error
     if m = @match /^(url-prefix|url|domain|regexp)\(/i
       call = new Token T.CALL, m.start
       call.name = m[1]

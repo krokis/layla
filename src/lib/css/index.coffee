@@ -2,6 +2,8 @@ Plugin = require '../plugin'
 
 MODULES = [
   require './color'
+  require './types'
+  require './units'
 ]
 
 ###
