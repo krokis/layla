@@ -169,7 +169,7 @@ describe 'Cases', ->
             desc = "#{(name.charAt 0).toUpperCase()}#{name.substr 1}"
             describe desc, ->
               testDir file
-          else if st.isFile() and name.match /\.md$/
+          else if st.isFile() and name.match /colors\.md$/
             testFile file
         else
           throw new Error "Could not stat file #{file_path}"

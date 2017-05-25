@@ -496,6 +496,45 @@
   }
   ~~~
 
+### `contrast-ratio`
+
+- Returns the contrast ratio with another color, as a number
+
+  ~~~ lay
+  color.contrast-ratio {
+    // Borrowed from Stylus
+    i: #fff.contrast-ratio(#fff)
+    ii: #f00.contrast-ratio(#0f0)
+  }
+  ~~~
+
+  ~~~ css
+  color.contrast-ratio {
+    i: 1;
+    ii: 2.91;
+  }
+  ~~~
+
+### `contrast`
+
+- Picks the color with the maximum contrast ratio
+
+  ~~~ lay
+  // Borrowed from Less
+  color.contrast {
+    // Borrowed from Less
+    contrast-light: #fff.contrast(#111111, #eeeeee)
+    contrast-dark: #000.contrast(#111111, #eeeeee)
+  }
+  ~~~
+
+  ~~~ css
+  color.contrast {
+    contrast-light: #111111;
+    contrast-dark: #eeeeee;
+  }
+  ~~~
+
 ### `lighten`
 
 - Returns a copy of the color with increased lightness

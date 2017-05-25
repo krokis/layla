@@ -434,11 +434,14 @@ class Color extends Object
     return @clone().setChannel(
       space, channel, amount + @getChannel(space, channel))
 
-  # https://drafts.csswg.org/css-color-4/#luminance
+  ###
+  https://drafts.csswg.org/css-color-4/#luminance
+  ###
   @property 'luminance',
     get: ->
       [r, g, b] = [@red, @green, @blue].map (channel, i) ->
         channel /= 255
+
         if channel <= .03928
           channel / 12.92
         else
@@ -447,6 +450,44 @@ class Color extends Object
       return .2126 * r + .7152 * g + .0722 * b
 
   blend: (backdrop, mode) -> @class.blend @, backdrop, mode
+
+  ###
+  https://www.w3.org/TR/2008/REC-WCAG20-20081211/#contrast-ratiodef
+  https://www.w3.org/TR/css-color-4/#contrast-ratio
+
+  (L1 + 0.05) / (L2 + 0.05), where
+  L1 is the relative luminance of the lighter of the colors, and
+  L2 is the relative luminance of the darker of the colors.
+
+  TODO This method does *not* care about alpha.
+  ###
+  contrastRatio: (other) ->
+    l1 = @luminance + .05
+    l2 = other.luminance + .05
+    ratio = l1 / l2
+
+    if ratio < 1
+      ratio = 1 / ratio
+
+    return ratio
+
+  ###
+  TODO At least an argument is required.
+  ###
+  contrast: (others...) ->
+    winner = null
+    record = 0
+
+    for other in others
+      # TODO This @blending is an assumption about how alpha should be handled.
+      # Throw an exception when passing non full opaque colors?
+      ratio = @contrastRatio other.blend(@)
+
+      if ratio > record
+        record = ratio
+        winner = other
+
+    return Null.ifNull winner
 
   isEqual: (other) ->
     if other instanceof Color
@@ -641,7 +682,10 @@ class Color extends Object
     black.alpha = amount.value / 100
     black.blend @
 
-  '.contrast': (context, another) ->
+  '.contrast-ratio': (context, other) ->
+    new Number @contrastRatio other
+
+  '.contrast': (context, others...) -> @contrast others...
 
   '.blend': (context, backdrop, mode = null) ->
     if mode isnt null
