@@ -44,16 +44,20 @@ class Layla
   parse: (source) ->
     @parser.parse source
 
-  evaluate: (node, context = @context) ->
-    node = @parse node unless node instanceof Node
-    @evaluator.evaluate node, context
+  evaluate: (program, context = @context) ->
+    @evaluator.evaluate program, context
 
   normalize: (node) -> @normalizer.normalize node
 
   emit: (node) -> @emitter.emit node
 
   # This is a shortcut subject to deprecation
-  compile: (source, file = null) ->
-    @emit @normalize @evaluate @parse source, file
+  compile: (program, file = null) ->
+    unless program instanceof Node
+      program = @parse program, file
+
+    @evaluate program
+
+    return @emit @normalize(@context.block)
 
 module.exports = Layla

@@ -203,6 +203,8 @@ class String extends Object
 
   '.repr': -> @clone @repr()
 
+  '.eval': (context) -> context.evaluate @value
+
 do ->
   supah = Number::['.*']
 

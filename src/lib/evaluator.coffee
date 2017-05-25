@@ -11,9 +11,10 @@ TODO Should we define this "stdlib" somewhere else (as a list of all built-in
 classes -- or a plugin)?
 ###
 Class                 = require './class'
-Parser                = require './parser'
+Parser                = require './parser/lay'
 Plugin                = require './plugin'
 Context               = require './context'
+Node                  = require './node'
 Expression            = require './node/expression'
 Operation             = require './node/expression/operation'
 LiteralString         = require './node/expression/string'
@@ -60,6 +61,7 @@ RuntimeError          = require './error/runtime'
 TypeError             = require './error/type'
 ReferenceError        = require './error/reference'
 InternalError         = require './error/internal'
+
 
 ###
 ###
@@ -751,15 +753,20 @@ class Evaluator extends Class
   ###
   evaluateRoot: (node, context = new Context) ->
     @evaluateBody node.body, context
-    return context.block
 
-  evaluate: (node, context = new Context) ->
+  parse: (source) -> (new Parser).parse source
+
+  evaluate: (program, context = new Context) ->
+    unless program instanceof Node
+      program = @parse program
+
     try
-      return @evaluateNode node, context
+      return @evaluateNode program, context
     catch err
       if err instanceof Directive
         @runtimeError "Uncaught `#{err.name}`"
       else
         throw err
+
 
 module.exports = Evaluator

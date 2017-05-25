@@ -1443,6 +1443,84 @@ Strings
   }
   ~~~
 
+### `eval`
+
+- Evaluates string contents as layla code
+
+  ~~~ lay
+  string.eval {
+    'color: red'.eval
+  }
+  ~~~
+
+  ~~~ css
+  string.eval {
+    color: red;
+  }
+  ~~~
+
+- Uses current context
+
+  ~~~ lay
+  $white = #fff
+
+  string.eval {
+    $lay = '
+    > div {
+      background-color: $white
+    }
+    '
+
+    $lay.eval()
+  }
+  ~~~
+
+  ~~~ css
+  string.eval > div {
+    background-color: #ffffff;
+  }
+  ~~~
+
+- Returns the last evaluated statement
+
+  ~~~ lay
+  string.eval {
+    $lay = '2; true; $foo = "Yo!"'
+    i: $lay.eval
+    ii: '#f00;;'.eval
+  }
+  ~~~
+
+  ~~~ css
+  string.eval {
+    i: "Yo!";
+    ii: #ff0000;
+  }
+  ~~~
+
+- Returns `null` for strings with no statements
+
+  ~~~ lay
+  string.eval {
+    i: "".eval
+    ii: "
+    ".eval
+    iii: ";".eval
+    iv: " ; ;;".eval
+    v: `if false {}`.eval
+  }
+  ~~~
+
+  ~~~ css
+  string.eval {
+    i: null;
+    ii: null;
+    iii: null;
+    iv: null;
+    v: null;
+  }
+  ~~~
+
 ### `copy`
 
 - Creates a copy of the string

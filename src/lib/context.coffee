@@ -143,8 +143,8 @@ class Context extends Class
         @_plugins.push plugin
         plugin.use @
 
-  evaluate: (node, context = @) ->
-    (new Evaluator).evaluate node, context
+  evaluate: (program, context = @) ->
+    (new Evaluator).evaluate program, context
 
   child: (block = @block) ->
     new Context block, @
