@@ -5,9 +5,9 @@ Null
 
   ~~~ lay
   body {
-    unless null {
+    if not null {
       if null.false? {
-        unless null { foo: bar! }
+        if not null { foo: bar! }
       }
     }
   }

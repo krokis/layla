@@ -92,7 +92,7 @@ Conditionals
       color: red
     } else if not true{
       color: green
-    } else if unless true{
+    } else if not true{
     } else {
 
     }
@@ -137,61 +137,3 @@ Conditionals
 
   ~~~~ SyntaxError
   ~~~~
-
-## Unless
-
-- Is the negated version of `if`
-
-  ~~~ lay
-  body {
-    unless ((false or 1))  { border:1px; }
-    unless black is white  { border:none;
-      unless (not (false)) { font-weight:bolder;font-style:italic; }
-      else                 { font-weight:normal;font-style:normal; }
-    }
-  }
-  ~~~
-
-  ~~~ css
-  body {
-    border: none;
-    font-weight: normal;
-    font-style: normal;
-  }
-  ~~~
-
-- Is also allowed as `else unless`
-
-  ~~~ lay
-  body
-  {
-    if false
-    {
-      color: transparent
-    } else unless not true {
-      color: black
-    } else {
-      color: white
-    }
-
-    unless true
-    {
-      color: transparent
-    }
-    else unless false or true
-    {
-      color: white
-    }
-    else
-    {
-      color: black
-    }
-  }
-  ~~~
-
-  ~~~ css
-  body {
-    color: black;
-    color: black;
-  }
-  ~~~

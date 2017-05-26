@@ -89,7 +89,7 @@ Assignments
       font: 'Comic Sans'
     }
 
-    unless monospace = false {
+    if not (monospace = false) {
       font: 'Monospaced'
     } else {
       font: serif

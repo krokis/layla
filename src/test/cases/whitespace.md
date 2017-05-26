@@ -1303,7 +1303,7 @@
 
   ~~~ lay
   if            true { body {color: black }}
-  unless       false { a { color: red }}
+  if not       false { a { color: red }}
   $i = 0
   $s = 0
   while      $i < 10 { $s = $s + 1; $i = $i + 1 }
@@ -1329,14 +1329,6 @@
   ~~~ lay
   if
   true { body {color: black }}
-  ~~~
-
-  ~~~ SyntaxError
-  ~~~
-
-  ~~~ lay
-      unless
-      false { a {color: red}}
   ~~~
 
   ~~~ SyntaxError

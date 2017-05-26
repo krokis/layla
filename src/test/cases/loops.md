@@ -633,7 +633,7 @@ Loops
         break
       }
 
-      unless $i.odd? {
+      if not $i.odd? {
         continue
       }
 

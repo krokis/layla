@@ -4,7 +4,6 @@ class Conditional extends Statement
   condition: null
   block: null
   elses: null
-  negate: no
 
   constructor: ->
     @elses = []
@@ -14,7 +13,6 @@ class Conditional extends Statement
     json.condition = @condition
     json.block = @block
     json.elses = @elses
-    json.negate = @negate
     json
 
   clone: -> @

@@ -1083,7 +1083,7 @@ class BaseParser extends Parser
     @parseProperty()
 
   ###
-  Parse the predicate of an `if` or an `unless` statement.
+  Parse the predicate of an `if` statement.
   ###
   parseConditionalPredicate: (cond) ->
     unless cond.condition = @parseExpression 0, no
@@ -1094,25 +1094,24 @@ class BaseParser extends Parser
     unless cond.block = @parseBlock()
       @error 'Expected block after conditional'
 
-    # Parse additional `else (if|unless)`s
+    # Parse additional `else (if)`s
     elses = []
     back = @token
     @skipAllWhitespace()
 
     while @token.is T.UNQUOTED_STRING, ['else']
-      els = negate: no
+      els = {}
 
       @next()
       @skipHorizontalWhitespace()
 
-      if @token.is T.UNQUOTED_STRING, ['if', 'unless']
-        els.negate = @token.value is 'unless'
+      if @token.is T.UNQUOTED_STRING, ['if']
         @next()
 
         @skipHorizontalWhitespace()
 
         unless els.condition = @parseExpression 0, no
-          @error "Expected expression after `else #{@token.value}`"
+          @error "Expected expression after `else if`"
 
       @skipAllWhitespace()
 
@@ -1133,12 +1132,11 @@ class BaseParser extends Parser
     @move back
 
   ###
-  Parse an `if|unless ... [[else if|unless ...]... [else]]` block.
+  Parse an `if ... [[else if...]... [else]]` block.
   ###
   parseConditional: ->
-    if @token.is T.UNQUOTED_STRING, ['if', 'unless']
+    if @token.is T.UNQUOTED_STRING, ['if']
       return @node Conditional, (cond) ->
-        cond.negate = @token.value is 'unless'
         @next()
         @skipHorizontalWhitespace()
         @parseConditionalPredicate cond

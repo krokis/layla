@@ -394,14 +394,14 @@ class Evaluator extends Class
     met = not node.condition or
           (@evaluateNode node.condition, context).toBoolean()
 
-    if met isnt node.negate
+    if met
       @evaluateBody node.block.body, context
     else if node.elses
       for els in node.elses
         met = not els.condition or
               (@evaluateNode els.condition, context).toBoolean()
 
-        if met isnt els.negate
+        if met
           @evaluateBody els.block.body, context
           break
 
