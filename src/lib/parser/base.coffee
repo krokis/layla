@@ -1144,13 +1144,12 @@ class BaseParser extends Parser
       @error "Unexpected `else`"
 
   ###
-  Parse a `loop|while|until ...` block.
+  Parse a `while ...` block.
   ###
   parseLoop: ->
-    if @token.is T.UNQUOTED_STRING, ['while', 'until']
+    if @token.is T.UNQUOTED_STRING, ['while']
       return @node Loop, (lp) ->
         lp.start = @token.start
-        lp.negate = @token.value is 'until'
         @next()
         @skipHorizontalWhitespace()
 

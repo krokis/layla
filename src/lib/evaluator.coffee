@@ -481,8 +481,7 @@ class Evaluator extends Class
       try
         if node.condition
           met = (@evaluateNode node.condition, context).toBoolean()
-          if met is node.negate
-            break
+          break if not met
         @evaluateBody node.block.body, context
       catch e
         if e instanceof Directive

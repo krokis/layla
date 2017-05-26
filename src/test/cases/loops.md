@@ -38,30 +38,6 @@ Loops
   }
   ~~~
 
-## `until` loops
-
-- Repeat their body until the condition is trueish
-
-  ~~~ lay
-  $i = 1
-
-  body {
-    until $i > 7 {
-      foo: $i
-      $i = $i + 2
-    }
-  }
-  ~~~
-
-  ~~~ css
-  body {
-    foo: 1;
-    foo: 3;
-    foo: 5;
-    foo: 7;
-  }
-  ~~~
-
 ## `for ... in` loops
 
 - Can iterate lists keys and values
@@ -409,7 +385,7 @@ Loops
   $i = 1
 
   body {
-    until null {
+    while not null {
       foo: $i
       if ($i = $i + 1) > 5 {
         break
@@ -543,7 +519,7 @@ Loops
 
   ~~~ lay
   while true {
-    until false {
+    while not false {
       break -1
     }
   }
@@ -565,7 +541,7 @@ Loops
 
   ~~~ lay
   while true {
-    until false {
+    while not false {
       break 2.0
     }
   }
@@ -588,7 +564,7 @@ Loops
 
   ~~~ lay
   while true {
-    until false {
+    while not false {
       break 3
     }
   }
@@ -743,7 +719,7 @@ Loops
 
   ~~~ lay
   while true {
-    until false {
+    while not false {
       continue 3
     }
   }
@@ -766,7 +742,7 @@ Loops
 
   ~~~ lay
   while true {
-    until false {
+    while not false {
       continue -1
     }
   }
@@ -792,7 +768,7 @@ Loops
   while $i < 100 {
     $i = $i + 1
 
-    until false {
+    while not false {
       continue 2.0
     }
 
