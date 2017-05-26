@@ -1,4 +1,4 @@
-Plugin = require '../../plugin'
+Plugin = require '../../lib/plugin'
 
 
 UNITS =

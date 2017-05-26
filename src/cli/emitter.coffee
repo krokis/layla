@@ -1,5 +1,7 @@
 CSSEmitter = require '../css/emitter'
 
+###
+###
 class CLIEmitter extends CSSEmitter
   ESC        = '\u001b'
   RESET      = 0
@@ -59,5 +61,6 @@ class CLIEmitter extends CSSEmitter
   emitAtRuleArguments: (sel) -> @format (super sel), MAGENTA
 
   emitPropertyName: (property) -> @format (super property), BOLD, CYAN
+
 
 module.exports = CLIEmitter

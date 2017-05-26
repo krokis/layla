@@ -148,4 +148,5 @@ class Context extends Class
   child: (block = @block) ->
     new Context block, @
 
+
 module.exports = Context

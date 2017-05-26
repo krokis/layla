@@ -1,8 +1,9 @@
-Plugin         = require '../../plugin'
-Function       = require '../../object/function'
-Color          = require '../../object/color'
-Number         = require '../../object/number'
-ReferenceError = require '../../error/reference'
+Plugin         = require '../../lib/plugin'
+Function       = require '../../lib/object/function'
+Color          = require '../../lib/object/color'
+Number         = require '../../lib/object/number'
+ReferenceError = require '../../lib/error/reference'
+
 
 SPACES = [
   'rgb'
@@ -36,6 +37,7 @@ SPACES.forEach (space) ->
     return color
 
   FUNCTIONS[space] = FUNCTIONS["#{space}a"] = func
+
 
 ###
 ###

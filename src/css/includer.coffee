@@ -1,6 +1,6 @@
 CSSParser      = require './parser'
-SourceIncluder = require '../includer/source'
-Evaluator      = require '../evaluator'
+SourceIncluder = require '../lib/includer/source'
+Evaluator      = require '../lib/evaluator'
 
 ###
 ###

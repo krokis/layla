@@ -1,9 +1,11 @@
-Plugin = require '../../plugin'
+Plugin = require '../../lib/plugin'
+
 
 PLUGINS = [
   require './functions'
   require './names'
 ]
+
 
 ###
 ###

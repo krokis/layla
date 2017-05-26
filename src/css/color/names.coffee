@@ -1,5 +1,5 @@
-Plugin = require '../../plugin'
-Color  = require '../../object/color'
+Plugin = require '../../lib/plugin'
+Color  = require '../../lib/object/color'
 
 
 # https://www.w3.org/TR/css-color-4/#named-colors
@@ -152,7 +152,6 @@ COLORS =
   yellow:               '#ffff00'
   yellowgreen:          '#9acd32'
   transparent:          '#00000000'
-
 
 for name of COLORS
   COLORS[name] = new Color COLORS[name]

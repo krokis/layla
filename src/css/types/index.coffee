@@ -1,6 +1,6 @@
-Plugin   = require '../../plugin'
-RegExp   = require '../../object/regexp'
-Function = require '../../object/function'
+Plugin   = require '../../lib/plugin'
+RegExp   = require '../../lib/object/regexp'
+Function = require '../../lib/object/function'
 
 
 FUNCTIONS = [

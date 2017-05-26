@@ -1,9 +1,12 @@
 fs   = require 'fs'
 URL  = require 'url'
 
-Loader      = require '../loader'
-IncludeError = require '../error/include'
+Loader       = require '../lib/loader'
+IncludeError = require '../lib/error/include'
 
+
+###
+###
 class FSLoader extends Loader
 
   canLoad: (uri, context) ->
@@ -20,5 +23,6 @@ class FSLoader extends Loader
       fs.readFileSync uri, 'utf8'
     catch
       throw new IncludeError "Could not include file: \"#{uri}\""
+
 
 module.exports = FSLoader

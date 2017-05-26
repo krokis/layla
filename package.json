@@ -17,10 +17,11 @@
   "main": "./index.js",
   "scripts": {
     "test": "cake --verbose build test",
-    "start": "node ./bin/layla -i"
+    "layla": "./cli/layla",
+    "start": "./cli/layla -i"
   },
   "bin": {
-    "layla": "./bin/layla"
+    "layla": "./cli/layla"
   },
   "dependencies": {
     "color-support": "^1.1.2"

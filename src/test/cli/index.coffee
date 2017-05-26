@@ -6,7 +6,7 @@ tmp           = require 'tmp'
 LAYLA_VERSION = require '../../lib/version'
 
 exec = (args, options = {}) ->
-  bin = fs.realpathSync "#{__dirname}/../../bin/layla"
+  bin = fs.realpathSync "#{__dirname}/../../cli/layla"
   args = args.split /\s+/
 
   options.cwd ?= __dirname
