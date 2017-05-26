@@ -1,10 +1,10 @@
-Context     = require '../context'
-LayIncluder = require '../includer/lay'
-Null        = require '../object/null'
-Boolean     = require '../object/boolean'
-String      = require '../object/string'
-Number      = require '../object/number'
-VERSION     =  require '../version'
+Context      = require '../context'
+LayIncluder  = require '../includer/lay'
+Null         = require '../object/null'
+Boolean      = require '../object/boolean'
+QuotedString = require '../object/string/quoted'
+Number       = require '../object/number'
+VERSION      =  require '../version'
 
 
 ###
@@ -20,7 +20,8 @@ class BaseContext extends Context
     @set 'true', Boolean.TRUE
     @set 'false', Boolean.FALSE
 
-    @set 'LAYLA-VERSION', new String VERSION
+    @set 'LAYLA-VERSION', new QuotedString VERSION
+
     @set 'PI', new Number Math.PI
     @set 'π', new Number Math.PI
     @set 'E', new Number Math.E
