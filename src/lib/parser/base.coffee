@@ -1099,13 +1099,13 @@ class BaseParser extends Parser
     back = @token
     @skipAllWhitespace()
 
-    while @token.is T.UNQUOTED_STRING, ['else']
+    while @token.is T.UNQUOTED_STRING, 'else'
       els = {}
 
       @next()
       @skipHorizontalWhitespace()
 
-      if @token.is T.UNQUOTED_STRING, ['if']
+      if @token.is T.UNQUOTED_STRING, 'if'
         @next()
 
         @skipHorizontalWhitespace()
@@ -1135,19 +1135,19 @@ class BaseParser extends Parser
   Parse an `if ... [[else if...]... [else]]` block.
   ###
   parseConditional: ->
-    if @token.is T.UNQUOTED_STRING, ['if']
+    if @token.is T.UNQUOTED_STRING, 'if'
       return @node Conditional, (cond) ->
         @next()
         @skipHorizontalWhitespace()
         @parseConditionalPredicate cond
-    else if @token.is T.UNQUOTED_STRING, ['else']
+    else if @token.is T.UNQUOTED_STRING, 'else'
       @error "Unexpected `else`"
 
   ###
   Parse a `while ...` block.
   ###
   parseLoop: ->
-    if @token.is T.UNQUOTED_STRING, ['while']
+    if @token.is T.UNQUOTED_STRING, 'while'
       return @node Loop, (lp) ->
         lp.start = @token.start
         @next()
@@ -1165,7 +1165,7 @@ class BaseParser extends Parser
   Parse a `for .. in ...` block.
   ###
   parseFor: ->
-    if @token.is T.UNQUOTED_STRING, ['for']
+    if @token.is T.UNQUOTED_STRING, 'for'
       return @node For, (fr) ->
         @next()
         @skipHorizontalWhitespace()
@@ -1182,7 +1182,7 @@ class BaseParser extends Parser
 
         @skipHorizontalWhitespace()
 
-        @expect T.UNQUOTED_STRING, ['in']
+        @expect T.UNQUOTED_STRING, 'in'
 
         @skipHorizontalWhitespace()
 
@@ -1215,7 +1215,7 @@ class BaseParser extends Parser
   `use`.
   ###
   parseDirective: ->
-    if @token.is T.UNQUOTED_STRING, @directives
+    if @token.is(T.UNQUOTED_STRING) and @token.value in @directives
       return @node Directive, (dir) ->
         dir.name = @token.value
         @next()
