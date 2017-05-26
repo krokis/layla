@@ -8,7 +8,7 @@ class Function extends Object
 
   invoke: (context, args...) ->
     try
-      return (@func.call this, context, args...) or Null.null
+      return (@func.call this, context, args...) or Null.NULL
     catch e
       if e instanceof Object
         return e

@@ -88,7 +88,7 @@ class RegExp extends Object
       if m = other.value.match @value
         return new List m.map (str) -> other.clone str
 
-      return Null.null
+      return Null.NULL
 
     throw new ValueError "Cannot match that!"
 
@@ -119,7 +119,7 @@ do ->
     else
       supah.call @, context, other, etc...
 
-String::['.split'] = (context, separator, limit = Null.null) ->
+String::['.split'] = (context, separator, limit = Null.NULL) ->
   if not separator
     reg = null
   else if separator instanceof RegExp
@@ -159,7 +159,7 @@ do ->
 
     return @['.split'] context, separator
 
-String::['.characters'] = (context, limit = Null.null) ->
+String::['.characters'] = (context, limit = Null.NULL) ->
   new List (@value.split '').map (char) => @clone char
 
 String::['.words'] = ->

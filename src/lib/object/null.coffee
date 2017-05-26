@@ -5,7 +5,7 @@ Boolean = require './boolean'
 ###
 class Null extends Object
 
-  @null = new @
+  @NULL = new @
 
   @new: -> @null
 

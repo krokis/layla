@@ -77,7 +77,7 @@ class Collection extends Indexed
       if 0 <= idx < @items.length
         return @items[idx]
       else
-        return Null.null
+        return Null.NULL
     else if other instanceof Collection
       slice = @clone []
       for idx in other.items
@@ -99,9 +99,9 @@ class Collection extends Indexed
 
   '.push': (context, args...) -> @push args...; @
 
-  '.pop': -> @items.pop() or Null.null
+  '.pop': -> @items.pop() or Null.NULL
 
-  '.shift': -> @items.shift() or Null.null
+  '.shift': -> @items.shift() or Null.NULL
 
   '.unshift': (context, objs...) ->
     @items.unshift (obj.clone() for obj in objs)...
@@ -111,9 +111,9 @@ class Collection extends Indexed
 
   '.empty': -> @items = []; @
 
-  '.first': -> @items[0] or Null.null
+  '.first': -> @items[0] or Null.NULL
 
-  '.last': -> @items[@items.length - 1] or Null.null
+  '.last': -> @items[@items.length - 1] or Null.NULL
 
   '.unique?': -> Boolean.new @isUnique()
 

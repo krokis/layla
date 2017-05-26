@@ -24,7 +24,7 @@ class Block extends Collection
 
   '.::': (context, other) ->
     if other instanceof String
-      val = Null.null
+      val = Null.NULL
 
       for node in @items
         if node instanceof Property and node.name is other.value

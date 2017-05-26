@@ -7,7 +7,7 @@ QuotedString = require './string/quoted'
 ###
 class Property extends Object
 
-  constructor: (@name, @value = Null.null) ->
+  constructor: (@name, @value = Null.NULL) ->
 
   @property 'important',
     get: -> @value.important

@@ -70,7 +70,7 @@ class Context extends Class
     else if @parent
       @parent.get name, args...
     else
-      Null.null
+      Null.NULL
 
   set: (name, value) ->
     @_scope[name] = value.clone()

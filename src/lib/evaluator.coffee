@@ -173,7 +173,7 @@ class Evaluator extends Class
         func = context.get(name)
 
         if func instanceof Function
-          obj = func.invoke.call(func, context, args...) or Null.null
+          obj = func.invoke.call(func, context, args...) or Null.NULL
         else
           obj = new Call name, args
 
@@ -218,7 +218,7 @@ class Evaluator extends Class
         if in_args[d][1]
           value = @evaluateNode in_args[d][1], ctx
         else
-          value = Null.null
+          value = Null.NULL
 
         ctx.set in_args[d][0], value
 
@@ -228,7 +228,7 @@ class Evaluator extends Class
 
       @evaluateBody body, ctx
 
-      return Null.null
+      return Null.NULL
 
   ###
   ###
@@ -275,7 +275,7 @@ class Evaluator extends Class
 
         # TODO add to call stack
 
-        return left[method](context, right) or Null.null
+        return left[method](context, right) or Null.NULL
 
       when '('
         left = node.left
@@ -292,7 +292,7 @@ class Evaluator extends Class
               method = '.::'
 
             # TODO add to call stack
-            return obj[method](context, name, args...) or Null.null
+            return obj[method](context, name, args...) or Null.NULL
         else if left instanceof LiteralString
           name = @getStringValue left
 
@@ -307,7 +307,7 @@ class Evaluator extends Class
 
         # TODO add to call stack
 
-        return left.invoke.call(left, context, args...) or Null.null
+        return left.invoke.call(left, context, args...) or Null.NULL
 
       else
         left = @evaluateNode node.left, context
@@ -447,7 +447,7 @@ class Evaluator extends Class
   evaluateReturn: (node, context) ->
     switch node.arguments.length
       when 0
-        node.value = Null.null
+        node.value = Null.NULL
       when 1
         node.value = @evaluateNode node.arguments[0], context
       else
@@ -515,7 +515,7 @@ class Evaluator extends Class
 
       context.include path
 
-    return Null.null
+    return Null.NULL
 
   ###
   ###
@@ -526,7 +526,7 @@ class Evaluator extends Class
         @valueError "Bad argument for `use`"
       @layla.use name.value
 
-    return Null.null
+    return Null.NULL
 
   ###
   ###
@@ -564,7 +564,7 @@ class Evaluator extends Class
   ###
   ###
   evaluateBody: (body, context) ->
-    value = Null.null
+    value = Null.NULL
 
     for node in body
       value = @evaluateNode node, context

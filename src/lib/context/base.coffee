@@ -16,9 +16,9 @@ class BaseContext extends Context
 
     @use new LayIncluder
 
-    @set 'null', Null.null
-    @set 'true', Boolean.true
-    @set 'false', Boolean.false
+    @set 'null', Null.NULL
+    @set 'true', Boolean.TRUE
+    @set 'false', Boolean.FALSE
 
     @set 'LAYLA-VERSION', new String VERSION
     @set 'PI', new Number Math.PI
