@@ -1,4 +1,4 @@
-BaseParser = require './base'
+BaseParser = require '../parser/base'
 
 class CSSParser extends BaseParser
 
