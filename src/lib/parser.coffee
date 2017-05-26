@@ -1,7 +1,9 @@
 Class         = require './class'
 Tokenizer     = require './tokenizer'
 InternalError = require './error/internal'
-{isString}    = require './util'
+
+
+isString = (obj) -> "[object String]" is toString.call obj
 
 class Parser extends Class
 
@@ -19,5 +21,6 @@ class Parser extends Class
     @token = tokens[0]
 
     return @parseRoot()
+
 
 module.exports = Parser
