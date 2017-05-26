@@ -1,15 +1,21 @@
-Emitter      = require '../emitter'
-Block        = require '../object/block'
-Rule         = require '../object/rule'
-Property     = require '../object/property'
-RawString    = require '../object/string/raw'
+Emitter        = require '../emitter'
+Rule           = require '../object/rule'
+Property       = require '../object/property'
+String         = require '../object/string'
+RawString      = require '../object/string/raw'
+QuotedString   = require '../object/string/quoted'
+UnquotedString = require '../object/string/unquoted'
 
+
+###
+###
 class CSSEmitter extends Emitter
 
   options: null
 
   constructor: (@options = {}) ->
     defaults =
+      charset:                     'utf8' # or ascii. For escaping strategy.
       bom:                         'preserve' # Or: true, false/strip
       new_line:                    '\n'
       final_newline:               yes
@@ -69,35 +75,14 @@ class CSSEmitter extends Emitter
     css = "{\n#{@indent (@emitBody block.items)}\n}"
     return css
 
-  escapeCharacters: (val, chars) ->
-    return val.replace ///(^|[^\\]|(?:\\(?:\\\\)*))([#{chars}])///gm, '$1\\$2'
+  escapeQuotedString: (value, quotes = '\'"') ->
+    value = QuotedString.escape value, @options.charset
+    value = String.escapeCharacters ///[#{quotes}]///, value, @options.charset
 
-  escapeRegex: (val, reg) ->
-    val.replace ///(^|[^\\]|(?:\\(?:\\\\)*))(#{reg.source})///gm, '$1\\$2'
+    return value
 
-  escapeWhitespace: (val) ->
-    # Escape new lines to \A
-    val = val.replace /(^|[^\\]|(?:\\\\)+)(\r\n|\r|\n)/gm, '$1\\A'
-
-    # Translate `\t` to \9
-    val = val.replace /\t/gm, '\\9'
-
-    return val
-
-  escapeQuotedString: (val, quotes = '\'"') ->
-    val = @escapeCharacters val, '\\\\'
-    val = @escapeWhitespace val
-    val = @escapeCharacters val, quotes
-
-    return val
-
-  # TODO What about `?`, `!` and `$`?
-  escapeUnquotedString: (val) ->
-    val = @escapeCharacters val, '\\\\'
-    val = @escapeWhitespace val
-    # Translate spaces to \20
-    val = val.replace /\x20/gm, '\\20'
-    val = @escapeRegex val, /[^a-zA-Z_0-9!\?\$\\\-\x80-\uFFFF]/
+  escapeUnquotedString: (str) ->
+    return str.class.escape str.value, @options.charset
 
   quoteString: (value, quote = '"') ->
     if not quote?
@@ -112,9 +97,7 @@ class CSSEmitter extends Emitter
 
   ###
   ###
-  emitUnquotedString: (str) ->
-    # TODO This is not correct (same escping as quoted strings)
-    @escapeUnquotedString str.value
+  emitUnquotedString: (str) -> @escapeUnquotedString str
 
   emitQuotedString: (str, quote = null) ->
     @quoteString str.value, quote
@@ -132,16 +115,24 @@ class CSSEmitter extends Emitter
 
   emitNumberValue: (num) -> "#{@formatNumber num.value}"
 
-  emitNumberUnit: (num) -> num.unit or ''
+  emitNumberUnit: (num) ->
+    if num.unit?
+      if num.unit is '%'
+        return '%'
+      else
+        return UnquotedString.escape num.unit, @options.charset
+
+    return ''
 
   emitNumber: (num) ->
     value = @emitNumberValue num
+
     if value isnt '0'
       value += @emitNumberUnit num
-    value
 
-  emitBoolean: (bool) ->
-    bool.value ? 'true' : 'false'
+    return value
+
+  emitBoolean: (bool) -> if bool.value then 'true' else 'false'
 
   emitNull: (node) -> 'null'
 
@@ -159,48 +150,129 @@ class CSSEmitter extends Emitter
     if @options.url_quote
       str += @emitQuotedString url, @options.url_quote
     else
-      # TODO Escape something? Parens?
-      str += url.value
+      str += String.escapeCharacters /[\)\(\\]/, url.value, @options.charset
 
     str += ')'
 
     return str
 
   emitCall: (call) ->
+    name = UnquotedString.escape call.name, @options.charset
     args = (@emit arg for arg in call.arguments)
-    return "#{call.name}(#{args.join ', '})"
+
+    return "#{name}(#{args.join ', '})"
 
   emitRegExp: (regexp) ->
     'regexp(' + @quoteString(regexp.toString()) + ')'
 
   emitDataURI: (uri) -> @emitURL uri
 
-  emitPropertyName: (property) -> property.name
+  emitImportant: -> '!important'
 
-  emitPropertyValue: (property) -> @emit property.value
+  emitPropertyName: (property) ->
+    UnquotedString.escape property.name, @options.charset
+
+  emitPropertyValue: (property) ->
+    str = @emit(property.value)
+
+    if property.important
+      str += ' ' + @emitImportant()
+
+    return str
 
   emitProperty: (property) ->
-    """
-    #{@emitPropertyName property}: #{@emitPropertyValue property}
-    """
+    @emitPropertyName(property) + ': ' + @emitPropertyValue(property)
 
-  emitSelector: (selector) ->
-    # TODO Trim should not be necessary, but currently a trailing descendant
-    # combinator (whitespace) is added if there's whitespace between selector
-    # and `{`. See TODO at the parser.
-    selector.toString().trim()
+  emitPseudoSelector: (selector) ->
+    str = selector.escape selector.name, @options.charset
 
-  emitPseudoClassSelector: @::emitSelector
+    if selector.arguments
+      str += '('
 
-  emitSelectorList: (rule) ->
-    (rule.selector.children.map (sel) => @emitSelector sel).join ',\n'
+      args = selector.arguments.map (arg) =>
+        ([].concat(arg).map (a) => @emit a).join ' '
+
+      str += args.join ', '
+      str += ')'
+
+    return str
+
+  emitPseudoClassSelector: (selector) ->
+    ':' + @emitPseudoSelector selector
+
+  emitPseudoElementSelector: (selector) ->
+    '::' + @emitPseudoSelector selector
+
+  emitSelectorNamespace: (selector) ->
+    if selector.namespace?
+      if selector.namespace is '*'
+        return '*|'
+
+      return selector.escape(selector.namespace, @options.charset) + '|'
+
+    return ''
+
+  emitAttributeSelector: (selector) ->
+    str = '['
+
+    str += @emitSelectorNamespace selector
+    str += selector.escape selector.name, @options.charset
+
+    if selector.operator
+      str += selector.operator
+
+    if selector.value?
+      str += @emit selector.value
+
+    if selector.flags
+      str += " #{selector.escape selector.flags, @options.charset}"
+
+    str += ']'
+
+    return str
+
+  emitIdSelector: (selector) ->
+    '#' + selector.escape(selector.name, @options.charset)
+
+  emitUniversalSelector: (selector) ->
+    @emitSelectorNamespace(selector) + '*'
+
+  emitTypeSelector: (selector) ->
+    @emitSelectorNamespace(selector) +
+    selector.escape(selector.name, @options.charset)
+
+  emitKeyframeSelector: (selector) -> selector.keyframe
+
+  emitClassSelector: (selector) ->
+    '.' + @emitSelectorNamespace(selector) +
+    selector.escape(selector.name, @options.charset)
+
+  emitCompoundSelector: (selector) ->
+    (selector.children.map (selector) => @emit selector).join ''
+
+  emitCombinator: (combinator) -> combinator.toString()
+
+  emitComplexSelector: (selector) ->
+    str = ''
+
+    for child in selector.children
+      piece = @emit(child).trim()
+
+      if piece
+        str += ' ' + piece
+
+    return str[1...]
+
+  emitSelectorList: (selector) ->
+    (selector.children.map (sel) => @emit sel).join ',\n'
 
   emitRuleSet: (rule) ->
     """
-    #{@emitSelectorList rule} #{@emitBlock rule}
+    #{@emitSelectorList rule.selector} #{@emitBlock rule}
     """
 
-  emitAtRuleName: (rule) -> "@#{rule.name}"
+  emitAtRuleName: (rule) ->
+    '@' + UnquotedString.escape(rule.name, @options.charset)
 
   emitAtRuleArguments: (args) ->
     str = ''

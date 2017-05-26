@@ -1,7 +1,7 @@
-BaseContext = require './base'
-XHRLoader   = require '../loader/xhr'
+CSSContext = require '../css/context'
+XHRLoader  = require '../loader/xhr'
 
-class BrowserContext extends BaseContext
+class BrowserContext extends CSSContext
 
   constructor: ->
     super

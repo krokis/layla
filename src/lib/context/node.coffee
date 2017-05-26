@@ -1,7 +1,7 @@
-BaseContext = require './base'
-FSLoader    = require '../loader/fs'
+CSSContext = require '../css/context'
+FSLoader   = require '../loader/fs'
 
-class NodeContext extends BaseContext
+class NodeContext extends CSSContext
 
   constructor: ->
     super

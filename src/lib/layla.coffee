@@ -3,7 +3,8 @@ Parser     = require './parser/base'
 Context    = require './context'
 Evaluator  = require './evaluator'
 Emitter    = require './emitter'
-CSSEmitter = require './emitter/css'
+CSSContext = require './css/context'
+CSSEmitter = require './css/emitter'
 CLIEmitter = require './emitter/cli'
 Node       = require './node'
 Object     = require './object'
@@ -35,7 +36,7 @@ class Layla
 
   ###
   ###
-  constructor: (@context = new Context) ->
+  constructor: (@context = new CSSContext) ->
     @parser = new Parser
     @evaluator = new Evaluator
     @normalizer = new Normalizer

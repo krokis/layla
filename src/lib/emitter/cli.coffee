@@ -1,4 +1,4 @@
-CSSEmitter = require './css'
+CSSEmitter = require '../css/emitter'
 
 class CLIEmitter extends CSSEmitter
   ESC        = '\u001b'

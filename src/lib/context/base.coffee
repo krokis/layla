@@ -7,13 +7,15 @@ String      = require '../object/string'
 Number      = require '../object/number'
 VERSION     =  require '../version'
 
+
+###
+###
 class BaseContext extends Context
 
   constructor: ->
     super
 
     @use new LayIncluder
-    @use new CSSIncluder
 
     @set 'null', Null.null
     @set 'true', Boolean.true
@@ -23,5 +25,6 @@ class BaseContext extends Context
     @set 'PI', new Number Math.PI
     @set 'π', new Number Math.PI
     @set 'E', new Number Math.E
+
 
 module.exports = BaseContext
