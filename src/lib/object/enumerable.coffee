@@ -57,15 +57,15 @@ class Enumerable extends Object
 
   '.length': -> new Number @length()
 
-  '.first': -> @firstValue() or Null.null
+  '.first': -> @firstValue() or Null.NULL
 
-  '.last': -> @lastValue() or Null.null
+  '.last': -> @lastValue() or Null.NULL
 
-  '.random': -> @randomValue() or Null.null
+  '.random': -> @randomValue() or Null.NULL
 
-  '.min': -> @minValue() or Null.null
+  '.min': -> @minValue() or Null.NULL
 
-  '.max': -> @maxValue() or Null.null
+  '.max': -> @maxValue() or Null.NULL
 
 Object::isEnumerable = -> no
 

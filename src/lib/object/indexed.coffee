@@ -46,7 +46,7 @@ class Indexed extends Enumerable
 
     while null isnt (key = @currentKey())
       index = new Number key
-      value = (@get key) or Null.null
+      value = (@get key) or Null.NULL
       return no if no is cb.call @, index, value
       @next()
 
@@ -62,7 +62,7 @@ class Indexed extends Enumerable
       idx = other.value
       idx += len if idx < 0
 
-      (@get idx) or Null.null
+      (@get idx) or Null.NULL
     else
       throw new ValueError
 

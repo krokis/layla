@@ -130,7 +130,7 @@ class String extends Object
       char = @value.charAt(idx)
 
       if char is ''
-        return Null.null
+        return Null.NULL
       else
         return @copy char
 
@@ -138,9 +138,9 @@ class String extends Object
 
   '.length': -> new Number @length
 
-  '.empty?': -> new Boolean @isEmpty()
+  '.empty?': -> Boolean.new @isEmpty()
 
-  '.blank?': -> new Boolean @isBlank()
+  '.blank?': -> Boolean.new @isBlank()
 
   '.trim': (context, chars) ->
     # TODO check bad args

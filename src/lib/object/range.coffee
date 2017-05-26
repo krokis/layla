@@ -78,7 +78,7 @@ class Range extends Indexed
 
     throw new ValueError "Cannot divide a range by #{step.repr()}"
 
-  '.unit': -> if @unit then new UnquotedString @unit else Null.null
+  '.unit': -> if @unit then new UnquotedString @unit else Null.NULL
 
   '.unit?': -> Boolean.new @unit
 

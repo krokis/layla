@@ -657,13 +657,13 @@ class Color extends Object
 
   '.safe?': ->
     if @alpha < 1
-      return Boolean.false
+      return Boolean.FALSE
 
     for channel in @rgb
       if channel % 51
-        return Boolean.false
+        return Boolean.FALSE
 
-    return Boolean.true
+    return Boolean.TRUE
 
   '.safe': ->
     if @alpha < 1

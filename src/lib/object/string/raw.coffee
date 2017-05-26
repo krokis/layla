@@ -16,9 +16,9 @@ class RawString extends String
   ###
   reprValue: -> '`' + super() + '`'
 
-  '.raw?': -> Boolean.true
+  '.raw?': -> Boolean.TRUE
 
-Number::['.unit'] = -> if @unit then new RawString @unit else Null.null
+Number::['.unit'] = -> if @unit then new RawString @unit else Null.NULL
 
 Number::['.base'] = (context, base = Number.TEN) ->
   base = base.toNumber()
@@ -44,7 +44,7 @@ Number::['.base'] = (context, base = Number.TEN) ->
 
   return new RawString str
 
-String::['.raw?'] = -> Boolean.false
+String::['.raw?'] = -> Boolean.FALSE
 
 Object::['.raw'] = -> new RawString @toString()
 

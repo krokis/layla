@@ -222,7 +222,13 @@ class Evaluator extends Class
       when 'regexp'
         obj = new RegExp args[0]?.value or null
       else
-        obj = new Call name, args
+        # TODO Temporary
+        func = context.get(name)
+
+        if func instanceof Function
+          obj = func.invoke.call(func, context, args...) or Null.NULL
+        else
+          obj = new Call name, args
 
     return obj
 
@@ -250,38 +256,32 @@ class Evaluator extends Class
       else
         in_args.push arg
 
-    return new Function (block, args...) =>
-      try
-        ctx = context.child block
-        l = in_args.length
+    return new Function (ctx, args...) =>
+      ctx = ctx.child()
 
-        for arg, i in args
-          if i < l
-            ctx.set in_args[i][0], arg
-          else
-            break
+      l = in_args.length
 
-        for d in [i...in_args.length]
-          if in_args[d][1]
-            value = @evaluateNode in_args[d][1], ctx
-          else
-            value = Null.null
-
-          ctx.set in_args[d][0], value
-
-        if rest_arg
-          rest = new List args[in_args.length...]
-          ctx.set rest_arg, rest
-
-        @evaluateBody body, ctx
-
-        return null
-
-      catch e
-        if (e instanceof Directive) and (e.name is 'return')
-          return e.value
+      for arg, i in args
+        if i < l
+          ctx.set in_args[i][0], arg
         else
-          throw e
+          break
+
+      for d in [i...in_args.length]
+        if in_args[d][1]
+          value = @evaluateNode in_args[d][1], ctx
+        else
+          value = Null.NULL
+
+        ctx.set in_args[d][0], value
+
+      if rest_arg
+        rest = new List args[in_args.length...]
+        ctx.set rest_arg, rest
+
+      @evaluateBody body, ctx
+
+      return Null.NULL
 
   ###
   ###
@@ -314,7 +314,7 @@ class Evaluator extends Class
 
         # TODO add to call stack
 
-        return left[".!#{name}"](context) or Null.null
+        return left[".!#{name}"](context) or Null.NULL
 
       when '.', '::'
         left = @evaluateNode node.left, context
@@ -329,7 +329,7 @@ class Evaluator extends Class
 
         # TODO add to call stack
 
-        return left[method](context, right) or Null.null
+        return left[method](context, right) or Null.NULL
 
       when '('
         left = node.left
@@ -346,7 +346,7 @@ class Evaluator extends Class
               method = '.::'
 
             # TODO add to call stack
-            return obj[method](context, name, args...) or Null.null
+            return obj[method](context, name, args...) or Null.NULL
         else if left instanceof LiteralString
           name = @getStringValue left
 
@@ -362,7 +362,7 @@ class Evaluator extends Class
 
         # TODO add to call stack
 
-        return left.invoke.call(left, context, args...) or Null.null
+        return left.invoke.call(left, context, args...) or Null.NULL
 
       else
         left = @evaluateNode node.left, context
@@ -425,7 +425,10 @@ class Evaluator extends Class
       setter = context.set.bind context, name
 
     else if left instanceof Operation and left.operator in ['.', '::']
-      name = @evaluateNode left.right, context
+      if left.right instanceof LiteralString
+        name = new UnquotedString @getStringValue(left.right, context)
+      else
+        name = @evaluateNode left.right, context
 
       ref = @evaluateNode left.left, context
 
@@ -499,13 +502,13 @@ class Evaluator extends Class
   evaluateReturn: (node, context) ->
     switch node.arguments.length
       when 0
-        node.value = Null.null
+        node.value = Null.NULL
       when 1
         node.value = @evaluateNode node.arguments[0], context
       else
         @valueError "Too many arguments for a `return`"
 
-    throw node
+    throw node.value
 
   ###
   ###
@@ -567,7 +570,7 @@ class Evaluator extends Class
 
       context.include path
 
-    return Null.null
+    return Null.NULL
 
   ###
   ###
@@ -578,7 +581,7 @@ class Evaluator extends Class
         @valueError "Bad argument for `use`"
       @layla.use name.value
 
-    return Null.null
+    return Null.NULL
 
   ###
   ###
@@ -618,7 +621,7 @@ class Evaluator extends Class
   ###
   ###
   evaluateBody: (body, context) ->
-    value = Null.null
+    value = Null.NULL
 
     for node in body
       value = @evaluateNode node, context
@@ -827,6 +830,8 @@ class Evaluator extends Class
     catch err
       if err instanceof Directive
         @runtimeError "Uncaught `#{err.name}`"
+      else if err instanceof Object
+        @runtimeError "Uncaught `return`"
       else
         throw err
 

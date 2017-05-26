@@ -195,7 +195,7 @@ class URL extends URI
       value = @[component]
 
       if value is null
-        Null.null
+        Null.NULL
       else
         new QuotedString value
 
@@ -240,7 +240,7 @@ class URL extends URI
     if domain = @domain
       new QuotedString domain
     else
-      Null.null
+      Null.NULL
 
   ###
   Returns a copy of the URL with the scheme set to `http`

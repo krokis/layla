@@ -10,7 +10,13 @@ class Function extends Object
     super()
 
   invoke: (context, args...) ->
-    (@func.call this, context.block, args...) or Null.null
+    try
+      return (@func.call this, context, args...) or Null.NULL
+    catch e
+      if e instanceof Object
+        return e
+
+      throw e
 
   toString: -> 'function'
 

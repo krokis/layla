@@ -9,11 +9,11 @@ class Boolean extends Object
     super()
     @value = !!@value
 
-  @true: new @ yes
+  @TRUE: new @ yes
 
-  @false: new @ no
+  @FALSE: new @ no
 
-  @new: (value) -> value and @true or @false
+  @new: (value) -> value and @TRUE or @FALSE
 
   isEqual: (other) -> other instanceof Boolean and @value is other.value
 

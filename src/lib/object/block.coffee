@@ -33,7 +33,7 @@ class Block extends Collection
 
   '.::': (context, other) ->
     if other instanceof String
-      return @getProperty(other.value) or Null.null
+      return @getProperty(other.value) or Null.NULL
 
     return super context, other
 

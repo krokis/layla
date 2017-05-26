@@ -249,7 +249,7 @@ class Number extends Object
       try
         other = other.convert @unit
       catch
-        return Boolean.false
+        return Boolean.FALSE
 
     div = @value / other.value
 

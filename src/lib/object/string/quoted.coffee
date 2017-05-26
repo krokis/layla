@@ -11,13 +11,13 @@ class QuotedString extends String
 
   reprValue: -> '"' + super() + '"'
 
-  '.quoted?': -> Boolean.true
+  '.quoted?': -> Boolean.TRUE
 
-  '.unquoted?': -> Boolean.false
+  '.unquoted?': -> Boolean.FALSE
 
-String::['.quoted?'] = -> Boolean.false
+String::['.quoted?'] = -> Boolean.FALSE
 
-String::['.unquoted?'] = -> Boolean.true
+String::['.unquoted?'] = -> Boolean.TRUE
 
 Object::['.quote'] = -> new QuotedString @toString()
 
