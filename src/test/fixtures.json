@@ -2,6 +2,6 @@
   "cases/*.md",
   "cases/include/*",
   "cases/whitespace/*",
-  "bin/*.css",
-  "bin/*.lay"
+  "cli/*.css",
+  "cli/*.lay"
 ]

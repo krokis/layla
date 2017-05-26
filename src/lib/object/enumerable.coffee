@@ -2,6 +2,7 @@ Object = require '../object'
 Null   = require './null'
 Number = require './number'
 
+
 ###
 ###
 class Enumerable extends Object

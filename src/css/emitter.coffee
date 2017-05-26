@@ -1,10 +1,10 @@
-Emitter        = require '../emitter'
-Rule           = require '../object/rule'
-Property       = require '../object/property'
-String         = require '../object/string'
-RawString      = require '../object/string/raw'
-QuotedString   = require '../object/string/quoted'
-UnquotedString = require '../object/string/unquoted'
+Emitter        = require '../lib/emitter'
+Rule           = require '../lib/object/rule'
+Property       = require '../lib/object/property'
+String         = require '../lib/object/string'
+RawString      = require '../lib/object/string/raw'
+QuotedString   = require '../lib/object/string/quoted'
+UnquotedString = require '../lib/object/string/unquoted'
 
 
 ###
@@ -366,5 +366,6 @@ class CSSEmitter extends Emitter
       css += '\n'
 
     css
+
 
 module.exports = CSSEmitter

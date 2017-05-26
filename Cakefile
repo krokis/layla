@@ -8,7 +8,10 @@ glob         = require 'glob'
 Layla        = require './src/lib'
 
 #
+MODULES = ['lib', 'css', 'node', 'cli']
+
 QUEUE = []
+ERRORS = 0
 
 ESC    = '\u001b'
 RESET  = "#{ESC}[0m"
@@ -22,8 +25,6 @@ BG_RED = "#{ESC}[41m"
 
 NPM = which.sync 'npm'
 NPM_BIN = childProcess.execSync("#{NPM} bin").toString().trim()
-
-ERRORS = 0
 
 VERBOSE = no
 WATCH   = no
@@ -182,20 +183,7 @@ option '-w', '--watch', 'Whatch sources for changes and re-run tasks'
 task 'clean', 'Remove all built files and directories', ->
   queue ->
     log 'task', 'Cleaning up'
-    remove ['bin', 'lib', 'dist', 'test']
-
-task 'build:bin', 'Build CLI binary', ->
-  queue ->
-    log 'task', 'Building binary'
-
-    read "src/bin/layla", (source) ->
-      js = """
-           #!/usr/bin/env node
-           #{uncoffee source}
-           """
-      mkdir 'bin', ->
-        write 'bin/layla', js, ->
-          chmod 'bin/layla', '0755'
+    remove MODULES.concat ['test']
 
 task 'build:test', 'Build tests', ->
   queue ->
@@ -219,13 +207,26 @@ task 'build:test', 'Build tests', ->
       else
         done()
 
-task 'build:lib', 'Build library', ->
-  queue ->
-    log 'task', 'Building lib'
-    mkdir 'lib', ->
+MODULES.forEach (module) ->
+  task "build:#{module}", 'Build #{module} module', ->
+    queue ->
+      log 'task', "Building #{module} module"
       args = ['--compile', '--no-header']
       args.push '--watch' if WATCH
-      exec "coffee #{args.join ' '} --output lib/ src/lib"
+
+      mkdir module, ->
+        exec "coffee #{args.join ' '} --output #{module}/ src/#{module}", ->
+          if module is 'cli'
+            read "src/cli/layla", (source) ->
+              js = """
+                   #!/usr/bin/env node
+                   #{uncoffee source}
+                   """
+              mkdir 'cli', ->
+                write 'cli/layla', js, ->
+                  chmod 'cli/layla', '0755'
+          else
+            done()
 
 task 'build:license', 'Build license file', ->
   queue ->
@@ -242,8 +243,9 @@ task 'build:module', 'Build NPM module', ->
   invoke 'build:index'
 
 task 'build:all', 'Build everything', ->
-  invoke 'build:lib'
-  invoke 'build:bin'
+  for module in MODULES
+    invoke "build:#{module}"
+
   invoke 'build:license'
   invoke 'build:module'
   invoke 'build:test'
@@ -281,15 +283,15 @@ task 'build', 'Alias of build:all', ->
       log 'task', "Running docs tests#{expl}"
       test 'docs', source
 
-  task "#{prefix}:bin", "Run CLI tests#{expl}", ->
+  task "#{prefix}:cli", "Run CLI tests#{expl}", ->
     queue ->
       log 'task', "Running CLI tests#{expl}"
-      test 'bin', source
+      test 'cli', source
 
   task "#{prefix}:all", "Run all tests#{expl}", ->
     invoke "#{prefix}:unit"
     invoke "#{prefix}:cases"
-    invoke "#{prefix}:bin"
+    invoke "#{prefix}:cli"
     invoke "#{prefix}:style"
     invoke "#{prefix}:docs"
 

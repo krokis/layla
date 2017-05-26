@@ -1,6 +1,4 @@
 #!/usr/bin/env coffee
-
-# 3rd party
 os              = require 'os'
 fs              = require 'fs'
 path            = require 'path'
@@ -9,10 +7,11 @@ colorSupport    = require 'color-support'
 
 Layla         = require '../lib'
 ProgramError  = require '../lib/error/program'
-NodeContext   = require '../lib/context/node'
-CLIEmitter    = require '../lib/emitter/cli'
 EOTError      = require '../lib/error/eot'
-CSSNormalizer = require '../lib/css/normalizer'
+CSSNormalizer = require '../css/normalizer'
+CLIContext    = require './context'
+CLIEmitter    = require './emitter'
+
 
 EOL = os.EOL
 
@@ -58,11 +57,6 @@ class Opt extends Arg
   constructor: (@name, value) -> super value
   bool: ->
     @value is null or /^\s*1|true|y|yes|on\s*/i.test(@value)
-
-class CLIContext extends NodeContext
-  constructor: (args...) ->
-    super args...
-    @pushPath process.cwd()
 
 # "Global" options
 $interactive = no
@@ -302,7 +296,7 @@ try
 
         $plugins.push plugin
       else
-        throw new UnknownOptionError "Unkown option: `#{opt.name}`"
+        throw new UsageError "Unkown option: `#{opt.name}`"
 
   # Iterate parsed arguments
   loop

@@ -1,5 +1,6 @@
 Literal = require './literal'
 
+
 ###
 ###
 class String extends Literal

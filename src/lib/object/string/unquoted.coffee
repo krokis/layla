@@ -1,6 +1,7 @@
 Object = require '../../object'
 String = require '../string'
 
+
 ###
 ###
 class UnquotedString extends String

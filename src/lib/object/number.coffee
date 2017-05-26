@@ -2,8 +2,8 @@ Object     = require '../object'
 Boolean    = require './boolean'
 ValueError = require '../error/value'
 
-
 FACTORS = {}
+
 
 ###
 ###

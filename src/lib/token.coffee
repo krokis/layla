@@ -1,5 +1,8 @@
 Class = require './class'
 
+
+###
+###
 class Token extends Class
 
   # Types

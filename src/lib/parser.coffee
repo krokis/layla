@@ -5,6 +5,9 @@ InternalError = require './error/internal'
 
 isString = (obj) -> "[object String]" is toString.call obj
 
+
+###
+###
 class Parser extends Class
 
   parseRoot: -> throw new InternalError 'Not implemented'

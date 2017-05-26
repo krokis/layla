@@ -1,8 +1,8 @@
 Selector = require '../selector'
 
-###
-###
 
+###
+###
 class SelectorList extends Selector
 
   constructor: (@items = []) ->

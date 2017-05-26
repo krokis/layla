@@ -1,4 +1,4 @@
-CSSEmitter = require './css'
+CSSEmitter = require '../css/emitter'
 
 
 ###

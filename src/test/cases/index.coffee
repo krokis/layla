@@ -5,7 +5,7 @@ mark     = require 'commonmark'
 {expect} = require 'chai'
 
 Layla       = require '../../lib'
-NodeContext = require '../../lib/context/node'
+NodeContext = require '../../node/context'
 
 describe 'Cases', ->
   json = (obj, indent = 4) ->

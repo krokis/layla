@@ -1,6 +1,7 @@
 Object  = require '../object'
 Boolean = require './boolean'
 
+
 ###
 ###
 class Null extends Object

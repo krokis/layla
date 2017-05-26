@@ -1,6 +1,5 @@
 Context      = require '../context'
 LayIncluder  = require '../includer/lay'
-CSSIncluder  = require '../includer/css'
 Null         = require '../object/null'
 Boolean      = require '../object/boolean'
 QuotedString = require '../object/string/quoted'
@@ -16,7 +15,6 @@ class BaseContext extends Context
     super()
 
     @use new LayIncluder
-    @use new CSSIncluder
 
     @set 'null', Null.null
     @set 'true', Boolean.true

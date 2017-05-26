@@ -2,6 +2,7 @@ Object  = require '../../object'
 String  = require '../string'
 Boolean = require '../boolean'
 
+
 ###
 ###
 class QuotedString extends String

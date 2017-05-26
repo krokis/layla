@@ -9,6 +9,7 @@ ValueError   = require '../error/value'
 
 JSRegExp = global.RegExp
 
+
 ###
 ###
 class RegExp extends Object

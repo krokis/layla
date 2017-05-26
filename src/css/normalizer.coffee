@@ -1,12 +1,12 @@
-Visitor       = require '../visitor'
-Block         = require '../object/block'
-Rule          = require '../object/rule'
-RuleSet       = require '../object/rule-set'
-AtRule        = require '../object/at-rule'
-Property      = require '../object/property'
-Null          = require '../object/null'
+Visitor       = require '../lib/visitor'
+Block         = require '../lib/object/block'
+Rule          = require '../lib/object/rule'
+RuleSet       = require '../lib/object/rule-set'
+AtRule        = require '../lib/object/at-rule'
+Property      = require '../lib/object/property'
+Null          = require '../lib/object/null'
+InternalError = require '../lib/error/internal'
 
-InternalError = require '../error/internal'
 
 ###
 ###
@@ -109,5 +109,6 @@ class Normalizer extends Visitor
   ###
   ###
   normalizeDocument: (node) -> @normalizeBlock node
+
 
 module.exports = Normalizer
