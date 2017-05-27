@@ -176,7 +176,7 @@ test = (path, source = SOURCE, callback = done) ->
 
   exec "mocha #{args.join ' '} #{path}", callback
 
-option '-v', '--verbose', 'Be verbose'
+option '-v', '--verbose', 'Enable verbose output'
 
 option '-s', '--source', 'Run tests against source coffee'
 
@@ -281,3 +281,8 @@ task 'test:all', 'Run all tests', ->
 
 task 'test', 'Alias of test:all', ->
   invoke 'test:all'
+
+task 'all', 'Build, test and then clean everything', ->
+  invoke 'build:all'
+  invoke 'test:all'
+  invoke 'clean'
