@@ -1,5 +1,5 @@
-Class      = require './class'
-ValueError = require './error/value'
+Class      = require '../class'
+ValueError = require '../error/value'
 
 
 ###
@@ -83,5 +83,6 @@ class Object extends Class
   '.unimportant': -> @toUnimportant()
 
   '.copy': -> @clone()
+
 
 module.exports = Object

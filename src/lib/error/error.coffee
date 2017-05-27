@@ -1,4 +1,5 @@
-Class = require './class'
+Class = require '../class'
+
 
 
 ###
@@ -10,6 +11,7 @@ class Error extends Class
   @property 'name', get: -> @class.name
 
   toString: -> "[#{@name}] #{@message}"
+
 
 
 module.exports = Error

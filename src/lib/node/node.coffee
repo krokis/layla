@@ -1,5 +1,8 @@
-Class = require './class'
+Class = require '../class'
 
+
+###
+###
 class Node extends Class
 
   start: null
@@ -12,5 +15,6 @@ class Node extends Class
     json.start = @start
     json.end = @end
     json
+
 
 module.exports = Node
