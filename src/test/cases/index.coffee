@@ -118,9 +118,13 @@ describe 'Cases', ->
                     expect(actual).to.equal c.expected
                   catch e
                     throw e unless c.err_name or c.err_msg
-                    throw e if c.err_name and e.name isnt c.err_name
+
+                    if c.err_name
+                      expect(e.name).to.equal c.err_name
+
                     if c.err_msg
                       expect(e.message).to.equal c.err_msg
+
               ).bind @, cases
             else if todo
               it desc
