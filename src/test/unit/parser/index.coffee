@@ -1,7 +1,7 @@
 fs       = require 'fs'
 {expect} = require 'chai'
 
-RootNode = require '../../../lib/node/root'
+RootNode = require '../../../lib/ast/root'
 Parser   = require '../../../lib/parser/lay'
 
 LAY = 'body { width: 200px * 2  }'
