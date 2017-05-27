@@ -11,6 +11,7 @@ class Class
   Simple property support. Allows subclasses to define their own property
   accessors.
   ###
+
   @property: (name, desc) ->
     if '@' is name.charAt 0
       name = name.substr 1

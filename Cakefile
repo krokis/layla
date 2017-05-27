@@ -1,9 +1,9 @@
-# 3rd party
 fs           = require 'fs-extra'
 {dirname}    = require 'path'
 which        = require 'which'
 childProcess = require 'child_process'
 coffee       = require 'coffee-script'
+browserify   = require 'browserify'
 glob         = require 'glob'
 Layla        = require './src/lib'
 
@@ -161,7 +161,7 @@ test = (path, source = no, callback = done) ->
 
   args = [
     '--slow 500'
-    '--timeout 10000'
+    "--timeout #{if process.env.CI then 60000 else 5000}"
     '--reporter ' + (if VERBOSE then 'spec' else 'base')
   ]
 
@@ -180,20 +180,7 @@ option '-w', '--watch', 'Whatch sources for changes and re-run tasks'
 task 'clean', 'Remove all built files and directories', ->
   queue ->
     log 'task', 'Cleaning up'
-    remove MODULES.concat ['test']
-
-task 'build:bin', 'Build CLI binary', ->
-  queue ->
-    log 'task', 'Building binary'
-
-    read "src/bin/layla", (source) ->
-      js = """
-           #!/usr/bin/env node
-           #{uncoffee source}
-           """
-      mkdir 'bin', ->
-        write 'bin/layla', js, ->
-          chmod 'bin/layla', '0755'
+    remove MODULES.concat ['test', 'browser']
 
 task 'build:test', 'Build tests', ->
   queue ->
@@ -237,6 +224,20 @@ MODULES.forEach (module) ->
           else
             done()
 
+task 'build:browser', 'Build browser module', (options) ->
+  queue ->
+    log 'task', 'Building browser module'
+    mkdir './browser', ->
+      extensions = ['.coffee', '.js', '.json']
+      bundle = browserify extensions: extensions
+      bundle.transform 'coffeeify', bare: yes
+      bundle.add './src/browser'
+      # TODO: Uglify!
+      bundle.bundle (err, js) ->
+        write "./browser/layla.js", js, ->
+          copy './src/browser/index.html', './browser/index.html', ->
+            done()
+
 task 'build:license', 'Build license file', ->
   queue ->
     log 'task', 'Building license'
@@ -255,6 +256,7 @@ task 'build:all', 'Build everything', ->
   for module in MODULES
     invoke "build:#{module}"
 
+  invoke 'build:browser'
   invoke 'build:license'
   invoke 'build:module'
   invoke 'build:test'
@@ -263,6 +265,7 @@ task 'build', 'Alias of build:all', ->
   invoke 'build:all'
 
 [no, yes].forEach (source) ->
+
 
   prefix = 'test'
 
@@ -277,6 +280,16 @@ task 'build', 'Alias of build:all', ->
       log 'task', "Running test cases#{expl}"
       test 'cases', source
 
+  task "#{prefix}:cli", "Run CLI tests#{expl}", ->
+    queue ->
+      log 'task', "Running CLI tests#{expl}"
+      test 'cli', source
+
+  task "#{prefix}:browser", "Run browser tests#{expl}", ->
+    queue ->
+      log 'task', "Running browser tests#{expl}"
+      test 'browser'
+
   task "#{prefix}:style", "Run style tests#{expl}", ->
     queue ->
       log 'task', "Running style tests#{expl}"
@@ -287,14 +300,10 @@ task 'build', 'Alias of build:all', ->
       log 'task', "Running docs tests#{expl}"
       test 'docs', source
 
-  task "#{prefix}:cli", "Run CLI tests#{expl}", ->
-    queue ->
-      log 'task', "Running CLI tests#{expl}"
-      test 'cli', source
-
   task "#{prefix}:all", "Run all tests#{expl}", ->
     invoke "#{prefix}:cases"
     invoke "#{prefix}:cli"
+    invoke "#{prefix}:browser"
     invoke "#{prefix}:style"
     invoke "#{prefix}:docs"
 

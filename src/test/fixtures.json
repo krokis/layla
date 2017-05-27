@@ -3,5 +3,8 @@
   "cases/include/*",
   "cases/whitespace/*",
   "cli/*.css",
-  "cli/*.lay"
+  "cli/*.lay",
+  "browser/*.html",
+  "browser/*.lay",
+  "browser/browsers.json"
 ]

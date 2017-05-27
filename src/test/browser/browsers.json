@@ -1,0 +1,13 @@
+{
+  "PhantomJS": "latest",
+  "Chrome": "latest",
+  "Firefox": "latest",
+  "Internet Explorer": "10",
+  "Opera": "latest",
+  "Android": "latest",
+  "Android": "latest",
+  "Microsoft Edge": "latest",
+  "Safari": "latest",
+  "iPad": "latest",
+  "iPhone": "latest"
+}

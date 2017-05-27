@@ -1,0 +1,13 @@
+ul {
+  list-style: lower-roman
+
+  > li {
+    font-size: $font-size
+
+    if $SCREAM {
+      text-transform: uppercase
+    } else {
+      font-weight: bold
+    }
+  }
+}
