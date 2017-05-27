@@ -85,8 +85,8 @@ class Tokenizer extends Class
   prepare: (source = '', @file = '<unknown>') ->
     @buffer = source
     @length = source.length
-    @line = 0
-    @column = 0
+    @line = 1
+    @column = 1
     @position = 0
     @move 0
 
@@ -114,7 +114,7 @@ class Tokenizer extends Class
     @line += (lines.length - 1)
 
     if lines.length > 1
-      @column = lines.pop().length
+      @column = lines.pop().length + 1
     else
       @column += n
 
