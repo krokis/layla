@@ -1,4 +1,4 @@
-Node = require '../node'
+Node = require '../ast/node'
 
 class Statement extends Node
 
