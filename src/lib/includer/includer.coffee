@@ -1,5 +1,5 @@
-Plugin       = require './plugin'
-IncludeError = require './error/include'
+Plugin       = require '../plugin'
+IncludeError = require '../error/include'
 
 
 ###

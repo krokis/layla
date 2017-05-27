@@ -1,6 +1,6 @@
-Class               = require './class'
-ValueError          = require './error/value'
-NotImplementedError = require './error/not-implemented'
+Class               = require '../class'
+ValueError          = require '../error/value'
+NotImplementedError = require '../error/not-implemented'
 
 
 ###
@@ -89,5 +89,6 @@ class Object extends Class
   '.unimportant': -> @toUnimportant()
 
   '.copy': -> @clone()
+
 
 module.exports = Object

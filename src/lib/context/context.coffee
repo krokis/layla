@@ -1,12 +1,12 @@
 Path = require 'path'
 URL  = require 'url'
 
-Class        = require './class'
-Document     = require './object/document'
-Null         = require './object/null'
-Function     = require './object/function'
-Evaluator    = require './evaluator'
-IncludeError = require './error/include'
+Class        = require '../class'
+Document     = require '../object/document'
+Null         = require '../object/null'
+Function     = require '../object/function'
+Evaluator    = require '../evaluator'
+IncludeError = require '../error/include'
 
 MAX_INCLUDE_STACK = 100
 MAX_CALL_STACK = 999

@@ -1,6 +1,6 @@
-Class         = require './class'
-Tokenizer     = require './tokenizer'
-InternalError = require './error/internal'
+Class         = require '../class'
+Tokenizer     = require '../tokenizer'
+InternalError = require '../error/internal'
 
 
 isString = (obj) -> "[object String]" is toString.call obj
