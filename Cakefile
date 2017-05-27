@@ -182,6 +182,19 @@ task 'clean', 'Remove all built files and directories', ->
     log 'task', 'Cleaning up'
     remove MODULES.concat ['test']
 
+task 'build:bin', 'Build CLI binary', ->
+  queue ->
+    log 'task', 'Building binary'
+
+    read "src/bin/layla", (source) ->
+      js = """
+           #!/usr/bin/env node
+           #{uncoffee source}
+           """
+      mkdir 'bin', ->
+        write 'bin/layla', js, ->
+          chmod 'bin/layla', '0755'
+
 task 'build:test', 'Build tests', ->
   queue ->
     log 'task', 'Building tests'
