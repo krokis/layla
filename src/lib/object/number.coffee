@@ -1,6 +1,6 @@
 Object     = require '../object'
 Boolean    = require './boolean'
-TypeError  = require '../error/type'
+ValueError = require '../error/value'
 
 
 FACTORS = {}
@@ -29,11 +29,11 @@ class Number extends Object
         FACTORS[to.unit][from.unit] = from.value / to.value
 
       else if from.value isnt to.value
-        throw new TypeError "Bad unit definition"
+        throw new ValueError "Bad unit definition"
 
       return to
 
-    throw new TypeError "Bad unit definition"
+    throw new ValueError "Bad unit definition"
 
   @isDefined: (unit) -> unit of FACTORS
 
@@ -45,7 +45,7 @@ class Number extends Object
         unit = match[2]
         return new Number value, unit
 
-    throw new TypeError "Could not convert \"#{str}\" to #{@reprType()}"
+    throw new ValueError "Could not convert \"#{str}\" to #{@reprType()}"
 
   constructor: (value = 0, @unit = null) ->
     @value = parseFloat value.toString()
@@ -71,7 +71,7 @@ class Number extends Object
 
         stack.pop()
 
-    throw new TypeError "Cannot convert #{value}#{from_unit} to #{to_unit}"
+    throw new ValueError "Cannot convert #{value}#{from_unit} to #{to_unit}"
 
   ###
   ###
@@ -102,7 +102,7 @@ class Number extends Object
       else
         -1
     else
-      throw new TypeError (
+      throw new ValueError (
         """
         Cannot compare #{@repr()} with #{other.repr()}: \
         that's not a [Number]
@@ -176,7 +176,7 @@ class Number extends Object
     if other instanceof Number
       @clone (@convert other.unit).value + other.value, other.unit or @unit
     else
-      throw new TypeError (
+      throw new ValueError (
         """
         Cannot perform #{@repr()} + #{other.repr()}: \
         right side must be a #{Number.repr()}
@@ -187,7 +187,7 @@ class Number extends Object
     if other instanceof Number
       @clone (@convert other.unit).value - other.value, other.unit or @unit
     else
-      throw new TypeError (
+      throw new ValueError (
         """
         Cannot perform #{@repr()} - #{other.repr()}: \
         right side must be a #{Number.repr()}
@@ -201,11 +201,11 @@ class Number extends Object
         # TODO should fail for incompatible units
         @clone other.value * @value, other.unit or @unit
       else
-        throw new TypeError """
+        throw new ValueError """
           Cannot perform #{@repr()} * #{other.repr()}
           """
     else
-      throw new TypeError """
+      throw new ValueError """
         Cannot perform #{@repr()} * #{other.repr()}: \
         right side must be a #{Number.repr()}
         """
@@ -213,13 +213,13 @@ class Number extends Object
   './': (context, other) ->
     if other instanceof Number
       if other.value is 0
-        throw new TypeError 'Cannot divide by 0'
+        throw new ValueError 'Cannot divide by 0'
       if !@isPure() and !other.isPure()
         @clone @value / (other.convert @unit).value, ''
       else
         @clone @value / other.value, @unit or other.unit
     else
-      throw new TypeError (
+      throw new ValueError (
         """
         Cannot perform #{@repr()} / #{other.repr()}: \
         right side must be a #{Number.repr()}
@@ -289,7 +289,7 @@ class Number extends Object
 
   '.root': (context, deg = TWO) ->
     if @value < 0
-      throw new TypeError """
+      throw new ValueError """
       Cannot make #{deg.value}th root of #{@repr()}: Base cannot be negative
       """
     @clone pow @value, 1 / (deg.value)
@@ -298,7 +298,7 @@ class Number extends Object
 
   '.mod': (context, other) ->
     if other.value is 0
-      throw new TypeError 'Cannot divide by 0'
+      throw new ValueError 'Cannot divide by 0'
     @clone @value % other.value
 
   '.sin': -> @clone sin @value

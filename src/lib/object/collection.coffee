@@ -1,10 +1,12 @@
-Indexed   = require './indexed'
-Boolean   = require './boolean'
-Number    = require './number'
-Null      = require './null'
-TypeError = require '../error/type'
+Indexed    = require './indexed'
+Boolean    = require './boolean'
+Number     = require './number'
+Null       = require './null'
+ValueError = require '../error/value'
 
 
+###
+###
 class Collection extends Indexed
 
   constructor: (@items = []) -> super
@@ -65,7 +67,7 @@ class Collection extends Indexed
     if other instanceof Collection
       return @clone @items.concat other.items
 
-    throw new TypeError "Cannot sum collection with that"
+    throw new ValueError "Cannot sum collection with that"
 
   '.::': (context, other) ->
     if other instanceof Number
@@ -82,7 +84,7 @@ class Collection extends Indexed
         slice.items.push @['.::'](context, idx)
       return slice
 
-    throw new TypeError "Bad member: #{other.type}"
+    throw new ValueError "Bad member: #{other.type}"
 
   '.::=': (context, key, value) ->
     if key instanceof Number
@@ -91,7 +93,7 @@ class Collection extends Indexed
       if 0 <= idx <= @items.length
         return @items[idx] = value
 
-    throw new TypeError
+    throw new ValueError
 
   '.length': -> new Number @length()
 

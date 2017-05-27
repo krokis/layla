@@ -1365,42 +1365,42 @@ Strings
   foo: ''.number
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   foo: ''.number
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   foo: ' '.number
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   foo: '100px20'.number
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   foo: 'a'.number
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   foo: '2.2.2px'.number
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 ### `base64`

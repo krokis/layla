@@ -1,5 +1,9 @@
-ValueError = require './type'
+RuntimeError = require './runtime'
 
-class ImportError extends ValueError
+
+###
+###
+class ImportError extends RuntimeError
+
 
 module.exports = ImportError

@@ -70,7 +70,7 @@ Regular expressions
   a = /(.*/i
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   Invalid regular expression: /(.*/: Unterminated group
   ~~~
 
@@ -105,7 +105,7 @@ Regular expressions
   a = /.*/mij
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   Bad flag for RegExp: "j"
   ~~~
 
@@ -115,7 +115,7 @@ Regular expressions
   a = /.*/I
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   Bad flag for RegExp: "I"
   ~~~
 
@@ -123,7 +123,7 @@ Regular expressions
   a = /.*/gMi
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   Bad flag for RegExp: "M"
   ~~~
 
@@ -131,7 +131,7 @@ Regular expressions
   a = /.*/miG
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   Bad flag for RegExp: "G"
   ~~~
 

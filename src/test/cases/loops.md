@@ -247,7 +247,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Strings
@@ -258,7 +258,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -267,7 +267,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -276,7 +276,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -285,7 +285,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - URLs
@@ -296,7 +296,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -305,7 +305,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Data URIs
@@ -316,7 +316,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -325,7 +325,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Booleans
@@ -336,7 +336,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -345,7 +345,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Null
@@ -356,7 +356,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Colors
@@ -367,7 +367,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -376,7 +376,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Functions
@@ -387,7 +387,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Regular expressions
@@ -398,7 +398,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 ## `break`
@@ -500,7 +500,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -509,7 +509,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -518,7 +518,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -527,7 +527,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Fails for non-positive `depth`s
@@ -538,7 +538,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -549,7 +549,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Fails for non-integer `depth`s
@@ -560,7 +560,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -699,7 +699,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -708,7 +708,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -717,7 +717,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -726,7 +726,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Fails for too high `depth`s
@@ -761,7 +761,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -772,7 +772,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Fails for non-integer `depth`s
@@ -783,7 +783,7 @@ Loops
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay

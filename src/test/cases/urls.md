@@ -705,14 +705,14 @@
   url('http://disney.com/').port = #fff
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   url('http://disney.com/').port = ''
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Fails for non-integer numbers
@@ -721,7 +721,7 @@
   url('http://disney.com/').port = '2.7'
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   Cannot set URL port to non-integer number: 2.7
   ~~~
 
@@ -741,7 +741,7 @@
   url('http://disney.com/').port = -1
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   Port number out of 1..65535 range: -1
   ~~~
 
@@ -756,7 +756,7 @@
   url('http://disney.com/').port = 65536
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   Port number out of 1..65535 range: 65536
   ~~~
 

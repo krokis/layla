@@ -1,4 +1,4 @@
-parseURL     = require 'url'
+ParseURL     = require 'url'
 Net          = require 'net'
 Path         = require 'path'
 
@@ -9,7 +9,8 @@ String       = require './string'
 QuotedString = require './string/quoted'
 Number       = require './number'
 Error        = require '../error'
-TypeError    = require '../error/type'
+ValueError   = require '../error/value'
+
 
 ###
 ###
@@ -34,7 +35,7 @@ class URL extends URI
   parse: (uri) ->
     uri = uri.trim()
     # TODO catch parsing errors
-    @components = parseURL.parse uri, no, yes
+    @components = ParseURL.parse uri, no, yes
     @components.host = null
 
   @property 'scheme',
@@ -153,7 +154,7 @@ class URL extends URI
   ###
   '.+': (context, other) ->
     if other instanceof URL or other instanceof String
-      @clone (parseURL.resolve @value, other.value)
+      @clone (ParseURL.resolve @value, other.value)
     else
       super
 
@@ -166,22 +167,22 @@ class URL extends URI
         try
           port = port.toNumber()
         catch
-          throw new TypeError (
+          throw new ValueError (
             "Cannot set URL port to non-numeric value: #{port.repr()}"
           )
 
       unless port.isPure()
-        throw new TypeError (
+        throw new ValueError (
           "Cannot set URL port to non-pure number: #{port.reprValue()}"
         )
 
       unless port.isInteger()
-        throw new TypeError (
+        throw new ValueError (
           "Cannot set URL port to non-integer number: #{port.reprValue()}"
         )
 
       unless 0 <= port.value <= 65535
-        throw new TypeError (
+        throw new ValueError (
           "Port number out of 1..65535 range: #{port.reprValue()}"
         )
 
@@ -270,14 +271,14 @@ class URL extends URI
 
         @[name] = value
 
-  toString: -> parseURL.format @components
+  toString: -> ParseURL.format @components
 
 do ->
   supah = String::['.+']
 
   String::['.+'] = (context, other, etc...) ->
     if other instanceof URL
-      other.clone parseURL.resolve @value, other.value
+      other.clone ParseURL.resolve @value, other.value
     else
       supah.call @, context, other, etc...
 

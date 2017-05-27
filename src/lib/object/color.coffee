@@ -3,7 +3,6 @@ Null          = require './null'
 Boolean       = require './boolean'
 Number        = require './number'
 String        = require './string'
-TypeError     = require '../error/type'
 ValueError    = require '../error/value'
 InternalError = require '../error/value'
 
@@ -602,13 +601,13 @@ class Color extends Object
     if amount instanceof Number
       @adjustChannel 'hsl', 1, amount.value, amount.unit
     else
-      throw new TypeError "Bad argument for #{@reprType()}.saturate"
+      throw new ValueError "Bad argument for #{@reprType()}.saturate"
 
   '.desaturate': (context, amount = Number.ONE_HUNDRED_PERCENT) ->
     if amount instanceof Number
       @adjustChannel 'hsl', 1, -1 * amount.value, amount.unit
     else
-      throw new TypeError "Bad argument for #{@reprType()}.saturate"
+      throw new ValueError "Bad argument for #{@reprType()}.saturate"
 
   '.grey': -> @['.desaturate']()
 
@@ -616,25 +615,25 @@ class Color extends Object
     if amount instanceof Number
       @adjustChannel 'hwb', 1, amount.value, amount.unit
     else
-      throw new TypeError "Bad argument for #{@reprType()}.whiten"
+      throw new ValueError "Bad argument for #{@reprType()}.whiten"
 
   '.blacken': (context, amount = Number.FIFTY_PERCENT) ->
     if amount instanceof Number
       @adjustChannel 'hwb', 2, amount.value, amount.unit
     else
-      throw new TypeError "Bad argument for #{@reprType()}.blacken"
+      throw new ValueError "Bad argument for #{@reprType()}.blacken"
 
   '.darken': (context, amount = Number.TEN_PERCENT) ->
     if amount instanceof Number
       @adjustChannel 'hsl', 2, -1 * amount.value, amount.unit
     else
-      throw new TypeError "Bad argument for #{@reprType()}.darken"
+      throw new ValueError "Bad argument for #{@reprType()}.darken"
 
   '.lighten': (context, amount = Number.TEN_PERCENT) ->
     if amount instanceof Number
       @adjustChannel 'hsl', 2, amount.value, amount.unit
     else
-      throw new TypeError "Bad argument for #{@reprType()}.lighten"
+      throw new ValueError "Bad argument for #{@reprType()}.lighten"
 
   # TODO: Use @luminance instead of @lightness? It seems more logical, but
   # it would be even more confusing: `light?` and `dark?` use luminance, but
@@ -655,7 +654,7 @@ class Color extends Object
       amount = amount.convert('deg')
       @adjustChannel 'hsl', 0, amount.value, amount.unit
     else
-      throw new TypeError "Bad argument for #{@reprType()}.rotate"
+      throw new ValueError "Bad argument for #{@reprType()}.rotate"
 
   @::['.spin'] = @::['.rotate']
 
@@ -692,12 +691,12 @@ class Color extends Object
       if mode instanceof String
         mode = mode.value
       else
-        throw new TypeError (
+        throw new ValueError (
           "Bad `mode` argument for [#{@reprType()}.blend]"
         )
 
     unless backdrop instanceof Color
-      throw new TypeError (
+      throw new ValueError (
         "Bad `mode` argument for [#{@reprType()}.blend]"
       )
 

@@ -1,11 +1,13 @@
-Object  = require '../../object'
-Null    = require '../null'
-Boolean = require '../boolean'
-String  = require '../string'
-Number  = require '../number'
+Object     = require '../../object'
+Null       = require '../null'
+Boolean    = require '../boolean'
+String     = require '../string'
+Number     = require '../number'
+ValueError = require '../../error/value'
 
-TypeError = require '../../error/type'
 
+###
+###
 class RawString extends String
 
   ###
@@ -20,14 +22,14 @@ Number::['.base'] = (context, base = Number.TEN) ->
   base = base.toNumber()
 
   unless base.isInteger()
-    throw new TypeError """
+    throw new ValueError """
       Cannot convert number to base `#{base.value}`: base must be integer
       """
 
   # TODO Check number is pure?
 
   unless 2 <= base.value <= 16
-    throw new TypeError """
+    throw new ValueError """
       Cannot convert number to base `#{base.value}`: base must be \
       between 2 and 16
       """
@@ -75,6 +77,7 @@ do ->
 
       return new RawString roman
 
-    throw new TypeError
+    throw new ValueError
+
 
 module.exports = RawString

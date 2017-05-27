@@ -5,9 +5,11 @@ String       = require './string'
 QuotedString = require './string/quoted'
 Number       = require './number'
 List         = require './list'
-TypeError    = require '../error/type'
+ValueError   = require '../error/value'
 
 
+###
+###
 class RegExp extends Object
 
   _value: null
@@ -54,7 +56,7 @@ class RegExp extends Object
       when 'i'
         @insensitive = value
       else
-        throw new TypeError "Bad flag for RegExp: \"#{flag}\""
+        throw new ValueError "Bad flag for RegExp: \"#{flag}\""
 
     return @
 
@@ -62,7 +64,7 @@ class RegExp extends Object
     try
       @_value = new global.RegExp @source, @flags
     catch e
-      throw new TypeError e.message
+      throw new ValueError e.message
 
   isEqual: (other) ->
     (other instanceof RegExp) and
@@ -86,7 +88,7 @@ class RegExp extends Object
 
       return Null.null
 
-    throw new TypeError "Cannot match that!"
+    throw new ValueError "Cannot match that!"
 
   '.flags': -> new QuotedString @flags
 
@@ -127,14 +129,14 @@ String::['.split'] = (context, separator, limit = Null.null) ->
       reg = RegExp.escape separator.value
       reg = new global.RegExp "#{reg}+"
   else
-    throw new TypeError 'Bad `separator` argument for `String.split`'
+    throw new ValueError 'Bad `separator` argument for `String.split`'
 
   if limit instanceof Null
     limit = -1
   else if limit instanceof Number
     limit = limit.value
   else
-    throw new TypeError 'Bad `limit` argument for `String.split`'
+    throw new ValueError 'Bad `limit` argument for `String.split`'
 
   chunks =
     (@value.split reg, limit)
@@ -151,7 +153,7 @@ do ->
       reg = RegExp.escape separator.value
       reg = new global.RegExp "#{reg}+"
     else
-      throw new TypeError "Cannot divide string by a [#{separator.reprType()}]"
+      throw new ValueError "Cannot divide string by a [#{separator.reprType()}]"
 
     return @['.split'] context, separator
 

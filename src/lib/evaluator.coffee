@@ -58,7 +58,7 @@ CompoundSelector      = require './object/selector/compound'
 ComplexSelector       = require './object/selector/complex'
 SelectorList          = require './object/selector/list'
 RuntimeError          = require './error/runtime'
-TypeError             = require './error/type'
+ValueError            = require './error/value'
 ReferenceError        = require './error/reference'
 InternalError         = require './error/internal'
 
@@ -73,8 +73,8 @@ class Evaluator extends Class
   runtimeError: (msg, location) ->
     @error RuntimeError, msg, location
 
-  typeError: (msg, location) ->
-    @error TypeError, msg, location
+  valueError: (msg, location) ->
+    @error ValueError, msg, location
 
   referenceError: (msg, location) ->
     @error ReferenceError, msg, location
@@ -416,14 +416,14 @@ class Evaluator extends Class
 
         if depth instanceof Number
           unless depth.isInteger() and depth.isPositive()
-            @typeError """
+            @valueError """
               Bad value for `#{node.name}` depth: #{depth.reprValue()}"""
         else
-          @typeError "Bad argument for a `#{node.name}`: #{depth.reprType()}"
+          @valueError "Bad argument for a `#{node.name}`: #{depth.reprType()}"
 
         depth = parseInt depth.value, 10
       else
-        @typeError "Too many arguments for a `#{node.name}`"
+        @valueError "Too many arguments for a `#{node.name}`"
 
     node.depth = depth
 
@@ -442,7 +442,7 @@ class Evaluator extends Class
       when 1
         node.value = @evaluateNode node.arguments[0], context
       else
-        @typeError "Too many arguments for a `return`"
+        @valueError "Too many arguments for a `return`"
 
     throw node
 
@@ -452,7 +452,7 @@ class Evaluator extends Class
     expression = @evaluateNode node.expression, context
 
     unless expression.isEnumerable()
-      @typeError """
+      @valueError """
         Cannot traverse over #{expression.repr()}: this object is not enumerable
         """
 
@@ -500,7 +500,7 @@ class Evaluator extends Class
       file = @evaluateNode arg, context
 
       unless file instanceof URL or file instanceof String
-        @typeError "Bad argument for `import`"
+        @valueError "Bad argument for `import`"
 
       path = file.value
 
@@ -514,7 +514,7 @@ class Evaluator extends Class
     for arg in node.arguments
       name = @evaluateNode arg
       unless name instanceof String
-        @typeError "Bad argument for `use`"
+        @valueError "Bad argument for `use`"
       @layla.use name.value
 
     return Null.null

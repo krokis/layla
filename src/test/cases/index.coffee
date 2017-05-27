@@ -117,7 +117,8 @@ describe 'Cases', ->
                     actual = layla.compile c.source
                     expect(actual).to.equal c.expected
                   catch e
-                    throw e unless c.err_name or c.err_msg
+                    unless c.err_name or c.err_msg
+                      throw e
 
                     if c.err_name
                       expect(e.name).to.equal c.err_name

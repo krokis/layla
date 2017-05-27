@@ -668,7 +668,7 @@
   foo: 17.mod(0)
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   Cannot divide by 0
   ~~~
 
@@ -770,7 +770,7 @@
   (-1mm).root
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 ### `sqrt`
@@ -793,7 +793,7 @@
   (-2).sqrt
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 ### `base`
@@ -838,7 +838,7 @@
   27.base(2.3)
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Fails for any base lower than 2
@@ -847,21 +847,21 @@
   27.base(-1.6)
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   27.base(0)
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   27.base(1)
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Fails for any base higher than 16
@@ -870,7 +870,7 @@
   27.base(17)
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 ### `prime?`
@@ -1354,28 +1354,28 @@
   1mm + 1kHz
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   1deg + 1ms
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   1dpcm + 1cm
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   1foo + 1bar
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 ### `roman`
@@ -1457,7 +1457,7 @@
   0.roman
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Fails for negative numbers
@@ -1466,7 +1466,7 @@
   -2.roman
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Fails for non integers
@@ -1487,7 +1487,7 @@
   0.2.roman
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Fails for numbers over 3000
@@ -1496,7 +1496,7 @@
   foo: 3001.roman
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -1517,7 +1517,7 @@
   5px.roman
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 ## Operators
@@ -1788,21 +1788,21 @@
   1cm + 2kHz
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   foo: 32px + 10%
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   foo: 10% + 32px
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Fails for non-numbers
@@ -1811,35 +1811,35 @@
   1cm + #777
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   1cm + "0"
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   1cm + null
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   1cm + false
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   1cm + ()
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 #### `-`
@@ -1890,21 +1890,21 @@
   1cm - 2W
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   foo: 50% - 102px
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   foo: 32px - 10%
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Fails for non-numbers
@@ -1913,7 +1913,7 @@
   1px - #777
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 #### `/`
@@ -1942,7 +1942,7 @@
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Returns a pure number when both dividend and divisor are dimensions
@@ -1969,7 +1969,7 @@
   17 / 0px
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   Cannot divide by 0
   ~~~
 
@@ -1977,7 +1977,7 @@
   17 / -(0%)
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   Cannot divide by 0
   ~~~
 
@@ -1985,7 +1985,7 @@
   0 / (1 - 1)
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   Cannot divide by 0
   ~~~
 
@@ -2019,7 +2019,7 @@
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 #### `>`, `>=`, `<` and `<=`
@@ -2086,26 +2086,26 @@
   foo: 8px > 7s
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   foo: 2cm >= 1dpi
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   foo: 1Hz < 4mm
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
   foo: 360deg <= 4in
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~

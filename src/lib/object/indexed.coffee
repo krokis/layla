@@ -62,7 +62,7 @@ class Indexed extends Enumerable
 
       (@get idx) or Null.null
     else
-      throw new TypeError
+      throw new ValueError
 
 
 module.exports = Indexed

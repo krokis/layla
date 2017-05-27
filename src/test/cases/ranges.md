@@ -82,7 +82,7 @@ Ranges
   1px..2s
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 - Can be casted to any unit when they're pure

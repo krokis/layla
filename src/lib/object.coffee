@@ -1,7 +1,9 @@
-Class     = require './class'
+Class      = require './class'
+ValueError = require './error/value'
 
-TypeError = require './error/type'
 
+###
+###
 class Object extends Class
 
   @new: (args...) ->
@@ -25,7 +27,7 @@ class Object extends Class
         else
           "#{operator}#{@repr()}"
 
-      throw new TypeError (
+      throw new ValueError (
         """
         Cannot perform #{repr}: \
         #{@class.repr()} has no method [.#{operator}]
@@ -52,7 +54,7 @@ class Object extends Class
     if typeof method is 'function'
       method.call this, context, etc...
     else
-      throw new TypeError "Call to undefined method: [#{@type}.#{name}]"
+      throw new ValueError "Call to undefined method: [#{@type}.#{name}]"
 
   '.=': (context, name, etc...) -> @['.'] context, "#{name}=", etc...
 

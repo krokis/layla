@@ -1649,7 +1649,7 @@
   10 .  2px
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
 #### Between value and unit

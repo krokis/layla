@@ -899,5 +899,5 @@ Lists
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~

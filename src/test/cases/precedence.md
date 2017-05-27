@@ -16,7 +16,7 @@
   foo: +'a'.length
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay
@@ -204,7 +204,7 @@
   }
   ~~~
 
-  ~~~ TypeError
+  ~~~ ValueError
   ~~~
 
   ~~~ lay

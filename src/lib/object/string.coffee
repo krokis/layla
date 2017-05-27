@@ -1,10 +1,12 @@
-Object    = require '../object'
-Null      = require './null'
-Boolean   = require './boolean'
-Number    = require './number'
+Object     = require '../object'
+Null       = require './null'
+Boolean    = require './boolean'
+Number     = require './number'
+ValueError = require '../error/value'
 
-TypeError = require '../error/type'
 
+###
+###
 class String extends Object
 
   QUOTE_REGEXP = (str) -> str.replace /[.?*+^$[\]\\(){}|-]/g, "\\$&"
@@ -83,7 +85,7 @@ class String extends Object
     if other instanceof String
       return @clone "#{@value}#{other.value}"
     else
-      throw new TypeError (
+      throw new ValueError (
         """
         Cannot perform #{@repr()} + #{other.repr()}: \
         right side must be a #{String.repr()}
@@ -96,17 +98,17 @@ class String extends Object
         unless other.unit
           return @clone ((Array other.value + 1).join @value)
         else
-          throw new TypeError (
+          throw new ValueError (
             """
             Cannot perform #{@repr()} * #{other.repr()}: \
             that's not a [Number]
             """
           )
       else
-        throw new TypeError
+        throw new ValueError
 
     else
-      throw new TypeError (
+      throw new ValueError (
         """
         Cannot perform #{@repr()} * #{other.repr()}: \
         that's not a [Number]
@@ -125,7 +127,7 @@ class String extends Object
       else
         return @clone char
     else
-      throw new TypeError
+      throw new ValueError
 
   '.length': -> new Number @length
 
@@ -200,5 +202,6 @@ do ->
       other['.*'] context, @
     else
       supah.call @, context, other, etc...
+
 
 module.exports = String

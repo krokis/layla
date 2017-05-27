@@ -5,7 +5,8 @@ List           = require './list'
 Number         = require './number'
 String         = require './string'
 UnquotedString = require './string/unquoted'
-TypeError      = require '../error/type'
+ValueError     = require '../error/value'
+
 
 ###
 ###
@@ -74,7 +75,7 @@ class Range extends Indexed
     if step instanceof Number
       return @clone null, null, null, (step.convert @unit).value
 
-    throw new TypeError "Cannot divide a range by #{step.repr()}"
+    throw new ValueError "Cannot divide a range by #{step.repr()}"
 
   '.unit': -> if @unit then new UnquotedString @unit else Null.null
 
@@ -90,7 +91,7 @@ class Range extends Indexed
     if step instanceof Number
       @step = (step.convert @unit).value
     else
-      throw new TypeError "Bad `step` value for a range: #{step.repr()}"
+      throw new ValueError "Bad `step` value for a range: #{step.repr()}"
 
   '.convert': (context, args...) -> @convert args...
 
@@ -112,7 +113,7 @@ Number::['...'] = (context, other) ->
 
     return new Range @value, other.value, unit
 
-  throw new TypeError "Cannot make a range with that: #{other.type}"
+  throw new ValueError "Cannot make a range with that: #{other.type}"
 
 do ->
   supah = List::['.::']
