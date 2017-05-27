@@ -143,6 +143,30 @@ Loops
 
 - Can iterate the document
 
+  ~~~ lay
+  border: red
+  color: black
+
+  $props = ()
+  $rules = 0
+
+  for $p in & {
+    $props.push($p.name)
+  }
+
+  &.empty
+
+  loop.document {
+    props: $props.commas
+  }
+  ~~~
+
+  ~~~ css
+  loop.document {
+    props: "border", "color";
+  }
+  ~~~
+
 - Can iterate blocks rules
 
   ~~~ lay
