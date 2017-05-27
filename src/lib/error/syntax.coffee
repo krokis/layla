@@ -1,6 +1,10 @@
-ParseError = require './parse'
+ProgramError = require './program'
 
-class SyntaxError extends ParseError
+
+###
+###
+class SyntaxError extends ProgramError
+
 
 module.exports = SyntaxError
 
