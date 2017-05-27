@@ -30,6 +30,18 @@ Lists
 
 - Can be made with tabs
 
+  ~~~ lay
+  lists:tabs {
+    i: "\t1\t\t2 3  4  \t5".eval
+  }
+  ~~~
+
+  ~~~ css
+  lists:tabs {
+    i: 1 2 3 4 5;
+  }
+  ~~~
+
 - Can be made with commas
 
   ~~~ lay
