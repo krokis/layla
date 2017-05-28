@@ -11,7 +11,7 @@ class Object extends Class
 
   @repr: -> "[#{@reprType()}]"
 
-  @clone: -> @
+  @clone: (args...) -> new @class args...
 
   hasMethod: (name) -> typeof @[".#{name}"] is 'function'
 

@@ -20,14 +20,14 @@ class URI extends Object
     m = uri.match /^[a-z][a-z\d\+\-\.]+(?=:)/i
 
     if m
-      @scheme = m[0]
+      @scheme = m[0].toLowerCase()
 
   @property 'value',
     get: -> @toString()
     set: (value) -> @parse value
 
-  clone: (value = @value, quote = @quote) ->
-    obj = super value, quote
+  clone: (value = @value, etc...) ->
+    obj = super value, etc...
     obj.name = @name
 
     return obj
@@ -35,7 +35,6 @@ class URI extends Object
   toJSON: ->
     json = super
     json.value = @value
-    json.quote = @quote
 
     return json
 
@@ -43,13 +42,13 @@ class URI extends Object
     if not @scheme
       Null.null
     else
-      new QuotedString @scheme, @quote or '"'
+      new QuotedString @scheme
 
   # TODO move these methods to the `URL` and `DataURI` classes?
   COMMON_SCHEMES.forEach (scheme) =>
     @::[".#{scheme}?"] = -> Boolean.new @scheme is scheme
 
-  '.string': -> new QuotedString @toString(), @quote or '"'
+  '.string': -> new QuotedString @toString()
 
 
 module.exports = URI

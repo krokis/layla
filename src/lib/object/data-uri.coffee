@@ -19,7 +19,7 @@ class DataURI extends URI
                      (?:
                        (?:(#{RE_MEDIATYPE.source})(#{RE_BASE_64.source})?)|
                        (#{RE_BASE_64.source})
-                      )?
+                     )?
                    ,([\s\S]*)
                  ///i
 
