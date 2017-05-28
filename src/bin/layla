@@ -7,13 +7,15 @@ path            = require 'path'
 readline        = require 'readline'
 colorSupport    = require 'color-support'
 
-SUPPORTS_COLORS = colorSupport()
-
 Layla         = require '../lib'
 NodeContext   = require '../lib/context/node'
 CLIEmitter    = require '../lib/emitter/cli'
 EOTError      = require '../lib/error/eot'
 CSSNormalizer = require '../lib/css/normalizer'
+
+EOL = os.EOL
+
+SUPPORTS_COLORS = colorSupport()
 
 USAGE = """
   Usage:
@@ -28,8 +30,6 @@ USAGE = """
     -v, --version           Print out Layla version
     -h, --help              Show this help
   """
-
-EOL = os.EOL
 
 class UsageError
   constructor: (@message) ->
@@ -67,17 +67,17 @@ stderr = (text = '', new_line = yes) ->
     stderr EOL, no
 
 ###
-Write an error line to stderr.
-###
-err = (text) ->
-  text = "\x1b[31m#{text}\x1b[0m" if SUPPORTS_COLORS
-  stderr text
-
-###
 Write a warning line to stderr.
 ###
 warn = (text) ->
   text = "\x1b[33m#{text}\x1b[0m" if SUPPORTS_COLORS
+  stderr text
+
+###
+Write an error line to stderr.
+###
+err = (text) ->
+  text = "\x1b[31m#{text}\x1b[0m" if SUPPORTS_COLORS
   stderr text
 
 ###
@@ -153,19 +153,16 @@ repl = (context) ->
       try
         res = null
         text = "#{buffer}\n#{text}" if buffer isnt ''
-
         block = $layla.parser.parse text, '<stdin>'
 
         for stmt in block.body
           if stmt?
             res = context.evaluate stmt
-
         if res
           emit res
           stdout()
 
         reset()
-
       catch e
         if e instanceof Layla.Error
           if e instanceof EOTError
@@ -198,9 +195,9 @@ repl = (context) ->
   reset()
 
 ###
-"Main"
+Main
 ###
-process.title = 'Layla' # Sets window title on Windows
+process.title = 'layla' # Sets window title on Windows
 
 try
   # Pre-parse arguments
@@ -254,25 +251,23 @@ try
         $interactive = opt.bool()
         $colors or= SUPPORTS_COLORS
       when 'o', 'out-file'
-        if opt.value is null
-          file = getArg()
-        else if opt.value
+        if opt.value
           file = opt
+        else
+          file = getArg()
 
         unless file
-          throw new UsageError """
-            Expected file name after `--out-file` option"""
+          throw new UsageError "Expected file name after `--out-file` option"
 
         $out_file = file.value.trim()
       when 'u', 'use'
-        if opt.value is null
-          plugin = getArg()
-        else if opt.value
+        if opt.value
           plugin = opt.value.trim()
+        else
+          plugin = getArg()
 
         unless plugin
-          throw new UsageError """
-            Expected plugin name after `--use` option"""
+          throw new UsageError "Expected plugin name after `--use` option"
 
         $plugins.push plugin
       else
@@ -287,30 +282,32 @@ try
     else
       break
 
-  $layla = new Layla new CLIContext
+  context = new CLIContext
+  $layla = new Layla context
 
   # $layla.use $plugins... # TODO
 
   if $files.length
     for file in $files
-      $layla.context.import file
+      context.import file
 
   if $interactive
-    repl $layla.context
+    repl context
   else if $files.length
-    emit $layla.context.block
+    emit context.block
     exit 0
   else
     source = ''
 
     stdin = process.openStdin()
     stdin.setEncoding 'utf8'
+
     stdin.on 'data', (chunk) ->
       source += chunk
 
     stdin.on 'end', ->
       $layla.evaluate source
-      emit $layla.context.block
+      emit context.block
       exit 0
 
 catch e
