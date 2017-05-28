@@ -5,26 +5,16 @@ Error = require '../error'
 ###
 class ProgramError extends Error
 
-  @property 'file', get: -> @location?.file
-
-  @property 'line', get: -> @location?.line
-
-  @property 'column', get: -> @location?.column
-
-  constructor: (message, @location = null, @stack = null) ->
+  constructor: (message, @start = null, @end = null, @stack = null) ->
     super message
 
-  toString: ->
-    str = super()
+  @property 'file', get: -> @start?.file or null
 
-    if @file?
-      str += " @ #{@file}"
+  @property 'line', get: -> @start?.line or null
 
-    if @line?
-      str += ":#{@line}"
-      str += ",#{@column}" if @column?
+  @property 'column', get: -> @start?.column or null
 
-    return str
+  @property 'location', get: -> @start? or null
 
 
 module.exports = ProgramError

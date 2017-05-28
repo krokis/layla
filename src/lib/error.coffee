@@ -7,9 +7,9 @@ class Error extends Class
 
   constructor: (@message) ->
 
-  @property 'name', get: -> @type
+  @property 'name', get: -> @class.name
 
-  toString: -> "[#{@type}] #{@message}"
+  toString: -> "[#{@name}] #{@message}"
 
 
 module.exports = Error
