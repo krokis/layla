@@ -733,30 +733,6 @@ Strings
   }
   ~~~
 
-### `append`
-
-- Appends one or more strings to this string
-
-  ~~~ lay
-  $a = 'Lorem'
-
-  $a.append(' ')
-  $a.append('ipsum' + ' ' + 'dolor')
-  $a.append(' ', 'sit', ' ', 'amet')
-
-  string.append {
-    i: $a
-    ii: $a.append()
-  }
-  ~~~
-
-  ~~~ css
-  string.append {
-    i: "Lorem ipsum dolor sit amet";
-    ii: "Lorem ipsum dolor sit amet";
-  }
-  ~~~
-
 ### `reverse`
 
 - Returns a copy of the string, reversed

@@ -55,16 +55,6 @@ class String extends Object
 
   toString: -> @value
 
-  # TODO Deprecate
-  append: (others...) ->
-    for other in others
-      if other instanceof String
-        @value += other.value
-      else
-        throw new TypeError "Cannot append that to a string"
-
-    return @
-
   compare: (other) ->
     if other instanceof String
       if other.value is @value
@@ -142,9 +132,6 @@ class String extends Object
   '.empty?': -> new Boolean @isEmpty()
 
   '.blank?': -> new Boolean @isBlank()
-
-  # TODO Deprecate
-  '.append': (context, others...) -> @append others...
 
   '.trim': (context, chars) ->
     # TODO check bad args
