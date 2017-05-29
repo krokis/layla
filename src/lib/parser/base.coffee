@@ -1199,7 +1199,7 @@ class BaseParser extends Parser
   parseArguments: ->
     items = []
 
-    while item = @parseExpression 0, no, no
+    while item = @parseExpression 0, yes, no
       items.push item
       @skipHorizontalWhitespace()
 
