@@ -1380,15 +1380,36 @@
   }
   ~~~
 
-  - Vertical whitespace is not allowed
+- Vertical whitespace is not allowed
 
   ~~~ lay
+  $foo = ($n) {
+    return
+    $n
+  }
+
+  $bar = ($n) {
+    return(
+      $n
+    )
+  }
+
+  body {
+    i: $foo(1)
+    ii: $bar(2)
+  }
   ~~~
 
   ~~~ css
+  body {
+    i: null;
+    ii: 2;
+  }
   ~~~
 
 #### Around commas
+
+- All whitespace is ignored
 
 ### In functions
 
