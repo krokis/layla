@@ -1345,7 +1345,181 @@
 
 ### In directives
 
+#### After name
+
+- Horizontal white space is required only in some cases
+
+  ~~~ lay
+  numbers {
+    i: () {return #fff}()
+    ii: () {return(#fff)}()
+    iii: () {return#fff}() //
+    iv: () {return.1}()
+    $n = 0
+    while true {
+      $n = $n + 1
+      break1 // `break1` is parsed to an unquoted string
+      v: $n
+      break(1)
+      v: $n + 1
+    }
+    vi: (){ return"HEY!".lower-case.raw}()
+    vii: (){return{foo: 'bar!'}}()::foo.raw
+  }
+  ~~~
+
+  ~~~ css
+  numbers {
+    i: #ffffff;
+    ii: #ffffff;
+    iii: #ffffff;
+    iv: 0.1;
+    v: 1;
+    vi: hey!;
+    vii: bar!;
+  }
+  ~~~
+
+  - Vertical whitespace is not allowed
+
+  ~~~ lay
+  ~~~
+
+  ~~~ css
+  ~~~
+
+#### Around commas
+
 ### In functions
+
+#### Before opening parentheses
+
+- Whitespace is not required
+
+  ~~~ lay
+  () {};(a, b) { return a + b};;$foo=() {};
+
+  body {> h1 {($s){font-size:$s}(17px)}}
+  ~~~
+
+  ~~~ css
+  body > h1 {
+    font-size: 17px;
+  }
+  ~~~
+
+- All whitespace is ignored
+
+  ~~~ lay
+
+
+  foo;          () {};
+  ($a,$b) { return $a + $b}
+
+  body {> h1 {               ($s){font-size:$s}(17px)}                }
+
+  body {
+    two: '(\t(a,b){return a + b}(1,1))ct'.eval
+  }
+  ~~~
+
+  ~~~ css
+  body > h1 {
+    font-size: 17px;
+  }
+
+  body {
+    two: 2ct;
+  }
+  ~~~
+
+#### Around argument name
+
+- Whitespace is not required
+
+  ~~~ lay
+
+
+  body {
+    > h1 {
+      $n = (a,$b,c) { return a+$b+c}
+      font-size: ($n(1,5,7))px
+
+      $n = (a:1px,$b:2px,c:9+1px) { return a+$b+c}
+      font-size: $n()
+    }
+  }
+  ~~~
+
+  ~~~ css
+  body > h1 {
+    font-size: 13px;
+    font-size: 13px;
+  }
+  ~~~
+
+- All whitespace is ignored
+
+  ~~~ lay
+  $n = (   a,
+
+
+
+  $b,
+
+
+       c
+  ) { return a+$b+c}
+
+  body {
+    > h1 {
+      font-size: ($n(1,5,7))px
+      max-width: '$f=(\t $m,
+      \t $u \t\t\t:
+
+      "cm"){return `\#{$m.pure}\#{$u}`};$f(100ms)'.eval
+    }
+  }
+  ~~~
+
+  ~~~ css
+  body > h1 {
+    font-size: 13px;
+    max-width: 100cm;
+  }
+  ~~~
+
+#### After closing parentheses
+
+- Whitespace is not required
+
+  ~~~ lay
+  (){};(a, b){ return a + b};;$foo=(){};body {> h1 {($s){font-size:$s}(17px)}}
+  ~~~
+
+  ~~~ css
+  body > h1 {
+    font-size: 17px;
+  }
+  ~~~
+
+- All whitespace is ignored
+
+  ~~~ lay
+  ()      {};
+                     (a, b)
+
+
+  { return a + b};;$foo=(){};body {> h1 {($s)
+
+    {font-size:$s}(17px)}}
+  ~~~
+
+  ~~~ css
+  body > h1 {
+    font-size: 17px;
+  }
+  ~~~
 
 ### In method calls
 
