@@ -21,7 +21,6 @@ CROSS  = "#{BOLD}#{RED}×#{RESET}"
 
 ERRORS = 0
 
-SOURCE  = no
 VERBOSE = no
 WATCH   = no
 
@@ -32,9 +31,6 @@ global.task = (name, description, action) ->
   _task name, description, (options) ->
     if options.verbose
       VERBOSE = yes
-
-    if options.source
-      SOURCE = yes
 
     if options.watch
       WATCH = yes
@@ -79,7 +75,7 @@ queue = (func) ->
 
 exit = ->
   if ERRORS and VERBOSE
-    s = if ERRORS.length is 1 then 's' else ''
+    s = if ERRORS.length > 1 then 's' else ''
     log 'error', "#{BOLD}#{ERRORS} task#{s} failed"
 
   process.exit ERRORS
@@ -159,7 +155,7 @@ chmod = (path, mode, callback = done) ->
 uncoffee = (source) ->
   coffee.compile source, bare: yes, header: no
 
-test = (path, source = SOURCE, callback = done) ->
+test = (path, source = no, callback = done) ->
   path = "test/#{path}"
 
   args = [
@@ -177,8 +173,6 @@ test = (path, source = SOURCE, callback = done) ->
   exec "mocha #{args.join ' '} #{path}", callback
 
 option '-v', '--verbose', 'Enable verbose output'
-
-option '-s', '--source', 'Run tests against source coffee'
 
 option '-w', '--watch', 'Whatch sources for changes and re-run tasks'
 
@@ -253,34 +247,44 @@ task 'build:all', 'Build everything', ->
 task 'build', 'Alias of build:all', ->
   invoke 'build:all'
 
-task 'test:cases', 'Run test cases', ->
-  queue ->
-    log 'task', 'Running test cases'
-    test 'cases'
+[no, yes].forEach (source) ->
 
-task 'test:style', 'Run style tests', ->
-  queue ->
-    log 'task', 'Running style tests'
-    test 'style', yes
+  prefix = 'test'
 
-task 'test:docs', 'Run docs tests', ->
-  queue ->
-    log 'task', 'Running docs tests'
-    test 'docs'
+  if source
+    prefix += ':source'
+    expl = ' (source)'
+  else
+    expl = ''
 
-task 'test:bin', 'Run CLI tests', ->
-  queue ->
-    log 'task', 'Running CLI tests'
-    test 'bin'
+  task "#{prefix}:cases", "Run test cases#{expl}", ->
+    queue ->
+      log 'task', "Running test cases#{expl}"
+      test 'cases', source
 
-task 'test:all', 'Run all tests', ->
-  invoke 'test:cases'
-  invoke 'test:style'
-  invoke 'test:docs'
-  invoke 'test:bin'
+  task "#{prefix}:style", "Run style tests#{expl}", ->
+    queue ->
+      log 'task', "Running style tests#{expl}"
+      test 'style', yes
 
-task 'test', 'Alias of test:all', ->
-  invoke 'test:all'
+  task "#{prefix}:docs", "Run docs tests#{expl}", ->
+    queue ->
+      log 'task', "Running docs tests#{expl}"
+      test 'docs', source
+
+  task "#{prefix}:bin", "Run CLI tests#{expl}", ->
+    queue ->
+      log 'task', "Running CLI tests#{expl}"
+      test 'bin', source
+
+  task "#{prefix}:all", "Run all tests#{expl}", ->
+    invoke "#{prefix}:cases"
+    invoke "#{prefix}:style"
+    invoke "#{prefix}:docs"
+    invoke "#{prefix}:bin"
+
+  task "#{prefix}", 'Alias of test:all', ->
+    invoke "#{prefix}:all"
 
 task 'all', 'Build, test and then clean everything', ->
   invoke 'build:all'
