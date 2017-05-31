@@ -366,24 +366,6 @@
   }
   ~~~
 
-### `grey`/`gray`
-
-- Are alias of `desaturate`
-
-  ~~~ lay
-  color.grey {
-    i: #203c31.grey
-    ii: #203c31.grey
-  }
-  ~~~
-
-  ~~~ css
-  color.grey {
-    i: #2e2e2e;
-    ii: #2e2e2e;
-  }
-  ~~~
-
 ### `light?`
 
 - Tells if the color is light (ie: its lightness is >= 50%)

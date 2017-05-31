@@ -609,8 +609,6 @@ class Color extends Object
     else
       throw new ValueError "Bad argument for #{@reprType()}.saturate"
 
-  '.grey': -> @['.desaturate']()
-
   '.whiten': (context, amount = Number.FIFTY_PERCENT) ->
     if amount instanceof Number
       @adjustChannel 'hwb', 1, amount.value, amount.unit
@@ -641,8 +639,6 @@ class Color extends Object
   '.light?': -> Boolean.new @lightness >= 50
 
   '.dark?': -> Boolean.new @lightness < 50
-
-  @::['.gray'] = @::['.grey']
 
   '.grey?': ->
     Boolean.new (@red is @blue and @blue is @green)
