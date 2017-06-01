@@ -1,14 +1,17 @@
-Plugin = require './plugin'
+Plugin       = require './plugin'
+IncludeError = require './error/include'
 
-ImportError = './error/import'
 
+###
+###
 class Loader extends Plugin
 
   canLoad: (uri, context) -> no
 
-  load: (uri, context) -> throw new ImportError "Cannot load \"#{uri}\""
+  load: (uri, context) -> throw new IncludeError "Cannot load \"#{uri}\""
 
   use: (context) ->
     context.useLoader @
+
 
 module.exports = Loader

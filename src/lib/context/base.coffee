@@ -1,6 +1,6 @@
 Context     = require '../context'
-LayImporter = require '../importer/lay'
-CSSImporter = require '../importer/css'
+LayIncluder = require '../includer/lay'
+CSSIncluder = require '../includer/css'
 Null        = require '../object/null'
 Boolean     = require '../object/boolean'
 String      = require '../object/string'
@@ -12,8 +12,8 @@ class BaseContext extends Context
   constructor: ->
     super
 
-    @use new LayImporter
-    @use new CSSImporter
+    @use new LayIncluder
+    @use new CSSIncluder
 
     @set 'null', Null.null
     @set 'true', Boolean.true

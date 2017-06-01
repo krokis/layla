@@ -1881,7 +1881,7 @@
   + LF
 
     ~~~ lay
-    import 'whitespace/lf.lay'
+    include 'whitespace/lf.lay'
     ~~~
 
     ~~~ css
@@ -1893,7 +1893,7 @@
   + CR
 
     ~~~ lay
-    import 'whitespace/cr.lay'
+    include 'whitespace/cr.lay'
     ~~~
 
     ~~~ css
@@ -1905,7 +1905,7 @@
   + CRLF
 
     ~~~ lay
-    import 'whitespace/crlf.lay'
+    include 'whitespace/crlf.lay'
     ~~~
 
     ~~~ css
@@ -1919,7 +1919,7 @@
 - Are ignored
 
   ~~~ lay
-  import 'whitespace/bom.lay'
+  include 'whitespace/bom.lay'
   ~~~
 
   ~~~ css

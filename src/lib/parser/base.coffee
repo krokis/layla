@@ -172,7 +172,7 @@ class BaseParser extends Parser
     'return'
     'break'
     'continue'
-    'import'
+    'include'
     'use'
   ]
 
@@ -1211,7 +1211,7 @@ class BaseParser extends Parser
     return items
 
   ###
-  Parse one of the 'directives': `return`, `break`, `continue`, `import` or
+  Parse one of the 'directives': `return`, `break`, `continue`, `include` or
   `use`.
   ###
   parseDirective: ->

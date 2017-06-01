@@ -1,4 +1,4 @@
-import 'base.lay'
+include 'base.lay'
 
 family: $base-font
 size: 13px

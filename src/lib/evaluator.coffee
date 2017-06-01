@@ -495,16 +495,16 @@ class Evaluator extends Class
 
   ###
   ###
-  evaluateImport: (node, context) ->
+  evaluateInclude: (node, context) ->
     for arg in node.arguments
       file = @evaluateNode arg, context
 
       unless file instanceof URL or file instanceof String
-        @valueError "Bad argument for `import`"
+        @valueError "Bad argument for `include`"
 
       path = file.value
 
-      context.import path
+      context.include path
 
     return Null.null
 
@@ -525,8 +525,8 @@ class Evaluator extends Class
     switch node.name
       when 'use'
         @evaluateUse node, context
-      when 'import'
-        @evaluateImport node, context
+      when 'include'
+        @evaluateInclude node, context
       when 'return'
         @evaluateReturn node, context
       when 'break'

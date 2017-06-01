@@ -1,15 +1,14 @@
 Path = require 'path'
 URL  = require 'url'
 
-Class     = require './class'
-Document  = require './object/document'
-Null      = require './object/null'
-Function  = require './object/function'
-Evaluator = require './evaluator'
+Class        = require './class'
+Document     = require './object/document'
+Null         = require './object/null'
+Function     = require './object/function'
+Evaluator    = require './evaluator'
+IncludeError = require './error/include'
 
-ImportError = require './error/import'
-
-MAX_IMPORT_STACK = 100
+MAX_INCLUDE_STACK = 100
 MAX_CALL_STACK = 999
 
 ###
@@ -21,8 +20,8 @@ class Context extends Class
   constructor: (@block = new Document, @_parent = null) ->
     @_scope = {}
     @_plugins = []
-    @_importers = []
-    @_imports = []
+    @_includers = []
+    @_includes = []
     @_calls = []
     @_loaders = []
     @_paths = []
@@ -42,17 +41,17 @@ class Context extends Class
     get: ->
       (if @parent then @parent.calls else []).concat @_calls
 
-  @property 'imports',
+  @property 'includes',
     get: ->
-      (if @parent then @parent.imports else []).concat @_imports
+      (if @parent then @parent.includes else []).concat @_includes
 
   @property 'plugins',
     get: ->
       (if @parent then @parent.plugins else []).concat @_plugins
 
-  @property 'importers',
+  @property 'includers',
     get: ->
-      (if @parent then @parent.importers else []).concat @_importers
+      (if @parent then @parent.includers else []).concat @_includers
 
   @property 'loaders',
     get: ->
@@ -95,13 +94,13 @@ class Context extends Class
       if loader.canLoad uri, @
         return loader.load uri, @
 
-    throw new ImportError "Could not load \"#{uri}\""
+    throw new IncludeError "Could not load \"#{uri}\""
 
-  useImporter: (importer) ->
-    @_importers.push importer
+  useIncluder: (includer) ->
+    @_includers.push includer
 
-  canImport: (uri) ->
-    @importers.some (importer) => importer.canImport uri, @
+  canInclude: (uri) ->
+    @includers.some (includer) => includer.canInclude uri, @
 
   resolveURI: (uri) ->
     if not @paths.length
@@ -111,27 +110,26 @@ class Context extends Class
 
     return URL.resolve base_uri, uri
 
-  import: (uri) ->
+  include: (uri) ->
     abs_uri = @resolveURI uri
 
-    for importer in @importers
-      if importer.canImport abs_uri, @
-        if abs_uri in @imports
-          throw new ImportError (
-            "Circular import detected")
+    for includer in @includers
+      if includer.canInclude abs_uri, @
+        if abs_uri in @includes
+          throw new IncludeError "Circular include detected"
 
-        @_imports.push abs_uri
+        @_includes.push abs_uri
 
-        if @imports.length > MAX_IMPORT_STACK
-          throw new ImportError (
-            "Max import stack size (#{MAX_IMPORT_STACK}) exceeded")
+        if @includes.length > MAX_INCLUDE_STACK
+          throw new IncludeError (
+            "Max include stack size (#{MAX_INCLUDE_STACK}) exceeded")
 
-        res = importer.import abs_uri, @
-        @_imports.pop()
+        res = includer.include abs_uri, @
+        @_includes.pop()
 
         return res
 
-    throw new ImportError "Could not import \"#{uri}\""
+    throw new IncludeError "Could not include \"#{uri}\""
 
   useVisitor: (visitor) ->
     @_visitors.push visitor

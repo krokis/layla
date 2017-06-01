@@ -2,7 +2,7 @@ fs   = require 'fs'
 URL  = require 'url'
 
 Loader      = require '../loader'
-ImportError = require '../error/import'
+IncludeError = require '../error/include'
 
 class FSLoader extends Loader
 
@@ -19,6 +19,6 @@ class FSLoader extends Loader
     try
       fs.readFileSync uri, 'utf8'
     catch
-      throw new ImportError "Could not import file: \"#{uri}\""
+      throw new IncludeError "Could not include file: \"#{uri}\""
 
 module.exports = FSLoader

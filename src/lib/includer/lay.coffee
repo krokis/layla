@@ -1,12 +1,12 @@
-SourceImporter = require './source'
+SourceIncluder = require './source'
 LayParser      = require '../parser/lay'
 Evaluator      = require '../evaluator'
 
-class LayImporter extends SourceImporter
+class LayIncluder extends SourceIncluder
 
   @EXTENSIONS: ['lay', '']
 
   parse: (source) ->
     (new LayParser).parse source
 
-module.exports = LayImporter
+module.exports = LayIncluder

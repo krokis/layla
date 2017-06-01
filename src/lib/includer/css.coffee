@@ -1,12 +1,12 @@
-SourceImporter = require './source'
+SourceIncluder = require './source'
 CSSParser      = require '../parser/css'
 Evaluator      = require '../evaluator'
 
-class CSSImporter extends SourceImporter
+class CSSIncluder extends SourceIncluder
 
   @EXTENSIONS: ['css']
 
   parse: (source) ->
     (new CSSParser).parse source
 
-module.exports = CSSImporter
+module.exports = CSSIncluder

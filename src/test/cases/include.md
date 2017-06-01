@@ -1,10 +1,10 @@
-# Import
+# Include
 
 - Imports rulesets from a external file onto current block
 
   ~~~ lay
-  import './import/base.lay'
-  import './import/extensionless'
+  include './include/base.lay'
+  include './include/extensionless'
   ~~~
 
   ~~~ css
@@ -22,7 +22,7 @@
 
   ~~~ lay
   html {
-    import './import/base.lay'
+    include './include/base.lay'
   }
   ~~~
 
@@ -37,8 +37,8 @@
 
   ~~~ lay
   html {
-    import './import/base.lay'
-    import './import/base.lay'
+    include './include/base.lay'
+    include './include/base.lay'
   }
   ~~~
 
@@ -58,7 +58,7 @@
 
   ~~~ lay
   html {
-    import './import/base.lay'
+    include './include/base.lay'
 
     a {
       font: $base-font
@@ -80,7 +80,7 @@
 - Can import CSS files
 
   ~~~ lay
-  import './import/layout.css'
+  include './include/layout.css'
   ~~~
 
   ~~~ css
@@ -101,8 +101,8 @@
   $body-width |= 1200px
 
   html {
-    import "import/base.lay",
-           "import/layout.lay"
+    include "include/base.lay",
+            "include/layout.lay"
   }
   ~~~
 
@@ -125,10 +125,10 @@
 - Arguments can be any type of expressions
 
   ~~~ lay
-  path = './import/'
+  path = './include/'
   base = 'base.lay'
 
-  import ("#{path}layout.css"), path + base
+  include ("#{path}layout.css"), path + base
   ~~~
 
   ~~~ css
@@ -147,11 +147,11 @@
   }
   ~~~
 
-- Imported files can recursively import others
+- Included files can recursively include others
 
   ~~~ lay
   html {
-    import 'import/base-comic.lay'
+    include 'include/base-comic.lay'
   }
   ~~~
 
@@ -162,13 +162,13 @@
   }
   ~~~
 
-- Uses current scope when evaluating the imported files, so variables can be shared
+- Uses current scope when evaluating included files, so variables can be shared
 
   ~~~ lay
   $base-font = "Comic Sans"
 
   html {
-    import './import/base.lay'
+    include './include/base.lay'
   }
   ~~~
 
@@ -182,11 +182,11 @@
 - Imported rule-sets and properties can be isolated by using a block
 
   ~~~ lay
-  import 'import/base.lay';
+  include 'include/base.lay';
 
-  $font = { import 'import/font.lay'}
-  $back = { import 'import/font.lay'}
-  $back = { import 'import/background.lay'}
+  $font = { include 'include/font.lay'}
+  $back = { include 'include/font.lay'}
+  $back = { include 'include/background.lay'}
 
   body {
     background-color: $back::color
@@ -213,13 +213,13 @@
 - URL's can be used instead of strings
 
   ~~~ lay
-  $inc = url(./import/)
+  $inc = url(./include/)
 
   html {
-    import $inc + './../import/base.lay'
+    include $inc + './../include/base.lay'
   }
 
-  import url('./import/layout.lay')
+  include url('./include/layout.lay')
   ~~~
 
   ~~~ css
@@ -241,20 +241,20 @@
 - Fails for non-existent files
 
   ~~~ lay
-  import './import/this-is-not-a-real-file.lay'
+  include './include/this-is-not-a-real-file.lay'
   ~~~
 
-  ~~~ ImportError
-  Could not import "./import/this-is-not-a-real-file.lay"
+  ~~~ IncludeError
+  Could not include "./include/this-is-not-a-real-file.lay"
   ~~~
 
 - Fails for unreadable files
 
-- Throws an error when a circular import is detected
+- Throws an error when a circular include is detected
 
   ~~~ lay
-  import './import/circular-1.lay'
+  include './include/circular-1.lay'
   ~~~
 
-  ~~~ ImportError
+  ~~~ IncludeError
   ~~~

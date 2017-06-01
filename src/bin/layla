@@ -289,7 +289,7 @@ try
 
   if $files.length
     for file in $files
-      context.import file
+      context.include file
 
   if $interactive
     repl context

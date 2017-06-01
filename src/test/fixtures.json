@@ -1,6 +1,6 @@
 [
   "cases/*.md",
-  "cases/import/*",
+  "cases/include/*",
   "cases/whitespace/*",
   "bin/*.css",
   "bin/*.lay"

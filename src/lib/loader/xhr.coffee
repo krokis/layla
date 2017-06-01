@@ -17,8 +17,8 @@ class XHRLoader extends Loader
     if xhr.status == 200
       return xhr.responseText
     else
-      throw new ImportError (
-        "Could not import URL: \"#{uri}\""
+      throw new IncludeError (
+        "Could not include URL: \"#{uri}\""
       )
 
 module.exports = XHRLoader
