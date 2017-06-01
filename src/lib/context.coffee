@@ -104,28 +104,32 @@ class Context extends Class
     @importers.some (importer) => importer.canImport uri, @
 
   resolveURI: (uri) ->
+    if not @paths.length
+      return  uri
+
+    base_uri = @paths[@paths.length - 1]
+
+    return URL.resolve base_uri, uri
 
   import: (uri) ->
-    for path in @paths by -1
-      abs_uri = URL.resolve path, uri
+    abs_uri = @resolveURI uri
 
-      for importer in @importers
-        if importer.canImport abs_uri, @
-          if abs_uri in @imports
-            throw new ImportError (
-              "Circular import detected")
+    for importer in @importers
+      if importer.canImport abs_uri, @
+        if abs_uri in @imports
+          throw new ImportError (
+            "Circular import detected")
 
-          @_imports.push abs_uri
+        @_imports.push abs_uri
 
-          if @imports.length > MAX_IMPORT_STACK
-            throw new ImportError (
-              "Max import stack size (#{MAX_IMPORT_STACK}) exceeded")
+        if @imports.length > MAX_IMPORT_STACK
+          throw new ImportError (
+            "Max import stack size (#{MAX_IMPORT_STACK}) exceeded")
 
-          res = importer.import abs_uri, @
-          @_imports.pop()
-          return res
+        res = importer.import abs_uri, @
+        @_imports.pop()
 
-      break # We don't allow more than one path where to look for at the moment
+        return res
 
     throw new ImportError "Could not import \"#{uri}\""
 
