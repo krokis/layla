@@ -9,28 +9,46 @@ ValueError = require '../error/value'
 ###
 class String extends Object
 
+  PRINTABLE_CHARS =
+    ascii: /[!-~]/
+    utf8:  /[!-~]|[^\x00-\x80]/
+
+  @ESCAPE_CHARS = /\\/
+
   QUOTE_REGEXP = (str) -> str.replace /[.?*+^$[\]\\(){}|-]/g, "\\$&"
 
-  @empty: new @ ''
+  @property '@EMPTY',
+    get: -> new @ ''
 
-  @escapeWhitespace: (value) ->
-    # Escape new lines to \A
-    value = value.replace /(^|[^\\]|(?:\\\\)+)(\r\n|\r|\n)/gm, '$1\\A'
+  @escapeCharacters: (chars, value, charset = 'utf8') ->
+    value.replace(
+      ///
+        (^|[^\\]|(?:\\(?:\\\\)*)) # $1
+        (#{chars.source}+)        # $2
+        ([a-fA-F\d]?)             # $3
+      ///gm,
 
-    # Translate `\t` to \9
-    value = value.replace /\t/gm, '\\9'
+      ($0, $1, $2, $3) ->
+        esc = ''
 
-    return value
+        while $2
+          c = $2[0]
+          $2 = $2[1...]
 
-  @escapeBackslashes: (value) -> value
+          is_printable = c.match PRINTABLE_CHARS[charset]
+          esc += '\\'
 
-  @escapeCharacters: (value, chars) ->
-    value.replace ///(^|[^\\]|(?:\\(?:\\\\)*))([#{chars}])///gm, '$1\\$2'
+          if is_printable
+            esc += c
+          else
+            esc += c.charCodeAt(0).toString(16).toUpperCase()
+            esc += ' ' if $3 and not $2.length
 
-  @escapeRegex: (value, reg) ->
-    value.replace ///(^|[^\\]|(?:\\(?:\\\\)*))([#{reg.source}])///gm, '$1\\$2'
+        return "#{$1}#{esc}#{$3 or ''}"
+    )
 
-  @escape: (value) -> value
+  @escape: (value, charset = 'utf8') ->
+    @escapeCharacters @ESCAPE_CHARS, value, charset
 
   constructor: (@value = '') ->
 
@@ -53,7 +71,7 @@ class String extends Object
 
   toBase64: -> new Buffer(@value).toString 'base64'
 
-  escape: -> @class.escape @value
+  escape: (charset = 'utf8') -> @class.escape @value, charset
 
   toString: -> @value
 

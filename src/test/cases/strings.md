@@ -24,37 +24,37 @@ Strings
   ~~~ lay
   string[quoted][escaped]
   {
-  foo: "Lorem\n\n\nIpsum\tdolor\t\tsit\r"
-  bar: "\nDolor\r\n\nSit\n"
-  baz: '\
+  i: "Lorem\n\n\nIpsum\tdolor\t\tsit\r"
+  ii: "\nDolor\r\n\nSit\n"
+  iii: '\
   Lorem\
   Ipsum\
   Dolor\
   Sit\
   '
-  baz: '\
+  iv: '\
   Lorem \
   Ipsum \
   Dolor \
   Sit\
   '
-  foo: '\tLorem\t'
-  foo: '\nLorem\n'
-  foo: '\rLorem\r'
-  foo: '\r\nLorem\r\n'
+  vi: '\tLorem\t'
+  vii: '\nLorem\n'
+  viii: '\rLorem\r'
+  ix: '\r\nLorem\r\n'
   }
   ~~~
 
   ~~~ css
   string[quoted][escaped] {
-    foo: "Lorem\A\A\AIpsum\9dolor\9\9sit\A";
-    bar: "\ADolor\A\ASit\A";
-    baz: "LoremIpsumDolorSit";
-    baz: "Lorem Ipsum Dolor Sit";
-    foo: "\9Lorem\9";
-    foo: "\ALorem\A";
-    foo: "\ALorem\A";
-    foo: "\ALorem\A";
+    i: "Lorem\A\A\AIpsum\9 dolor\9\9sit\D";
+    ii: "\A Dolor\D\A\ASit\A";
+    iii: "LoremIpsumDolorSit";
+    iv: "Lorem Ipsum Dolor Sit";
+    vi: "\9Lorem\9";
+    vii: "\ALorem\A";
+    viii: "\DLorem\D";
+    ix: "\D\ALorem\D\A";
   }
   ~~~
 
@@ -173,7 +173,7 @@ Strings
 
   ~~~ css
   string.unquoted[escaped=unicode] {
-    is: Españistán, señoras\20y\20señores!;
+    is: Españistán, señoras\20y\20señores\!;
   }
   ~~~
 
@@ -187,7 +187,7 @@ Strings
 
   ~~~ css
   string.unquoted[escaped=whitespace] {
-    i: Lorem\Aipsum\9dolor\Asit\Aamet;
+    i: Lorem\Aipsum\9 dolor\Dsit\D\A amet;
   }
   ~~~
 

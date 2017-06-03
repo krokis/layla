@@ -1898,7 +1898,7 @@
 
     ~~~ css
     @cr {
-      is: \Allowed;
+      is: \Dllowed;
     }
     ~~~
 
@@ -1910,7 +1910,7 @@
 
     ~~~ css
     @crlf {
-      is: "\Allowed";
+      is: "\D\Allowed";
     }
     ~~~
 

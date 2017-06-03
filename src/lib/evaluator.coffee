@@ -588,6 +588,7 @@ class Evaluator extends Class
   ###
   evaluateSelectorNamespace: (node, context) ->
     if node.namespace?
+      # TODO :S
       if typeof node.namespace is 'string'
         return node.namespace
       else
@@ -606,27 +607,26 @@ class Evaluator extends Class
       else
         # TODO :S
         name = node.name
-
         unless typeof name is 'string'
-          name = new UnquotedString @getStringValue name, context
+          name = @getStringValue name, context
 
         return new TypeSelector name, namespace
 
   ###
   ###
   evaluateIdSelector: (node, context) ->
-    new IdSelector new UnquotedString @getStringValue node.name, context
+    new IdSelector @getStringValue node.name, context
 
   ###
   ###
   evaluateClassSelector: (node, context) ->
-    new ClassSelector new UnquotedString @getStringValue node.name, context
+    new ClassSelector @getStringValue node.name, context
 
   ###
   ###
   evaluateAttributeSelector: (node, context) ->
     namespace = @evaluateSelectorNamespace node, context
-    name =  new UnquotedString @getStringValue node.name, context
+    name = @getStringValue node.name, context
 
     attr_selector = new AttributeSelector name, null, null, null, namespace
 
@@ -644,7 +644,7 @@ class Evaluator extends Class
   ###
   ###
   evaluatePseudoSelector: (cls, node, context) ->
-    name = new UnquotedString @getStringValue node.name, context
+    name = @getStringValue node.name, context
 
     if node.arguments
       args = []

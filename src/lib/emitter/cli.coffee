@@ -50,6 +50,8 @@ class CLIEmitter extends CSSEmitter
 
   emitUnquotedString: (str) -> @format (super str), YELLOW
 
+  emitRawString: (str) -> @format (super str), YELLOW
+
   emitSelector: (sel) -> @format (super sel), BOLD, GREEN
 
   emitAtRuleName: (sel) -> @format (super sel), BOLD, MAGENTA

@@ -20,6 +20,8 @@ class List extends Collection
 
     return flat
 
+  join: (glue = '') -> (@items.map (item) -> item.toString()).join glue
+
   clone: (items, separator = @separator, etc...) ->
     super items, separator, etc...
 
@@ -35,6 +37,8 @@ class List extends Collection
   '.list': -> @clone()
 
   '.flatten': -> @clone @flattenItems()
+
+  '.join': (context, glue = QuotedString.EMPTY) -> glue.clone @join glue.value
 
 Object::['.list'] = ->
   if @ instanceof Collection

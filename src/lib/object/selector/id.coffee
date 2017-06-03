@@ -1,7 +1,11 @@
 ComplementarySelector = require './complementary'
 
+
+####
+####
 class IdSelector extends ComplementarySelector
 
-  toString: -> '#' + @name
+  toString: -> '#' + @escape @name
+
 
 module.exports = IdSelector

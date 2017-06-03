@@ -67,9 +67,6 @@ class DataURI extends URI
 
   '.mime': -> new QuotedString @mime
 
-  '.encoding': ->
-    if not @encoding then Null.null else new QuotedString @encoding
-
   '.mediatype': -> new QuotedString "#{@mime};charset=#{@charset}"
 
   '.base64?': -> Boolean.new @base64

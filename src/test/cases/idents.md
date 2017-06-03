@@ -13,18 +13,18 @@ Idents
   ~~~
 
   ~~~ css
-  color: red!;
-  colour: __light_green!!!;
+  color: red\!;
+  colour: __light_green\!\!\!;
   colour: #ff0000;
   colour: --pale-white;
-  whisky: please?;
+  whisky: please\?;
   ~~~
 
 - Are case-sensitive
 
   ~~~ lay
-  foo = bar!
-  __Baz = baz!
+  foo = bar
+  __Baz = baz
 
   body {
     foo: FOO foo
@@ -34,8 +34,8 @@ Idents
 
   ~~~ css
   body {
-    foo: FOO bar!;
-    bar: __baz baz!;
+    foo: FOO bar;
+    bar: __baz baz;
   }
   ~~~
 

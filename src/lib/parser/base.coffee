@@ -642,7 +642,7 @@ class BaseParser extends Parser
           sel.operator = @token.value
           @next()
           @skipHorizontalWhitespace()
-          sel.value = @parseString()
+          sel.value = @parseLiteral()
           @skipHorizontalWhitespace()
 
         if sel.flags = @parseUnquotedString()

@@ -4,17 +4,8 @@ Boolean = require '../boolean'
 
 class QuotedString extends String
 
-  @escape: (value, quote = '"') ->
-    value = @escapeWhitespace value
-    value = @escapeCharacters value, "#{quote}\\\\"
+  @ESCAPE_CHARS = /[\n\r\t\\]/
 
-    return value
-
-  constructor: (value) -> super value
-
-  ###
-  TODO escape
-  ###
   reprValue: -> '"' + super + '"'
 
   '.quoted?': -> Boolean.true

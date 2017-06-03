@@ -10,6 +10,8 @@ ValueError = require '../../error/value'
 ###
 class RawString extends String
 
+  @ESCAPE_CHARS = /[^\s\S]/
+
   ###
   ###
   reprValue: -> '`' + super + '`'

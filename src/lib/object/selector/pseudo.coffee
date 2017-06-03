@@ -1,5 +1,8 @@
 ComplementarySelector = require './complementary'
 
+
+###
+###
 class PseudoSelector extends ComplementarySelector
 
   constructor: (name = null, @arguments = null) -> super name
@@ -8,7 +11,7 @@ class PseudoSelector extends ComplementarySelector
     super name, args, etc...
 
   toString: ->
-    str = @name
+    str = @escape @name
 
     if @arguments
       args = []

@@ -1,5 +1,8 @@
 ElementalSelector = require './elemental'
 
+
+###
+###
 class TypeSelector extends ElementalSelector
 
   constructor: (@name = null, etc...) -> super etc...
@@ -11,9 +14,13 @@ class TypeSelector extends ElementalSelector
     str = ''
 
     if @namespace?
-      str += @namespace + '|'
+      if @namespace is '*'
+        str += '*'
+      else
+        str += @escape @namespace
+      str += '|'
 
-    str += @name
+    str += @escape @name
 
     return str
 
@@ -21,5 +28,6 @@ class TypeSelector extends ElementalSelector
     json = super
     json.name = @name
     json
+
 
 module.exports = TypeSelector

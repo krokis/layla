@@ -90,11 +90,37 @@ At-rules
   }
   ~~~
 
+- Supports escapes
+
+  ~~~ lay
+  $special-chars = "!\"#$%&'()*+,./:;<=>?@[\\]^`{|}~-"
+
+  @__foo\.bar\$baz {
+    ok: true
+  }
+
+  @--foo-#{$special-chars} {
+    ok: true
+  }
+  ~~~
+
+  ~~~ css
+  @__foo\.bar\$baz {
+    ok: true;
+  }
+
+  @--foo-\!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\[\\\]\^\`\{\|\}\~- {
+    ok: true;
+  }
+  ~~~
+
 ## Block
 
 - Can not be present
 
   ~~~ lay
+  // TODO Would be cool if we could use this at the begining of a document
+  // https://developer.mozilla.org/en-US/docs/Web/CSS/@charset
   @charset 'iso-8859-1'
   ~~~
 
@@ -159,12 +185,12 @@ At-rules
 - Booleans
 
   ~~~ lay
-  bar? = bar!; @media (screen) { foo: bar? }
+  bar? = bar; @media (screen) { foo: bar? }
   ~~~
 
   ~~~ css
   @media (screen) {
-    foo: bar!;
+    foo: bar;
   }
   ~~~
 
@@ -172,13 +198,13 @@ At-rules
 
   ~~~ lay
   @media (max-width: 768px) {
-    foo: bar?
+    foo: bar
   }
   ~~~
 
   ~~~ css
   @media (max-width: 768px) {
-    foo: bar?;
+    foo: bar;
   }
   ~~~
 
@@ -256,13 +282,13 @@ At-rules
 
   ~~~ lay
   @lorem ipsum, dolor, "sit", :amet {
-    lorem: ipsum!
+    lorem: ipsum
   }
   ~~~
 
   ~~~ css
   @lorem ipsum, dolor, "sit", :amet {
-    lorem: ipsum!;
+    lorem: ipsum;
   }
   ~~~
 
@@ -377,13 +403,13 @@ At-rules
             domain(mozilla.org),
             regexp("https:.*")
   {
-    foo: bar!
+    foo: bar
   }
   ~~~
 
   ~~~ css
   @document url("http://www.w3.org/"), url-prefix("http://www.w3.org/Style/"), domain(mozilla.org), regexp("https:.*") {
-    foo: bar!;
+    foo: bar;
   }
   ~~~
 

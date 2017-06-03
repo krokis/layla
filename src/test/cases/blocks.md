@@ -144,7 +144,7 @@ Blocks
     hey: {
       been: "tryin'"
       to: {
-        meet: you!
+        meet: you!.raw
       }
     }
     {
@@ -432,7 +432,7 @@ Blocks
       whores: 'at the door'
     }
     but: hey?
-    but: hey!
+    but: hey!.raw
   }
 
   #hey {

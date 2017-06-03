@@ -91,11 +91,13 @@ Rule sets
   }
   ~~~
 
-## Must have a valid syntax
+## Support common syntax
 
 ### Simple selectors
 
-- Universal selector
+#### Universal selectors
+
+- Are supported
 
   ~~~ lay
   * {
@@ -116,7 +118,9 @@ Rule sets
   }
   ~~~
 
-- Type selector
+#### Type selectors
+
+- Are supported
 
   ~~~ lay
   body, div_2 {
@@ -131,7 +135,111 @@ Rule sets
   }
   ~~~
 
-- Class selector
+- Support namespaces
+
+  ~~~ lay
+  foo|body { color: white }
+  *|body { color: white }
+  |body { color: white }
+  ~~~
+
+  ~~~ css
+  foo|body {
+    color: white;
+  }
+
+  *|body {
+    color: white;
+  }
+
+  |body {
+    color: white;
+  }
+  ~~~
+
+  ~~~ css
+  foo|* {
+    color: white;
+  }
+
+  *|* {
+    color: white;
+  }
+
+  |* {
+    color: white;
+  }
+  ~~~
+
+- Support escapes
+
+  ~~~ lay
+  \#foo\20 bar\.baz        { border: 0 }
+  ~~~
+
+  ~~~ css
+  \#foo\20 bar\.baz {
+    border: 0;
+  }
+  ~~~
+
+- Are correctly scaped
+
+  ~~~ lay
+  $special-chars = "!\"#$%&'()*+,./:;<=>?@[]^`{|}~- \t\n\r\n\r\\"
+
+  #{$special-chars} {
+    color: none
+  }
+
+  my-o#{$special-chars.characters.join('o')}o-tag {
+    color: none
+  }
+  ~~~
+
+  ~~~ css
+  \!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\[\]\^\`\{\|\}\~-\20\9\A\D\A\D\\ {
+    color: none;
+  }
+
+  my-o\!o\"o\#o\$o\%o\&o\'o\(o\)o\*o\+o\,o\.o\/o\:o\;o\<o\=o\>o\?o\@o\[o\]o\^o\`o\{o\|o\}o\~o-o\20o\9o\Ao\Do\Ao\Do\\o-tag {
+    color: none;
+  }
+  ~~~
+
+- Support interpolation
+
+  ~~~ lay
+  doc = 'bod'
+
+  html > #{doc + 'y'}.js {
+    color: white
+  }
+  ~~~
+
+  ~~~ css
+  html > body.js {
+    color: white;
+  }
+  ~~~
+
+  ~~~ lay
+  $ns = 'svg'
+
+  #{$ns}|circle {
+    border: 2px solid red
+  }
+  ~~~
+
+  ~~~ css
+  svg|circle {
+    border: 2px solid red;
+  }
+  ~~~
+
+#### Class selectors
+
+- Are supported
 
   ~~~ lay
   .h1 {
@@ -169,7 +277,63 @@ Rule sets
   }
   ~~~
 
-- Id selector
+- Support escapes
+
+  ~~~ lay
+  .my\.very\.special\@class {
+    color: none
+  }
+  ~~~
+
+  ~~~ css
+  .my\.very\.special\@class {
+    color: none;
+  }
+  ~~~
+
+- Are correctly scaped
+
+  ~~~ lay
+  $special-chars = "!\"#$%&'()*+,./:;<=>?@[]^`{|}~- \t\n\r\n\r\\"
+
+  .#{$special-chars} {
+    color: none
+  }
+
+  .my-o#{$special-chars.characters.join('o')}o-class {
+    color: none
+  }
+  ~~~
+
+  ~~~ css
+  .\!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\[\]\^\`\{\|\}\~-\20\9\A\D\A\D\\ {
+    color: none;
+  }
+
+  .my-o\!o\"o\#o\$o\%o\&o\'o\(o\)o\*o\+o\,o\.o\/o\:o\;o\<o\=o\>o\?o\@o\[o\]o\^o\`o\{o\|o\}o\~o-o\20o\9o\Ao\Do\Ao\Do\\o-class {
+    color: none;
+  }
+  ~~~
+
+- Support interpolation
+
+  ~~~ lay
+  class = 'mobile'
+
+  body.#{class} {
+    width: 800px
+  }
+  ~~~
+
+  ~~~ css
+  body.mobile {
+    width: 800px;
+  }
+  ~~~
+
+#### Id selectors
+
+- Are supported
 
   ~~~ lay
   #H1 {
@@ -204,6 +368,58 @@ Rule sets
 
   .hide#form {
     display: none;
+  }
+  ~~~
+
+- Support escapes
+
+  ~~~ lay
+  #\#foo\20 bar\.baz        { border: 0 }
+  ~~~
+
+  ~~~ css
+  #\#foo\20 bar\.baz {
+    border: 0;
+  }
+  ~~~
+
+- Are correctly scaped
+
+  ~~~ lay
+  $special-chars = "!\"#$%&'()*+,./:;<=>?@[]^`{|}~- \t\n\r\n\r\\"
+
+  ##{$special-chars} {
+    color: none
+  }
+
+  #my-o#{$special-chars.characters.join('o')}o-id {
+    color: none
+  }
+  ~~~
+
+  ~~~ css
+  #\!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\[\]\^\`\{\|\}\~-\20\9\A\D\A\D\\ {
+    color: none;
+  }
+
+  #my-o\!o\"o\#o\$o\%o\&o\'o\(o\)o\*o\+o\,o\.o\/o\:o\;o\<o\=o\>o\?o\@o\[o\]o\^o\`o\{o\|o\}o\~o-o\20o\9o\Ao\Do\Ao\Do\\o-id {
+    color: none;
+  }
+  ~~~
+
+- Support interpolation
+
+  ~~~ lay
+  id = 'main'
+
+  div##{id} #header {
+    font-size: 48px
+  }
+  ~~~
+
+  ~~~ css
+  div#main #header {
+    font-size: 48px;
   }
   ~~~
 
@@ -386,6 +602,143 @@ Rule sets
   }
   ~~~
 
+- Support namespaces
+
+  ~~~ lay
+  a[html|href] {
+    text-decoration: none
+  }
+
+  a[html|target=_blank] {
+    text-decoration: underline
+  }
+  ~~~
+
+  ~~~ css
+  a[html|href] {
+    text-decoration: none;
+  }
+
+  a[html|target=_blank] {
+    text-decoration: underline;
+  }
+  ~~~
+
+- Support escapes
+
+  ~~~ lay
+  *[\#\[\\foo\20 bar\.baz=2] { border: 0 }
+  ~~~
+
+  ~~~ css
+  *[\#\[\\foo\20 bar\.baz=2] {
+    border: 0;
+  }
+  ~~~
+
+- Are correctly scaped
+
+  ~~~ lay
+  $special-chars = "!\"#$%&'()*+,./:;<=>?@[]^`{|}~- \t\n\r\n\r\\"
+
+  [#{$special-chars}] {
+    color: none
+  }
+
+  [my-o#{$special-chars.characters.join('o')}o-attr="foo"] {
+    color: none
+  }
+  ~~~
+
+  ~~~ css
+  [\!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\[\]\^\`\{\|\}\~-\20\9\A\D\A\D\\] {
+    color: none;
+  }
+
+  [my-o\!o\"o\#o\$o\%o\&o\'o\(o\)o\*o\+o\,o\.o\/o\:o\;o\<o\=o\>o\?o\@o\[o\]o\^o\`o\{o\|o\}o\~o-o\20o\9o\Ao\Do\Ao\Do\\o-attr="foo"] {
+    color: none;
+  }
+  ~~~
+
+- Support interpolation
+
+  ~~~ lay
+  attr = 'target'
+
+  a[#{attr}="_blank"] {
+    after: ' (External) '
+  }
+
+  a[#{attr}=_blank] {
+    after: ' (External) '
+  }
+  ~~~
+
+  ~~~ css
+  a[target="_blank"] {
+    after: " (External) ";
+  }
+
+  a[target=_blank] {
+    after: " (External) ";
+  }
+  ~~~
+
+  ~~~ lay
+  ext-target = '_blank'
+
+  a[target=#{ext-target}] {
+    after: ' (External) '
+  }
+
+  a[target="#{ext-target}"] {
+    after: ' (External) '
+  }
+  ~~~
+
+  ~~~ css
+  a[target=_blank] {
+    after: " (External) ";
+  }
+
+  a[target="_blank"] {
+    after: " (External) ";
+  }
+  ~~~
+  ~~~ lay
+  body a[target]:#{'after'} {
+    content: '(EXT)'
+  }
+
+  body a:hov#{'e' + 'r'} {
+    text-decoration: underline
+  }
+  ~~~
+
+  ~~~ css
+  body a[target]:after {
+    content: "(EXT)";
+  }
+
+  body a:hover {
+    text-decoration: underline;
+  }
+  ~~~
+
+  ~~~ lay
+  $ns = 'svg'
+
+  #{"*"}|*[#{$ns}|stroke] {
+    border: none
+  }
+  ~~~
+
+  ~~~ css
+  *|*[svg|stroke] {
+    border: none;
+  }
+  ~~~
+
 #### Pseudo selectors
 
 - Pseudo-classes
@@ -467,6 +820,65 @@ Rule sets
 
   p:not(.foo, .bar) {
     margin: 0 0 50px;
+  }
+  ~~~
+
+- Support escapes
+
+  ~~~ lay
+  *:\#not\20 bar\.baz(2px)        { border: 0 }
+  ~~~
+
+  ~~~ css
+  *:\#not\20 bar\.baz(2px) {
+    border: 0;
+  }
+  ~~~
+
+- Are correctly scaped
+
+  ~~~ lay
+  $special-chars = "!\"#$%&'()*+,./:;<=>?@[]^`{|}~- \t\n\r\n\r\\"
+
+  a:#{$special-chars} {
+    color: none
+  }
+
+  a:link::my-o#{$special-chars.characters.join('o')}o-pseudo('bar') {
+    color: none
+  }
+  ~~~
+
+  ~~~ css
+  a:\!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\[\]\^\`\{\|\}\~-\20\9\A\D\A\D\\ {
+    color: none;
+  }
+
+  a:link::my-o\!o\"o\#o\$o\%o\&o\'o\(o\)o\*o\+o\,o\.o\/o\:o\;o\<o\=o\>o\?o\@o\[o\]o\^o\`o\{o\|o\}o\~o-o\20o\9o\Ao\Do\Ao\Do\\o-pseudo("bar") {
+    color: none;
+  }
+  ~~~
+
+
+- Support interpolation
+
+  ~~~ lay
+  body a[target]:#{'after'} {
+    content: '(EXT)'
+  }
+
+  body a:hov#{'e' + 'r'} {
+    text-decoration: underline
+  }
+  ~~~
+
+  ~~~ css
+  body a[target]:after {
+    content: "(EXT)";
+  }
+
+  body a:hover {
+    text-decoration: underline;
   }
   ~~~
 
@@ -554,74 +966,6 @@ Rule sets
 
   > div {
     color: red;
-  }
-  ~~~
-
-### Namespaces
-
-- Are supported in type selectors
-
-  ~~~ lay
-  foo|body { color: white }
-  *|body { color: white }
-  |body { color: white }
-  ~~~
-
-  ~~~ css
-  foo|body {
-    color: white;
-  }
-
-  *|body {
-    color: white;
-  }
-
-  |body {
-    color: white;
-  }
-  ~~~
-
-- Are supported in universal selectors
-
-  ~~~ lay
-  foo|*   { color: white }
-    *|*   { color: white }
-     |*   { color: white }
-  ~~~
-
-  ~~~ css
-  foo|* {
-    color: white;
-  }
-
-  *|* {
-    color: white;
-  }
-
-  |* {
-    color: white;
-  }
-  ~~~
-
-- Are supported in attribute selectors
-
-  ~~~ lay
-  a[html|href] {
-    text-decoration: none
-  }
-
-  a[html|target=_blank] {
-    text-decoration: underline
-  }
-  ~~~
-
-  ~~~ css
-  a[html|href] {
-    text-decoration: none;
-  }
-
-  a[html|target=_blank] {
-    text-decoration: underline;
   }
   ~~~
 
@@ -818,147 +1162,3 @@ Rule sets
   ~~~
 
 - Cannot appear more than once
-
-### Interpolation
-
-- Is allowed in type selectors
-
-  ~~~ lay
-  doc = 'bod'
-
-  html > #{doc + 'y'}.js {
-    color: white
-  }
-  ~~~
-
-  ~~~ css
-  html > body.js {
-    color: white;
-  }
-  ~~~
-
-- Is allowed in class selectors
-
-  ~~~ lay
-  class = 'mobile'
-
-  body.#{class} {
-    width: 800px
-  }
-  ~~~
-
-  ~~~ css
-  body.mobile {
-    width: 800px;
-  }
-  ~~~
-
-- Is allowed in id selectors
-
-  ~~~ lay
-  id = 'main'
-
-  div##{id} #header {
-    font-size: 48px
-  }
-  ~~~
-
-  ~~~ css
-  div#main #header {
-    font-size: 48px;
-  }
-  ~~~
-
-- Is allowed in attribute names
-
-  ~~~ lay
-  attr = 'target'
-
-  a[#{attr}="_blank"] {
-    after: ' (External) '
-  }
-
-  a[#{attr}=_blank] {
-    after: ' (External) '
-  }
-  ~~~
-
-  ~~~ css
-  a[target="_blank"] {
-    after: " (External) ";
-  }
-
-  a[target=_blank] {
-    after: " (External) ";
-  }
-  ~~~
-
-- Is allowed in pseudo-selectors names
-
-  ~~~ lay
-  body a[target]:#{'after'} {
-    content: '(EXT)'
-  }
-
-  body a:hov#{'e' + 'r'} {
-    text-decoration: underline
-  }
-  ~~~
-
-  ~~~ css
-  body a[target]:after {
-    content: "(EXT)";
-  }
-
-  body a:hover {
-    text-decoration: underline;
-  }
-  ~~~
-
-- Is allowed in attribute values
-
-  ~~~ lay
-  ext-target = '_blank'
-
-  a[target=#{ext-target}] {
-    after: ' (External) '
-  }
-
-  a[target="#{ext-target}"] {
-    after: ' (External) '
-  }
-  ~~~
-
-  ~~~ css
-  a[target=_blank] {
-    after: " (External) ";
-  }
-
-  a[target="_blank"] {
-    after: " (External) ";
-  }
-  ~~~
-
-- Is allowed in namespaces
-
-  ~~~ lay
-  ns = 'svg'
-
-  #{ns}|circle {
-    border: 2px solid red
-  }
-
-  #{"*"}|*[#{ns}|stroke] {
-    border: none
-  }
-  ~~~
-
-  ~~~ css
-  svg|circle {
-    border: 2px solid red;
-  }
-
-  *|*[svg|stroke] {
-    border: none;
-  }
-  ~~~

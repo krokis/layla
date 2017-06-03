@@ -1,5 +1,8 @@
 SimpleSelector = require './simple'
 
+
+###
+###
 class ElementalSelector extends SimpleSelector
 
   constructor: (@namespace = null) ->
@@ -11,5 +14,6 @@ class ElementalSelector extends SimpleSelector
     json = super
     json.namespace = @namespace
     json
+
 
 module.exports = ElementalSelector

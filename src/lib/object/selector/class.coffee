@@ -2,6 +2,6 @@ ComplementarySelector = require './complementary'
 
 class ClassSelector extends ComplementarySelector
 
-  toString: -> '.' + @name
+  toString: -> '.' + @escape @name
 
 module.exports = ClassSelector

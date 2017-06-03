@@ -3,6 +3,9 @@ ElementalSelector     = require './elemental'
 ComplementarySelector = require './complementary'
 ParentSelector        = require './parent'
 
+
+###
+###
 class CompoundSelector extends Selector
 
   @property 'elemental',
@@ -53,5 +56,6 @@ class CompoundSelector extends Selector
     json = super
     json.children = @children
     json
+
 
 module.exports = CompoundSelector

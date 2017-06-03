@@ -3,6 +3,8 @@ CompoundSelector = require './compound'
 ParentSelector   = require './parent'
 Combinator       = require './combinator'
 
+###
+###
 class ComplexSelector extends Selector
 
   constructor: (@children = []) ->
@@ -44,6 +46,7 @@ class ComplexSelector extends Selector
             piece = ' ' + piece
           if piece[-1..-1].trim() isnt ''
             piece += ' '
+
         str += piece
 
     return str
@@ -55,5 +58,6 @@ class ComplexSelector extends Selector
     json = super
     json.children = @children
     json
+
 
 module.exports = ComplexSelector

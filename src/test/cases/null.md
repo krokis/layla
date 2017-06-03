@@ -15,7 +15,7 @@ Null
 
   ~~~ css
   body {
-    foo: bar!;
+    foo: bar\!;
   }
   ~~~
 
