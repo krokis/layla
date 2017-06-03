@@ -115,9 +115,6 @@ class Context extends Class
 
     for includer in @includers
       if includer.canInclude abs_uri, @
-        if abs_uri in @includes
-          throw new IncludeError "Circular include detected"
-
         @_includes.push abs_uri
 
         if @includes.length > MAX_INCLUDE_STACK

@@ -249,12 +249,3 @@
   ~~~
 
 - Fails for unreadable files
-
-- Throws an error when a circular include is detected
-
-  ~~~ lay
-  include './include/circular-1.lay'
-  ~~~
-
-  ~~~ IncludeError
-  ~~~
