@@ -279,9 +279,9 @@ task 'build', 'Alias of build:all', ->
 
   task "#{prefix}:all", "Run all tests#{expl}", ->
     invoke "#{prefix}:cases"
+    invoke "#{prefix}:bin"
     invoke "#{prefix}:style"
     invoke "#{prefix}:docs"
-    invoke "#{prefix}:bin"
 
   task "#{prefix}", 'Alias of test:all', ->
     invoke "#{prefix}:all"
