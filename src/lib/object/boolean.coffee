@@ -68,5 +68,7 @@ Object::['.false?'] = -> Boolean.new not @toBoolean()
 
 Object::['.empty?'] = -> Boolean.new @isEmpty()
 
+Object::['.important?'] = -> Boolean.new @important
+
 
 module.exports = Boolean

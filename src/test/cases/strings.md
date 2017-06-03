@@ -209,7 +209,7 @@ Strings
 
   ~~~ lay
   string.unquoted.true {
-    i: -moz-border-radius.true? not !important.false? yes.true?
+    i: -moz-border-radius.true? not important!.false? yes.true?
   }
   ~~~
 

@@ -256,6 +256,14 @@ class Evaluator extends Class
       when '=', '|='
         @evaluateAssignment node, context
 
+      when '!'
+        left = @evaluateNode node.left, context
+        name = @getStringValue node.right, context
+
+        # TODO add to call stack
+
+        return left[".!#{name}"](context) or Null.null
+
       when '.', '::'
         left = @evaluateNode node.left, context
         right = node.right

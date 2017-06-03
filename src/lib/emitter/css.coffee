@@ -174,9 +174,17 @@ class CSSEmitter extends Emitter
 
   emitDataURI: (uri) -> @emitURL uri
 
+  emitImportant: -> '!important'
+
   emitPropertyName: (property) -> property.name
 
-  emitPropertyValue: (property) -> @emit property.value
+  emitPropertyValue: (property) ->
+    str = @emit(property.value)
+
+    if property.important
+      str += ' ' + @emitImportant()
+
+    return str
 
   emitProperty: (property) ->
     """

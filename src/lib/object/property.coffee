@@ -7,6 +7,9 @@ class Property extends Object
 
   constructor: (@name, @value = Null.null) ->
 
+  @property 'important',
+    get: -> @value.important
+
   isEmpty: -> @value.isNull()
 
   isEqual: (other) ->

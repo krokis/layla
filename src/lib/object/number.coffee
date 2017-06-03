@@ -159,7 +159,8 @@ class Number extends Object
 
   reprValue: -> "#{@value}#{@unit or ''}"
 
-  clone: (value = @value, unit = @unit, etc...) -> super value, unit, etc...
+  clone: (value = @value, unit = @unit, etc...) ->
+    super(value, unit, etc...)
 
   ZERO = @ZERO = new @ 0
   TWO  = @TWO  = new @ 2

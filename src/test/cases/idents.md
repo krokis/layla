@@ -9,7 +9,7 @@ Idents
   $-my-colour-! = #f00
   colour: $-my-colour-!
   colour: --pale-white
-  whisky: !please?
+  whisky: please?
   ~~~
 
   ~~~ css
@@ -17,7 +17,7 @@ Idents
   colour: __light_green!!!;
   colour: #ff0000;
   colour: --pale-white;
-  whisky: !please?;
+  whisky: please?;
   ~~~
 
 - Are case-sensitive

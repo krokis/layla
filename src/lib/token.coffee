@@ -48,6 +48,7 @@ class Token extends Class
   @CURLY_CLOSE     = 'CurlyClose'
   @BRACKET_OPEN    = 'BracketOpen'
   @BRACKET_CLOSE   = 'BracketClose'
+  @EXCLAMATION     = 'Exclamation'
 
   @H_WHITESPACE    = 'HorizontalWhitespace'
   @V_WHITESPACE    = 'VerticalWhitespace'

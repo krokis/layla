@@ -42,13 +42,14 @@ class Tokenizer extends Class
     '}'  : T.CURLY_CLOSE
     '['  : T.BRACKET_OPEN
     ']'  : T.BRACKET_CLOSE
+    '!'  : T.EXCLAMATION
 
   RE_HEX_DIGIT      = /[0-9a-fA-F]/
   RE_COLOR          = ///(#{RE_HEX_DIGIT.source})+///
   RE_BREAK          = /\r\n?|\n/
   RE_NON_ASCII      = /[^\x00-\x80]/
   RE_IDENT_START    = ///^(
-                        ([\!\$])?(-+|_+)?)
+                        (\$)?(-+|_+)?)
                         (?=[a-zA-Z\\]|(#{RE_NON_ASCII.source})|(\#\{)
                       )///
   RE_IDENT_CHAR     = ///([a-zA-Z\d_\-\\])|(#{RE_NON_ASCII.source})///
@@ -57,7 +58,7 @@ class Tokenizer extends Class
                         (::|\|?:|\.{1,3}|\(|\)|\{|\}|\[|\]|\&|@|;|%|
                         \,|[\|\$~*^]?=|~|\*|\/|
                         \||>=|>|<=|<|
-                        ([\+\-](?!#{RE_IDENT_START.source})))
+                        ([\+\-\!](?!#{RE_IDENT_START.source})))
                       ///
   RE_NUMBER         = ///
                         ^((?:\d*\.)?\d+)

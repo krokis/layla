@@ -36,6 +36,8 @@ class CLIEmitter extends CSSEmitter
 
   emitBoolean: (bool) -> @format (super bool), BOLD
 
+  emitImportant: -> @format super(), BOLD
+
   emitFunction: (func) -> @format func.repr(), BOLD
 
   emitNumber: (num) -> @format (super num), YELLOW

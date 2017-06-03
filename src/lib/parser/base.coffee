@@ -62,6 +62,7 @@ class BaseParser extends Parser
     'or'    # Logical "or"
     ' '     # List separator
     ','     # List separator
+    '!'     # As in `!important`
     '='     # Assignment
     '|='    # Conditional assignment
   ]
@@ -99,9 +100,9 @@ class BaseParser extends Parser
     'or'    :   80
     ' '     :   70
     ','     :   60
+    '!'     :   55
     '='     :   50
     '|='    :   50
-    # '!important' :    0
 
   # Operators with right-to-left associativity.
   RIGHT_ASSOC =

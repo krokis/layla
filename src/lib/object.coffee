@@ -6,6 +6,8 @@ ValueError = require './error/value'
 ###
 class Object extends Class
 
+  important = no
+
   @new: (args...) ->
     new (@bind.apply @, args)
 
@@ -13,7 +15,11 @@ class Object extends Class
 
   @repr: -> "[#{@reprType()}]"
 
-  @clone: (args...) -> new @class args...
+  clone: (args...) ->
+    copy = super
+    copy.important = @important
+
+    return copy
 
   hasMethod: (name) -> typeof @[".#{name}"] is 'function'
 
@@ -40,6 +46,18 @@ class Object extends Class
 
     return @
 
+  toImportant: ->
+    copy = @clone()
+    copy.important = yes
+
+    return copy
+
+  toUnimportant: ->
+    copy = @clone()
+    copy.important = no
+
+    return copy
+
   reprValue: -> ''
 
   reprType: -> @class.reprType()
@@ -57,6 +75,12 @@ class Object extends Class
       throw new ValueError "Call to undefined method: [#{@type}.#{name}]"
 
   '.=': (context, name, etc...) -> @['.'] context, "#{name}=", etc...
+
+  '.!important': -> @toImportant()
+
+  '.important': -> @toImportant()
+
+  '.unimportant': -> @toUnimportant()
 
   '.copy': -> @clone()
 
