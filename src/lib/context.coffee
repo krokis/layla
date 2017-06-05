@@ -8,7 +8,6 @@ Function     = require './object/function'
 Evaluator    = require './evaluator'
 IncludeError = require './error/include'
 
-MAX_INCLUDE_STACK = 100
 MAX_CALL_STACK = 999
 
 
@@ -24,8 +23,6 @@ class Context extends Class
     @_scope = {}
     @_plugins = []
     @_includers = []
-    @_includes = []
-    @_calls = []
     @_loaders = []
     @_paths = []
     @_visitors = []
@@ -36,9 +33,6 @@ class Context extends Class
 
   @property 'calls', ->
     (if @parent then @parent.calls else []).concat @_calls
-
-  @property 'includes', ->
-    (if @parent then @parent.includes else []).concat @_includes
 
   @property 'plugins', ->
     (if @parent then @parent.plugins else []).concat @_plugins
@@ -106,14 +100,7 @@ class Context extends Class
 
     for includer in @includers
       if includer.canInclude abs_uri, @
-        @_includes.push abs_uri
-
-        if @includes.length > MAX_INCLUDE_STACK
-          throw new IncludeError (
-            "Max include stack size (#{MAX_INCLUDE_STACK}) exceeded")
-
         res = includer.include abs_uri, @
-        @_includes.pop()
 
         return res
 
