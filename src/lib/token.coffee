@@ -9,11 +9,10 @@ class Token extends Class
   @QUOTED_STRING   = 'QuotedString'
   @HASH            = 'Hash'
   @NUMBER          = 'Number'
-  @COLOR           = 'Color'
   @REGEXP          = 'RegExp'
   @URL             = 'URL'
-  @CALl            = 'Call'
   @CALC            = 'Calc'
+  @CALL            = 'Call'
   @UNICODE_RANGE   = 'UnicodeRange'
 
   @TILDE_EQUAL     = 'TildeEqual'

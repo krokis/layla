@@ -961,15 +961,6 @@ class BaseParser extends Parser
 
   ###
   ###
-  parseAtRuleURL: ->
-    if @token.is T.URL
-      url = new URL @parseSequence @token.value
-      @next()
-
-      return url
-
-  ###
-  ###
   parseAtRuleCall: ->
     if call = @parseCall()
       return call
@@ -1008,7 +999,6 @@ class BaseParser extends Parser
   ###
   parseAtRuleArgument: (props = no) ->
     (props and @parseAtRuleProperty()) or
-    @parseAtRuleURL() or
     @parseAtRuleSelector() or
     @parseAtRuleCall() or
     @parseAtRuleString() or
