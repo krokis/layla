@@ -152,12 +152,15 @@ class Evaluator extends Class
   evaluateUnicodeRange: (node, context) ->
     new RawString (@getStringValue node, context).toUpperCase()
 
-  ###
-  ###
   evaluateCall: (node, context) ->
     name = @getStringValue(node.name, context).toLowerCase()
     args = (@evaluateNode arg, context for arg in node.arguments)
 
+    return @_evaluateCall name, args, context
+
+  ###
+  ###
+  _evaluateCall: (name, args, context) ->
     switch name
       when 'url', 'url-prefix'
         uri = args[0]?.value or ''
@@ -300,7 +303,8 @@ class Evaluator extends Class
 
           if name[0] isnt '$'
             if not context.has name
-              return new Call left.value, args
+              # TODO :S
+              return @_evaluateCall name, args, context
 
         left = @evaluateNode left, context
 
