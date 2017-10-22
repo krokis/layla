@@ -204,15 +204,15 @@ Ranges
   $r = 0..30mm
 
   range.contains {
-    i: $r.contains?(2mm)
-    ii: $r.contains?(3cm)
+    v: $r.contains?(2mm)
+    vi: $r.contains?(3cm)
   }
   ~~~
 
   ~~~ css
   range.contains {
-    i: true;
-    ii: true;
+    v: true;
+    vi: true;
   }
   ~~~
 

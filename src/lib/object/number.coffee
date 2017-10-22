@@ -2,8 +2,6 @@ Object     = require '../object'
 Boolean    = require './boolean'
 ValueError = require '../error/value'
 
-FACTORS = {}
-
 
 ###
 ###
@@ -17,20 +15,29 @@ class Number extends Object
 
   RE_NUMERIC = /^\s*([\+-]?(?:\d*\.)?\d+)\s*(%|(?:[a-z]+))?\s*$/i
 
-  @define: (from, to) ->
+  @define: (from, to, context) ->
     unless from instanceof Number
-      from = @fromString from
+      from = @fromString from, context
 
     unless to instanceof Number
-      to = @fromString to
+      to = @fromString to, context
+
+    to = to.clone()
 
     if from.unit and to.unit
       if from.unit isnt to.unit
-        FACTORS[from.unit] ?= {}
-        FACTORS[from.unit][to.unit] = to.value / from.value
+        factors = {}
 
-        FACTORS[to.unit] ?= {}
-        FACTORS[to.unit][from.unit] = from.value / to.value
+        if context.has '__UNITS__'
+          global.Object.assign factors, context.get('__UNITS__')
+
+        factors[from.unit] ?= {}
+        factors[from.unit][to.unit] = to.value / from.value
+
+        factors[to.unit] ?= {}
+        factors[to.unit][from.unit] = from.value / to.value
+
+        context.set '__UNITS__', factors
 
       else if from.value isnt to.value
         throw new ValueError "Bad unit definition"
@@ -39,11 +46,18 @@ class Number extends Object
 
     throw new ValueError "Bad unit definition"
 
-  @isDefined: (unit) -> unit of FACTORS
+  @isDefined: (context, unit) ->
+    if context.has '__UNITS__'
+      factors = context.get '__UNITS__'
 
-  @fromString: (str) ->
+      return unit of factors
+
+    return no
+
+  @fromString: (str, context) ->
     try
       str = str.toString()
+
       if match = RE_NUMERIC.exec str
         value = parseFloat match[1]
         unit = match[2]
@@ -55,36 +69,42 @@ class Number extends Object
     super()
     @value = parseFloat value.toString()
 
-  @convert: (value, from_unit, to_unit = null, stack = []) ->
-    if to_unit is from_unit or (to_unit and not from_unit)
-      return value
-    else if not to_unit
-      return value
-    else if from_unit of FACTORS
-      if to_unit of FACTORS[from_unit]
-        return value * FACTORS[from_unit][to_unit]
+  doConvert = (value, from_unit, to_unit, factors, stack) ->
+    if from_unit of factors
+      if to_unit of factors[from_unit]
+        return value * factors[from_unit][to_unit]
       else
         stack.push from_unit
 
-        for u of FACTORS[from_unit]
+        for u of factors[from_unit]
           unless u in stack
             stack.push u
-            val = FACTORS[from_unit][u] * value
+            val = factors[from_unit][u] * value
             try
-              return @convert val, u, to_unit, stack
+              return doConvert val, u, to_unit, factors, stack
             stack.pop()
 
         stack.pop()
 
     throw new ValueError "Cannot convert #{value}#{from_unit} to #{to_unit}"
 
+  @convert: (value, from_unit, to_unit = null, context) ->
+    if to_unit is from_unit or (to_unit and not from_unit)
+      return value
+    else if not to_unit
+      return value
+
+    factors = if context?.has('__UNITS__') then context.get('__UNITS__') else {}
+
+    return doConvert value, from_unit, to_unit, factors, []
+
   ###
   ###
-  convert: (unit = null) ->
+  convert: (unit = null, context) ->
     if unit
       unit = unit.toString().trim()
 
-    value = @class.convert @value, @unit, unit
+    value = @class.convert @value, @unit, unit, context
 
     return @copy value, unit
 
@@ -94,13 +114,13 @@ class Number extends Object
 
   ###
   ###
-  isEqual: (other) ->
+  isEqual: (other, context) ->
     other instanceof Number and
-    try round(other.convert(@unit).value, 10) is round(@value, 10)
+    try round(other.convert(@unit, context).value, 10) is round(@value, 10)
 
-  compare: (other) ->
+  compare: (other, context) ->
     if other instanceof Number
-      other = other.convert @unit
+      other = other.convert @unit, context
       if other.value is @value
         return 0
       else if other.value > @value
@@ -179,58 +199,62 @@ class Number extends Object
   '.-@': -> @copy -@value
 
   '.+': (context, other) ->
-    if other instanceof Number
-      return @copy @convert(other.unit).value + other.value, other.unit or @unit
+    unless other instanceof Number
+      throw new ValueError """
+        Cannot perform #{@repr()} + #{other.repr()}: \
+        right side must be a #{Number.repr()}
+        """
 
-    throw new ValueError (
-      """
-      Cannot perform #{@repr()} + #{other.repr()}: \
-      right side must be a #{Number.repr()}
-      """
-    )
+    value = @convert(other.unit, context).value + other.value
+    unit = other.unit or @unit
+
+    return @copy value, unit
 
   '.-': (context, other) ->
-    if other instanceof Number
-      return @copy @convert(other.unit).value - other.value, other.unit or @unit
+    unless other instanceof Number
+      throw new ValueError """
+        Cannot perform #{@repr()} - #{other.repr()}: \
+        right side must be a #{Number.repr()}
+        """
 
-    throw new ValueError (
-      """
-      Cannot perform #{@repr()} - #{other.repr()}: \
-      right side must be a #{Number.repr()}
-      """
-    )
+    value = @convert(other.unit, context).value - other.value
+    unit = other.unit or @unit
+
+    return @copy value, unit
 
   '.*': (context, other) ->
+    unless other instanceof Number
+      throw new ValueError """
+        Cannot perform #{@repr()} * #{other.repr()}: \
+        right side must be a #{Number.repr()}
+        """
 
-    if other instanceof Number
-      if @isPure() or other.isPure()
-        # TODO should fail for incompatible units
-        return @copy other.value * @value, other.unit or @unit
-
+    if not (@isPure() or other.isPure())
       throw new ValueError """
         Cannot perform #{@repr()} * #{other.repr()}
         """
 
-    throw new ValueError """
-      Cannot perform #{@repr()} * #{other.repr()}: \
-      right side must be a #{Number.repr()}
-      """
+    # TODO should fail for incompatible units
+    return @copy other.value * @value, other.unit or @unit
 
   './': (context, other) ->
-    if other instanceof Number
-      if other.value is 0
-        throw new ValueError 'Cannot divide by 0'
-      if !@isPure() and !other.isPure()
-        return @copy @value / other.convert(@unit).value, null
-      else
-        return @copy @value / other.value, @unit or other.unit
+    unless other instanceof Number
+      throw new ValueError """
+        Cannot perform #{@repr()} / #{other.repr()}: \
+        right side must be a #{Number.repr()}
+        """
 
-    throw new ValueError (
-      """
-      Cannot perform #{@repr()} / #{other.repr()}: \
-      right side must be a #{Number.repr()}
-      """
-    )
+    if other.value is 0
+      throw new ValueError 'Cannot divide by 0'
+
+    if !@isPure() and !other.isPure()
+      value = @value / other.convert(@unit, context).value
+      unit = ''
+    else
+      value = @value / other.value
+      unit = @unit or other.unit
+
+    return @copy value, unit
 
   '.unit?': -> Boolean.new @unit
 
@@ -247,13 +271,13 @@ class Number extends Object
   '.divisible-by?': (context, other) ->
     unless other.isPure()
       try
-        other = other.convert @unit
+        other = other.convert @unit, context
       catch
         return Boolean.FALSE
 
     div = @value / other.value
 
-    Boolean.new div is floor div
+    return Boolean.new div is floor(div)
 
   '.even?': -> Boolean.new @value % 2 is 0
 
@@ -326,7 +350,7 @@ class Number extends Object
     else
       unit = unit.toString()
 
-    @convert unit
+    @convert unit, context
 
 Object::toNumber = -> throw new Error "Cannot convert #{@repr()} to number"
 

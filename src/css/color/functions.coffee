@@ -30,7 +30,7 @@ SPACES.forEach (space) ->
 
     return value
 
-  getChannel = (channel, val) ->
+  getChannel = (channel, val, context) ->
     unit = val.unit
     value = val.value
 
@@ -40,7 +40,7 @@ SPACES.forEach (space) ->
       else if unit isnt SPACE[channel].unit
         if SPACE[channel].unit?
           try
-            value = Number.convert value, unit, SPACE[channel].unit
+            value = Number.convert value, unit, SPACE[channel].unit, context
           catch e
             throw new ValueError """
               Bad value for #{space} #{channel}: #{val.repr()}"
@@ -81,7 +81,7 @@ SPACES.forEach (space) ->
       unless value instanceof Number
         throw new ValueError "Bad argument for #{space}()"
 
-      channels.push getChannel(channel, value)
+      channels.push getChannel(channel, value, context)
 
     return new Color space, channels
 
@@ -103,7 +103,7 @@ SPACES.forEach (space) ->
       unless value instanceof Number
         throw new ValueError "Bad argument for #{space}()"
 
-      channels.push getChannel(channel, value)
+      channels.push getChannel(channel, value, context)
 
     alpha = args.pop()
 

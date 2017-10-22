@@ -64,7 +64,7 @@ class Context extends Class
       Null.NULL
 
   set: (name, value) ->
-    @_scope[name] = value.clone()
+    @_scope[name] = value
 
   useLoader: (loader) ->
     @_loaders.push loader

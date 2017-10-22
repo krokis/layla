@@ -41,13 +41,13 @@ class Range extends Indexed
   constructor: (@first = 0, @last = 0, @unit = null, @step = 1) ->
     super()
 
-  convert: (unit) ->
+  convert: (unit, context) ->
     unit = unit.toString()
 
     if unit isnt ''
-      first = Number.convert @first, @unit, unit
-      last = Number.convert @last, @unit, unit
-      step = Number.convert @step, @unit, unit
+      first = Number.convert @first, @unit, unit, context
+      last = Number.convert @last, @unit, unit, context
+      step = Number.convert @step, @unit, unit, context
     else
       unit = ''
 
@@ -56,9 +56,9 @@ class Range extends Indexed
   ###
   TODO this is buggy
   ###
-  contains: (other) ->
+  contains: (other, context) ->
     try
-      other = other.convert @unit
+      other = other.convert @unit, context
       return min(@first, @last) <= other.value <= max(@first, @last)
 
     return no
@@ -74,7 +74,9 @@ class Range extends Indexed
 
   './': (context, step) ->
     if step instanceof Number
-      return @copy undefined, undefined, undefined, (step.convert @unit).value
+      value = step.convert(@unit, context).value
+
+      return @copy undefined, undefined, undefined, value
 
     throw new ValueError "Cannot divide a range by #{step.repr()}"
 
@@ -88,7 +90,7 @@ class Range extends Indexed
 
   '.step': -> new Number @step, @unit
 
-  '.convert': (context, args...) -> @convert args...
+  '.convert': (context, unit) -> @convert unit, context
 
   '.reverse?': -> Boolean.new @isReverse()
 
@@ -99,7 +101,7 @@ class Range extends Indexed
 Number::['...'] = (context, other) ->
   if other instanceof Number
     if @unit
-      other = other.convert @unit
+      other = other.convert @unit, context
       unit = @unit
     else if other.unit
       unit = other.unit

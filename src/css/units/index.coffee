@@ -23,8 +23,7 @@ UNITS =
 class CSSUnitsPlugin extends Plugin
 
   use: (context) ->
-    # TODO these should be scoped
-    Number.define frm, to for frm, to of UNITS
+    Number.define frm, to, context for frm, to of UNITS
 
 
 module.exports = CSSUnitsPlugin

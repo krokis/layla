@@ -30,7 +30,6 @@ class Normalizer extends Visitor
       hoist_rule_sets:            yes
       hoist_at_rules:             no
       hoist_media_at_rules:       yes
-      convert_unknown_units:      yes
 
     for name of defaults
       @options[name] = defaults[name] unless name of @options
@@ -97,8 +96,10 @@ class Normalizer extends Visitor
               if grandchild instanceof Property
                 name = "#{child.name}-#{grandchild.name}"
                 value = grandchild.value
+                value = @normalize value
                 node.items.push new Property name, value
           else
+            child.value = @normalize child.value
             node.items.push child
 
         else

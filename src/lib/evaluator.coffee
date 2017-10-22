@@ -416,7 +416,8 @@ class Evaluator extends Class
         curr = getter()
         return curr if not curr.isNull()
 
-    value = @evaluateNode right, context
+    value = @evaluateNode(right, context).clone()
+
     setter value
 
     return value
@@ -490,10 +491,10 @@ class Evaluator extends Class
         """
 
     expression.each (key, value) =>
-      context.set node.value.value, value
+      context.set node.value.value, value.clone()
 
       if node.key?
-        context.set node.key.value, key
+        context.set node.key.value, key.clone()
 
       try
         @evaluateBody node.block.body, context
