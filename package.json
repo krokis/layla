@@ -26,13 +26,13 @@
     "color-support": "^1.1.2"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
+    "chai": "^4.1.2",
     "coffee-script": "^1.12.0",
     "coffeelint": "^1.9.3",
     "commonmark": "~0.12.0",
     "fs-extra": "^0.18.2",
     "glob": "^5.0.5",
-    "mocha": "^3.3.0",
+    "mocha": "^3.5.3",
     "tmp": "0.0.30",
     "uglify-js": "^2.4.17",
     "which": "^1.0.9"

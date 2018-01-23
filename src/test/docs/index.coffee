@@ -16,7 +16,7 @@ describe 'Docs', ->
       text = fs.readFileSync 'Readme.md', 'utf8'
       parser = new mark.DocParser
       doc = parser.parse text
-      expect(doc).to.be.an.Object
+      expect(doc).to.be.an 'object'
 
     it 'Contains only code examples that actually work', ->
       last = null

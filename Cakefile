@@ -167,8 +167,8 @@ test = (path, source = no, callback = done) ->
   args.push '--watch' if WATCH
 
   if source
-    path = "src/#{path}"
-    args.push '--compilers coffee:coffee-script/register'
+    path = "src/#{path}/**/index.coffee"
+    args.push '--require coffee-script/register'
 
   exec "mocha #{args.join ' '} #{path}", callback
 
