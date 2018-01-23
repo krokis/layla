@@ -1,4 +1,4 @@
-Copyright (c) 2014-2017 Jaume Alemany <jaume@krokis.com>
+Copyright (c) 2014-2018 Jaume Alemany <jaume@krokis.com>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
