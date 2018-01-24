@@ -1,4 +1,5 @@
 os            = require 'os'
+path          = require 'path'
 fs            = require 'fs'
 childProcess  = require 'child_process'
 {expect}      = require 'chai'
@@ -40,12 +41,50 @@ describe 'CLI', ->
       expect(stdout).to.equal expected
       expect(stderr).to.be.empty
 
+    it 'Returns `EX_ERROR_DATAERR` when a `SyntaxError` happens', ->
+      {status, stdout, stderr} = exec 'syntax-error.lay'
+      expect(status).to.equal 65
+      expect(stderr).to.contain 'SyntaxError'
+
+
+    it 'Returns `EX_ERROR_DATAERR` when a `RuntimeError` happens', ->
+      {status, stdout, stderr} = exec 'reference-error.lay'
+      expect(status).to.equal 65
+      expect(stderr).to.contain 'ReferenceError'
+
     describe 'Options', ->
 
-      describe '`--out-file`', ->
+      describe '`--out-file`, `-o`', ->
 
         it 'Sets an output file', ->
+          out_file = tmp.fileSync().name
+          {status, stdout, stderr} = exec "1.lay -o #{out_file}"
+          actual = fs.readFileSync(out_file).toString()
+          expected = fs.readFileSync("#{__dirname}/1.css").toString()
+          expect(status).to.equal 0
+          expect(stdout).to.be.empty
+          expect(stderr).to.be.empty
+          expect(actual).to.equal expected
 
+          out_file = tmp.fileSync().name
+          {status, stdout, stderr} = exec "2.lay --out-file #{out_file}"
+          actual = fs.readFileSync(out_file).toString()
+          expected = fs.readFileSync("#{__dirname}/2.css").toString()
+          expect(status).to.equal 0
+          expect(stdout).to.be.empty
+          expect(stderr).to.be.empty
+          expect(actual).to.equal expected
+
+          out_file = tmp.fileSync().name
+          {status, stdout, stderr} = exec "1.lay --out-file=#{out_file} 2.lay"
+          actual = fs.readFileSync(out_file).toString()
+          expected = fs.readFileSync("#{__dirname}/1+2.css").toString()
+          expect(status).to.equal 0
+          expect(stdout).to.be.empty
+          expect(stderr).to.be.empty
+          expect(actual).to.equal expected
+
+        it 'Overwrites existing files', ->
           out_file = tmp.fileSync().name
 
           {status, stdout, stderr} = exec "1.lay -o #{out_file}"
@@ -56,7 +95,8 @@ describe 'CLI', ->
           expect(stderr).to.be.empty
           expect(actual).to.equal expected
 
-          {status, stdout, stderr} = exec "2.lay --out-file #{out_file}"
+          out_file = tmp.fileSync().name
+          {status, stdout, stderr} = exec "2.lay -o #{out_file}"
           actual = fs.readFileSync(out_file).toString()
           expected = fs.readFileSync("#{__dirname}/2.css").toString()
           expect(status).to.equal 0
@@ -64,13 +104,33 @@ describe 'CLI', ->
           expect(stderr).to.be.empty
           expect(actual).to.equal expected
 
-          {status, stdout, stderr} = exec "1.lay --out-file=#{out_file} 2.lay"
-          actual = fs.readFileSync(out_file).toString()
-          expected = fs.readFileSync("#{__dirname}/1+2.css").toString()
-          expect(status).to.equal 0
+        it 'Fails if output file is not writable', ->
+          out_file = tmp.fileSync().name
+          out_file_basename = path.basename out_file
+          out_file = "#{out_file}#{out_file_basename}/#{out_file_basename}.css"
+          {status, stdout, stderr} = exec "1.lay -o #{out_file}"
+          expect(status).to.equal 74
           expect(stdout).to.be.empty
-          expect(stderr).to.be.empty
-          expect(actual).to.equal expected
+          expect(stderr).to.contain out_file
+          expect(stderr).to.contain 'directory does not exist'
+
+          # Should fail because first part of path is a regular file, not a dir.
+          out_file = tmp.fileSync().name
+          out_file = "#{out_file}/#{out_file_basename}"
+          {status, stdout, stderr} = exec "1.lay -o #{out_file}"
+          expect(status).to.equal 74
+          expect(stdout).to.be.empty
+          expect(stderr).to.contain out_file
+          expect(stderr).to.contain 'directory does not exist'
+
+          out_file = tmp.fileSync().name
+          fs.chmodSync out_file, 0o444
+
+          {status, stdout, stderr} = exec "1.lay -o #{out_file}"
+          expect(status).to.equal 74
+          expect(stdout).to.be.empty
+          expect(stderr).to.contain out_file
+          expect(stderr).to.contain 'permission denied'
 
       describe '`--version`', ->
 
@@ -112,12 +172,12 @@ describe 'CLI', ->
 
         testUsageError = (args, err = null) ->
           {status, stdout, stderr} = exec args
-          expect(status).to.equal 1
+          expect(status).to.equal 64
           expect(stderr).to.contain 'Usage'
           if err?
             expect(stderr).to.contain err
           expect(stdout).to.be.empty
 
-        it 'cause errors', ->
+        it 'Cause errors', ->
           testUsageError '-f', '`f`'
 

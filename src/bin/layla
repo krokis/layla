@@ -8,12 +8,21 @@ readline        = require 'readline'
 colorSupport    = require 'color-support'
 
 Layla         = require '../lib'
+ProgramError  = require '../lib/error/program'
 NodeContext   = require '../lib/context/node'
 CLIEmitter    = require '../lib/emitter/cli'
 EOTError      = require '../lib/error/eot'
 CSSNormalizer = require '../lib/css/normalizer'
 
 EOL = os.EOL
+
+# Exit codes from http://www.gsp.com/cgi-bin/man.cgi?section=3&topic=sysexits
+EX_OK              = 0
+EX_ERROR_GENERAL   = 1  # Not currently used
+EX_ERROR_USAGE     = 64
+EX_ERROR_DATAERR   = 65
+EX_ERROR_SOFTWARE  = 70 # TODO Ensure it's used on any uncaught error
+EX_ERROR_IOERR     = 74
 
 SUPPORTS_COLORS = colorSupport()
 
@@ -31,9 +40,14 @@ USAGE = """
     -h, --help              Show this help
   """
 
-class UsageError
+
+class CLIError
   constructor: (@message) ->
   toString: -> @message
+
+class UsageError extends CLIError
+
+class IOError extends CLIError
 
 class UnknownOptionError extends UsageError
 
@@ -81,9 +95,9 @@ err = (text) ->
   stderr text
 
 ###
-Exit with given `status`.
+Exit with given `code`.
 ###
-exit = (status = 0) -> process.exit status
+exit = (code = EX_OK) -> process.exit code
 
 ###
 Print Layla version.
@@ -106,7 +120,24 @@ emit = (node, new_line = no) ->
   res = emitter.emit node
 
   if $out_file
-    fs.writeFileSync $out_file, res
+    try
+      fs.writeFileSync $out_file, res
+    catch e
+      cause = null
+
+      switch e.code
+        when 'EACCES'
+          cause = 'permission denied'
+        when 'ENOTDIR', 'ENOENT'
+          cause = 'directory does not exist'
+        else
+          cause = "got a `#{e.code}` error while trying to write file"
+
+      message = "Could not write to `#{$out_file}`"
+      message += ": #{cause}" if cause
+      message += '.'
+
+      throw new IOError message
   else
     stdout res, new_line
 
@@ -170,7 +201,6 @@ repl = (context) ->
             repl.prompt()
             return
 
-
           msg = e.toString()
 
           if e.line? and e.column?
@@ -198,7 +228,7 @@ repl = (context) ->
 ###
 Main
 ###
-process.title = 'layla' # Sets window title on Windows
+process.title = 'layla' # Sets process name, plus shell title on Windows
 
 try
   # Pre-parse arguments
@@ -236,11 +266,11 @@ try
       when 'h', 'help'
         # Show usage and exit
         help()
-        exit 0
+        exit()
       when 'v', 'version'
         # Print version and exit
         version()
-        exit 0
+        exit()
       when 'c', 'colors'
         # Enable or disable colors
         $colors = opt.bool()
@@ -290,13 +320,17 @@ try
 
   if $files.length
     for file in $files
+      # TODO Throw proper exception if file is not writable
+      # BUT.... I'm using `context.include` right now. It will throw its own
+      # exceptions, but will also allow us to incude non-local files! :)
+      # ie: `layla -use http-loader http://foo.com/file.lay > file.css
       context.include file
 
   if $interactive
     repl context
   else if $files.length
     emit context.block
-    exit 0
+    exit()
   else
     source = ''
 
@@ -309,15 +343,21 @@ try
     stdin.on 'end', ->
       $layla.evaluate source
       emit context.block
-      exit 0
+      exit()
 
 catch e
-  if e instanceof UsageError
-    warn e.toString()
-    stderr()
-    stderr USAGE
-  else
-    err e.toString()
-    throw e
+  ex = EX_ERROR_SOFTWARE
 
-  exit 1
+  if e instanceof CLIError
+    if e instanceof UsageError
+      warn e.toString()
+      stderr()
+      stderr USAGE
+      ex = EX_ERROR_USAGE
+    else if e instanceof IOError
+      ex = EX_ERROR_IOERR
+  else if e instanceof ProgramError
+    ex = EX_ERROR_DATAERR
+
+  err e.toString()
+  exit ex
