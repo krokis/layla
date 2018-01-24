@@ -257,6 +257,11 @@ task 'build', 'Alias of build:all', ->
   else
     expl = ''
 
+  task "#{prefix}:unit", "Run unit tests#{expl}", ->
+    queue ->
+      log 'task', "Running unit tests#{expl}"
+      test 'unit', source
+
   task "#{prefix}:cases", "Run test cases#{expl}", ->
     queue ->
       log 'task', "Running test cases#{expl}"
@@ -278,6 +283,7 @@ task 'build', 'Alias of build:all', ->
       test 'bin', source
 
   task "#{prefix}:all", "Run all tests#{expl}", ->
+    invoke "#{prefix}:unit"
     invoke "#{prefix}:cases"
     invoke "#{prefix}:bin"
     invoke "#{prefix}:style"
