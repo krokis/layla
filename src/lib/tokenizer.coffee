@@ -342,18 +342,6 @@ class Tokenizer extends Class
       return new Token T.UNICODE_RANGE, m.start, m.end, m.value
 
   ###
-  Read the virtual 'End of file' token.
-
-  TODO: add a null '\0' character at the end of the file and look for it?
-  A '\0' in the middle of a source code could break it, but people **should
-  not** do that, and it could be a mostly useless hidden feature.
-  ###
-  readEOF: ->
-    if @position is @length
-      @position++ # TODO :S
-      return new Token T.EOF, @location, @location
-
-  ###
   Try to read horizontal (non-breaking) whitespace, including embedded and
   line comments.
   ###
@@ -462,8 +450,7 @@ class Tokenizer extends Class
       token = @readUnicodeRange() or
               @readUnquotedString() or
               @readPunctuation() or
-              @readHash() or
-              @readEOF()
+              @readHash()
 
     if token and prev
       prev.next = token
@@ -485,6 +472,13 @@ class Tokenizer extends Class
 
     unless @isEndOfFile()
       @syntaxError "Unrecognized syntax"
+
+    eof = new Token T.EOF, @location, @location
+
+    if tokens.length
+      tokens[tokens.length - 1].next = eof
+
+    tokens.push eof
 
     return tokens
 

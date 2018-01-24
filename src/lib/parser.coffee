@@ -13,12 +13,11 @@ class Parser extends Class
   Parse source string or an array of tokens.
   ###
   parse: (program, file = null) ->
-    if isString program
-      tokens = (new Tokenizer).tokenize program, file
-    else
-      tokens = program
+    unless program instanceof Array
+      program = program.toString()
+      program = (new Tokenizer).tokenize program, file
 
-    @token = tokens[0]
+    @token = program[0]
 
     return @parseRoot()
 
