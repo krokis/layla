@@ -572,14 +572,13 @@ class Color extends Object
   reprValue: @::toString
 
   ###
-  TODO WRONG! Don't transform to RGB! Carry current color space
   ###
   clone: (color = null, etc...) ->
     clone = super color, etc...
 
     if not color
       clone.alpha = @alpha
-      clone[@space] = @spaces[@space]
+      clone[@space] = [].concat @spaces[@space]
 
     return clone
 
