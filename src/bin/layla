@@ -122,12 +122,13 @@ repl = (context) ->
     historyFile = path.join process.env.HOME, '.layla_history'
 
     if fs.existsSync historyFile
-      history = (fs.readFileSync historyFile).toString().trim()
-      history = (history.split '\n').reverse()
+      history = (fs.readFileSync historyFile).toString()
+      history = history.replace /\0$/, ''
+      history = (history.split '\0').reverse()
       repl.history = history
 
     saveHistoryLine = (line) ->
-      fs.appendFileSync historyFile, line + "\n"
+      fs.appendFileSync historyFile, line + '\0'
   else
     saveHistoryLine = ->
 
@@ -148,8 +149,6 @@ repl = (context) ->
     if text.trim() is '' and buffer is ''
       reset()
     else
-      saveHistoryLine text
-
       try
         res = null
         text = "#{buffer}\n#{text}" if buffer isnt ''
@@ -181,6 +180,8 @@ repl = (context) ->
           reset()
         else
           throw e
+
+      saveHistoryLine text
 
   repl.on 'close', ->
     stdout()
