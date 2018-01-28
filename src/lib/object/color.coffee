@@ -290,10 +290,11 @@ class Color extends Object
     else
       throw new ValueError "Bad mode for Color.blend: #{mode}"
 
-  parseHexString: (str) ->
+  @parseHexString: (str) ->
     if m = str.match RE_HEX_COLOR
       str = m[1]
       l = str.length
+      alpha = 1
 
       switch l
         when 1
@@ -305,21 +306,19 @@ class Color extends Object
           green = 17 * parseInt str[1], 16
           blue  = 17 * parseInt str[2], 16
           if l > 3
-            @alpha = (17 * parseInt str[3], 16) / 255
+            alpha = (17 * parseInt str[3], 16) / 255
         when 6, 8
           red   = parseInt str[0..1], 16
           green = parseInt str[2..3], 16
           blue  = parseInt str[4..5], 16
           if l > 6
-            @alpha = (parseInt str[6..7], 16) / 255
+            alpha = (parseInt str[6..7], 16) / 255
         else
           throw new Error "Bad hex color: #{str}"
 
-      @space = 'rgb'
+      return new @('rgb', [red, green, blue], alpha)
 
-      return @spaces['rgb'] = [red, green, blue]
-
-  parseFuncString: (str) ->
+  @parseFuncString: (str) ->
     if m = str.match RE_FUNC_COLOR
       space = m[1].toLowerCase()
 
@@ -336,30 +335,25 @@ class Color extends Object
           channels.push parseFloat args.shift()
 
         if args.length
-          @alpha = parseFloat args.shift()
+          alpha = parseFloat args.shift()
+        else
+          alpha = 1
 
         if args.length
           throw new Error "Too many values passed to `#{space}()`"
 
-        @space = space
-
-        return @spaces[space] = channels
-
+        return new @(space, channels, alpha)
       else
         throw new Error "Bad color space: #{space}"
 
-  parseColor: (color) ->
-    if not color.trim()
-      @spaces = { rgb: [0, 0, 0] }
-    else
-      @parseHexString(color) or
-      @parseFuncString(color) or
-      throw new Error "Bad color string: #{color}"
+  @parse: (color) ->
+    @parseHexString(color) or
+    @parseFuncString(color) or
+    throw new Error "Bad color string: #{color}"
 
-  constructor: (color = '#0000') ->
+  constructor: (@space, channels, @alpha = 1) ->
     @spaces = {}
-    @alpha = 1
-    @parseColor(color)
+    @[@space] = channels
 
   do =>
     make_space_accessors = (space) =>
@@ -387,7 +381,7 @@ class Color extends Object
 
         set: (values) ->
           @space = space
-          @spaces = "#{space}": [].concat values
+          @spaces = "#{space}": values.slice()
 
     make_channel_accessors = (space, index, name) =>
       unless name of @::
@@ -575,14 +569,8 @@ class Color extends Object
 
   ###
   ###
-  copy: (color = null, etc...) ->
-    copy = super color, etc...
-
-    if not color
-      copy.alpha = @alpha
-      copy[@space] = @spaces[@space]
-
-    return copy
+  copy: (space = @space, channels = @spaces[@space], alpha = @alpha, etc...) ->
+    super space, channels, alpha, etc...
 
   '.transparent?': -> Boolean.new @isTransparent()
 
@@ -664,12 +652,12 @@ class Color extends Object
 
   # http://dev.w3.org/csswg/css-color/#tint-shade-adjusters
   '.tint': (context, amount = Number.FIFTY_PERCENT) ->
-    white = new Color '#fff'
+    white = @class.parse '#fff'
     white.alpha = amount.value / 100
     white.blend @
 
   '.shade': (context, amount = Number.FIFTY_PERCENT) ->
-    black = new Color '#000'
+    black = @class.parse '#000'
     black.alpha = amount.value / 100
     black.blend @
 

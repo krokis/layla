@@ -95,7 +95,7 @@ class Evaluator extends Class
   ###
   ###
   evaluateColor: (node, context) ->
-    new Color node.value
+    Color.parse node.value
 
   evaluateSequence: (pieces, context) ->
     value = ''
