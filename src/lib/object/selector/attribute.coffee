@@ -10,7 +10,7 @@ class AttributeSelector extends ComplementarySelector
     @flags = null, @namespace = null) ->
     super name
 
-  clone: (name = @name, value = @value, operator = @operator,
+  copy: (name = @name, value = @value, operator = @operator,
     flags = @flags, namespace = @namespace, etc...) ->
     super name, value, operator, flags, namespace, etc...
 

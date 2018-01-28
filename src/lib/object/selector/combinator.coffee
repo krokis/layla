@@ -14,7 +14,7 @@ class Combinator extends Selector
     json.value = @value
     json
 
-  clone: (value = @value, etc...) ->
+  copy: (value = @value, etc...) ->
     super value, etc...
 
 

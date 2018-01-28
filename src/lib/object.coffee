@@ -21,8 +21,6 @@ class Object extends Class
 
     return copy
 
-  clone: (etc...) -> @copy etc...
-
   hasMethod: (name) -> typeof @[".#{name}"] is 'function'
 
   operate: (context, operator, other, etc...) ->

@@ -4,7 +4,7 @@ class SelectorList extends Selector
 
   constructor: (@items = []) -> super
 
-  clone: (items = [].concat @items, etc...) ->
+  copy: (items = @items.slice(), etc...) ->
     super items, etc...
 
   toString: ->

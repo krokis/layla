@@ -7,7 +7,7 @@ class ComplementarySelector extends SimpleSelector
 
   constructor: (@name = null) ->
 
-  clone: (name = @name, etc...) ->
+  copy: (name = @name, etc...) ->
     super name, etc...
 
   toJSON: ->

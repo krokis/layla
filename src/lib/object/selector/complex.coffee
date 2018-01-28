@@ -51,7 +51,7 @@ class ComplexSelector extends Selector
 
     return str
 
-  clone: (children = @children, etc...) ->
+  copy: (children = @children, etc...) ->
     super (child.clone() for child in children), etc...
 
   toJSON: ->
