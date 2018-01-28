@@ -73,7 +73,7 @@ class RegExp extends Object
 
   toString: -> @source
 
-  clone: (source = @source, flags = @flags, etc...) ->
+  copy: (source = @source, flags = @flags, etc...) ->
     super source, flags, etc...
 
   reprValue: -> "/#{@source}/#{@flags}"
@@ -94,19 +94,19 @@ class RegExp extends Object
 
   '.global?': -> Boolean.new @global
 
-  '.global': -> @clone().setFlag 'g', yes
+  '.global': -> @copy().setFlag 'g', yes
 
   '.sensitive?': -> Boolean.new not @insensitive
 
-  '.sensitive': -> @clone().setFlag 'i', no
+  '.sensitive': -> @copy().setFlag 'i', no
 
   '.insensitive?': -> Boolean.new @insensitive
 
-  '.insensitive': -> @clone().setFlag 'i', yes
+  '.insensitive': -> @copy().setFlag 'i', yes
 
   '.multiline?': -> Boolean.new @multiline
 
-  '.multiline': -> @clone().setFlag 'm', yes
+  '.multiline': -> @copy().setFlag 'm', yes
 
 do ->
   supah = String::match
