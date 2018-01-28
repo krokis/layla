@@ -349,45 +349,28 @@ class Color extends Object
     throw new Error "Bad color string: #{color}"
 
   constructor: (@space, channels, @alpha = 1) ->
-    @spaces = {}
-    @[@space] = channels
+    @channels = channels.slice()
 
   do =>
     make_space_accessors = (space) =>
       @property space,
         get: ->
-          unless @spaces[space]
-            convertor = null
+          if @space is space
+            return @channels.slice()
 
-            unless @space is space
-              if (convertor = "#{@space}2#{space}") of CONVERTORS
-                other = @space
+          convertor = "#{@space}2#{space}"
 
-            if not convertor
-              for other of @spaces
-                unless other in [space, @space]
-                  if (convertor = "#{@space}2#{space}") of CONVERTORS
-                    break
+          if not convertor of CONVERTORS
+            throw new ValueError(
+              "Cannot convert color from `#{@space}` to `#{space}`"
+            )
 
-            if not convertor
-              throw new Error "No convertor to #{space} :("
-
-            @spaces[space] = CONVERTORS[convertor] @spaces[other]
-
-          return @spaces[space]
-
-        set: (values) ->
-          @space = space
-          @spaces = "#{space}": values.slice()
+          return CONVERTORS[convertor] @channels
 
     make_channel_accessors = (space, index, name) =>
       unless name of @::
         @property name,
           get: -> @[space][index]
-          set: (value) ->
-            space = @[space]
-            space[index] = value
-            @[space] = space
 
     for space of SPACES
       make_space_accessors space
@@ -408,23 +391,18 @@ class Color extends Object
 
     return value
 
-  setAlpha: (@alpha) -> @
-
-  setChannel: (space, channel, value) ->
-    channels = @[space]
-    channels[channel] = @clampChannel space, channel, value
-    @[space] = channels
-
-    return @
-
   adjustChannel: (space, channel, amount, unit) ->
-    if unit is '%'
-      amount = SPACES[space][channel].max * amount / 100
-    else if unit and unit isnt SPACES[space][channel].unit
-      throw new Error "Bad value for #{space} #{channel}: #{amount}#{unit}"
+    if unit?
+      if unit is '%'
+        amount = SPACES[space][channel].max * amount / 100
+      else if unit isnt SPACES[space][channel].unit
+        throw new Error "Bad value for #{space} #{channel}: #{amount}#{unit}"
 
-    return @copy().setChannel(
-      space, channel, amount + @getChannel(space, channel))
+    channels = @[space]
+    value = channels[channel] + amount
+    channels[channel] = @clampChannel(space, channel, value)
+
+    return @copy space, channels
 
   ###
   https://drafts.csswg.org/css-color-4/#luminance
@@ -483,8 +461,10 @@ class Color extends Object
 
   isEqual: (other) ->
     if other instanceof Color
-      for channel of @spaces[@space]
-        if @spaces[@space][channel] isnt other[@space][channel]
+      other_channels = other[@space]
+
+      for i in [0..SPACES[@space].length]
+        if @channels[i] isnt other_channels[i]
           return no
 
       return @alpha is other.alpha
@@ -566,16 +546,18 @@ class Color extends Object
 
   ###
   ###
-  copy: (space = @space, channels = @spaces[@space], alpha = @alpha, etc...) ->
+  copy: (space = @space, channels = @channels, alpha = @alpha, etc...) ->
     super space, channels, alpha, etc...
+
+  clone: -> @
 
   '.transparent?': -> Boolean.new @isTransparent()
 
-  '.transparent': -> @copy().setAlpha 0
+  '.transparent': -> @copy null, null, 0
 
   '.opaque?': -> Boolean.new @isOpaque()
 
-  '.opaque': -> @copy().setAlpha 1
+  '.opaque': -> @copy null, null, 1
 
   '.saturate': (context, amount) ->
     unless amount instanceof Number
@@ -689,11 +671,9 @@ class Color extends Object
     if @alpha < 1
       throw new Error "Cannot make safe a non-opaque color"
 
-    safe = @copy()
-    safe.rgb = safe.rgb.map (channel) ->
-      51 * round(channel / 51)
+    channels = @rgb.map (channel) -> 51 * round(channel / 51)
 
-    return safe
+    return @copy 'rgb', channels
 
   # Individual channel accessors
   '.alpha': (context, value) ->
@@ -713,20 +693,6 @@ class Color extends Object
     value = min(1, max(value, 0))
 
     return @copy null, null, value
-
-  '.alpha=': (context, value) ->
-    if value instanceof Number
-      if value.unit is '%'
-        value = value.value / 100
-      else if value.isPure()
-        value = value.value
-      else
-        throw new Error "Bad alpha value: #{value}"
-
-      value = min 1, (max value, 0)
-      @alpha = value
-    else
-      throw new Error "Bad alpha value: #{value}"
 
   do =>
     make_accessors = (space, index, channel) =>
@@ -751,22 +717,6 @@ class Color extends Object
         channels[index] = value
 
         return @copy space, channels
-
-      @::[".#{name}="] ?= (context, value) ->
-        if value instanceof Number
-          if value.unit is '%'
-            value = channel.max * value.value / 100
-          else
-            if channel.unit and not value.isPure()
-              value = value.convert channel.unit
-
-            value = @clampChannel space, index, value.value
-
-          channels = @[space]
-          channels[index] = value
-          @[space] = channels
-        else
-          throw new Error "Bad #{name} channel value: #{value.repr()}"
 
     for space of SPACES
       for channel, index in SPACES[space]
