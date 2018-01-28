@@ -80,34 +80,35 @@ class Number extends Object
       unit = unit.toString().trim()
 
     value = @class.convert @value, @unit, unit
-    @clone value, (unit or '')
+
+    return @copy value, unit or ''
 
   ###
   ###
-  negate: -> @clone -1 * @value
+  negate: -> @copy -1 * @value
 
   ###
   ###
   isEqual: (other) ->
     other instanceof Number and
-    try (round (other.convert @unit).value, 10) is (round @value, 10)
+    try round(other.convert(@unit).value, 10) is round(@value, 10)
 
   compare: (other) ->
     if other instanceof Number
       other = other.convert @unit
       if other.value is @value
-        0
+        return 0
       else if other.value > @value
-        1
+        return 1
       else
-        -1
-    else
-      throw new ValueError (
-        """
-        Cannot compare #{@repr()} with #{other.repr()}: \
-        that's not a [Number]
-        """
-      )
+        return -1
+
+    throw new ValueError (
+      """
+      Cannot compare #{@repr()} with #{other.repr()}: \
+      that's not a [Number]
+      """
+    )
 
   isPure: -> not @unit
 
@@ -159,8 +160,8 @@ class Number extends Object
 
   reprValue: -> "#{@value}#{@unit or ''}"
 
-  clone: (value = @value, unit = @unit, etc...) ->
-    super(value, unit, etc...)
+  copy: (value = @value, unit = @unit) ->
+    super value, unit
 
   ZERO = @ZERO = new @ 0
   TWO  = @TWO  = new @ 2
@@ -171,61 +172,61 @@ class Number extends Object
 
   '.+@': -> @clone()
 
-  '.-@': -> @clone -@value
+  '.-@': -> @copy -@value
 
   '.+': (context, other) ->
     if other instanceof Number
-      @clone (@convert other.unit).value + other.value, other.unit or @unit
-    else
-      throw new ValueError (
-        """
-        Cannot perform #{@repr()} + #{other.repr()}: \
-        right side must be a #{Number.repr()}
-        """
-      )
+      return @copy @convert(other.unit).value + other.value, other.unit or @unit
+
+    throw new ValueError (
+      """
+      Cannot perform #{@repr()} + #{other.repr()}: \
+      right side must be a #{Number.repr()}
+      """
+    )
 
   '.-': (context, other) ->
     if other instanceof Number
-      @clone (@convert other.unit).value - other.value, other.unit or @unit
-    else
-      throw new ValueError (
-        """
-        Cannot perform #{@repr()} - #{other.repr()}: \
-        right side must be a #{Number.repr()}
-        """
-      )
+      return @copy @convert(other.unit).value - other.value, other.unit or @unit
+
+    throw new ValueError (
+      """
+      Cannot perform #{@repr()} - #{other.repr()}: \
+      right side must be a #{Number.repr()}
+      """
+    )
 
   '.*': (context, other) ->
 
     if other instanceof Number
       if @isPure() or other.isPure()
         # TODO should fail for incompatible units
-        @clone other.value * @value, other.unit or @unit
-      else
-        throw new ValueError """
-          Cannot perform #{@repr()} * #{other.repr()}
-          """
-    else
+        return @copy other.value * @value, other.unit or @unit
+
       throw new ValueError """
-        Cannot perform #{@repr()} * #{other.repr()}: \
-        right side must be a #{Number.repr()}
+        Cannot perform #{@repr()} * #{other.repr()}
         """
+
+    throw new ValueError """
+      Cannot perform #{@repr()} * #{other.repr()}: \
+      right side must be a #{Number.repr()}
+      """
 
   './': (context, other) ->
     if other instanceof Number
       if other.value is 0
         throw new ValueError 'Cannot divide by 0'
       if !@isPure() and !other.isPure()
-        @clone @value / (other.convert @unit).value, ''
+        return @copy @value / other.convert(@unit).value, ''
       else
-        @clone @value / other.value, @unit or other.unit
-    else
-      throw new ValueError (
-        """
-        Cannot perform #{@repr()} / #{other.repr()}: \
-        right side must be a #{Number.repr()}
-        """
-      )
+        return @copy @value / other.value, @unit or other.unit
+
+    throw new ValueError (
+      """
+      Cannot perform #{@repr()} / #{other.repr()}: \
+      right side must be a #{Number.repr()}
+      """
+    )
 
   '.unit?': -> Boolean.new @unit
 
@@ -266,9 +267,9 @@ class Number extends Object
 
   '.positive?': -> Boolean.new @isPositive()
 
-  '.positive': -> @clone abs @value
+  '.positive': -> @copy abs(@value)
 
-  '.negative': -> @clone -1 * (abs @value)
+  '.negative': -> @copy -1 * abs(@value)
 
   '.negate': -> @negate()
 
@@ -276,15 +277,15 @@ class Number extends Object
 
   '.round': (context, places = ZERO) ->
     m = pow 10, places.value
-    @clone (round (@value * m)) / m
+    return @copy round(@value * m) / m
 
-  '.ceil': ->  @clone ceil @value
+  '.ceil': ->  @copy ceil(@value)
 
-  '.floor': -> @clone floor @value
+  '.floor': -> @copy floor(@value)
 
-  '.abs': -> @clone abs @value
+  '.abs': -> @copy abs(@value)
 
-  '.pow': (context, exp = TWO) -> @clone pow @value, exp.value
+  '.pow': (context, exp = TWO) -> @copy pow(@value, exp.value)
 
   '.sq': -> @['.pow'] TWO
 
@@ -293,26 +294,26 @@ class Number extends Object
       throw new ValueError """
       Cannot make #{deg.value}th root of #{@repr()}: Base cannot be negative
       """
-    @clone pow @value, 1 / (deg.value)
+    @copy pow(@value, 1 / (deg.value))
 
   '.sqrt': -> @['.root'] TWO
 
   '.mod': (context, other) ->
     if other.value is 0
       throw new ValueError 'Cannot divide by 0'
-    @clone @value % other.value
+    @copy @value % other.value
 
-  '.sin': -> @clone sin @value
+  '.sin': -> @copy sin(@value)
 
-  '.cos': -> @clone cos @value
+  '.cos': -> @copy cos(@value)
 
-  '.tan': -> @clone tan @value
+  '.tan': -> @copy tan(@value)
 
-  '.asin': -> @clone asin @value
+  '.asin': -> @copy asin(@value)
 
-  '.acos': -> @clone acos @value
+  '.acos': -> @copy acos(@value)
 
-  '.atan': -> @clone atan @value
+  '.atan': -> @copy atan(@value)
 
   '.prime?': -> Boolean.new @isPrime()
 
