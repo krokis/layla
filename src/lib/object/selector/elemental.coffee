@@ -7,7 +7,7 @@ class ElementalSelector extends SimpleSelector
 
   constructor: (@namespace = null) ->
 
-  clone: (namespace = @namespace, etc...) ->
+  copy: (namespace = @namespace, etc...) ->
     super namespace, etc...
 
   toJSON: ->

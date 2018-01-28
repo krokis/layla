@@ -7,7 +7,7 @@ class KeyframeSelector extends Selector
 
   constructor: (@keyframe = null, etc...) -> super etc...
 
-  clone: (keyframe = @keyframe, etc...) ->
+  copy: (keyframe = @keyframe, etc...) ->
     super keyframe, etc...
 
   toString: -> @keyframe

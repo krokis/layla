@@ -25,7 +25,7 @@ class SelectorList extends Selector
   toString: ->
     (child.toString() for child in @children).join ', '
 
-  clone: (children = @children, etc...) ->
+  copy: (children = @children, etc...) ->
     super (child.clone() for child in children), etc...
 
   toJSON: ->

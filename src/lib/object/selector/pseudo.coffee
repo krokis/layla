@@ -7,7 +7,7 @@ class PseudoSelector extends ComplementarySelector
 
   constructor: (name = null, @arguments = null) -> super name
 
-  clone: (name = @name, args = @arguments, etc...) ->
+  copy: (name = @name, args = @arguments, etc...) ->
     super name, args, etc...
 
   toString: ->

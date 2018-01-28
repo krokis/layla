@@ -44,9 +44,9 @@ class CompoundSelector extends Selector
 
         return new CompoundSelector resolved
 
-    @clone()
+    return @clone()
 
-  clone: (children = @children, etc...) ->
+  copy: (children = @children, etc...) ->
     super (child.clone() for child in children), etc...
 
   toString: ->
