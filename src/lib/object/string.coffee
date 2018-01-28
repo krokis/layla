@@ -95,43 +95,43 @@ class String extends Object
     json.value = @value
     json
 
-  clone: (value = @value) -> super value
+  copy: (value = @value) ->
+    super value
 
   reprValue: -> @escape()
 
   '.+': (context, other) ->
     if other instanceof String
-      return @clone "#{@value}#{other.value}"
-    else
-      throw new ValueError (
-        """
-        Cannot perform #{@repr()} + #{other.repr()}: \
-        right side must be a #{String.repr()}
-        """
-      )
+      return @copy "#{@value}#{other.value}"
+
+    throw new ValueError (
+      """
+      Cannot perform #{@repr()} + #{other.repr()}: \
+      right side must be a #{String.repr()}
+      """
+    )
 
   '.*': (context, other) ->
     if other instanceof Number
       if other.value >= 0
         unless other.unit
-          return @clone ((Array other.value + 1).join @value)
-        else
-          throw new ValueError (
-            """
-            Cannot perform #{@repr()} * #{other.repr()}: \
-            that's not a [Number]
-            """
-          )
-      else
-        throw new ValueError
+          return @copy Array(other.value + 1).join(@value)
 
-    else
-      throw new ValueError (
-        """
-        Cannot perform #{@repr()} * #{other.repr()}: \
-        that's not a [Number]
-        """
-      )
+        throw new ValueError (
+          """
+          Cannot perform #{@repr()} * #{other.repr()}: \
+          that's not a [Number]
+          """
+        )
+
+      throw new ValueError
+
+    throw new ValueError (
+      """
+      Cannot perform #{@repr()} * #{other.repr()}: \
+      that's not a [Number]
+      """
+    )
 
   '.::': (context, other) ->
     if other instanceof Number
@@ -143,9 +143,9 @@ class String extends Object
       if char is ''
         return Null.null
       else
-        return @clone char
-    else
-      throw new ValueError
+        return @copy char
+
+    throw new ValueError
 
   '.length': -> new Number @length
 
@@ -160,7 +160,7 @@ class String extends Object
     else
       chars = '\\s'
 
-    @clone (@value.replace ///^[#{chars}]+|[#{chars}]+$///g, '')
+    @copy @value.replace(///^[#{chars}]+|[#{chars}]+$///g, '')
 
   '.ltrim': (context, chars) ->
     # TODO check bad args
@@ -169,7 +169,7 @@ class String extends Object
     else
       chars = '\\s'
 
-    @clone (@value.replace ///^[#{chars}]+///g, '')
+    @copy @value.replace(///^[#{chars}]+///g, '')
 
   '.rtrim': (context, chars) ->
     # TODO check bad args
@@ -178,7 +178,7 @@ class String extends Object
     else
       chars = '\\s'
 
-    @clone (@value.replace ///[#{chars}]+$///g, '')
+    @copy @value.replace(///[#{chars}]+$///g, '')
 
   '.starts-with?': (context, str) ->
     Boolean.new (
@@ -194,21 +194,21 @@ class String extends Object
       (@value.substr -(str.value.length), str.value.length) is str.value
     )
 
-  '.lower-case': -> @clone @value.toLowerCase()
+  '.lower-case': -> @copy @value.toLowerCase()
 
-  '.upper-case': -> @clone @value.toUpperCase()
+  '.upper-case': -> @copy @value.toUpperCase()
 
   '.string': -> @clone()
 
   '.numeric?': -> Boolean.new @isNumeric()
 
-  '.reverse': -> @clone (@value.split '').reverse().join ''
+  '.reverse': -> @copy @value.split('').reverse().join('')
 
   '.palindrome?': -> Boolean.new @isPalindrome()
 
-  '.base64': -> @clone @toBase64()
+  '.base64': -> @copy @toBase64()
 
-  '.repr': -> @clone @repr()
+  '.repr': -> @copy @repr()
 
   '.eval': (context) -> context.evaluate @value
 

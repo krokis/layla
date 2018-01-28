@@ -84,7 +84,7 @@ class RegExp extends Object
   '.~': (context, other) ->
     if other instanceof String
       if m = other.value.match @value
-        return new List m.map (str) -> other.clone str
+        return new List m.map (str) -> other.copy str
 
       return Null.null
 
@@ -141,7 +141,7 @@ String::['.split'] = (context, separator, limit = Null.null) ->
   chunks =
     (@value.split reg, limit)
     .filter (str) -> str isnt ''
-    .map (str) => @clone str
+    .map (str) => @copy str
 
   return new List chunks
 
@@ -158,23 +158,23 @@ do ->
     return @['.split'] context, separator
 
 String::['.characters'] = (context, limit = Null.null) ->
-  new List (@value.split '').map (char) => @clone char
+  new List (@value.split '').map (char) => @copy char
 
 String::['.words'] = ->
-  new List ((@value.match /\w+/g) or []).map (word) => @clone word
+  new List ((@value.match /\w+/g) or []).map (word) => @copy word
 
 String::['.lines'] = ->
-  new List ((@value.match /[^\s](.+)[^\s]/g) or []).map (line) => @clone line
+  new List ((@value.match /[^\s](.+)[^\s]/g) or []).map (line) => @copy line
 
 String::['.replace'] = (context, search, replacement) ->
   if search instanceof RegExp
     search = search.value
   else
-    search = new global.RegExp (RegExp.escape search.toString()), 'g'
+    search = new global.RegExp RegExp.escape(search.toString()), 'g'
 
   replacement = replacement.toString()
 
-  @clone (@value.replace search, replacement)
+  @copy @value.replace(search, replacement)
 
 
 module.exports = RegExp

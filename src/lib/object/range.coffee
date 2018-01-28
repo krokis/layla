@@ -149,7 +149,7 @@ do ->
         while idx isnt end
           str += @value.charAt idx
           idx = (idx + 1) % len
-      @clone str
+      @copy str
     else
       supah.call @, context, other, etc...
 
