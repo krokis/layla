@@ -15,10 +15,11 @@ class RuleSet extends Rule
     json.selector = @selector
     json
 
-  clone: ->
-    that = super
-    that.selector = @selector.clone()
-    that
+  copy: ->
+    copy = super
+    copy.selector = @selector.clone()
+
+    copy
 
   '.selector': -> new QuotedString @selector.toString()
 
