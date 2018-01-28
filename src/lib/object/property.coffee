@@ -25,7 +25,7 @@ class Property extends Object
     json.value = @value
     json
 
-  clone: (name = @name, value = @value, etc...) ->
+  copy: (name = @name, value = @value, etc...) ->
     super name, value.clone(), etc...
 
   reprValue: -> "#{@name}: #{@value.repr()}"

@@ -16,7 +16,7 @@ class Function extends Object
     (other.func is @func) and
     (other.block is @block)
 
-  clone: (func = @func, etc...) -> super func, etc...
+  copy: (func = @func, etc...) -> super func, etc...
 
   # TODO this should not use @block by default; instead, this should be executed
   # bound to the *calling block*.

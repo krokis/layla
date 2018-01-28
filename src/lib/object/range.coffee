@@ -52,7 +52,7 @@ class Range extends Indexed
     else
       unit = ''
 
-    return @clone first, last, unit, step
+    return @copy first, last, unit, step
 
   ###
   TODO this is buggy
@@ -66,14 +66,14 @@ class Range extends Indexed
 
   isPure: -> not @unit
 
-  clone: (first = @first, last = @last, unit = @unit, step = @step, etc...) ->
+  copy: (first = @first, last = @last, unit = @unit, step = @step, etc...) ->
     super first, last, unit, step, etc...
 
   reprValue: -> "#{@first}..#{@last}"
 
   './': (context, step) ->
     if step instanceof Number
-      return @clone null, null, null, (step.convert @unit).value
+      return @copy null, null, null, (step.convert @unit).value
 
     throw new ValueError "Cannot divide a range by #{step.repr()}"
 
@@ -83,7 +83,7 @@ class Range extends Indexed
 
   '.pure?': -> Boolean.new @isPure()
 
-  '.pure': -> @clone null, null, ''
+  '.pure': -> @copy null, null, ''
 
   '.step': -> new Number @step, @unit
 
@@ -97,7 +97,7 @@ class Range extends Indexed
 
   '.reverse?': -> Boolean.new @isReverse()
 
-  '.reverse': -> @clone @last, @first
+  '.reverse': -> @copy @last, @first
 
   '.list': -> new List @items
 
@@ -120,7 +120,7 @@ do ->
 
   List::['.::'] = (context, other, etc...) ->
     if other instanceof Range
-      slice = @clone []
+      slice = @copy []
       for idx in other.items
         slice.items.push @['.::'] context, idx
       slice
