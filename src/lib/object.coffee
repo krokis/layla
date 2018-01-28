@@ -15,11 +15,13 @@ class Object extends Class
 
   @repr: -> "[#{@reprType()}]"
 
-  clone: (args...) ->
-    copy = super
+  copy: (etc...) ->
+    copy = super etc...
     copy.important = @important
 
     return copy
+
+  clone: (etc...) -> @copy etc...
 
   hasMethod: (name) -> typeof @[".#{name}"] is 'function'
 

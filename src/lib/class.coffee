@@ -35,7 +35,9 @@ class Class
   @property 'type',
     get: -> @class.name
 
-  clone: (etc...) -> new @class etc...
+  copy: (etc...) -> new @class etc...
+
+  clone: -> @copy()
 
   toJSON: -> {}
 
