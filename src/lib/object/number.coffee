@@ -160,6 +160,8 @@ class Number extends Object
 
   reprValue: -> "#{@value}#{@unit or ''}"
 
+  clone: -> @
+
   copy: (value = @value, unit = @unit) ->
     super value, unit
 
