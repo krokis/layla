@@ -87,12 +87,6 @@ class Range extends Indexed
 
   '.step': -> new Number @step, @unit
 
-  '.step=': (context, step) ->
-    if step instanceof Number
-      @step = (step.convert @unit).value
-    else
-      throw new ValueError "Bad `step` value for a range: #{step.repr()}"
-
   '.convert': (context, args...) -> @convert args...
 
   '.reverse?': -> Boolean.new @isReverse()

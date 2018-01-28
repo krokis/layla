@@ -122,7 +122,7 @@ Ranges
     $r = 0..10
     i: $r
     ii: ($r / 2).list.commas
-    $r.step = 3
+    $r = $r / 3
     iii: $r
     $r = 1..-1cm
     iv: $r
