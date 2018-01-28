@@ -28,6 +28,8 @@ class Property extends Object
   copy: (name = @name, value = @value, etc...) ->
     super name, value.clone(), etc...
 
+  clone: -> @
+
   reprValue: -> "#{@name}: #{@value.repr()}"
 
   '.name': -> new QuotedString @name

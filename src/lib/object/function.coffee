@@ -18,6 +18,8 @@ class Function extends Object
 
   copy: (func = @func, etc...) -> super func, etc...
 
+  clone: -> @
+
   # TODO this should not use @block by default; instead, this should be executed
   # bound to the *calling block*.
   '.invoke': (context, args...) -> @invoke context, args...

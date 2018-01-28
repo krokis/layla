@@ -76,6 +76,8 @@ class RegExp extends Object
   copy: (source = @source, flags = @flags, etc...) ->
     super source, flags, etc...
 
+  clone: -> @
+
   reprValue: -> "/#{@source}/#{@flags}"
 
   ###

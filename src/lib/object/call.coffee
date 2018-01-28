@@ -10,6 +10,8 @@ class Call extends Object
   copy: (name = @name, args = @arguments, etc...) ->
     super name, args, etc...
 
+  clone: -> @
+
   toJSON: ->
     json = super
     json.name = @name
