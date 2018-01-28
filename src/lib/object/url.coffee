@@ -154,7 +154,7 @@ class URL extends URI
   ###
   '.+': (context, other) ->
     if other instanceof URL or other instanceof String
-      @clone (ParseURL.resolve @value, other.value)
+      @copy (ParseURL.resolve @value, other.value)
     else
       super
 
@@ -278,7 +278,7 @@ do ->
 
   String::['.+'] = (context, other, etc...) ->
     if other instanceof URL
-      other.clone ParseURL.resolve @value, other.value
+      other.copy ParseURL.resolve @value, other.value
     else
       supah.call @, context, other, etc...
 

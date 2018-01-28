@@ -26,11 +26,15 @@ class URI extends Object
     get: -> @toString()
     set: (value) -> @parse value
 
-  clone: (value = @value, etc...) ->
-    obj = super value, etc...
+
+  clone: ->
+    obj = @copy()
     obj.name = @name
 
     return obj
+
+  copy: (value = @value) ->
+    super value
 
   toJSON: ->
     json = super
