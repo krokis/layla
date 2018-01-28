@@ -13,18 +13,18 @@ class Color extends Object
 
   {round, max, min, abs, sqrt, pow} = Math
 
-  RED         = name: 'red', max: 255
-  GREEN       = name: 'green', max: 255
-  BLUE        = name: 'blue', max: 255
-  HUE         = name: 'hue', max: 360, unit: 'deg'
+  RED         = name: 'red',        max: 255
+  GREEN       = name: 'green',      max: 255
+  BLUE        = name: 'blue',       max: 255
+  HUE         = name: 'hue',        max: 360, unit: 'deg'
   SATURATION  = name: 'saturation', max: 100, unit: '%'
-  LIGHTNESS   = name: 'lightness', max: 100, unit: '%'
-  WHITENESS   = name: 'whiteness', max: 100, unit: '%'
-  BLACKNESS   = name: 'blackness', max: 100, unit: '%'
-  CYAN        = name: 'cyan', max: 100, unit: '%'
-  MAGENTA     = name: 'magenta', max: 100, unit: '%'
-  YELLOW      = name: 'yellow', max: 100, unit: '%'
-  BLACK       = name: 'black', max: 100, unit: '%'
+  LIGHTNESS   = name: 'lightness',  max: 100, unit: '%'
+  WHITENESS   = name: 'whiteness',  max: 100, unit: '%'
+  BLACKNESS   = name: 'blackness',  max: 100, unit: '%'
+  CYAN        = name: 'cyan',       max: 100, unit: '%'
+  MAGENTA     = name: 'magenta',    max: 100, unit: '%'
+  YELLOW      = name: 'yellow',     max: 100, unit: '%'
+  BLACK       = name: 'black',      max: 100, unit: '%'
 
   SPACES =
     rgb:  [ RED, GREEN, BLUE ]
@@ -269,26 +269,23 @@ class Color extends Object
       source + backdrop - 2 * source * backdrop
 
   @blend: (source, backdrop, mode = 'normal') ->
-    if mode of BLEND_METHODS
-      srgb = source.rgb.map (ch) -> ch / 255
-      brgb = backdrop.rgb.map (ch) -> ch / 255
-
-      blent = (BLEND_METHODS[mode] srgb[i], brgb[i] for i of srgb)
-
-      blent = blent.map (ch, i) ->
-        ch = (1 - backdrop.alpha) * (source.rgb[i] / 255) + backdrop.alpha * ch
-        ch = source.alpha * ch + (1 - source.alpha) * backdrop.alpha *
-             (backdrop.rgb[i] / 255)
-        ch *= 255
-
-      alpha = source.alpha + backdrop.alpha * (1 - source.alpha)
-
-      that = source.copy()
-      that.rgb = blent
-      that.alpha = alpha
-      that
-    else
+    if not mode of BLEND_METHODS
       throw new ValueError "Bad mode for Color.blend: #{mode}"
+
+    srgb = source.rgb.map (ch) -> ch / 255
+    brgb = backdrop.rgb.map (ch) -> ch / 255
+
+    blent = (BLEND_METHODS[mode] srgb[i], brgb[i] for i of srgb)
+
+    blent = blent.map (ch, i) ->
+      ch = (1 - backdrop.alpha) * (source.rgb[i] / 255) + backdrop.alpha * ch
+      ch = source.alpha * ch + (1 - source.alpha) * backdrop.alpha *
+           (backdrop.rgb[i] / 255)
+      ch *= 255
+
+    alpha = source.alpha + backdrop.alpha * (1 - source.alpha)
+
+    return source.copy 'rgb', blent, alpha
 
   @parseHexString: (str) ->
     if m = str.match RE_HEX_COLOR
@@ -504,7 +501,7 @@ class Color extends Object
     comps = @['rgb'].map (c) -> round c
 
     if @alpha < 1
-      comps.push (round @alpha * 100) / 100
+      comps.push round(@alpha * 100) / 100
 
     return "rgba(" + (comps.join ', ') + ')'
 
@@ -519,7 +516,7 @@ class Color extends Object
     hex = '#'
 
     for c in comps
-      c = (round c).toString 16
+      c = round(c).toString 16
 
       if c.length < 2
         hex += '0'
@@ -558,7 +555,7 @@ class Color extends Object
       str += 'a' if @alpha < 1
       str += '('
       str += channels.join ', '
-      str += ", #{(round @alpha * 100) / 100}"
+      str += ", #{round(@alpha * 100) / 100}"
       str += ')'
 
       return str
@@ -581,40 +578,40 @@ class Color extends Object
   '.opaque': -> @copy().setAlpha 1
 
   '.saturate': (context, amount) ->
-    if amount instanceof Number
-      @adjustChannel 'hsl', 1, amount.value, amount.unit
-    else
+    unless amount instanceof Number
       throw new ValueError "Bad argument for #{@reprType()}.saturate"
+
+    return @adjustChannel 'hsl', 1, amount.value, amount.unit
 
   '.desaturate': (context, amount = Number.ONE_HUNDRED_PERCENT) ->
-    if amount instanceof Number
-      @adjustChannel 'hsl', 1, -1 * amount.value, amount.unit
-    else
+    unless amount instanceof Number
       throw new ValueError "Bad argument for #{@reprType()}.saturate"
 
+    return @adjustChannel 'hsl', 1, -1 * amount.value, amount.unit
+
   '.whiten': (context, amount = Number.FIFTY_PERCENT) ->
-    if amount instanceof Number
-      @adjustChannel 'hwb', 1, amount.value, amount.unit
-    else
+    unless amount instanceof Number
       throw new ValueError "Bad argument for #{@reprType()}.whiten"
 
+    return @adjustChannel 'hwb', 1, amount.value, amount.unit
+
   '.blacken': (context, amount = Number.FIFTY_PERCENT) ->
-    if amount instanceof Number
-      @adjustChannel 'hwb', 2, amount.value, amount.unit
-    else
+    unless amount instanceof Number
       throw new ValueError "Bad argument for #{@reprType()}.blacken"
 
+    return @adjustChannel 'hwb', 2, amount.value, amount.unit
+
   '.darken': (context, amount = Number.TEN_PERCENT) ->
-    if amount instanceof Number
-      @adjustChannel 'hsl', 2, -1 * amount.value, amount.unit
-    else
+    unless amount instanceof Number
       throw new ValueError "Bad argument for #{@reprType()}.darken"
 
+    return @adjustChannel 'hsl', 2, -1 * amount.value, amount.unit
+
   '.lighten': (context, amount = Number.TEN_PERCENT) ->
-    if amount instanceof Number
-      @adjustChannel 'hsl', 2, amount.value, amount.unit
-    else
+    unless amount instanceof Number
       throw new ValueError "Bad argument for #{@reprType()}.lighten"
+
+    return @adjustChannel 'hsl', 2, amount.value, amount.unit
 
   # TODO: Use @luminance instead of @lightness? It seems more logical, but
   # it would be even more confusing: `light?` and `dark?` use luminance, but
@@ -629,11 +626,12 @@ class Color extends Object
   @::['.gray?'] = @::['.grey?']
 
   '.rotate': (context, amount) ->
-    if amount instanceof Number
-      amount = amount.convert('deg')
-      @adjustChannel 'hsl', 0, amount.value, amount.unit
-    else
+    unless amount instanceof Number
       throw new ValueError "Bad argument for #{@reprType()}.rotate"
+
+    amount = amount.convert('deg')
+
+    return @adjustChannel 'hsl', 0, amount.value, amount.unit
 
   @::['.spin'] = @::['.rotate']
 
@@ -645,10 +643,7 @@ class Color extends Object
   '.luminance?': -> Boolean.new @luminance > 0
 
   '.invert': ->
-    copy = @copy()
-    copy.rgb = (255 - channel for channel in copy.rgb)
-
-    return copy
+    @copy 'rgb', (255 - channel for channel in @rgb)
 
   # http://dev.w3.org/csswg/css-color/#tint-shade-adjusters
   '.tint': (context, amount = Number.FIFTY_PERCENT) ->
@@ -667,20 +662,18 @@ class Color extends Object
   '.contrast': (context, others...) -> @contrast others...
 
   '.blend': (context, backdrop, mode = null) ->
+    unless backdrop instanceof Color
+      throw new ValueError "Bad `mode` argument for [#{@reprType()}.blend]"
+
     if mode isnt null
-      if mode instanceof String
-        mode = mode.value
-      else
+      unless mode instanceof String
         throw new ValueError (
           "Bad `mode` argument for [#{@reprType()}.blend]"
         )
 
-    unless backdrop instanceof Color
-      throw new ValueError (
-        "Bad `mode` argument for [#{@reprType()}.blend]"
-      )
+      mode = mode.value
 
-    @blend backdrop, mode
+    return @blend backdrop, mode
 
   '.safe?': ->
     if @alpha < 1
@@ -698,12 +691,28 @@ class Color extends Object
 
     safe = @copy()
     safe.rgb = safe.rgb.map (channel) ->
-      51 * (round channel / 51)
+      51 * round(channel / 51)
 
     return safe
 
   # Individual channel accessors
-  '.alpha': -> new Number @alpha
+  '.alpha': (context, value) ->
+    if not value?
+      return new Number @alpha
+
+    unless value instanceof Number
+      throw new Error "Bad alpha value: #{value}"
+
+    if value.unit is '%'
+      value = value.value / 100
+    else if value.isPure()
+      value = value.value
+    else
+      throw new Error "Bad alpha value: #{value}"
+
+    value = min(1, max(value, 0))
+
+    return @copy null, null, value
 
   '.alpha=': (context, value) ->
     if value instanceof Number
@@ -723,8 +732,25 @@ class Color extends Object
     make_accessors = (space, index, channel) =>
       name = channel.name
 
-      @::[".#{name}"] ?= ->
-        new Number @[space][index], channel.unit
+      @::[".#{name}"] ?= (context, value) ->
+        if not value?
+          return new Number @[space][index], channel.unit
+
+        unless value instanceof Number
+          throw new Error "Bad `#{name}` channel value: #{value.repr()}"
+
+        if value.unit is '%'
+          value = channel.max * value.value / 100
+        else
+          if channel.unit and not value.isPure()
+            value = value.convert channel.unit
+
+          value = @clampChannel space, index, value.value
+
+        channels = @[space].slice()
+        channels[index] = value
+
+        return @copy space, channels
 
       @::[".#{name}="] ?= (context, value) ->
         if value instanceof Number

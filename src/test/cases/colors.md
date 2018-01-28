@@ -809,90 +809,88 @@
   }
   ~~~
 
-#### `alpha=`
-
 - Adjusts the `alpha` channel of the color
 
   ~~~ lay
   color.alpha {
     $i = #000000
-    $i.alpha = 0
+    $i = $i.alpha(0)
     i: $i.alpha.round(2)
 
-    $i.alpha = .1
+    $i = $i.alpha(.1)
     ii: $i.alpha.round(2)
 
-    $i.alpha = 99%
+    $i = $i.alpha(99%)
     iii: $i.alpha.round(2)
 
-    $i.alpha = 100%
+    $i = $i.alpha(100%)
     iv: $i.alpha.round(2)
 
-    $i.alpha = 1
+    $i = $i.alpha(1)
     v: $i.alpha.round(2)
 
     $ii = #ffffff
-    $ii.alpha = 0
+    $ii = $ii.alpha(0)
     vi: $ii.alpha.round(2)
 
-    $ii.alpha = .1
+    $ii = $ii.alpha(.1)
     vii: $ii.alpha.round(2)
 
-    $ii.alpha = 99%
+    $ii = $ii.alpha(99%)
     viii: $ii.alpha.round(2)
 
-    $ii.alpha = 100%
+    $ii = $ii.alpha(100%)
     ix: $ii.alpha.round(2)
 
-    $ii.alpha = 1
+    $ii = $ii.alpha(1)
     x: $ii.alpha.round(2)
 
     $iii = #f01d93
-    $iii.alpha = 0
+    $iii = $iii.alpha(0)
     xi: $iii.alpha.round(2)
 
-    $iii.alpha = .1
+    $iii = $iii.alpha(.1)
     xii: $iii.alpha.round(2)
 
-    $iii.alpha = 99%
+    $iii = $iii.alpha(99%)
     xiii: $iii.alpha.round(2)
 
-    $iii.alpha = 100%
+    $iii = $iii.alpha(100%)
     xiv: $iii.alpha.round(2)
 
-    $iii.alpha = 1
+    $iii = $iii.alpha(1)
     xv: $iii.alpha.round(2)
 
     $iv = #008b8b99
-    $iv.alpha = 0
+    $iv = $iv.alpha(0)
     xvi: $iv.alpha.round(2)
 
-    $iv.alpha = .1
+    $iv = $iv.alpha(.1)
     xvii: $iv.alpha.round(2)
 
-    $iv.alpha = 99%
+    $iv = $iv.alpha(99%)
     xviii: $iv.alpha.round(2)
 
-    $iv.alpha = 100%
+    $iv = $iv.alpha(100%)
     xix: $iv.alpha.round(2)
 
-    $iv.alpha = 1
+    $iv = $iv.alpha(1)
     xx: $iv.alpha.round(2)
 
     $v = #adff2f1c
-    $v.alpha = 0
+    $v = $v.alpha(0)
     xxi: $v.alpha.round(2)
 
-    $v.alpha = .1
+    $v = $v.alpha(.1)
     xxii: $v.alpha.round(2)
 
-    $v.alpha = 99%
+    $v = $v.alpha(99%)
     xxiii: $v.alpha.round(2)
 
-    $v.alpha = 100%
+    $v = $v.alpha(100%)
     xxiv: $v.alpha.round(2)
 
-    $v.alpha = 1
+    $v = $v.alpha(1)
     xxv: $v.alpha.round(2)
   }
   ~~~
@@ -951,90 +949,88 @@
   }
   ~~~
 
-#### `red=`
-
 - Adjusts the `red` channel of the color
 
   ~~~ lay
   color.red {
     $i = #000000
-    $i.red = 0
+    $i = $i.red(0)
     i: $i.red.round
 
-    $i.red = 127.50
+    $i = $i.red(127.50)
     ii: $i.red.round
 
-    $i.red = 255
+    $i = $i.red(255)
     iii: $i.red.round
 
-    $i.red = 100%
+    $i = $i.red(100%)
     iv: $i.red.round
 
-    $i.red = 33.33%
+    $i = $i.red(33.33%)
     v: $i.red.round
 
     $ii = #ffffff
-    $ii.red = 0
+    $ii = $ii.red(0)
     vi: $ii.red.round
 
-    $ii.red = 127.50
+    $ii = $ii.red(127.50)
     vii: $ii.red.round
 
-    $ii.red = 255
+    $ii = $ii.red(255)
     viii: $ii.red.round
 
-    $ii.red = 100%
+    $ii = $ii.red(100%)
     ix: $ii.red.round
 
-    $ii.red = 33.33%
+    $ii = $ii.red(33.33%)
     x: $ii.red.round
 
     $iii = #f01d93
-    $iii.red = 0
+    $iii = $iii.red(0)
     xi: $iii.red.round
 
-    $iii.red = 127.50
+    $iii = $iii.red(127.50)
     xii: $iii.red.round
 
-    $iii.red = 255
+    $iii = $iii.red(255)
     xiii: $iii.red.round
 
-    $iii.red = 100%
+    $iii = $iii.red(100%)
     xiv: $iii.red.round
 
-    $iii.red = 33.33%
+    $iii = $iii.red(33.33%)
     xv: $iii.red.round
 
     $iv = #008b8b99
-    $iv.red = 0
+    $iv = $iv.red(0)
     xvi: $iv.red.round
 
-    $iv.red = 127.50
+    $iv = $iv.red(127.50)
     xvii: $iv.red.round
 
-    $iv.red = 255
+    $iv = $iv.red(255)
     xviii: $iv.red.round
 
-    $iv.red = 100%
+    $iv = $iv.red(100%)
     xix: $iv.red.round
 
-    $iv.red = 33.33%
+    $iv = $iv.red(33.33%)
     xx: $iv.red.round
 
     $v = #adff2f1c
-    $v.red = 0
+    $v = $v.red(0)
     xxi: $v.red.round
 
-    $v.red = 127.50
+    $v = $v.red(127.50)
     xxii: $v.red.round
 
-    $v.red = 255
+    $v = $v.red(255)
     xxiii: $v.red.round
 
-    $v.red = 100%
+    $v = $v.red(100%)
     xxiv: $v.red.round
 
-    $v.red = 33.33%
+    $v = $v.red(33.33%)
     xxv: $v.red.round
   }
   ~~~
@@ -1093,90 +1089,88 @@
   }
   ~~~
 
-#### `green=`
-
 - Adjusts the `green` channel of the color
 
   ~~~ lay
   color.green {
     $i = #000000
-    $i.green = 0
+    $i = $i.green(0)
     i: $i.green.round
 
-    $i.green = 127.50
+    $i = $i.green(127.50)
     ii: $i.green.round
 
-    $i.green = 255
+    $i = $i.green(255)
     iii: $i.green.round
 
-    $i.green = 100%
+    $i = $i.green(100%)
     iv: $i.green.round
 
-    $i.green = 33.33%
+    $i = $i.green(33.33%)
     v: $i.green.round
 
     $ii = #ffffff
-    $ii.green = 0
+    $ii = $ii.green(0)
     vi: $ii.green.round
 
-    $ii.green = 127.50
+    $ii = $ii.green(127.50)
     vii: $ii.green.round
 
-    $ii.green = 255
+    $ii = $ii.green(255)
     viii: $ii.green.round
 
-    $ii.green = 100%
+    $ii = $ii.green(100%)
     ix: $ii.green.round
 
-    $ii.green = 33.33%
+    $ii = $ii.green(33.33%)
     x: $ii.green.round
 
     $iii = #f01d93
-    $iii.green = 0
+    $iii = $iii.green(0)
     xi: $iii.green.round
 
-    $iii.green = 127.50
+    $iii = $iii.green(127.50)
     xii: $iii.green.round
 
-    $iii.green = 255
+    $iii = $iii.green(255)
     xiii: $iii.green.round
 
-    $iii.green = 100%
+    $iii = $iii.green(100%)
     xiv: $iii.green.round
 
-    $iii.green = 33.33%
+    $iii = $iii.green(33.33%)
     xv: $iii.green.round
 
     $iv = #008b8b99
-    $iv.green = 0
+    $iv = $iv.green(0)
     xvi: $iv.green.round
 
-    $iv.green = 127.50
+    $iv = $iv.green(127.50)
     xvii: $iv.green.round
 
-    $iv.green = 255
+    $iv = $iv.green(255)
     xviii: $iv.green.round
 
-    $iv.green = 100%
+    $iv = $iv.green(100%)
     xix: $iv.green.round
 
-    $iv.green = 33.33%
+    $iv = $iv.green(33.33%)
     xx: $iv.green.round
 
     $v = #adff2f1c
-    $v.green = 0
+    $v = $v.green(0)
     xxi: $v.green.round
 
-    $v.green = 127.50
+    $v = $v.green(127.50)
     xxii: $v.green.round
 
-    $v.green = 255
+    $v = $v.green(255)
     xxiii: $v.green.round
 
-    $v.green = 100%
+    $v = $v.green(100%)
     xxiv: $v.green.round
 
-    $v.green = 33.33%
+    $v = $v.green(33.33%)
     xxv: $v.green.round
   }
   ~~~
@@ -1235,90 +1229,88 @@
   }
   ~~~
 
-#### `blue=`
-
 - Adjusts the `blue` channel of the color
 
   ~~~ lay
   color.blue {
     $i = #000000
-    $i.blue = 0
+    $i = $i.blue(0)
     i: $i.blue.round
 
-    $i.blue = 127.50
+    $i = $i.blue(127.50)
     ii: $i.blue.round
 
-    $i.blue = 255
+    $i = $i.blue(255)
     iii: $i.blue.round
 
-    $i.blue = 100%
+    $i = $i.blue(100%)
     iv: $i.blue.round
 
-    $i.blue = 33.33%
+    $i = $i.blue(33.33%)
     v: $i.blue.round
 
     $ii = #ffffff
-    $ii.blue = 0
+    $ii = $ii.blue(0)
     vi: $ii.blue.round
 
-    $ii.blue = 127.50
+    $ii = $ii.blue(127.50)
     vii: $ii.blue.round
 
-    $ii.blue = 255
+    $ii = $ii.blue(255)
     viii: $ii.blue.round
 
-    $ii.blue = 100%
+    $ii = $ii.blue(100%)
     ix: $ii.blue.round
 
-    $ii.blue = 33.33%
+    $ii = $ii.blue(33.33%)
     x: $ii.blue.round
 
     $iii = #f01d93
-    $iii.blue = 0
+    $iii = $iii.blue(0)
     xi: $iii.blue.round
 
-    $iii.blue = 127.50
+    $iii = $iii.blue(127.50)
     xii: $iii.blue.round
 
-    $iii.blue = 255
+    $iii = $iii.blue(255)
     xiii: $iii.blue.round
 
-    $iii.blue = 100%
+    $iii = $iii.blue(100%)
     xiv: $iii.blue.round
 
-    $iii.blue = 33.33%
+    $iii = $iii.blue(33.33%)
     xv: $iii.blue.round
 
     $iv = #008b8b99
-    $iv.blue = 0
+    $iv = $iv.blue(0)
     xvi: $iv.blue.round
 
-    $iv.blue = 127.50
+    $iv = $iv.blue(127.50)
     xvii: $iv.blue.round
 
-    $iv.blue = 255
+    $iv = $iv.blue(255)
     xviii: $iv.blue.round
 
-    $iv.blue = 100%
+    $iv = $iv.blue(100%)
     xix: $iv.blue.round
 
-    $iv.blue = 33.33%
+    $iv = $iv.blue(33.33%)
     xx: $iv.blue.round
 
     $v = #adff2f1c
-    $v.blue = 0
+    $v = $v.blue(0)
     xxi: $v.blue.round
 
-    $v.blue = 127.50
+    $v = $v.blue(127.50)
     xxii: $v.blue.round
 
-    $v.blue = 255
+    $v = $v.blue(255)
     xxiii: $v.blue.round
 
-    $v.blue = 100%
+    $v = $v.blue(100%)
     xxiv: $v.blue.round
 
-    $v.blue = 33.33%
+    $v = $v.blue(33.33%)
     xxv: $v.blue.round
   }
   ~~~
@@ -1377,75 +1369,73 @@
   }
   ~~~
 
-#### `hue=`
-
 - Adjusts the `hue` channel of the color
 
   ~~~ lay
   color.hue {
     $i = #000000
-    $i.hue = 0
+    $i = $i.hue(0)
     i: $i.hue.round
 
-    $i.hue = 90
+    $i = $i.hue(90)
     ii: $i.hue.round
 
-    $i.hue = 360
+    $i = $i.hue(360)
     iii: $i.hue.round
 
-    $i.hue = 736
+    $i = $i.hue(736)
     iv: $i.hue.round
 
     $ii = #ffffff
-    $ii.hue = 0
+    $ii = $ii.hue(0)
     v: $ii.hue.round
 
-    $ii.hue = 90
+    $ii = $ii.hue(90)
     vi: $ii.hue.round
 
-    $ii.hue = 360
+    $ii = $ii.hue(360)
     vii: $ii.hue.round
 
-    $ii.hue = 736
+    $ii = $ii.hue(736)
     viii: $ii.hue.round
 
     $iii = #f01d93
-    $iii.hue = 0
+    $iii = $iii.hue(0)
     ix: $iii.hue.round
 
-    $iii.hue = 90
+    $iii = $iii.hue(90)
     x: $iii.hue.round
 
-    $iii.hue = 360
+    $iii = $iii.hue(360)
     xi: $iii.hue.round
 
-    $iii.hue = 736
+    $iii = $iii.hue(736)
     xii: $iii.hue.round
 
     $iv = #008b8b99
-    $iv.hue = 0
+    $iv = $iv.hue(0)
     xiii: $iv.hue.round
 
-    $iv.hue = 90
+    $iv = $iv.hue(90)
     xiv: $iv.hue.round
 
-    $iv.hue = 360
+    $iv = $iv.hue(360)
     xv: $iv.hue.round
 
-    $iv.hue = 736
+    $iv = $iv.hue(736)
     xvi: $iv.hue.round
 
     $v = #adff2f1c
-    $v.hue = 0
+    $v = $v.hue(0)
     xvii: $v.hue.round
 
-    $v.hue = 90
+    $v = $v.hue(90)
     xviii: $v.hue.round
 
-    $v.hue = 360
+    $v = $v.hue(360)
     xix: $v.hue.round
 
-    $v.hue = 736
+    $v = $v.hue(736)
     xx: $v.hue.round
   }
   ~~~
@@ -1499,75 +1489,73 @@
   }
   ~~~
 
-#### `saturation=`
-
 - Adjusts the `saturation` channel of the color
 
   ~~~ lay
   color.saturation {
     $i = #000000
-    $i.saturation = 0
+    $i = $i.saturation(0)
     i: $i.saturation.round
 
-    $i.saturation = 0%
+    $i = $i.saturation(0%)
     ii: $i.saturation.round
 
-    $i.saturation = 17.98%
+    $i = $i.saturation(17.98%)
     iii: $i.saturation.round
 
-    $i.saturation = 100%
+    $i = $i.saturation(100%)
     iv: $i.saturation.round
 
     $ii = #ffffff
-    $ii.saturation = 0
+    $ii = $ii.saturation(0)
     v: $ii.saturation.round
 
-    $ii.saturation = 0%
+    $ii = $ii.saturation(0%)
     vi: $ii.saturation.round
 
-    $ii.saturation = 17.98%
+    $ii = $ii.saturation(17.98%)
     vii: $ii.saturation.round
 
-    $ii.saturation = 100%
+    $ii = $ii.saturation(100%)
     viii: $ii.saturation.round
 
     $iii = #f01d93
-    $iii.saturation = 0
+    $iii = $iii.saturation(0)
     ix: $iii.saturation.round
 
-    $iii.saturation = 0%
+    $iii = $iii.saturation(0%)
     x: $iii.saturation.round
 
-    $iii.saturation = 17.98%
+    $iii = $iii.saturation(17.98%)
     xi: $iii.saturation.round
 
-    $iii.saturation = 100%
+    $iii = $iii.saturation(100%)
     xii: $iii.saturation.round
 
     $iv = #008b8b99
-    $iv.saturation = 0
+    $iv = $iv.saturation(0)
     xiii: $iv.saturation.round
 
-    $iv.saturation = 0%
+    $iv = $iv.saturation(0%)
     xiv: $iv.saturation.round
 
-    $iv.saturation = 17.98%
+    $iv = $iv.saturation(17.98%)
     xv: $iv.saturation.round
 
-    $iv.saturation = 100%
+    $iv = $iv.saturation(100%)
     xvi: $iv.saturation.round
 
     $v = #adff2f1c
-    $v.saturation = 0
+    $v = $v.saturation(0)
     xvii: $v.saturation.round
 
-    $v.saturation = 0%
+    $v = $v.saturation(0%)
     xviii: $v.saturation.round
 
-    $v.saturation = 17.98%
+    $v = $v.saturation(17.98%)
     xix: $v.saturation.round
 
-    $v.saturation = 100%
+    $v = $v.saturation(100%)
     xx: $v.saturation.round
   }
   ~~~
@@ -1621,75 +1609,73 @@
   }
   ~~~
 
-#### `lightness=`
-
 - Adjusts the `lightness` channel of the color
 
   ~~~ lay
   color.lightness {
     $i = #000000
-    $i.lightness = 0
+    $i = $i.lightness(0)
     i: $i.lightness.round
 
-    $i.lightness = 0%
+    $i = $i.lightness(0%)
     ii: $i.lightness.round
 
-    $i.lightness = 17.98%
+    $i = $i.lightness(17.98%)
     iii: $i.lightness.round
 
-    $i.lightness = 100%
+    $i = $i.lightness(100%)
     iv: $i.lightness.round
 
     $ii = #ffffff
-    $ii.lightness = 0
+    $ii = $ii.lightness(0)
     v: $ii.lightness.round
 
-    $ii.lightness = 0%
+    $ii = $ii.lightness(0%)
     vi: $ii.lightness.round
 
-    $ii.lightness = 17.98%
+    $ii = $ii.lightness(17.98%)
     vii: $ii.lightness.round
 
-    $ii.lightness = 100%
+    $ii = $ii.lightness(100%)
     viii: $ii.lightness.round
 
     $iii = #f01d93
-    $iii.lightness = 0
+    $iii = $iii.lightness(0)
     ix: $iii.lightness.round
 
-    $iii.lightness = 0%
+    $iii = $iii.lightness(0%)
     x: $iii.lightness.round
 
-    $iii.lightness = 17.98%
+    $iii = $iii.lightness(17.98%)
     xi: $iii.lightness.round
 
-    $iii.lightness = 100%
+    $iii = $iii.lightness(100%)
     xii: $iii.lightness.round
 
     $iv = #008b8b99
-    $iv.lightness = 0
+    $iv = $iv.lightness(0)
     xiii: $iv.lightness.round
 
-    $iv.lightness = 0%
+    $iv = $iv.lightness(0%)
     xiv: $iv.lightness.round
 
-    $iv.lightness = 17.98%
+    $iv = $iv.lightness(17.98%)
     xv: $iv.lightness.round
 
-    $iv.lightness = 100%
+    $iv = $iv.lightness(100%)
     xvi: $iv.lightness.round
 
     $v = #adff2f1c
-    $v.lightness = 0
+    $v = $v.lightness(0)
     xvii: $v.lightness.round
 
-    $v.lightness = 0%
+    $v = $v.lightness(0%)
     xviii: $v.lightness.round
 
-    $v.lightness = 17.98%
+    $v = $v.lightness(17.98%)
     xix: $v.lightness.round
 
-    $v.lightness = 100%
+    $v = $v.lightness(100%)
     xx: $v.lightness.round
   }
   ~~~
@@ -1743,75 +1729,73 @@
   }
   ~~~
 
-#### `blackness=`
-
 - Adjusts the `blackness` channel of the color
 
   ~~~ lay
   color.blackness {
     $i = #000000
-    $i.blackness = 0
+    $i = $i.blackness(0)
     i: $i.blackness.round
 
-    $i.blackness = 0%
+    $i = $i.blackness(0%)
     ii: $i.blackness.round
 
-    $i.blackness = 17.98%
+    $i = $i.blackness(17.98%)
     iii: $i.blackness.round
 
-    $i.blackness = 100%
+    $i = $i.blackness(100%)
     iv: $i.blackness.round
 
     $ii = #ffffff
-    $ii.blackness = 0
+    $ii = $ii.blackness(0)
     v: $ii.blackness.round
 
-    $ii.blackness = 0%
+    $ii = $ii.blackness(0%)
     vi: $ii.blackness.round
 
-    $ii.blackness = 17.98%
+    $ii = $ii.blackness(17.98%)
     vii: $ii.blackness.round
 
-    $ii.blackness = 100%
+    $ii = $ii.blackness(100%)
     viii: $ii.blackness.round
 
     $iii = #f01d93
-    $iii.blackness = 0
+    $iii = $iii.blackness(0)
     ix: $iii.blackness.round
 
-    $iii.blackness = 0%
+    $iii = $iii.blackness(0%)
     x: $iii.blackness.round
 
-    $iii.blackness = 17.98%
+    $iii = $iii.blackness(17.98%)
     xi: $iii.blackness.round
 
-    $iii.blackness = 100%
+    $iii = $iii.blackness(100%)
     xii: $iii.blackness.round
 
     $iv = #008b8b99
-    $iv.blackness = 0
+    $iv = $iv.blackness(0)
     xiii: $iv.blackness.round
 
-    $iv.blackness = 0%
+    $iv = $iv.blackness(0%)
     xiv: $iv.blackness.round
 
-    $iv.blackness = 17.98%
+    $iv = $iv.blackness(17.98%)
     xv: $iv.blackness.round
 
-    $iv.blackness = 100%
+    $iv = $iv.blackness(100%)
     xvi: $iv.blackness.round
 
     $v = #adff2f1c
-    $v.blackness = 0
+    $v = $v.blackness(0)
     xvii: $v.blackness.round
 
-    $v.blackness = 0%
+    $v = $v.blackness(0%)
     xviii: $v.blackness.round
 
-    $v.blackness = 17.98%
+    $v = $v.blackness(17.98%)
     xix: $v.blackness.round
 
-    $v.blackness = 100%
+    $v = $v.blackness(100%)
     xx: $v.blackness.round
   }
   ~~~
@@ -1865,75 +1849,73 @@
   }
   ~~~
 
-#### `whiteness=`
-
 - Adjusts the `whiteness` channel of the color
 
   ~~~ lay
   color.whiteness {
     $i = #000000
-    $i.whiteness = 0
+    $i = $i.whiteness(0)
     i: $i.whiteness.round
 
-    $i.whiteness = 0%
+    $i = $i.whiteness(0%)
     ii: $i.whiteness.round
 
-    $i.whiteness = 17.98%
+    $i = $i.whiteness(17.98%)
     iii: $i.whiteness.round
 
-    $i.whiteness = 100%
+    $i = $i.whiteness(100%)
     iv: $i.whiteness.round
 
     $ii = #ffffff
-    $ii.whiteness = 0
+    $ii = $ii.whiteness(0)
     v: $ii.whiteness.round
 
-    $ii.whiteness = 0%
+    $ii = $ii.whiteness(0%)
     vi: $ii.whiteness.round
 
-    $ii.whiteness = 17.98%
+    $ii = $ii.whiteness(17.98%)
     vii: $ii.whiteness.round
 
-    $ii.whiteness = 100%
+    $ii = $ii.whiteness(100%)
     viii: $ii.whiteness.round
 
     $iii = #f01d93
-    $iii.whiteness = 0
+    $iii = $iii.whiteness(0)
     ix: $iii.whiteness.round
 
-    $iii.whiteness = 0%
+    $iii = $iii.whiteness(0%)
     x: $iii.whiteness.round
 
-    $iii.whiteness = 17.98%
+    $iii = $iii.whiteness(17.98%)
     xi: $iii.whiteness.round
 
-    $iii.whiteness = 100%
+    $iii = $iii.whiteness(100%)
     xii: $iii.whiteness.round
 
     $iv = #008b8b99
-    $iv.whiteness = 0
+    $iv = $iv.whiteness(0)
     xiii: $iv.whiteness.round
 
-    $iv.whiteness = 0%
+    $iv = $iv.whiteness(0%)
     xiv: $iv.whiteness.round
 
-    $iv.whiteness = 17.98%
+    $iv = $iv.whiteness(17.98%)
     xv: $iv.whiteness.round
 
-    $iv.whiteness = 100%
+    $iv = $iv.whiteness(100%)
     xvi: $iv.whiteness.round
 
     $v = #adff2f1c
-    $v.whiteness = 0
+    $v = $v.whiteness(0)
     xvii: $v.whiteness.round
 
-    $v.whiteness = 0%
+    $v = $v.whiteness(0%)
     xviii: $v.whiteness.round
 
-    $v.whiteness = 17.98%
+    $v = $v.whiteness(17.98%)
     xix: $v.whiteness.round
 
-    $v.whiteness = 100%
+    $v = $v.whiteness(100%)
     xx: $v.whiteness.round
   }
   ~~~
@@ -1987,75 +1969,73 @@
   }
   ~~~
 
-#### `cyan=`
-
 - Adjusts the `cyan` channel of the color
 
   ~~~ lay
   color.cyan {
     $i = #000000
-    $i.cyan = 0
+    $i = $i.cyan(0)
     i: $i.cyan.round
 
-    $i.cyan = 0%
+    $i = $i.cyan(0%)
     ii: $i.cyan.round
 
-    $i.cyan = 17.98%
+    $i = $i.cyan(17.98%)
     iii: $i.cyan.round
 
-    $i.cyan = 100%
+    $i = $i.cyan(100%)
     iv: $i.cyan.round
 
     $ii = #ffffff
-    $ii.cyan = 0
+    $ii = $ii.cyan(0)
     v: $ii.cyan.round
 
-    $ii.cyan = 0%
+    $ii = $ii.cyan(0%)
     vi: $ii.cyan.round
 
-    $ii.cyan = 17.98%
+    $ii = $ii.cyan(17.98%)
     vii: $ii.cyan.round
 
-    $ii.cyan = 100%
+    $ii = $ii.cyan(100%)
     viii: $ii.cyan.round
 
     $iii = #f01d93
-    $iii.cyan = 0
+    $iii = $iii.cyan(0)
     ix: $iii.cyan.round
 
-    $iii.cyan = 0%
+    $iii = $iii.cyan(0%)
     x: $iii.cyan.round
 
-    $iii.cyan = 17.98%
+    $iii = $iii.cyan(17.98%)
     xi: $iii.cyan.round
 
-    $iii.cyan = 100%
+    $iii = $iii.cyan(100%)
     xii: $iii.cyan.round
 
     $iv = #008b8b99
-    $iv.cyan = 0
+    $iv = $iv.cyan(0)
     xiii: $iv.cyan.round
 
-    $iv.cyan = 0%
+    $iv = $iv.cyan(0%)
     xiv: $iv.cyan.round
 
-    $iv.cyan = 17.98%
+    $iv = $iv.cyan(17.98%)
     xv: $iv.cyan.round
 
-    $iv.cyan = 100%
+    $iv = $iv.cyan(100%)
     xvi: $iv.cyan.round
 
     $v = #adff2f1c
-    $v.cyan = 0
+    $v = $v.cyan(0)
     xvii: $v.cyan.round
 
-    $v.cyan = 0%
+    $v = $v.cyan(0%)
     xviii: $v.cyan.round
 
-    $v.cyan = 17.98%
+    $v = $v.cyan(17.98%)
     xix: $v.cyan.round
 
-    $v.cyan = 100%
+    $v = $v.cyan(100%)
     xx: $v.cyan.round
   }
   ~~~
@@ -2109,75 +2089,73 @@
   }
   ~~~
 
-#### `magenta=`
-
 - Adjusts the `magenta` channel of the color
 
   ~~~ lay
   color.magenta {
     $i = #000000
-    $i.magenta = 0
+    $i = $i.magenta(0)
     i: $i.magenta.round
 
-    $i.magenta = 0%
+    $i = $i.magenta(0%)
     ii: $i.magenta.round
 
-    $i.magenta = 17.98%
+    $i = $i.magenta(17.98%)
     iii: $i.magenta.round
 
-    $i.magenta = 100%
+    $i = $i.magenta(100%)
     iv: $i.magenta.round
 
     $ii = #ffffff
-    $ii.magenta = 0
+    $ii = $ii.magenta(0)
     v: $ii.magenta.round
 
-    $ii.magenta = 0%
+    $ii = $ii.magenta(0%)
     vi: $ii.magenta.round
 
-    $ii.magenta = 17.98%
+    $ii = $ii.magenta(17.98%)
     vii: $ii.magenta.round
 
-    $ii.magenta = 100%
+    $ii = $ii.magenta(100%)
     viii: $ii.magenta.round
 
     $iii = #f01d93
-    $iii.magenta = 0
+    $iii = $iii.magenta(0)
     ix: $iii.magenta.round
 
-    $iii.magenta = 0%
+    $iii = $iii.magenta(0%)
     x: $iii.magenta.round
 
-    $iii.magenta = 17.98%
+    $iii = $iii.magenta(17.98%)
     xi: $iii.magenta.round
 
-    $iii.magenta = 100%
+    $iii = $iii.magenta(100%)
     xii: $iii.magenta.round
 
     $iv = #008b8b99
-    $iv.magenta = 0
+    $iv = $iv.magenta(0)
     xiii: $iv.magenta.round
 
-    $iv.magenta = 0%
+    $iv = $iv.magenta(0%)
     xiv: $iv.magenta.round
 
-    $iv.magenta = 17.98%
+    $iv = $iv.magenta(17.98%)
     xv: $iv.magenta.round
 
-    $iv.magenta = 100%
+    $iv = $iv.magenta(100%)
     xvi: $iv.magenta.round
 
     $v = #adff2f1c
-    $v.magenta = 0
+    $v = $v.magenta(0)
     xvii: $v.magenta.round
 
-    $v.magenta = 0%
+    $v = $v.magenta(0%)
     xviii: $v.magenta.round
 
-    $v.magenta = 17.98%
+    $v = $v.magenta(17.98%)
     xix: $v.magenta.round
 
-    $v.magenta = 100%
+    $v = $v.magenta(100%)
     xx: $v.magenta.round
   }
   ~~~
@@ -2231,75 +2209,73 @@
   }
   ~~~
 
-#### `yellow=`
-
 - Adjusts the `yellow` channel of the color
 
   ~~~ lay
   color.yellow {
     $i = #000000
-    $i.yellow = 0
+    $i = $i.yellow(0)
     i: $i.yellow.round
 
-    $i.yellow = 0%
+    $i = $i.yellow(0%)
     ii: $i.yellow.round
 
-    $i.yellow = 17.98%
+    $i = $i.yellow(17.98%)
     iii: $i.yellow.round
 
-    $i.yellow = 100%
+    $i = $i.yellow(100%)
     iv: $i.yellow.round
 
     $ii = #ffffff
-    $ii.yellow = 0
+    $ii = $ii.yellow(0)
     v: $ii.yellow.round
 
-    $ii.yellow = 0%
+    $ii = $ii.yellow(0%)
     vi: $ii.yellow.round
 
-    $ii.yellow = 17.98%
+    $ii = $ii.yellow(17.98%)
     vii: $ii.yellow.round
 
-    $ii.yellow = 100%
+    $ii = $ii.yellow(100%)
     viii: $ii.yellow.round
 
     $iii = #f01d93
-    $iii.yellow = 0
+    $iii = $iii.yellow(0)
     ix: $iii.yellow.round
 
-    $iii.yellow = 0%
+    $iii = $iii.yellow(0%)
     x: $iii.yellow.round
 
-    $iii.yellow = 17.98%
+    $iii = $iii.yellow(17.98%)
     xi: $iii.yellow.round
 
-    $iii.yellow = 100%
+    $iii = $iii.yellow(100%)
     xii: $iii.yellow.round
 
     $iv = #008b8b99
-    $iv.yellow = 0
+    $iv = $iv.yellow(0)
     xiii: $iv.yellow.round
 
-    $iv.yellow = 0%
+    $iv = $iv.yellow(0%)
     xiv: $iv.yellow.round
 
-    $iv.yellow = 17.98%
+    $iv = $iv.yellow(17.98%)
     xv: $iv.yellow.round
 
-    $iv.yellow = 100%
+    $iv = $iv.yellow(100%)
     xvi: $iv.yellow.round
 
     $v = #adff2f1c
-    $v.yellow = 0
+    $v = $v.yellow(0)
     xvii: $v.yellow.round
 
-    $v.yellow = 0%
+    $v = $v.yellow(0%)
     xviii: $v.yellow.round
 
-    $v.yellow = 17.98%
+    $v = $v.yellow(17.98%)
     xix: $v.yellow.round
 
-    $v.yellow = 100%
+    $v = $v.yellow(100%)
     xx: $v.yellow.round
   }
   ~~~
@@ -2353,75 +2329,73 @@
   }
   ~~~
 
-#### `black=`
-
 - Adjusts the `black` channel of the color
 
   ~~~ lay
   color.black {
     $i = #000000
-    $i.black = 0
+    $i = $i.black(0)
     i: $i.black.round
 
-    $i.black = 0%
+    $i = $i.black(0%)
     ii: $i.black.round
 
-    $i.black = 17.98%
+    $i = $i.black(17.98%)
     iii: $i.black.round
 
-    $i.black = 100%
+    $i = $i.black(100%)
     iv: $i.black.round
 
     $ii = #ffffff
-    $ii.black = 0
+    $ii = $ii.black(0)
     v: $ii.black.round
 
-    $ii.black = 0%
+    $ii = $ii.black(0%)
     vi: $ii.black.round
 
-    $ii.black = 17.98%
+    $ii = $ii.black(17.98%)
     vii: $ii.black.round
 
-    $ii.black = 100%
+    $ii = $ii.black(100%)
     viii: $ii.black.round
 
     $iii = #f01d93
-    $iii.black = 0
+    $iii = $iii.black(0)
     ix: $iii.black.round
 
-    $iii.black = 0%
+    $iii = $iii.black(0%)
     x: $iii.black.round
 
-    $iii.black = 17.98%
+    $iii = $iii.black(17.98%)
     xi: $iii.black.round
 
-    $iii.black = 100%
+    $iii = $iii.black(100%)
     xii: $iii.black.round
 
     $iv = #008b8b99
-    $iv.black = 0
+    $iv = $iv.black(0)
     xiii: $iv.black.round
 
-    $iv.black = 0%
+    $iv = $iv.black(0%)
     xiv: $iv.black.round
 
-    $iv.black = 17.98%
+    $iv = $iv.black(17.98%)
     xv: $iv.black.round
 
-    $iv.black = 100%
+    $iv = $iv.black(100%)
     xvi: $iv.black.round
 
     $v = #adff2f1c
-    $v.black = 0
+    $v = $v.black(0)
     xvii: $v.black.round
 
-    $v.black = 0%
+    $v = $v.black(0%)
     xviii: $v.black.round
 
-    $v.black = 17.98%
+    $v = $v.black(17.98%)
     xix: $v.black.round
 
-    $v.black = 100%
+    $v = $v.black(100%)
     xx: $v.black.round
   }
   ~~~
