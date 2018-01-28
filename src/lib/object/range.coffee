@@ -66,6 +66,8 @@ class Range extends Indexed
 
   isPure: -> not @unit
 
+  clone: -> @
+
   copy: (first = @first, last = @last, unit = @unit, step = @step, etc...) ->
     super first, last, unit, step, etc...
 
