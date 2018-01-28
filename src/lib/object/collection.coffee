@@ -60,12 +60,12 @@ class Collection extends Indexed
     json.items = @items
     json
 
-  clone: (items = @items, etc...) ->
+  copy: (items = @items, etc...) ->
     super (obj.clone() for obj in items), etc...
 
   '.+': (context, other) ->
     if other instanceof Collection
-      return @clone @items.concat other.items
+      return @copy @items.concat(other.items)
 
     throw new ValueError "Cannot sum collection with that"
 
@@ -79,7 +79,7 @@ class Collection extends Indexed
       else
         return Null.null
     else if other instanceof Collection
-      slice = @clone []
+      slice = @copy []
       for idx in other.items
         slice.items.push @['.::'](context, idx)
       return slice
@@ -107,7 +107,7 @@ class Collection extends Indexed
     @items.unshift (obj.clone() for obj in objs)...
     this
 
-  '.slice': (context, start, end) -> @clone (@slice start, end)
+  '.slice': (context, start, end) -> @copy @slice(start, end)
 
   '.empty': -> @items = []; @
 
@@ -129,7 +129,7 @@ class Collection extends Indexed
       return yes
 
 
-    return @clone unique
+    return @copy unique
 
 
 module.exports = Collection

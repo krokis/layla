@@ -22,7 +22,7 @@ class List extends Collection
 
   join: (glue = '') -> (@items.map (item) -> item.toString()).join glue
 
-  clone: (items, separator = @separator, etc...) ->
+  copy: (items, separator = @separator, etc...) ->
     super items, separator, etc...
 
   toJSON: ->
@@ -30,15 +30,16 @@ class List extends Collection
     json.separator = @separator
     json
 
-  '.commas': -> @clone null, ','
+  '.commas': -> @copy null, ','
 
-  '.spaces': -> @clone null, ' '
+  '.spaces': -> @copy null, ' '
 
   '.list': -> @clone()
 
-  '.flatten': -> @clone @flattenItems()
+  '.flatten': -> @copy @flattenItems()
 
-  '.join': (context, glue = QuotedString.EMPTY) -> glue.clone @join glue.value
+  '.join': (context, glue = QuotedString.EMPTY) ->
+    glue.copy @join(glue.value)
 
 Object::['.list'] = ->
   if @ instanceof Collection

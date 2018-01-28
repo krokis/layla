@@ -283,7 +283,7 @@ class Color extends Object
 
       alpha = source.alpha + backdrop.alpha * (1 - source.alpha)
 
-      that = source.clone()
+      that = source.copy()
       that.rgb = blent
       that.alpha = alpha
       that
@@ -387,7 +387,7 @@ class Color extends Object
 
         set: (values) ->
           @space = space
-          @spaces = "#{space}": values
+          @spaces = "#{space}": [].concat values
 
     make_channel_accessors = (space, index, name) =>
       unless name of @::
@@ -417,6 +417,8 @@ class Color extends Object
 
     return value
 
+  setAlpha: (@alpha) -> @
+
   setChannel: (space, channel, value) ->
     channels = @[space]
     channels[channel] = @clampChannel space, channel, value
@@ -430,7 +432,7 @@ class Color extends Object
     else if unit and unit isnt SPACES[space][channel].unit
       throw new Error "Bad value for #{space} #{channel}: #{amount}#{unit}"
 
-    return @clone().setChannel(
+    return @copy().setChannel(
       space, channel, amount + @getChannel(space, channel))
 
   ###
@@ -573,28 +575,22 @@ class Color extends Object
 
   ###
   ###
-  clone: (color = null, etc...) ->
-    clone = super color, etc...
+  copy: (color = null, etc...) ->
+    copy = super color, etc...
 
     if not color
-      clone.alpha = @alpha
-      clone[@space] = [].concat @spaces[@space]
+      copy.alpha = @alpha
+      copy[@space] = @spaces[@space]
 
-    return clone
+    return copy
 
   '.transparent?': -> Boolean.new @isTransparent()
 
-  '.transparent': ->
-    that = @clone()
-    that.alpha = 0
-    that
+  '.transparent': -> @copy().setAlpha 0
 
   '.opaque?': -> Boolean.new @isOpaque()
 
-  '.opaque': ->
-    that = @clone()
-    that.alpha = 1
-    that
+  '.opaque': -> @copy().setAlpha 1
 
   '.saturate': (context, amount) ->
     if amount instanceof Number
@@ -661,9 +657,10 @@ class Color extends Object
   '.luminance?': -> Boolean.new @luminance > 0
 
   '.invert': ->
-    that = @clone()
-    that.rgb = (255 - channel for channel in that.rgb)
-    that
+    copy = @copy()
+    copy.rgb = (255 - channel for channel in copy.rgb)
+
+    return copy
 
   # http://dev.w3.org/csswg/css-color/#tint-shade-adjusters
   '.tint': (context, amount = Number.FIFTY_PERCENT) ->
@@ -711,7 +708,7 @@ class Color extends Object
     if @alpha < 1
       throw new Error "Cannot make safe a non-opaque color"
 
-    safe = @clone()
+    safe = @copy()
     safe.rgb = safe.rgb.map (channel) ->
       51 * (round channel / 51)
 
