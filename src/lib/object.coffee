@@ -48,17 +48,18 @@ class Object extends Class
 
     return @
 
-  toImportant: ->
-    copy = @clone()
-    copy.important = yes
+  toImportance: (important) ->
+    if @important is important
+      return @clone()
+
+    copy = @copy()
+    copy.important = important
 
     return copy
 
-  toUnimportant: ->
-    copy = @clone()
-    copy.important = no
+  toImportant: -> @toImportance yes
 
-    return copy
+  toUnimportant: -> @toImportance no
 
   reprValue: -> ''
 
