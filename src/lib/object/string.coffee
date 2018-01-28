@@ -95,6 +95,8 @@ class String extends Object
     json.value = @value
     json
 
+  clone: -> @
+
   copy: (value = @value) ->
     super value
 
