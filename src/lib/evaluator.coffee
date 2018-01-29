@@ -376,40 +376,11 @@ class Evaluator extends Class
       @evaluateUnaryOperation node, context
 
   ###
-  TODO Refactor!
-  Maybe the left node SHOULD be evaluated, but maybe in a new scope,
-  so existing defined factors on current scope are not applied
-  ###
-  evaluateUnitAssignment: (node, context) ->
-    value = parseFloat node.left.value
-    unit = node.left.unit.value
-
-    unless unit and value isnt 0
-      @referenceError "Bad unit definition"
-
-    unless node.operator is '|=' and Number.isDefined unit
-      right = (@evaluateNode node.right, context)
-
-      unless right.unit and right.value isnt 0
-        @referenceError "Bad unit definition"
-
-      # TODO This is a temporary hack, because units are not scoped yet
-      left = new Number value
-      left.unit = unit
-
-      Number.define left, right, yes
-
-    return @evaluateNode node.left, context
-
-  ###
   ###
   evaluateAssignment: (node, context) ->
     getter = setter = null
 
     {left, right} = node
-
-    if left instanceof LiteralNumber
-      return @evaluateUnitAssignment node, context
 
     if left instanceof LiteralString
       name = @getStringValue left, context
