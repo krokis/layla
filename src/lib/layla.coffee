@@ -8,7 +8,7 @@ Object     = require './object'
 Document   = require './object/document'
 String     = require './object/string'
 Error      = require './error'
-CSSContext = require '../css/context'
+CSS        = require '../css'
 Normalizer = require '../css/normalizer'
 CSSEmitter = require '../css/emitter'
 VERSION    = require './version'
@@ -35,11 +35,12 @@ class Layla
 
   ###
   ###
-  constructor: (@context = new CSSContext) ->
+  constructor: (@context = new Context) ->
     @parser = new Parser
     @evaluator = new Evaluator
     @normalizer = new Normalizer
     @emitter = new CSSEmitter
+    @context.use new CSS
 
   # Core methods
   parse: (source) ->

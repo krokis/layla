@@ -6,6 +6,8 @@ mark     = require 'commonmark'
 
 Layla       = require '../../lib'
 NodeContext = require '../../node/context'
+CSS         = require '../../css'
+
 
 describe 'Cases', ->
   json = (obj, indent = 4) ->
@@ -112,6 +114,7 @@ describe 'Cases', ->
                 for c in cases
                   try
                     context = new NodeContext
+                    context.use new CSS
                     layla = new Layla context
                     layla.context.pushPath path.dirname file
                     actual = layla.compile c.source
