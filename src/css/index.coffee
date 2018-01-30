@@ -4,6 +4,8 @@ Plugin = require '../lib/plugin'
 MODULES = [
   require './includer'
   require './color'
+  require './types'
+  require './units'
 ]
 
 

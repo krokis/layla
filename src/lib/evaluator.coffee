@@ -219,8 +219,6 @@ class Evaluator extends Class
           obj = new URL uri
 
         obj.name = name
-      when 'regexp'
-        obj = new RegExp args[0]?.value or null
       else
         # TODO Temporary
         func = context.get(name)
