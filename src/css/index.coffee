@@ -1,9 +1,9 @@
 Plugin = require '../lib/plugin'
-CSSIncluder = require './includer'
 
 
 MODULES = [
-  CSSIncluder
+  require './includer'
+  require './color'
 ]
 
 
