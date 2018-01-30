@@ -18,6 +18,7 @@ GREEN  = "#{ESC}[32m"
 YELLOW = "#{ESC}[33m"
 CHECK  = "#{GREEN}√#{RESET}"
 CROSS  = "#{BOLD}#{RED}×#{RESET}"
+BG_RED = "#{ESC}[41m"
 
 ERRORS = 0
 
@@ -75,8 +76,8 @@ queue = (func) ->
 
 exit = ->
   if ERRORS and VERBOSE
-    s = if ERRORS.length > 1 then 's' else ''
-    log 'error', "#{BOLD}#{ERRORS} task#{s} failed"
+    s = if ERRORS > 1 then 's' else ''
+    log 'error', "#{BG_RED}#{BOLD}#{ERRORS} task#{s} failed"
 
   process.exit ERRORS
 
