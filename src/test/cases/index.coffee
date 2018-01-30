@@ -122,6 +122,8 @@ describe 'Cases', ->
                   catch e
                     unless c.err_name or c.err_msg
                       throw e
+                    unless e instanceof Layla.Error
+                      throw e
 
                     if c.err_name
                       expect(e.name).to.equal c.err_name

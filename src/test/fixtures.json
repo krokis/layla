@@ -1,5 +1,5 @@
 [
-  "cases/*.md",
+  "cases/**/*.md",
   "cases/include/*",
   "cases/whitespace/*",
   "cli/*.css",

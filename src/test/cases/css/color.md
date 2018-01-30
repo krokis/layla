@@ -1,6 +1,1051 @@
 CSS Color
 =========
 
+## Functions
+
+### `rgb()`
+
+- Creates a color from `rgb` channels
+
+  ~~~ lay
+  rgb {
+    i:  rgb(255,0,0)
+    ii:  rgb(0, 255, 0)
+    iii: rgb(
+        0
+       ,0
+       ,255
+    )
+  }
+  ~~~
+
+  ~~~ css
+  rgb {
+    i: #f00;
+    ii: #0f0;
+    iii: #00f;
+  }
+  ~~~
+
+- Fails if called with less than 3 arguments
+
+  ~~~ lay
+  rgb(0,0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  rgb(0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  rgb()
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+- Fails if called with more than 3 arguments
+
+  ~~~ lay
+  rgb(0,0,0,0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  rgb(0,0,0,0,0,0,0,0,0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+- Accepts percentages as channels
+
+  ~~~ lay
+  rgb[percentages] {
+    i:  rgb(100%,0,0)
+    ii:  rgb(0%,100%,0%)
+    iii: rgb(0,0,(100)%)
+  }
+  ~~~
+
+  ~~~ css
+  rgb[percentages] {
+    i: #f00;
+    ii: #0f0;
+    iii: #00f;
+  }
+  ~~~
+
+- Fails if an argument is not a number
+
+    ~~~ lay
+    rgb('foobar',0,0)
+    ~~~
+
+    ~~~ ValueError
+    ~~~
+
+    ~~~ lay
+    rgb(100%,null,0)
+    ~~~
+
+    ~~~ ValueError
+    ~~~
+
+- Fails if an argument has wrong unit
+
+  ~~~ lay
+  rgb(100px,0,0)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+- Clips channels in the 0..255 range
+
+  ~~~ lay
+  rgb[clipping] {
+    i:  rgb(256,0,0)
+    ii:  rgb(-1,9999,0)
+    iii: rgb(0,-100%,200%);
+  }
+  ~~~
+
+  ~~~ css
+  rgb[clipping] {
+    i: #f00;
+    ii: #0f0;
+    iii: #00f;
+  }
+  ~~~
+
+### `rgba()`
+
+- Creates a color from `rgb` channels and optional `alpha` value
+
+  ~~~ lay
+  rgba {
+    i:  rgba(255,0,0,1)
+  }
+  ~~~
+
+  ~~~ css
+  rgba {
+    i: #f00;
+  }
+  ~~~
+
+- Accepts a decimal number in the 0..1 range as `alpha`
+
+  ~~~ lay
+  rgba {
+    i:    rgba(255,0,0,0).alpha
+    ii:   rgba(0,255,0,.2).alpha
+    iii:  rgba(0,0,255,.99).alpha
+  }
+  ~~~
+
+  ~~~ css
+  rgba {
+    i: 0;
+    ii: 0.2;
+    iii: 0.99;
+  }
+  ~~~
+
+- Accepts a percentage as `alpha`
+
+  ~~~ lay
+  rgba {
+    i:    rgba(255,0,0,0%).alpha
+    ii:   rgba(0,255,0,20%).alpha
+    iii:  rgba(0,0,255,99%).alpha
+  }
+  ~~~
+
+  ~~~ css
+  rgba {
+    i: 0;
+    ii: 0.2;
+    iii: 0.99;
+  }
+  ~~~
+
+- Clips alpha values
+
+  ~~~ lay
+  rgba {
+    i:   rgba(255,0,0,-1%).alpha
+    ii:  rgba(255,0,0,-.5%).alpha
+    iii: rgba(255,0,0,-2).alpha
+    iv:  rgba(255,0,0,2).alpha
+    v:   rgba(255,0,0,1.001).alpha
+  }
+  ~~~
+
+  ~~~ css
+  rgba {
+    i: 0;
+    ii: 0;
+    iii: 0;
+    iv: 1;
+    v: 1;
+  }
+  ~~~
+
+- Fails if called with less than 3 arguments
+
+  ~~~ lay
+  rgba(0,0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  rgba(0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  rgba()
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+- Fails if called with more than 4 arguments
+
+  ~~~ lay
+  rgba(0,0,0,0,1)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  rgba(0,0,0,0,0,0,0,0,0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+- Fails for non-numeric `alpha` values
+
+  ~~~ lay
+  rgba(100%,0,0, 'foobar')
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+  ~~~ lay
+  rgba(100%,0,0, #f00)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+- Fails for `alpha` values with wrong unit
+
+  ~~~ lay
+  rgba(100%,0,0, 1px)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+  ~~~ lay
+  rgba(100%,0,0, .5deg)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+### `hsl()`
+
+- Creates a color from `hsl` channels
+
+  ~~~ lay
+  #color.hsl {
+    i: hsl(0deg, 100%, 50%)  // red
+    ii: hsl(0, 100%, 50%)    // red
+    iii: hsl(120, 100%, 50%) // lime green
+    iv: hsl(120, 100%, 25%)  // dark green
+    v: hsl(120, 100%, 75%)   // light green
+    vi: hsl(120, 75%, 85%)   // pastel green
+    vii: hsl(30deg, 75%, 50%)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hsl {
+    i: #f00;
+    ii: #f00;
+    iii: #0f0;
+    iv: #008000;
+    v: #80ff80;
+    vi: #bcf5bc;
+    vii: #df8020;
+  }
+  ~~~
+
+- Fails if called with less than 3 arguments
+
+  ~~~ lay
+  hsl(0,0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  hsl(0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  hsl()
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+- Fails if called with more than 3 arguments
+
+  ~~~ lay
+  hsl(0,0,0,0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  hsl(0,0,0,0,0,0,0,0,0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+- Accepts any angle as `hue`
+
+  ~~~ lay
+  #color.hsl {
+    i: hsl(90deg, 100%, 50%)
+    ii: hsl(.25turn, 100%, 50%)
+    iii: hsl((PI/2)rad, 100%, 50%)
+    iv: hsl(100grad, 100%, 50%)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hsl {
+    i: #80ff00;
+    ii: #80ff00;
+    iii: #80ff00;
+    iv: #80ff00;
+  }
+  ~~~
+
+- Assumes `hue` is an angle in degrees if a pure number is passed
+
+  ~~~ lay
+  #color.hsl {
+    i: hsl(90, 100%, 50%)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hsl {
+    i: #80ff00;
+  }
+  ~~~
+
+- Accepts a percentage as `hue`
+
+  ~~~ lay
+  #color.hsl {
+    i: hsl(25%, 100%, 50%)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hsl {
+    i: #80ff00;
+  }
+  ~~~
+
+- Clips `hue` angle
+
+  ~~~ lay
+  #color.hsl {
+    i: hsl(360deg, 100%, 50%)
+    ii: hsl(450deg, 100%, 50%)
+    iii: hsl(1.25turn, 100%, 50%)
+    iv: hsl(200%, 100%, 50%)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hsl {
+    i: #f00;
+    ii: #80ff00;
+    iii: #80ff00;
+    iv: #f00;
+  }
+  ~~~
+
+- Fails if `hue` is not an angle, a percentage or a pure number
+
+  ~~~ lay
+  hsl(90px, 50%, 100%)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+  ~~~ lay
+  hsl(`10`, 50%, 100%)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+- Assumes `saturation` is a percentage if a pure number is passed
+
+  ~~~ lay
+  #color.hsl {
+    i: hsl(0deg, 100, 50%)  // red
+  }
+  ~~~
+
+  ~~~ css
+  #color.hsl {
+    i: #f00;
+  }
+  ~~~
+
+- Fails if `saturation` is not a percentage or a pure number
+
+  ~~~ lay
+  hsl(90deg, 1px, 100%)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+  ~~~ lay
+  hsl(90deg, '100%', 100%)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+  ~~~ lay
+  hsl(90deg, #f00, 100%)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+- Clips `saturation` value
+
+  ~~~ lay
+  #color.hsl {
+    i: hsl(360deg, 110%, 50%)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hsl {
+    i: #f00;
+  }
+  ~~~
+
+
+- Assumes `lightness` is a percentage if a pure number is passed
+
+  ~~~ lay
+  #color.hsl {
+    i: hsl(0deg, 100%, 50)
+    ii: hsl(120, 100%, 25.0)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hsl {
+    i: #f00;
+    ii: #008000;
+  }
+  ~~~
+
+- Fails if `lightness` is not a percentage or a pure number
+
+  ~~~ lay
+  hsl(90deg, 100%, 1px)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+  ~~~ lay
+  hsl(90deg, 100%, '100%')
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+  ~~~ lay
+  hsl(90deg, 100%, #f00)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+- Clips `lightness` value
+
+  ~~~ lay
+  #color.hsl {
+    i: hsl(90deg, 0, 100.999)
+    ii: hsl(90deg, 0, 300%)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hsl {
+    i: #fff;
+    ii: #fff;
+  }
+  ~~~
+
+### `hsla()`
+
+- Creates a color from `hsl` channels and optional `alpha` value
+
+  ~~~ lay
+  #color.hsla {
+    i: hsla(170, 50%, 45%, 1)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hsla {
+    i: #39ac99;
+  }
+  ~~~
+
+- Fails if called with less than 3 arguments
+
+  ~~~ lay
+  hsla(0,0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  hsla(0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  hsla()
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+- Fails if called with more than 4 arguments
+
+  ~~~ lay
+  hsla(0,0,0,0,0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+- Accepts a decimal number in the 0..1 range as `alpha`
+
+  ~~~ lay
+  hsla {
+    i:    hsla(255,0,0,0).alpha
+    ii:   hsla(0,255,0,.2).alpha
+    iii:  hsla(0,0,255,.99).alpha
+  }
+  ~~~
+
+  ~~~ css
+  hsla {
+    i: 0;
+    ii: 0.2;
+    iii: 0.99;
+  }
+  ~~~
+
+- Accepts a percentage as `alpha`
+
+  ~~~ lay
+  hsla {
+    i:    hsla(255,0,0,0%).alpha
+    ii:   hsla(0,255,0,20%).alpha
+    iii:  hsla(0,0,255,99%).alpha
+  }
+  ~~~
+
+  ~~~ css
+  hsla {
+    i: 0;
+    ii: 0.2;
+    iii: 0.99;
+  }
+  ~~~
+
+- Clips alpha values
+
+  ~~~ lay
+  hsla {
+    i:   hsla(255,0,0,-1%).alpha
+    ii:  hsla(255,0,0,-.5%).alpha
+    iii: hsla(255,0,0,-2).alpha
+    iv:  hsla(255,0,0,2).alpha
+    v:   hsla(255,0,0,1.001).alpha
+  }
+  ~~~
+
+  ~~~ css
+  hsla {
+    i: 0;
+    ii: 0;
+    iii: 0;
+    iv: 1;
+    v: 1;
+  }
+  ~~~
+
+- Fails for non-numeric `alpha` values
+
+  ~~~ lay
+  hsla(100%,0,0, (1,2,3))
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+  ~~~ lay
+  hsla(100%,0,0, /.*/)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+- Fails for `alpha` values with wrong unit
+
+  ~~~ lay
+  hsla(100%,0,0, 100mm)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+### `hwb()`
+
+- Creates a color from `hwb` channels
+
+  ~~~ lay
+  #color.hwb {
+    i: hwb(0, 0, 0)
+    i: hwb(0, 100%, 0)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hwb {
+    i: #f00;
+    i: #fff;
+  }
+  ~~~
+
+- Fails if called with less than 3 arguments
+
+  ~~~ lay
+  hwb(0,0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  hwb(0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  hwb()
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+- Fails if called with more than 3 arguments
+
+  ~~~ lay
+  hwb(0,0,0,0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  hwb(0,0,0,0,0,0,0,0,0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+- Accepts any angle as `hue`
+
+  ~~~ lay
+  #color.hwb {
+    i: hwb(90deg, 0, 0)
+    ii: hwb(1.25turn, 0, 0)
+    iii: hwb(100grad, 0, 0)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hwb {
+    i: #80ff00;
+    ii: #80ff00;
+    iii: #80ff00;
+  }
+  ~~~
+
+- Assumes `hue` is an angle in degrees if a pure number is passed
+
+  ~~~ lay
+  #color.hwb {
+    i: hwb(90, 0, 0)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hwb {
+    i: #80ff00;
+  }
+  ~~~
+
+- Accepts a percentage as `hue`
+
+  ~~~ lay
+  #color.hwb {
+    i: hwb(25%, 0, 0)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hwb {
+    i: #80ff00;
+  }
+  ~~~
+
+- Clips `hue` angle
+
+  ~~~ lay
+  #color.hwb {
+    i: hwb(360deg, 0, 0)
+    ii: hwb(450deg, 0, 0)
+    iii: hwb(1.25turn, 0, 0)
+    iv: hwb(200%, 0, 0)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hwb {
+    i: #f00;
+    ii: #80ff00;
+    iii: #80ff00;
+    iv: #f00;
+  }
+  ~~~
+
+- Fails if `hue` is not an angle or a percentage
+
+  ~~~ lay
+  hwb(90px, 50%, 100%)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+  ~~~ lay
+  hwb(`10`, 50%, 100%)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+   ~~~ lay
+  hwb((0,), 50%, 100%)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+- Assumes `whiteness` is a percentage is a pure number is passed
+
+  ~~~ lay
+  #color.hwb {
+    i: hwb(180, 17, 17%)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hwb {
+    i: #2bd4d4;
+  }
+  ~~~
+
+- Fails if `whiteness` is not a percentage or a pure number
+
+  ~~~ lay
+  hwb(120deg, 'foobar', 0)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+  ~~~ lay
+  hwb(120deg, 100px, 0)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+  ~~~ lay
+  hwb(120deg, '100', 0)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+- Clips `whiteness` value
+
+  ~~~ lay
+  #color.hwb {
+    i: hwb(0, 101, 0)
+    ii: hwb(0, 200%, 0)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hwb {
+    i: #fff;
+    ii: #fff;
+  }
+  ~~~
+
+- Assumes `blackness` is a percentage is a pure number is passed
+
+  ~~~ lay
+  #color.hwb {
+    i: hwb(180, 17%, 17)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hwb {
+    i: #2bd4d4;
+  }
+  ~~~
+
+- Fails if `blackness` is not a a percentage or a pure number
+
+  ~~~ lay
+  hwb(120deg, 0, #f00)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+  ~~~ lay
+  hwb(120deg, 0, 100px)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+  ~~~ lay
+  hwb(120deg, 0, '0')
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+- Clips `blackness` value
+
+  ~~~ lay
+  #color.hwb {
+    i: hwb(0, 0, 100.9)
+    ii: hwb(0, 0, 1000%)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hwb {
+    i: #000;
+    ii: #000;
+  }
+  ~~~
+
+### `hwba()`
+
+- Creates a color from `hwb` channels and optional `alpha` value
+
+  ~~~ lay
+  #color.hwba {
+    i: hwba(0, 100%, 0)
+    ii: hwba(0, 100%, 0, 1)
+  }
+  ~~~
+
+  ~~~ css
+  #color.hwba {
+    i: #fff;
+    ii: #fff;
+  }
+  ~~~
+
+- Fails if called with less than 3 arguments
+
+  ~~~ lay
+  hwba(0,0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  hwba(0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+  ~~~ lay
+  hwba()
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+- Fails if called with more than 4 arguments
+
+  ~~~ lay
+  hwba(0,0,0,0,0)
+  ~~~
+
+  ~~~ ReferenceError
+  ~~~
+
+- Accepts a decimal number in the 0..1 range as `alpha`
+
+  ~~~ lay
+  hwba {
+    i:    hwba(255,0,0,0).alpha
+    ii:   hwba(0,255,0,.2).alpha
+    iii:  hwba(0,0,255,.99).alpha
+  }
+  ~~~
+
+  ~~~ css
+  hwba {
+    i: 0;
+    ii: 0.2;
+    iii: 0.99;
+  }
+  ~~~
+
+- Accepts a percentage as `alpha`
+
+  ~~~ lay
+  hwba {
+    i:    hwba(255,0,0,0%).alpha
+    ii:   hwba(0,255,0,20%).alpha
+    iii:  hwba(0,0,255,99%).alpha
+  }
+  ~~~
+
+  ~~~ css
+  hwba {
+    i: 0;
+    ii: 0.2;
+    iii: 0.99;
+  }
+  ~~~
+
+- Clips alpha values
+
+  ~~~ lay
+  hwba {
+    i:   hwba(255,0,0,-1%).alpha
+    ii:  hwba(255,0,0,-.5%).alpha
+    iii: hwba(255,0,0,-2).alpha
+    iv:  hwba(255,0,0,2).alpha
+    v:   hwba(255,0,0,1.001).alpha
+  }
+  ~~~
+
+  ~~~ css
+  hwba {
+    i: 0;
+    ii: 0;
+    iii: 0;
+    iv: 1;
+    v: 1;
+  }
+  ~~~
+
+- Fails for non-numeric `alpha` values
+
+  ~~~ lay
+  hwba(100%,0,0, false)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+  ~~~ lay
+  hwba(100%,0,0, url(//example.org))
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+- Fails for `alpha` values with wrong unit
+
+  ~~~ lay
+  hwba(100%,0,0, 100hz)
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
 ## Names
 
 - All X11/CSS4 color names are defined

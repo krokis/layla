@@ -26,7 +26,7 @@ class Color extends Object
   YELLOW      = name: 'yellow',     max: 100, unit: '%'
   BLACK       = name: 'black',      max: 100, unit: '%'
 
-  SPACES =
+  @SPACES = SPACES =
     rgb:  [ RED, GREEN, BLUE ]
     hsl:  [ HUE, SATURATION, LIGHTNESS ]
     hwb:  [ HUE, WHITENESS, BLACKNESS ]
@@ -348,9 +348,19 @@ class Color extends Object
     @parseFuncString(color) or
     throw new Error "Bad color string: #{color}"
 
-  constructor: (@space, channels, @alpha = 1) ->
+  constructor: (space = 'rgb', channels, @alpha = 1) ->
     super()
-    @channels = channels.slice()
+
+    if not space in SPACES
+      throw new ValueError "Unknown color space: #{space}"
+
+    if channels?
+      @channels = channels.slice()
+    else
+      @channels = (0 for c in SPACES[space])
+
+    @space = space
+    @alpha = min(1, max(@alpha, 0))
 
   do ->
     make_space_accessors = (space) ->
@@ -376,8 +386,6 @@ class Color extends Object
 
       for channel, index in SPACES[space]
         make_channel_accessors space, index, channel.name
-
-  getChannel: (space, channel) -> @[space][channel]
 
   clampChannel: (space, channel, value) ->
     if SPACES[space][channel].unit is 'deg'
@@ -484,7 +492,7 @@ class Color extends Object
     return "rgba(" + (comps.join ', ') + ')'
 
   toHexString: ->
-    comps = @['rgb'].map Math.round
+    comps = @['rgb'].map round
 
     alpha = @alpha * 255
 
@@ -690,8 +698,6 @@ class Color extends Object
       value = value.value
     else
       throw new Error "Bad alpha value: #{value}"
-
-    value = min(1, max(value, 0))
 
     return @copy undefined, undefined, value
 

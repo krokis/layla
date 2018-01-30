@@ -3,6 +3,7 @@ Plugin = require '../../lib/plugin'
 
 PLUGINS = [
   require './names'
+  require './functions'
 ]
 
 ###
