@@ -1,7 +1,9 @@
 Plugin = require '../../lib/plugin'
 
 
-PLUGINS = [ ]
+PLUGINS = [
+  require './names'
+]
 
 ###
 ###

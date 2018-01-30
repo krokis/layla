@@ -42,7 +42,7 @@ Functions
   }
 
   button {
-    DO-NOTHING(2px red)
+    DO-NOTHING(2px #f00)
     make-button(5px)
     font-style: (() { return italic })()
     font-weight: (($weight: 400) { return $weight })(bolder)
@@ -219,8 +219,8 @@ Functions
 
   ~~~ css
   function + call {
-    color: red;
-    background: white url("background.jpg");
+    color: #f00;
+    background: #fff url("background.jpg");
   }
   ~~~
 

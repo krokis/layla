@@ -10,53 +10,53 @@
 
   ~~~ lay
   .whitespace {
-    color: white
-  };.whitespace  { color: white };#whitespace {color: white };
-  #whitespace { color: white }
-  [whitespace] { color: white } [whitespace] { color: white } * { color: white };
-  * { color: white };
-  whitespace { color: white };;whitespace { color: white };
+    color: #fff
+  };.whitespace  { color: #fff };#whitespace {color: #fff };
+  #whitespace { color: #fff }
+  [whitespace] { color: #fff } [whitespace] { color: #fff } * { color: #fff };
+  * { color: #fff };
+  whitespace { color: #fff };;whitespace { color: #fff };
   ~~~
 
   ~~~ css
   .whitespace {
-    color: white;
+    color: #fff;
   }
 
   .whitespace {
-    color: white;
+    color: #fff;
   }
 
   #whitespace {
-    color: white;
+    color: #fff;
   }
 
   #whitespace {
-    color: white;
+    color: #fff;
   }
 
   [whitespace] {
-    color: white;
+    color: #fff;
   }
 
   [whitespace] {
-    color: white;
+    color: #fff;
   }
 
   * {
-    color: white;
+    color: #fff;
   }
 
   * {
-    color: white;
+    color: #fff;
   }
 
   whitespace {
-    color: white;
+    color: #fff;
   }
 
   whitespace {
-    color: white;
+    color: #fff;
   }
   ~~~
 
@@ -64,31 +64,31 @@
 
   ~~~ lay
      .whitespace {
-    color: white
-  };   .whitespace  { color: white };
+    color: #fff
+  };   .whitespace  { color: #fff };
 
-      #whitespace {color: white }; #whitespace { color: white };	 [whitespace] { color: white }
+      #whitespace {color: #fff }; #whitespace { color: #fff };	 [whitespace] { color: #fff }
   ~~~
 
   ~~~ css
   .whitespace {
-    color: white;
+    color: #fff;
   }
 
   .whitespace {
-    color: white;
+    color: #fff;
   }
 
   #whitespace {
-    color: white;
+    color: #fff;
   }
 
   #whitespace {
-    color: white;
+    color: #fff;
   }
 
   [whitespace] {
-    color: white;
+    color: #fff;
   }
   ~~~
 
@@ -313,7 +313,7 @@
 
   ~~~ lay
   body ul > li a: hover {
-    border: 1px solid red
+    border: 1px solid #f00
   }
   ~~~
 
@@ -322,7 +322,7 @@
 
   ~~~ lay
   body ul > li a:: before {
-    border: 1px solid green
+    border: 1px solid #0f0
   }
   ~~~
 
@@ -335,7 +335,7 @@
 
   ~~~ lay
   body ul > li a:not (.ext) {
-    border: 1px solid red
+    border: 1px solid #f00
   }
   ~~~
 
@@ -348,21 +348,21 @@
 
   ~~~ lay
   body ul > li:nth-child(-2n+1) {
-    border: 1px solid red
+    border: 1px solid #f00
   }
 
   body ul > li a:not(.external,.ext){
-    border: 1px solid red
+    border: 1px solid #f00
   }
   ~~~
 
   ~~~ css
   body ul > li:nth-child(-2n + 1) {
-    border: 1px solid red;
+    border: 1px solid #f00;
   }
 
   body ul > li a:not(.external, .ext) {
-    border: 1px solid red;
+    border: 1px solid #f00;
   }
   ~~~
 
@@ -370,21 +370,21 @@
 
   ~~~ lay
   body ul > li:nth-child(   -2n  +   1   ) {
-    border: 1px solid red
+    border: 1px solid #f00
   }
 
   body ul > li a:not(   .external   ,    .ext , strong   >  a){
-    border: 1px solid red
+    border: 1px solid #f00
   }
   ~~~
 
   ~~~ css
   body ul > li:nth-child(-2n + 1) {
-    border: 1px solid red;
+    border: 1px solid #f00;
   }
 
   body ul > li a:not(.external, .ext, strong > a) {
-    border: 1px solid red;
+    border: 1px solid #f00;
   }
   ~~~
 
@@ -393,39 +393,39 @@
 - Whitespace is not required
 
   ~~~ lay
-  .class{color: white}
-  #id{color: white}
-  :pseudo(){color: white}
+  .class{color: #fff}
+  #id{color: #fff}
+  :pseudo(){color: #fff}
   ~~~
 
   ~~~ css
   .class {
-    color: white;
+    color: #fff;
   }
 
   #id {
-    color: white;
+    color: #fff;
   }
 
   :pseudo() {
-    color: white;
+    color: #fff;
   }
   ~~~
 
 - All whitespace is ignored
 
   ~~~ lay
-  .whitespace{color: white}
-  .whitespace  { color: white }
+  .whitespace{color: #fff}
+  .whitespace  { color: #fff }
   ~~~
 
   ~~~ css
   .whitespace {
-    color: white;
+    color: #fff;
   }
 
   .whitespace {
-    color: white;
+    color: #fff;
   }
   ~~~
 
@@ -436,19 +436,19 @@
 - Whitespace is not required
 
   ~~~ lay
-  @media screen { body { background: silver}};;@media print { body { background: white}}@media screen { body { max-width: 800px}}
+  @media screen { body { background: #c0c0c0}};;@media print { body { background: #fff}}@media screen { body { max-width: 800px}}
   ~~~
 
   ~~~ css
   @media screen {
     body {
-      background: silver;
+      background: #c0c0c0;
     }
   }
 
   @media print {
     body {
-      background: white;
+      background: #fff;
     }
   }
 
@@ -462,23 +462,23 @@
 - All whitespace is ignored
 
   ~~~ lay
-      @media screen { body { background: silver}}
+      @media screen { body { background: #c0c0c0}}
 
 
 
-  @media print { body { background: white}}     @media screen { body { max-width: 800px}}
+  @media print { body { background: #fff}}     @media screen { body { max-width: 800px}}
   ~~~
 
   ~~~ css
   @media screen {
     body {
-      background: silver;
+      background: #c0c0c0;
     }
   }
 
   @media print {
     body {
-      background: white;
+      background: #fff;
     }
   }
 
@@ -496,7 +496,7 @@
   ~~~ lay
   @media    screen    and  (max-width: 200px)   not    print    {
     body {
-      background: silver
+      background: #c0c0c0
     }
   }
   ~~~
@@ -504,7 +504,7 @@
   ~~~ css
   @media screen and (max-width: 200px) not print {
     body {
-      background: silver;
+      background: #c0c0c0;
     }
   }
   ~~~
@@ -516,7 +516,7 @@
   ~~~ lay
   @media    screen    and  (    max-width: 200px)   not    print    {
     body {
-      background: silver
+      background: #c0c0c0
     }
   }
   ~~~
@@ -524,7 +524,7 @@
   ~~~ css
   @media screen and (max-width: 200px) not print {
     body {
-      background: silver;
+      background: #c0c0c0;
     }
   }
   ~~~
@@ -536,7 +536,7 @@
   ~~~ lay
   @media    screen    and  (max-width: 200px      )   not    print    {
     body {
-      background: silver
+      background: #c0c0c0
     }
   }
   ~~~
@@ -544,7 +544,7 @@
   ~~~ css
   @media screen and (max-width: 200px) not print {
     body {
-      background: silver;
+      background: #c0c0c0;
     }
   }
   ~~~
@@ -556,7 +556,7 @@
   ~~~ lay
   @media    screen    and  (max-width: 200px)  {
     body {
-      background: silver
+      background: #c0c0c0
     }
   }
   ~~~
@@ -564,7 +564,7 @@
   ~~~ css
   @media screen and (max-width: 200px) {
     body {
-      background: silver;
+      background: #c0c0c0;
     }
   }
   ~~~
@@ -574,7 +574,7 @@
   ~~~ lay
   @media    screen    and  (max-width     :200px)  {
     body {
-      background: silver
+      background: #c0c0c0
     }
   }
   ~~~
@@ -582,7 +582,7 @@
   ~~~ css
   @media screen and (max-width: 200px) {
     body {
-      background: silver;
+      background: #c0c0c0;
     }
   }
   ~~~
@@ -594,7 +594,7 @@
   ~~~ lay
   @media    screen    and  (min-width:200px)and (max-width     :1200px)  {
     body {
-      background: white
+      background: #fff
     }
   }
   ~~~
@@ -602,7 +602,7 @@
   ~~~ css
   @media screen and (min-width: 200px) and (max-width: 1200px) {
     body {
-      background: white;
+      background: #fff;
     }
   }
   ~~~
@@ -612,7 +612,7 @@
   ~~~ lay
   @media    screen    and  (min-width:     200px)and (max-width     :     1200px)  {
     body {
-      background: white
+      background: #fff
     }
   }
   ~~~
@@ -620,7 +620,7 @@
   ~~~ css
   @media screen and (min-width: 200px) and (max-width: 1200px) {
     body {
-      background: white;
+      background: #fff;
     }
   }
   ~~~
@@ -658,7 +658,7 @@
     vii: url("http://example.org/home");
     viii: null, true, false;
     ix: 1 2, -1 0 1;
-    x: #ffffff;
+    x: #fff;
   }
   ~~~
 
@@ -696,7 +696,7 @@
     vii: url("http://example.org/home");
     viii: null, true, false;
     ix: 1 2, -1 0 1;
-    x: #ffffff;
+    x: #fff;
   }
   ~~~
 
@@ -743,7 +743,7 @@
     vii: url("http://example.org/home");
     viii: null, true, false;
     ix: 1 2, -1 0 1;
-    x: #ffffff;
+    x: #fff;
   }
   ~~~
 
@@ -1126,25 +1126,25 @@
 - Whitespace is not required
 
   ~~~ lay
-  div {a{color: red}}div {#foo{color: green}}div {.bar{color: blue}}div {[baz]{color,outline:black}}
+  div {a{color: #f00}}div {#foo{color: #0f0}}div {.bar{color: #00f}}div {[baz]{color,outline:#000}}
   ~~~
 
   ~~~ css
   div a {
-    color: red;
+    color: #f00;
   }
 
   div #foo {
-    color: green;
+    color: #0f0;
   }
 
   div .bar {
-    color: blue;
+    color: #00f;
   }
 
   div [baz] {
-    color: black;
-    outline: black;
+    color: #000;
+    outline: #000;
   }
   ~~~
 
@@ -1161,7 +1161,7 @@
 
 
 
-  color: red            }
+  color: #f00            }
 
 
 
@@ -1171,7 +1171,7 @@
 
   ~~~ css
   div #foo {
-    color: red;
+    color: #f00;
   }
   ~~~
 
@@ -1320,8 +1320,8 @@
 - Horizontal whitespace is ignored
 
   ~~~ lay
-  if            true { body {color: black }}
-  if not       false { a { color: red }}
+  if            true { body {color: #000 }}
+  if not       false { a { color: #f00 }}
   $i = 0
   $s = 0
   while      $i < 10 { $s = $s + 1; $i = $i + 1 }
@@ -1330,11 +1330,11 @@
 
   ~~~ css
   body {
-    color: black;
+    color: #000;
   }
 
   a {
-    color: red;
+    color: #f00;
   }
 
   s {
@@ -1346,7 +1346,7 @@
 
   ~~~ lay
   if
-  true { body {color: black }}
+  true { body {color: #000 }}
   ~~~
 
   ~~~ SyntaxError
@@ -1355,7 +1355,7 @@
   ~~~ lay
   for
       $i in 1..10 {
-      { a {color: red}}}
+      { a {color: #f00}}}
   ~~~
 
   ~~~ SyntaxError
@@ -1388,9 +1388,9 @@
 
   ~~~ css
   numbers {
-    i: #ffffff;
-    ii: #ffffff;
-    iii: #ffffff;
+    i: #fff;
+    ii: #fff;
+    iii: #fff;
     iv: 0.1;
     v: 1;
     vi: hey!;

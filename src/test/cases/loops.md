@@ -106,17 +106,17 @@ Loops
   ~~~ lay
   doc = {
     body {
-      background: yellow
+      background: #ff0
     }
 
     a:hover > span {
-      color: green
+      color: #0f0
       font-weight: bold
     }
   }
 
   props = {
-    border: red
+    border: #f00
     background: pink
   }
 
@@ -136,8 +136,8 @@ Loops
   #foo {
     foo: 0 "body";
     foo: 1 "a:hover > span";
-    prop: "border", red;
-    prop: "background", pink;
+    prop: "border", #f00;
+    prop: "background", #ffc0cb;
   }
   ~~~
 
@@ -173,18 +173,18 @@ Loops
   doc = {
     font-weight: 700
     body {
-      background: yellow
+      background: #ff0
     }
 
-    border: red
+    border: #f00
     background: pink
 
     a:hover > span {
-      color: green
+      color: #0f0
       font-weight: bold
     }
 
-    color: yellow
+    color: #ff0
   }
 
   #foo {
@@ -207,18 +207,18 @@ Loops
   doc = {
     font-weight: 700
     body {
-      background: yellow
+      background: #ff0
     }
 
-    border: red
+    border: #f00
     background: pink
 
     a:hover > span {
-      color: green
+      color: #0f0
       font-weight: bold
     }
 
-    color: yellow
+    color: #ff0
   }
 
   #foo {
@@ -231,9 +231,9 @@ Loops
   ~~~ css
   #foo {
     font-weight: 700;
-    border: red;
-    background: pink;
-    color: yellow;
+    border: #f00;
+    background: #ffc0cb;
+    color: #ff0;
   }
   ~~~
 

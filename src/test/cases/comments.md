@@ -12,7 +12,7 @@
 
     // Background color
 
-    background-color: white
+    background-color: #fff
 
     // Font color
     color: #666
@@ -26,15 +26,15 @@
 
   ~~~ css
   body {
-    background-color: white;
-    color: #666666;
+    background-color: #fff;
+    color: #666;
   }
   ~~~
 
 - Can be at the end of a line
 
   ~~~ lay
-  $background-color = white // This is the background color
+  $background-color = #fff // This is the background color
   $margin = 20px, // top
             10px, // left/right
             40px // Bottom
@@ -48,7 +48,7 @@
 
   ~~~ css
   body {
-    background-color: white;
+    background-color: #fff;
     margin: 20px 10px 40px;
   }
   ~~~
@@ -66,12 +66,12 @@
     Vivamus non commodo tellus.
     Mauris dolor justo, ornare eget venenatis nec,
     ullamcorper sit amet ipsum.*/
-    background: white }
+    background: #fff }
   ~~~
 
   ~~~ css
   body {
-    background: white;
+    background: #fff;
   }
   ~~~
 
@@ -104,19 +104,19 @@
 
     section {
       box-shadow: /* These are the shadows */
-        /* shadow one: */ 1px 2px 2px black /* end of shadow one */,
-        /* shadow two: */ 1px 2px 4px silver /* end of shadow two */
+        /* shadow one: */ 1px 2px 2px #000 /* end of shadow one */,
+        /* shadow two: */ 1px 2px 4px #c0c0c0 /* end of shadow two */
     }
   }
   ~~~
 
   ~~~ css
   body {
-    color: #666666;
+    color: #666;
   }
 
   body section {
-    box-shadow: 1px 2px 2px black, 1px 2px 4px silver;
+    box-shadow: 1px 2px 2px #000, 1px 2px 4px #c0c0c0;
   }
   ~~~
 
@@ -125,17 +125,17 @@
   ~~~ lay
   /* lorem
   ipsum */body /*lorem*/ > /*ipsum*/div{
-    border: red
-  } /* */ a /* dolor */~ /* sit */a { color: red }
+    border: #f00
+  } /* */ a /* dolor */~ /* sit */a { color: #f00 }
   ~~~
 
   ~~~ css
   body > div {
-    border: red;
+    border: #f00;
   }
 
   a ~ a {
-    color: red;
+    color: #f00;
   }
   ~~~
 

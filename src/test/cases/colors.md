@@ -12,8 +12,8 @@
 
   ~~~ css
   color[hex] {
-    color: #aa22ff;
-    color: #666666;
+    color: #a2f;
+    color: #666;
     color: #fefefe;
   }
   ~~~
@@ -30,8 +30,8 @@
 
   ~~~ css
   color[hex="6"] {
-    six: #000000;
-    six: #ffffff;
+    six: #000;
+    six: #fff;
     six: #a7cb82;
   }
   ~~~
@@ -48,9 +48,9 @@
 
   ~~~ css
   color[hex="3"] {
-    three: #000000;
-    three: #ffffff;
-    three: #77aabb;
+    three: #000;
+    three: #fff;
+    three: #7ab;
   }
   ~~~
 
@@ -67,7 +67,7 @@
   ~~~ css
   color[hex="8"] {
     eight: rgba(0, 0, 0, 0);
-    eight: #ffffff;
+    eight: #fff;
     eight: rgba(167, 203, 130, 0.67);
   }
   ~~~
@@ -87,7 +87,7 @@
   color[hex="4"] {
     four: rgba(0, 0, 0, 0);
     four: rgba(0, 0, 0, 0.67);
-    four: #ffffff;
+    four: #fff;
     four: rgba(187, 119, 136, 0.8);
   }
   ~~~
@@ -104,8 +104,8 @@
 
   ~~~ css
   color[hex="2"] {
-    two: #000000;
-    two: #ffffff;
+    two: #000;
+    two: #fff;
     two: #3a3a3a;
   }
   ~~~
@@ -122,9 +122,9 @@
 
   ~~~ css
   color[hex="1"] {
-    one: #000000;
-    one: #ffffff;
-    one: #333333;
+    one: #000;
+    one: #fff;
+    one: #333;
   }
   ~~~
 
@@ -152,7 +152,7 @@
   color.equal {
     i: #000 == #000
     ii: #000 == #000000
-    iii: #000 == red
+    iii: #000 == #f00
     iv: #f02 == #ff0022
     vi: #f02 == #ff0022ff
     vi: #f02e == #ff0022ff
@@ -313,9 +313,9 @@
 
   ~~~ css
   color.opaque {
-    foo: #000000;
-    foo: #000000;
-    foo: #ffaa22;
+    foo: #000;
+    foo: #000;
+    foo: #fa2;
     foo: #b271ac;
   }
   ~~~
@@ -540,8 +540,8 @@
 
   ~~~ css
   color.contrast {
-    contrast-light: #111111;
-    contrast-dark: #eeeeee;
+    contrast-light: #111;
+    contrast-dark: #eee;
   }
   ~~~
 
@@ -559,9 +559,9 @@
 
   ~~~ css
   color.lighten {
-    i: #ffcccc;
-    ii: #ff3333;
-    iii: #ffffff;
+    i: #fcc;
+    ii: #f33;
+    iii: #fff;
   }
   ~~~
 
@@ -579,9 +579,9 @@
 
   ~~~ css
   color.darken {
-    i: #330000;
-    ii: #cc0000;
-    iii: #000000;
+    i: #300;
+    ii: #c00;
+    iii: #000;
   }
   ~~~
 
@@ -638,8 +638,8 @@
   ~~~ css
   color.opposite {
     i: #40bf95;
-    ii: #000000;
-    iii: #ffffff;
+    ii: #000;
+    iii: #fff;
   }
   ~~~
 
@@ -660,10 +660,10 @@
   ~~~ css
   color.invert {
     i: #bc8579;
-    ii: #ffffff;
-    iii: #000000;
+    ii: #fff;
+    iii: #000;
     iv: rgba(255, 255, 255, 0.87);
-    v: #000000;
+    v: #000;
   }
   ~~~
 
@@ -683,7 +683,7 @@
   ~~~ css
   color.tint {
     i: #898989;
-    ii: #ffffff;
+    ii: #fff;
     iii: #898989;
     iv: #656565;
   }
@@ -705,7 +705,7 @@
   ~~~ css
   color.shade {
     i: #686868;
-    ii: #000000;
+    ii: #000;
     iii: #686868;
     iv: #868686;
   }
@@ -805,9 +805,9 @@
 
   ~~~ css
   color.safe {
-    i: #000066;
-    ii: #ffffff;
-    iii: #33cc00;
+    i: #006;
+    ii: #fff;
+    iii: #3c0;
   }
   ~~~
 
@@ -2474,7 +2474,7 @@
     multiply: #ed0000;
     screen: #f600f6;
     overlay: #0000ed;
-    soft-light: #ffffff;
+    soft-light: #fff;
     hard-light: #ed0000;
     difference: #f600f6;
     exclusion: #f600f6;
@@ -2517,28 +2517,28 @@
 
   ~~~ css
   color.blend[normal] {
-    i: #000000;
-    ii: #ffffff;
+    i: #000;
+    ii: #fff;
     iii: #f01d93;
     iv: #005353;
     v: #141d05;
-    vi: #000000;
-    vii: #ffffff;
+    vi: #000;
+    vii: #fff;
     viii: #f01d93;
     ix: #66b9b9;
     x: #f6ffe7;
-    xi: #000000;
-    xii: #ffffff;
+    xi: #000;
+    xii: #fff;
     xiii: #f01d93;
     xiv: #605f8e;
     xv: #e83788;
-    xvi: #000000;
-    xvii: #ffffff;
+    xvi: #000;
+    xvii: #fff;
     xviii: #f01d93;
     xix: #299e9e;
     xx: #6ec1aa;
-    xxi: #000000;
-    xxii: #ffffff;
+    xxi: #000;
+    xxii: #fff;
     xxiii: #f01d93;
     xxiv: #62b9b0;
     xxv: #edffd2;
@@ -2579,27 +2579,27 @@
 
   ~~~ css
   color.blend[multiply] {
-    i: #000000;
-    ii: #000000;
-    iii: #000000;
-    iv: #000000;
-    v: #000000;
-    vi: #000000;
-    vii: #ffffff;
+    i: #000;
+    ii: #000;
+    iii: #000;
+    iv: #000;
+    v: #000;
+    vi: #000;
+    vii: #fff;
     viii: #f01d93;
     ix: #66b9b9;
     x: #f6ffe7;
-    xi: #000000;
+    xi: #000;
     xii: #f01d93;
     xiii: #e20355;
     xiv: #60156b;
     xv: #e71d85;
-    xvi: #000000;
+    xvi: #000;
     xvii: #66b9b9;
     xviii: #60156b;
     xix: #298787;
     xx: #62b9a8;
-    xxi: #000000;
+    xxi: #000;
     xxii: #f6ffe7;
     xxiii: #e71d85;
     xxiv: #62b9a8;
@@ -2641,28 +2641,28 @@
 
   ~~~ css
   color.blend[screen] {
-    i: #000000;
-    ii: #ffffff;
+    i: #000;
+    ii: #fff;
     iii: #f01d93;
     iv: #005353;
     v: #141d05;
-    vi: #ffffff;
-    vii: #ffffff;
-    viii: #ffffff;
-    ix: #ffffff;
-    x: #ffffff;
+    vi: #fff;
+    vii: #fff;
+    viii: #fff;
+    ix: #fff;
+    x: #fff;
     xi: #f01d93;
-    xii: #ffffff;
+    xii: #fff;
     xiii: #fe37d1;
     xiv: #f067b6;
     xv: #f13795;
     xvi: #66b9b9;
-    xvii: #ffffff;
+    xvii: #fff;
     xviii: #f6c1e2;
     xix: #66d0d0;
     xx: #72c1bb;
     xxi: #f6ffe7;
-    xxii: #ffffff;
+    xxii: #fff;
     xxiii: #fefff5;
     xxiv: #f6ffef;
     xxv: #f6ffe8;
@@ -2703,28 +2703,28 @@
 
   ~~~ css
   color.blend[overlay] {
-    i: #000000;
-    ii: #000000;
-    iii: #000000;
-    iv: #000000;
-    v: #000000;
-    vi: #ffffff;
-    vii: #ffffff;
-    viii: #ffffff;
-    ix: #ffffff;
-    x: #ffffff;
+    i: #000;
+    ii: #000;
+    iii: #000;
+    iv: #000;
+    v: #000;
+    vi: #fff;
+    vii: #fff;
+    viii: #fff;
+    ix: #fff;
+    x: #fff;
     xi: #e10027;
     xii: #ff3aff;
     xiii: #fd07a4;
     xiv: #e71f99;
     xv: #f1208b;
     xvi: #007474;
-    xvii: #ccffff;
+    xvii: #cff;
     xviii: #c084c4;
     xix: #29bdbd;
     xx: #6ac1b4;
     xxi: #ecffd0;
-    xxii: #ffffff;
+    xxii: #fff;
     xxiii: #feffeb;
     xxiv: #f0ffe9;
     xxv: #f6ffe6;
@@ -2765,27 +2765,27 @@
 
   ~~~ css
   color.blend[darken] {
-    i: #000000;
-    ii: #000000;
-    iii: #000000;
-    iv: #000000;
-    v: #000000;
-    vi: #000000;
-    vii: #ffffff;
+    i: #000;
+    ii: #000;
+    iii: #000;
+    iv: #000;
+    v: #000;
+    vi: #000;
+    vii: #fff;
     viii: #f01d93;
     ix: #66b9b9;
     x: #f6ffe7;
-    xi: #000000;
+    xi: #000;
     xii: #f01d93;
     xiii: #f01d93;
     xiv: #601d8e;
     xv: #e81d88;
-    xvi: #000000;
+    xvi: #000;
     xvii: #66b9b9;
     xviii: #661d93;
     xix: #299e9e;
     xx: #66b9aa;
-    xxi: #000000;
+    xxi: #000;
     xxii: #f6ffe7;
     xxiii: #f01d93;
     xxiv: #62b9b0;
@@ -2827,28 +2827,28 @@
 
   ~~~ css
   color.blend[lighten] {
-    i: #000000;
-    ii: #ffffff;
+    i: #000;
+    ii: #fff;
     iii: #f01d93;
     iv: #005353;
     v: #141d05;
-    vi: #ffffff;
-    vii: #ffffff;
-    viii: #ffffff;
-    ix: #ffffff;
-    x: #ffffff;
+    vi: #fff;
+    vii: #fff;
+    viii: #fff;
+    ix: #fff;
+    x: #fff;
     xi: #f01d93;
-    xii: #ffffff;
+    xii: #fff;
     xiii: #f01d93;
     xiv: #f05f93;
     xv: #f03793;
     xvi: #66b9b9;
-    xvii: #ffffff;
+    xvii: #fff;
     xviii: #f0b9b9;
     xix: #66b9b9;
     xx: #6ec1b9;
     xxi: #f6ffe7;
-    xxii: #ffffff;
+    xxii: #fff;
     xxiii: #f6ffe7;
     xxiv: #f6ffe7;
     xxv: #f6ffe7;
@@ -2889,28 +2889,28 @@
 
   ~~~ css
   color.blend[hard-light] {
-    i: #000000;
-    ii: #ffffff;
+    i: #000;
+    ii: #fff;
     iii: #e10027;
     iv: #000e0e;
     v: #0a1d00;
-    vi: #000000;
-    vii: #ffffff;
+    vi: #000;
+    vii: #fff;
     viii: #ff3aff;
-    ix: #66ffff;
+    ix: #6ff;
     x: #ffffed;
-    xi: #000000;
-    xii: #ffffff;
+    xi: #000;
+    xii: #fff;
     xiii: #fd07a4;
     xiv: #602999;
     xv: #f13788;
-    xvi: #000000;
-    xvii: #ffffff;
+    xvi: #000;
+    xvii: #fff;
     xviii: #ed2ac4;
     xix: #29bdbd;
     xx: #6cc1ac;
-    xxi: #000000;
-    xxii: #ffffff;
+    xxi: #000;
+    xxii: #fff;
     xxiii: #fe3aeb;
     xxiv: #62ffe9;
     xxv: #f6ffd7;
@@ -2951,16 +2951,16 @@
 
   ~~~ css
   color.blend[soft-light] {
-    i: #000000;
-    ii: #000000;
-    iii: #000000;
-    iv: #000000;
-    v: #000000;
-    vi: #ffffff;
-    vii: #ffffff;
-    viii: #ffffff;
-    ix: #ffffff;
-    x: #ffffff;
+    i: #000;
+    ii: #000;
+    iii: #000;
+    iv: #000;
+    v: #000;
+    vi: #fff;
+    vii: #fff;
+    viii: #fff;
+    ix: #fff;
+    x: #fff;
     xi: #e20355;
     xii: #f752c2;
     xiii: #f7099a;
@@ -3013,25 +3013,25 @@
 
   ~~~ css
   color.blend[difference] {
-    i: #000000;
-    ii: #ffffff;
+    i: #000;
+    ii: #fff;
     iii: #f01d93;
     iv: #005353;
     v: #141d05;
-    vi: #ffffff;
-    vii: #000000;
+    vi: #fff;
+    vii: #000;
     viii: #0fe26c;
     ix: #ffacac;
     x: #ebe2fa;
     xi: #f01d93;
     xii: #0fe26c;
-    xiii: #000000;
+    xiii: #000;
     xiv: #f04e40;
     xv: #dc338e;
     xvi: #66b9b9;
     xvii: #994646;
     xviii: #8a9c26;
-    xix: #666666;
+    xix: #666;
     xx: #62acb4;
     xxi: #f6ffe7;
     xxii: #090018;
@@ -3075,13 +3075,13 @@
 
   ~~~ css
   color.blend[exclusion] {
-    i: #000000;
-    ii: #ffffff;
+    i: #000;
+    ii: #fff;
     iii: #f01d93;
     iv: #005353;
     v: #141d05;
-    vi: #ffffff;
-    vii: #000000;
+    vi: #fff;
+    vii: #000;
     viii: #0fe26c;
     ix: #ffacac;
     x: #ebe2fa;

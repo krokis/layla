@@ -16,9 +16,9 @@ Idents
 
   ~~~ css
   idents {
-    color: red;
+    color: #f00;
     colour: __light_green___;
-    colour: #ff0000;
+    colour: #f00;
     colour: --pale-white;
     whisky: please\?;
   }

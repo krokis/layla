@@ -21,7 +21,7 @@ Conditionals
       }
 
       if ({}) {
-        color: red
+        color: #f00
       }
 
       if not true {}
@@ -32,7 +32,7 @@ Conditionals
     body {
       border: 1px;
       font-weight: bolder;
-      color: red;
+      color: #f00;
     }
     ~~~
 
@@ -49,15 +49,15 @@ Conditionals
     if false {
       color: transparent
     } else if not true {
-      color: white
+      color: #fff
     } else if null or not false {
       color: #666
     } else if true {
-      color: yellow
+      color: #ff0
     }
 
     if false {
-      color: red
+      color: #f00
     } else if true {
     }
   }
@@ -66,7 +66,7 @@ Conditionals
   ~~~ css
   body {
     border: 1px;
-    color: #666666;
+    color: #666;
   }
   ~~~
 
@@ -85,13 +85,13 @@ Conditionals
     } else if not true or null or black == white {
       color: white
     } else {
-      color: black
+      color: #000
     }
 
     if false {
-      color: red
+      color: #f00
     } else if not true{
-      color: green
+      color: #0f0
     } else if not true{
     } else {
 
@@ -102,7 +102,7 @@ Conditionals
   ~~~ css
   body {
     border: 1px;
-    color: black;
+    color: #000;
   }
   ~~~
 

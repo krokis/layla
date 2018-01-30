@@ -203,7 +203,7 @@
   }
 
   body {
-    background-color: white;
+    background-color: #fff;
     font: "Helvetica";
     font-family: "Helvetica";
     foo: null;
