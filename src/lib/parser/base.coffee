@@ -841,24 +841,22 @@ class BaseParser extends Parser
 
   ###
   Parse a complex selector, made of a list of compound selectors separated by
-  combinators. We're allowing a selector to *start* or *end* with a selector
-  for nesting.
-
+  combinators. A complex selector can also _start_ with a combinator.
   ###
   parseComplexSelector: ->
     @node ComplexSelector, (selector) ->
       loop
+        before_combinator = @token
         combinator = @parseCombinator()
 
-        if not combinator and selector.items.length > 0
+        if not combinator and selector.items.length
           break
 
-        if compound = (@parseKeyframeSelector() or @parseCompoundSelector())
+        if compound = @parseKeyframeSelector() or @parseCompoundSelector()
           selector.items.push combinator if combinator
           selector.items.push compound
         else
-          if combinator and combinator.value isnt ' '
-            selector.items.push combinator
+          @move before_combinator
           break
 
       if not selector.items.length
