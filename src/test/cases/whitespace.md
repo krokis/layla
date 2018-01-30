@@ -130,6 +130,24 @@
   }
   ~~~
 
+- Vertical whitespace is ignored (except on descendant combinator)
+
+  ~~~ lay
+  body      +
+            foo bar
+  ~
+  baz
+  >          qux { foo: nope }
+  ~~~
+
+  ~~~ css
+  body + foo bar ~ baz > qux {
+    foo: nope;
+  }
+  ~~~
+
+
+
 ##### In attribute selectors
 
 ###### Before attribute name

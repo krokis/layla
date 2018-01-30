@@ -571,12 +571,21 @@ class BaseParser extends Parser
   Parse a combinator: `>`, `+`, `~` or horizontal whitespace.
   ###
   parseCombinator: ->
-    token = @eat T.H_WHITESPACE
+    start = @token
+    token = @skipHorizontalWhitespace()
+
+    unless @token?.kind in COMBINATORS
+      before_break = @token
+
+      if @skipAllWhitespace()
+        unless @token?.kind in COMBINATORS
+          @move before_break
 
     if @token?.kind in COMBINATORS
       token = @token
       value = token.value
       @next()
+      @skipAllWhitespace()
     else
       value = ' '
 
@@ -586,6 +595,10 @@ class BaseParser extends Parser
       comb.end = token.end
 
       return comb
+
+    @move start
+
+    return null
 
   ###
   Parse simple `.class` selector.
@@ -830,28 +843,25 @@ class BaseParser extends Parser
   Parse a complex selector, made of a list of compound selectors separated by
   combinators. We're allowing a selector to *start* or *end* with a selector
   for nesting.
+
   ###
   parseComplexSelector: ->
-    @node ComplexSelector, (sel) ->
+    @node ComplexSelector, (selector) ->
       loop
-        comb = @parseCombinator()
+        combinator = @parseCombinator()
 
-        if not comb and sel.items.length > 0
+        if not combinator and selector.items.length > 0
           break
-
-        @skipHorizontalWhitespace()
 
         if compound = (@parseKeyframeSelector() or @parseCompoundSelector())
-          if comb
-            sel.items.push comb
-
-          sel.items.push compound
+          selector.items.push combinator if combinator
+          selector.items.push compound
         else
-          if comb and comb.value isnt ' '
-            sel.items.push comb
+          if combinator and combinator.value isnt ' '
+            selector.items.push combinator
           break
 
-      if not sel.items.length
+      if not selector.items.length
         return no
 
   ###
