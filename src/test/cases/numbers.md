@@ -1706,7 +1706,7 @@
     xviii: 96px is 1in
       xix: 1in is 2.54cm
        xx: .5turn is 200grad
-      xxi: 1mm is 0.24pc
+      xxi: 1mm isnt 0.24pc
   }
   ~~~
 

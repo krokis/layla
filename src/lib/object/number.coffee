@@ -9,7 +9,11 @@ FACTORS = {}
 ###
 class Number extends Object
 
-  {round, ceil, floor, abs, pow, sin, cos, tan, asin, acos, atan} = Math
+  {ceil, floor, abs, pow, sin, cos, tan, asin, acos, atan} = Math
+
+  round = (number, places = 0) ->
+    m = pow 10, places
+    return Math.round(number * m) / m
 
   RE_NUMERIC = /^\s*([\+-]?(?:\d*\.)?\d+)\s*(%|(?:[a-z]+))?\s*$/i
 
@@ -278,8 +282,7 @@ class Number extends Object
   '.negative?': -> Boolean.new @value < 0
 
   '.round': (context, places = ZERO) ->
-    m = pow 10, places.value
-    return @copy round(@value * m) / m
+    @copy round(@value, places.value)
 
   '.ceil': ->  @copy ceil(@value)
 
