@@ -3,7 +3,7 @@ fs           = require 'fs-extra'
 {dirname}    = require 'path'
 which        = require 'which'
 childProcess = require 'child_process'
-coffee       = require 'coffee-script'
+coffee       = require 'coffeescript'
 glob         = require 'glob'
 Layla        = require './src/lib'
 
@@ -169,7 +169,7 @@ test = (path, source = no, callback = done) ->
 
   if source
     path = "src/#{path}/**/index.coffee"
-    args.push '--require coffee-script/register'
+    args.push '--require coffeescript/register'
 
   exec "mocha #{args.join ' '} #{path}", callback
 
