@@ -71,11 +71,11 @@ Functions
 
   ~~~ lay
   bar = ( ) { "dummy" }
-  body{foo:dummy}
+  function[empty]{foo:dummy}
   ~~~
 
   ~~~ css
-  body {
+  function[empty] {
     foo: dummy;
   }
   ~~~
@@ -87,57 +87,6 @@ Functions
   ~~~
 
   ~~~ css
-  ~~~
-
-- May `return` a value
-
-  ~~~ lay
-  sum = ((a, b) {
-    return a + b
-  })
-
-  font-size: sum(12px, 15px)
-  ~~~
-
-  ~~~ css
-  font-size: 27px;
-  ~~~
-
-- Can `return` with no arguments
-
-  ~~~ lay
-  bar = () {
-    return
-  }
-
-  FOO = () {
-    return
-    foo: bar
-  }
-
-  foo: bar()
-  bar: FOO()
-  ~~~
-
-  ~~~ css
-  foo: null;
-  bar: null;
-  ~~~
-
-- Return `null` if they don't return anything
-
-  ~~~ lay
-  NOOP = () {}
-
-  functions#no-return {
-    border: NOOP()
-  }
-  ~~~
-
-  ~~~ css
-  functions#no-return {
-    border: null;
-  }
   ~~~
 
 - Can have default arguments
@@ -262,13 +211,17 @@ Functions
 - Can be self-called
 
   ~~~ lay
-  (($c) { color: $c })(red)
-  ($i, $c: white) { background: $c $i }(url(background.jpg))
+  function + call {
+    (($c) { color: $c })(red)
+    ($i, $c: white) { background: $c $i }(url(background.jpg))
+  }
   ~~~
 
   ~~~ css
-  color: red;
-  background: white url("background.jpg");
+  function + call {
+    color: red;
+    background: white url("background.jpg");
+  }
   ~~~
 
 ## `return`
@@ -280,11 +233,15 @@ Functions
     return a + b
   })
 
-  font-size: sum(12px, 15px)
+  function#return {
+    font-size: sum(12px, 15px)
+  }
   ~~~
 
   ~~~ css
-  font-size: 27px;
+  function#return {
+    font-size: 27px;
+  }
   ~~~
 
 - Can be called with no arguments
@@ -299,13 +256,17 @@ Functions
     foo: bar
   }
 
-  foo: bar()
-  bar: FOO()
+  function.return[empty] {
+    i: bar()
+    ii: FOO()
+  }
   ~~~
 
   ~~~ css
-  foo: null;
-  bar: null;
+  function.return[empty] {
+    i: null;
+    ii: null;
+  }
   ~~~
 
 - Defaults to `null` when it's not present
