@@ -258,10 +258,12 @@ class CSSEmitter extends Emitter
 
   emitSelectorNamespace: (selector) ->
     if selector.namespace?
-      if selector.namespace is '*'
-        return '*|'
+      namespace = selector.namespace
 
-      return selector.escape(selector.namespace, @options.charset) + '|'
+      unless namespace is '*'
+        namespace = selector.escape(namespace, @options.charset)
+
+      return namespace + '|'
 
     return ''
 
@@ -297,8 +299,7 @@ class CSSEmitter extends Emitter
   emitKeyframeSelector: (selector) -> selector.keyframe
 
   emitClassSelector: (selector) ->
-    '.' + @emitSelectorNamespace(selector) +
-    selector.escape(selector.name, @options.charset)
+    '.' + selector.escape(selector.name, @options.charset)
 
   emitCompoundSelector: (selector) ->
     (selector.children.map (selector) => @emit selector).join ''
@@ -352,7 +353,7 @@ class CSSEmitter extends Emitter
     if rule.items?.length
       css += " #{@emitBlock rule}"
 
-    css
+    return css
 
   emitDocument: (doc) ->
     css = ''
@@ -365,7 +366,7 @@ class CSSEmitter extends Emitter
     if @options.final_newline and (css isnt '')
       css += '\n'
 
-    css
+    return css
 
 
 module.exports = CSSEmitter
