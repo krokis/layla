@@ -14,6 +14,7 @@ class URI extends Object
   COMMON_SCHEMES = ['http', 'https', 'data']
 
   constructor: (@value) ->
+    super()
 
   parse: (uri) ->
     # scheme = alpha *( alpha | digit | "+" | "-" | "." )
@@ -26,7 +27,6 @@ class URI extends Object
     get: -> @toString()
     set: (value) -> @parse value
 
-
   clone: ->
     obj = @copy()
     obj.name = @name
@@ -36,12 +36,6 @@ class URI extends Object
   copy: (value = @value) ->
     super value
 
-  toJSON: ->
-    json = super
-    json.value = @value
-
-    return json
-
   '.scheme': ->
     if not @scheme
       Null.null
@@ -49,8 +43,8 @@ class URI extends Object
       new QuotedString @scheme
 
   # TODO move these methods to the `URL` and `DataURI` classes?
-  COMMON_SCHEMES.forEach (scheme) =>
-    @::[".#{scheme}?"] = -> Boolean.new @scheme is scheme
+  COMMON_SCHEMES.forEach (scheme) ->
+    URI::[".#{scheme}?"] = -> Boolean.new @scheme is scheme
 
   '.string': -> new QuotedString @toString()
 

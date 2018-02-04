@@ -52,9 +52,10 @@ class Number extends Object
     throw new ValueError "Could not convert \"#{str}\" to #{@reprType()}"
 
   constructor: (value = 0, @unit = null) ->
+    super()
     @value = parseFloat value.toString()
 
-  @convert: (value, from_unit, to_unit = '', stack = []) ->
+  @convert: (value, from_unit, to_unit = null, stack = []) ->
     if to_unit is from_unit or (to_unit and not from_unit)
       return value
     else if not to_unit
@@ -85,7 +86,7 @@ class Number extends Object
 
     value = @class.convert @value, @unit, unit
 
-    return @copy value, unit or ''
+    return @copy value, unit
 
   ###
   ###
@@ -154,13 +155,8 @@ class Number extends Object
   toString: ->
     str = "#{@value}"
     str += @unit if @unit
-    str
 
-  toJSON: ->
-    json = super
-    json.value = @value
-    json.unit = @unit
-    json
+    return str
 
   reprValue: -> "#{@value}#{@unit or ''}"
 
@@ -223,7 +219,7 @@ class Number extends Object
       if other.value is 0
         throw new ValueError 'Cannot divide by 0'
       if !@isPure() and !other.isPure()
-        return @copy @value / other.convert(@unit).value, ''
+        return @copy @value / other.convert(@unit).value, null
       else
         return @copy @value / other.value, @unit or other.unit
 

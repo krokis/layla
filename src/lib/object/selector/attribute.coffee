@@ -6,7 +6,7 @@ ComplementarySelector = require './complementary'
 class AttributeSelector extends ComplementarySelector
 
   # coffeelint: disable=indentation
-  constructor: (name = null, @value = null, @operator = null,
+  constructor: (name, @value = null, @operator = null,
     @flags = null, @namespace = null) ->
     super name
 
@@ -23,13 +23,7 @@ class AttributeSelector extends ComplementarySelector
     str += " #{@escape @flags}" if @flags
     str += ']'
 
-  toJSON: ->
-    json = super
-    json.value = @value.toJSON()
-    json.operator = @operator
-    json.namespace = namespace
-    json.flags = @flags
-    json
+    return str
 
 
 module.exports = AttributeSelector

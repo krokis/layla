@@ -44,8 +44,7 @@ class DataURI extends URI
       else
         @decoded = data
 
-  @property 'data',
-    get: -> @decoded or= @class.decode @encoded
+  @property 'data', -> @decoded or= @class.decode @encoded
 
   toString: ->
     str = 'data:'

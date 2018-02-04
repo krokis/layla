@@ -93,7 +93,7 @@
   }
   ~~~
 
-### `.important`
+### `.unimportant`
 
 - Returns a non `!important` copy of the object
 

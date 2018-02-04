@@ -11,6 +11,7 @@ IncludeError = require './error/include'
 MAX_INCLUDE_STACK = 100
 MAX_CALL_STACK = 999
 
+
 ###
 ###
 class Context extends Class
@@ -18,6 +19,8 @@ class Context extends Class
   ###
   ###
   constructor: (@block = new Document, @_parent = null) ->
+    super()
+
     @_scope = {}
     @_plugins = []
     @_includers = []
@@ -27,39 +30,27 @@ class Context extends Class
     @_paths = []
     @_visitors = []
 
-  @property 'parent',
-    get: -> @_parent
+  @property 'parent', -> @_parent
 
-  @property 'root',
-    get: ->
-      if @parent
-        @parent.root
-      else
-        @
+  @property 'root', -> if @parent then @parent.root else @
 
-  @property 'calls',
-    get: ->
-      (if @parent then @parent.calls else []).concat @_calls
+  @property 'calls', ->
+    (if @parent then @parent.calls else []).concat @_calls
 
-  @property 'includes',
-    get: ->
-      (if @parent then @parent.includes else []).concat @_includes
+  @property 'includes', ->
+    (if @parent then @parent.includes else []).concat @_includes
 
-  @property 'plugins',
-    get: ->
-      (if @parent then @parent.plugins else []).concat @_plugins
+  @property 'plugins', ->
+    (if @parent then @parent.plugins else []).concat @_plugins
 
-  @property 'includers',
-    get: ->
-      (if @parent then @parent.includers else []).concat @_includers
+  @property 'includers', ->
+    (if @parent then @parent.includers else []).concat @_includers
 
-  @property 'loaders',
-    get: ->
-      (if @parent then @parent.loaders else []).concat @_loaders
+  @property 'loaders', ->
+    (if @parent then @parent.loaders else []).concat @_loaders
 
-  @property 'paths',
-    get: ->
-      (if @parent then @parent.paths else []).concat @_paths
+  @property 'paths', ->
+    (if @parent then @parent.paths else []).concat @_paths
 
   has: (name) ->
     (name of @_scope) or (@parent?.has name) or no
@@ -147,5 +138,6 @@ class Context extends Class
 
   child: (block = @block) ->
     new Context block, @
+
 
 module.exports = Context

@@ -14,14 +14,13 @@ class Range extends Indexed
 
   { min, max, abs, floor } = Math
 
-  @property 'items',
-    get: ->
-      items = []
+  @property 'items', ->
+    items = []
 
-      for i in [0...@length()]
-        items.push new Number (@getByIndex i), @unit
+    for i in [0...@length()]
+      items.push new Number (@getByIndex i), @unit
 
-      return items
+    return items
 
   isReverse: -> @first > @last
 
@@ -40,7 +39,7 @@ class Range extends Indexed
     return new Number @first + index * step, @unit
 
   constructor: (@first = 0, @last = 0, @unit = null, @step = 1) ->
-    super
+    super()
 
   convert: (unit) ->
     unit = unit.toString()
@@ -75,7 +74,7 @@ class Range extends Indexed
 
   './': (context, step) ->
     if step instanceof Number
-      return @copy null, null, null, (step.convert @unit).value
+      return @copy undefined, undefined, undefined, (step.convert @unit).value
 
     throw new ValueError "Cannot divide a range by #{step.repr()}"
 
@@ -85,7 +84,7 @@ class Range extends Indexed
 
   '.pure?': -> Boolean.new @isPure()
 
-  '.pure': -> @copy null, null, ''
+  '.pure': -> @copy undefined, undefined, ''
 
   '.step': -> new Number @step, @unit
 

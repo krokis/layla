@@ -9,7 +9,8 @@ ValueError = require '../error/value'
 ###
 class Collection extends Indexed
 
-  constructor: (@items = []) -> super
+  constructor: (@items = []) ->
+    super()
 
   length: -> @items.length
 
@@ -54,11 +55,6 @@ class Collection extends Indexed
         return yes
 
     return no
-
-  toJSON: ->
-    json = super
-    json.items = @items
-    json
 
   copy: (items = @items, etc...) ->
     super (obj.clone() for obj in items), etc...

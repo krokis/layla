@@ -5,9 +5,12 @@ String     = require './string'
 Number     = require './number'
 
 
+###
+###
 class List extends Collection
 
-  constructor: (items, @separator = ' ') -> super items
+  constructor: (items, @separator = ' ') ->
+    super items
 
   flattenItems: ->
     flat = []
@@ -25,14 +28,9 @@ class List extends Collection
   copy: (items, separator = @separator, etc...) ->
     super items, separator, etc...
 
-  toJSON: ->
-    json = super
-    json.separator = @separator
-    json
+  '.commas': -> @copy undefined, ','
 
-  '.commas': -> @copy null, ','
-
-  '.spaces': -> @copy null, ' '
+  '.spaces': -> @copy undefined, ' '
 
   '.list': -> @clone()
 
@@ -40,6 +38,7 @@ class List extends Collection
 
   '.join': (context, glue = QuotedString.EMPTY) ->
     glue.copy @join(glue.value)
+
 
 Object::['.list'] = ->
   if @ instanceof Collection

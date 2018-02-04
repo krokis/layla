@@ -14,6 +14,8 @@ class CSSEmitter extends Emitter
   options: null
 
   constructor: (@options = {}) ->
+    super()
+
     defaults =
       charset:                     'utf8' # or ascii. For escaping strategy.
       bom:                         'preserve' # Or: true, false/strip
@@ -89,8 +91,6 @@ class CSSEmitter extends Emitter
         quote = '"'
       else
         quote = "'"
-    else
-      quote = quote
 
     return "#{quote}#{@escapeQuotedString value, quote}#{quote}"
 
@@ -98,8 +98,8 @@ class CSSEmitter extends Emitter
   ###
   emitUnquotedString: (str) -> @escapeUnquotedString str
 
-  emitQuotedString: (str, quote = null) ->
-    @quoteString str.value, quote
+  emitQuotedString: (str) ->
+    @quoteString str.value
 
   emitRawString: (str) ->
     str.value
@@ -147,7 +147,7 @@ class CSSEmitter extends Emitter
     str += '('
 
     if @options.url_quote
-      str += @emitQuotedString url, @options.url_quote
+      str += @quoteString url.value, @options.url_quote
     else
       str += String.escapeCharacters /[\)\(\\]/, url.value, @options.charset
 

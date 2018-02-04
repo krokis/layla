@@ -6,13 +6,9 @@ Selector = require '../selector'
 class Combinator extends Selector
 
   constructor: (@value = null) ->
+    super()
 
   toString: -> @value or ''
-
-  toJSON: ->
-    json = super
-    json.value = @value
-    json
 
   copy: (value = @value, etc...) ->
     super value, etc...

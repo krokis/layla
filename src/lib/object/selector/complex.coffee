@@ -8,6 +8,7 @@ Combinator       = require './combinator'
 class ComplexSelector extends Selector
 
   constructor: (@children = []) ->
+    super()
 
   resolve: (other) ->
     unless other instanceof ComplexSelector
@@ -53,11 +54,6 @@ class ComplexSelector extends Selector
 
   copy: (children = @children, etc...) ->
     super (child.clone() for child in children), etc...
-
-  toJSON: ->
-    json = super
-    json.children = @children
-    json
 
 
 module.exports = ComplexSelector

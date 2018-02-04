@@ -8,18 +8,17 @@ ParentSelector        = require './parent'
 ###
 class CompoundSelector extends Selector
 
-  @property 'elemental',
-    get: ->
-      for child in @children
-        return child if child instanceof ElementalSelector
+  @property 'elemental', ->
+    for child in @children
+      return child if child instanceof ElementalSelector
 
-      return null
+    return null
 
-  @property 'complementary',
-    get: ->
-      @children.filter (child) -> child instanceof ComplementarySelector
+  @property 'complementary', ->
+    @children.filter (child) -> child instanceof ComplementarySelector
 
   constructor: (@children = []) ->
+    super()
 
   hasParentSelector: -> @children.some (c) -> c instanceof ParentSelector
 
@@ -51,11 +50,6 @@ class CompoundSelector extends Selector
 
   toString: ->
     (child.toString() for child in @children).join ''
-
-  toJSON: ->
-    json = super
-    json.children = @children
-    json
 
 
 module.exports = CompoundSelector

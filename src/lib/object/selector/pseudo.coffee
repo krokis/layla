@@ -5,7 +5,8 @@ ComplementarySelector = require './complementary'
 ###
 class PseudoSelector extends ComplementarySelector
 
-  constructor: (name = null, @arguments = null) -> super name
+  constructor: (name, @arguments = null) ->
+    super name
 
   copy: (name = @name, args = @arguments, etc...) ->
     super name, args, etc...
@@ -21,11 +22,7 @@ class PseudoSelector extends ComplementarySelector
 
       str += "(#{args.join ', '})"
 
-    str
+    return str
 
-  toJSON: ->
-    json = super
-    json.arguments = @arguments
-    json
 
 module.exports = PseudoSelector

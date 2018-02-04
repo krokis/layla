@@ -32,7 +32,7 @@ class Block extends Collection
 
       return val
 
-    return super
+    return super context, other
 
   '.::=': (context, key, value) ->
     if key instanceof String
@@ -50,7 +50,7 @@ class Block extends Collection
 
       return value
 
-    return super
+    return super context, key, value
 
   '.properties': -> new Block (@items.filter (obj) -> obj instanceof Property)
 

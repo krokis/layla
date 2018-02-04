@@ -87,12 +87,11 @@ class URL extends URI
     set: (value) ->
       @components.hostname = value
 
-  @property 'domain',
-    get: ->
-      if @isIP()
-        return null
-      else
-        return @host
+  @property 'domain', ->
+    if @isIP()
+      return null
+    else
+      return @host
 
   @property 'port',
     get: -> @components.port
@@ -156,7 +155,7 @@ class URL extends URI
     if other instanceof URL or other instanceof String
       @copy (ParseURL.resolve @value, other.value)
     else
-      super
+      super context, other
 
   ###
   Sets the `port` component
@@ -191,8 +190,8 @@ class URL extends URI
   ###
   Batch defines all other getters and setters (`scheme`, `path`, `query`, etc)
   ###
-  @COMPONENTS.forEach (component) =>
-    @::[".#{component}"] ?= ->
+  @COMPONENTS.forEach (component) ->
+    URL::[".#{component}"] ?= ->
       value = @[component]
 
       if value is null
@@ -200,14 +199,14 @@ class URL extends URI
       else
         new QuotedString value
 
-    @::[".#{component}="] ?= (context, value) ->
+    URL::[".#{component}="] ?= (context, value) ->
       value = if value.isNull() then null else value.toString()
       @[component] = value
 
   for alias of @ALIAS_COMPONENTS
-    @::[".#{alias}"] ?= @::[".#{@ALIAS_COMPONENTS[alias]}"]
-    @::[".#{alias}?"] ?= @::[".#{@ALIAS_COMPONENTS[alias]}?"]
-    @::[".#{alias}="] ?= @::[".#{@ALIAS_COMPONENTS[alias]}="]
+    URL::[".#{alias}"] ?= URL::[".#{@ALIAS_COMPONENTS[alias]}"]
+    URL::[".#{alias}?"] ?= URL::[".#{@ALIAS_COMPONENTS[alias]}?"]
+    URL::[".#{alias}="] ?= URL::[".#{@ALIAS_COMPONENTS[alias]}="]
 
   ###
   Returns `true` if the URL is a fully qualified URL, ie: it has a scheme
@@ -253,23 +252,22 @@ class URL extends URI
   ###
   '.https': -> @clone().set scheme: 'https'
 
-  do =>
-    ['dir', 'base', 'ext', 'file'].forEach (comp) =>
-      name = "#{comp}name"
+  ['dir', 'base', 'ext', 'file'].forEach (comp) ->
+    name = "#{comp}name"
 
-      @::[".#{name}"] = ->
-        value = @[name]
+    URL::[".#{name}"] = ->
+      value = @[name]
 
-        if value?
-          new QuotedString value
+      if value?
+        new QuotedString value
 
-      @::[".#{name}="] = (context, value) ->
-        if not value.isNull()
-          value = value.toString()
-        else
-          value = null
+    URL::[".#{name}="] = (context, value) ->
+      if not value.isNull()
+        value = value.toString()
+      else
+        value = null
 
-        @[name] = value
+      @[name] = value
 
   toString: -> ParseURL.format @components
 

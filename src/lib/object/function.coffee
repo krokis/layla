@@ -2,9 +2,12 @@ Object = require '../object'
 Null   = require './null'
 
 
+###
+###
 class Function extends Object
 
   constructor: (@func = ->) ->
+    super()
 
   invoke: (context, args...) ->
     (@func.call this, context.block, args...) or Null.null

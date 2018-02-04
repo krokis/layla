@@ -61,16 +61,9 @@ class Token extends Class
   ###
   ###
   constructor: (@kind, @start = null, @end = null, @value = null) ->
+    super()
 
   is: (kind, value) -> (kind is @kind) and (not value or @value is value)
 
-  toJSON: ->
-    json = super
-    json.kind = @kind
-    json.start = @start
-    json.end = @end
-    json.value = @value
-
-    return json
 
 module.exports = Token

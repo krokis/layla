@@ -16,6 +16,8 @@ class Normalizer extends Visitor
   indentation: 0
 
   constructor: (@options = {}) ->
+    super()
+
     defaults =
       flatten_block_properties:   yes
       strip_root_properties:      no

@@ -3,8 +3,6 @@ The base for all Layla classes (except for the core `Layla` class itself).
 ###
 class Class
 
-  @NOT_IMPLEMENTED: (name) -> throw new NotImplementedError
-
   { getOwnPropertyDescriptor, defineProperty } = Object
 
   ###
@@ -18,6 +16,9 @@ class Class
     else
       target = @::
 
+    if typeof desc is 'function'
+      desc = get: desc
+
     desc.enumerable ?= yes
     desc.configurable ?= yes
 
@@ -29,16 +30,13 @@ class Class
 
     defineProperty target, name, desc
 
-  @property 'class',
-    get: -> @constructor
+  @property 'class', -> @constructor
 
-  @property 'type',
-    get: -> @class.name
+  @property 'type', -> @class.name
 
   copy: (etc...) -> new @class etc...
 
   clone: -> @copy()
 
-  toJSON: -> {}
 
 module.exports = Class

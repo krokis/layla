@@ -180,6 +180,7 @@ class BaseParser extends Parser
   ###
   ###
   constructor: ->
+    super()
     @directives = DIRECTIVES
 
   @location: -> @token.start

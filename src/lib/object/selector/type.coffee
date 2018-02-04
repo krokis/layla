@@ -5,7 +5,8 @@ ElementalSelector = require './elemental'
 ###
 class TypeSelector extends ElementalSelector
 
-  constructor: (@name = null, etc...) -> super etc...
+  constructor: (@name = null, etc...) ->
+    super etc...
 
   copy: (name = @name, etc...) ->
     super name, etc...
@@ -23,11 +24,6 @@ class TypeSelector extends ElementalSelector
     str += @escape @name
 
     return str
-
-  toJSON: ->
-    json = super
-    json.name = @name
-    json
 
 
 module.exports = TypeSelector

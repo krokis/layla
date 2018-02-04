@@ -1,5 +1,6 @@
-Class      = require './class'
-ValueError = require './error/value'
+Class               = require './class'
+ValueError          = require './error/value'
+NotImplementedError = require './error/not-implemented'
 
 
 ###
@@ -7,6 +8,8 @@ ValueError = require './error/value'
 class Object extends Class
 
   important = no
+
+  @NOT_IMPLEMENTED: (name) -> throw new NotImplementedError
 
   @new: (args...) ->
     new (@bind.apply @, args)

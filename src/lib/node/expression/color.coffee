@@ -1,12 +1,12 @@
 Literal = require './literal'
 
+
+###
+###
 class Color extends Literal
 
   constructor: (@value) ->
+    super()
 
-  toJSON: ->
-    json = super
-    json.value = @value
-    json
 
 module.exports = Color

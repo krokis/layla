@@ -3,6 +3,8 @@ Null       = require './null'
 Number     = require './number'
 
 
+###
+###
 class Indexed extends Enumerable
 
   reset: -> @index = 0

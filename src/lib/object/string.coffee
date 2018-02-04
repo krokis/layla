@@ -17,8 +17,7 @@ class String extends Object
 
   QUOTE_REGEXP = (str) -> str.replace /[.?*+^$[\]\\(){}|-]/g, "\\$&"
 
-  @property '@EMPTY',
-    get: -> new @ ''
+  @EMPTY = new @ ''
 
   @escapeCharacters: (chars, value, charset = 'utf8') ->
     value.replace(
@@ -51,9 +50,9 @@ class String extends Object
     @escapeCharacters @ESCAPE_CHARS, value, charset
 
   constructor: (@value = '') ->
+    super()
 
-  @property 'length',
-    get: -> @value.length
+  @property 'length', -> @value.length
 
   isEmpty: -> @length is 0
 
@@ -89,11 +88,6 @@ class String extends Object
   contains: (other) ->
     # TODO should throw an error when other is not an string?
     (other instanceof String) and (@value.indexOf other.value) >= 0
-
-  toJSON: ->
-    json = super
-    json.value = @value
-    json
 
   clone: -> @
 

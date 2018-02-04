@@ -1,9 +1,12 @@
 Object = require '../object'
 
 
+###
+###
 class Boolean extends Object
 
   constructor: (@value) ->
+    super()
     @value = !!@value
 
   @true: new @ yes
@@ -20,12 +23,8 @@ class Boolean extends Object
 
   toString: -> if @value then 'true' else 'false'
 
-  toJSON: ->
-    json = super
-    json.value = @value
-    json
-
   clone: -> @
+
 
 Object::toBoolean = -> yes
 

@@ -349,28 +349,27 @@ class Color extends Object
     throw new Error "Bad color string: #{color}"
 
   constructor: (@space, channels, @alpha = 1) ->
+    super()
     @channels = channels.slice()
 
-  do =>
-    make_space_accessors = (space) =>
-      @property space,
-        get: ->
-          if @space is space
-            return @channels.slice()
+  do ->
+    make_space_accessors = (space) ->
+      Color.property space, ->
+        if @space is space
+          return @channels.slice()
 
-          convertor = "#{@space}2#{space}"
+        convertor = "#{@space}2#{space}"
 
-          if not convertor of CONVERTORS
-            throw new ValueError(
-              "Cannot convert color from `#{@space}` to `#{space}`"
-            )
+        if not convertor of CONVERTORS
+          throw new ValueError(
+            "Cannot convert color from `#{@space}` to `#{space}`"
+          )
 
-          return CONVERTORS[convertor] @channels
+        return CONVERTORS[convertor] @channels
 
-    make_channel_accessors = (space, index, name) =>
-      unless name of @::
-        @property name,
-          get: -> @[space][index]
+    make_channel_accessors = (space, index, name) ->
+      unless name of Color::
+        Color.property name, -> @[space][index]
 
     for space of SPACES
       make_space_accessors space
@@ -407,17 +406,16 @@ class Color extends Object
   ###
   https://drafts.csswg.org/css-color-4/#luminance
   ###
-  @property 'luminance',
-    get: ->
-      [r, g, b] = [@red, @green, @blue].map (channel, i) ->
-        channel /= 255
+  @property 'luminance', ->
+    [r, g, b] = [@red, @green, @blue].map (channel, i) ->
+      channel /= 255
 
-        if channel <= .03928
-          channel / 12.92
-        else
-          pow (channel + .055) / 1.055, 2.4
+      if channel <= .03928
+        channel / 12.92
+      else
+        pow (channel + .055) / 1.055, 2.4
 
-      return .2126 * r + .7152 * g + .0722 * b
+    return .2126 * r + .7152 * g + .0722 * b
 
   blend: (backdrop, mode) -> @class.blend @, backdrop, mode
 
@@ -475,7 +473,7 @@ class Color extends Object
 
   isOpaque: -> @alpha >= 1
 
-  isEmpty: @::isTransparent
+  isEmpty: Color::isTransparent
 
   toRGBAString: ->
     comps = @['rgb'].map (c) -> round c
@@ -553,11 +551,11 @@ class Color extends Object
 
   '.transparent?': -> Boolean.new @isTransparent()
 
-  '.transparent': -> @copy null, null, 0
+  '.transparent': -> @copy undefined, undefined, 0
 
   '.opaque?': -> Boolean.new @isOpaque()
 
-  '.opaque': -> @copy null, null, 1
+  '.opaque': -> @copy undefined, undefined, 1
 
   '.saturate': (context, amount) ->
     unless amount instanceof Number
@@ -643,11 +641,11 @@ class Color extends Object
 
   '.contrast': (context, others...) -> @contrast others...
 
-  '.blend': (context, backdrop, mode = null) ->
+  '.blend': (context, backdrop, mode = undefined) ->
     unless backdrop instanceof Color
       throw new ValueError "Bad `mode` argument for [#{@reprType()}.blend]"
 
-    if mode isnt null
+    if mode?
       unless mode instanceof String
         throw new ValueError (
           "Bad `mode` argument for [#{@reprType()}.blend]"
@@ -692,13 +690,13 @@ class Color extends Object
 
     value = min(1, max(value, 0))
 
-    return @copy null, null, value
+    return @copy undefined, undefined, value
 
-  do =>
-    make_accessors = (space, index, channel) =>
+  do ->
+    make_accessors = (space, index, channel) ->
       name = channel.name
 
-      @::[".#{name}"] ?= (context, value) ->
+      Color::[".#{name}"] ?= (context, value) ->
         if not value?
           return new Number @[space][index], channel.unit
 

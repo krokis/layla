@@ -8,13 +8,13 @@ class ProgramError extends Error
   constructor: (message, @start = null, @end = null, @stack = null) ->
     super message
 
-  @property 'file', get: -> @start?.file or null
+  @property 'file', -> @start?.file or null
 
-  @property 'line', get: -> @start?.line or null
+  @property 'line', -> @start?.line or null
 
-  @property 'column', get: -> @start?.column or null
+  @property 'column', -> @start?.column or null
 
-  @property 'location', get: -> @start? or null
+  @property 'location', -> @start? or null
 
 
 module.exports = ProgramError

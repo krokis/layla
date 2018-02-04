@@ -6,20 +6,14 @@ QuotedString = require './string/quoted'
 ###
 class RuleSet extends Rule
 
-  constructor: ->
-    super
-    @selector = []
+  constructor: (items, @selector = []) ->
+    super items
 
-  toJSON: ->
-    json = super
-    json.selector = @selector
-    json
-
-  copy: ->
-    copy = super
+  copy: (args...) ->
+    copy = super args...
     copy.selector = @selector.clone()
 
-    copy
+    return copy
 
   '.selector': -> new QuotedString @selector.toString()
 

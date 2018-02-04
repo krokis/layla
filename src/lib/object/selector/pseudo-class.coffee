@@ -5,7 +5,7 @@ PseudoSelector = require './pseudo'
 ###
 class PseudoClassSelector extends PseudoSelector
 
-  toString: -> ':' + super
+  toString: -> ':' + super()
 
 
 module.exports = PseudoClassSelector

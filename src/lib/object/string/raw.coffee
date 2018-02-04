@@ -14,7 +14,7 @@ class RawString extends String
 
   ###
   ###
-  reprValue: -> '`' + super + '`'
+  reprValue: -> '`' + super() + '`'
 
   '.raw?': -> Boolean.true
 

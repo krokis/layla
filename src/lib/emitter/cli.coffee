@@ -1,5 +1,8 @@
 CSSEmitter = require './css'
 
+
+###
+###
 class CLIEmitter extends CSSEmitter
   ESC        = '\u001b'
   RESET      = 0
@@ -32,32 +35,33 @@ class CLIEmitter extends CSSEmitter
     else
       str
 
-  emitNull: (nil) -> @format (super nil), BOLD
+  emitNull: (nil) -> @format super(nil), BOLD
 
-  emitBoolean: (bool) -> @format (super bool), BOLD
+  emitBoolean: (bool) -> @format super(bool), BOLD
 
   emitImportant: -> @format super(), BOLD
 
   emitFunction: (func) -> @format func.repr(), BOLD
 
-  emitNumber: (num) -> @format (super num), YELLOW
+  emitNumber: (num) -> @format super(num), YELLOW
 
   emitRegExp: (reg) -> @format "/#{reg.source}/#{reg.flags}", YELLOW
 
-  emitColor: (str) -> @format (super str), YELLOW
+  emitColor: (str) -> @format super(str), YELLOW
 
-  emitQuotedString: (str) -> @format (super str), YELLOW
+  emitQuotedString: (str) -> @format super(str), YELLOW
 
-  emitUnquotedString: (str) -> @format (super str), YELLOW
+  emitUnquotedString: (str) -> @format super(str), YELLOW
 
-  emitRawString: (str) -> @format (super str), YELLOW
+  emitRawString: (str) -> @format super(str), YELLOW
 
-  emitSelector: (sel) -> @format (super sel), BOLD, GREEN
+  emitSelector: (sel) -> @format super(sel), BOLD, GREEN
 
-  emitAtRuleName: (sel) -> @format (super sel), BOLD, MAGENTA
+  emitAtRuleName: (sel) -> @format super(sel), BOLD, MAGENTA
 
-  emitAtRuleArguments: (sel) -> @format (super sel), MAGENTA
+  emitAtRuleArguments: (sel) -> @format super(sel), MAGENTA
 
-  emitPropertyName: (property) -> @format (super property), BOLD, CYAN
+  emitPropertyName: (property) -> @format super(property), BOLD, CYAN
+
 
 module.exports = CLIEmitter

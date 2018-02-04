@@ -6,8 +6,7 @@ Selector = require '../selector'
 class SelectorList extends Selector
 
   constructor: (@children = []) ->
-
-  append: (other) ->
+    super()
 
   resolve: (other) ->
     unless other instanceof SelectorList
@@ -27,11 +26,6 @@ class SelectorList extends Selector
 
   copy: (children = @children, etc...) ->
     super (child.clone() for child in children), etc...
-
-  toJSON: ->
-    json = super
-    json.children = @children
-    json
 
 
 module.exports = SelectorList

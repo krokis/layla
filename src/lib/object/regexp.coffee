@@ -20,17 +20,18 @@ class RegExp extends Object
 
   @escape: (str) -> str.replace /[-\/\\^$*+?.()|[\]{}]/g, '\\$&'
 
-  constructor: (@source, @flags) -> @build()
+  constructor: (@source, @flags = '') ->
+    super()
+    @build()
 
-  @property 'value',
-    get: ->
-      @build() unless @_value and
-                      @_value.source is @source and
-                      @_value.ignoreCase is @insensitive and
-                      @_value.global is @global and
-                      @_value.multiline is @multiline
+  @property 'value', ->
+    @build() unless @_value and
+                    @_value.source is @source and
+                    @_value.ignoreCase is @insensitive and
+                    @_value.global is @global and
+                    @_value.multiline is @multiline
 
-      return @_value
+    return @_value
 
   @property 'flags',
     get: ->

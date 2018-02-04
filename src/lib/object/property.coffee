@@ -8,9 +8,10 @@ QuotedString = require './string/quoted'
 class Property extends Object
 
   constructor: (@name, @value = Null.null) ->
+    super()
 
-  @property 'important',
-    get: -> @value.important
+  @property 'important', ->
+    @value.important
 
   isEmpty: -> @value.isNull()
 
@@ -18,12 +19,6 @@ class Property extends Object
     (other instanceof Property) and
     (other.name is @name) and
     (other.value.isEqual @value)
-
-  toJSON: ->
-    json = super
-    json.name = @name
-    json.value = @value
-    json
 
   copy: (name = @name, value = @value, etc...) ->
     super name, value.clone(), etc...

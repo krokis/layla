@@ -13,7 +13,7 @@ VERSION      = require '../version'
 class BaseContext extends Context
 
   constructor: ->
-    super
+    super()
 
     @use new LayIncluder
     @use new CSSIncluder

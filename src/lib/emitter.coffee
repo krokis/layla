@@ -1,5 +1,8 @@
 Class = require './class'
 
+
+###
+###
 class Emitter extends Class
 
   emit: (node) ->
@@ -11,6 +14,7 @@ class Emitter extends Class
           "Don't know how to emit node of type #{node.type}"
         )
 
-      this[method].call this, node
+      return this[method].call this, node
+
 
 module.exports = Emitter

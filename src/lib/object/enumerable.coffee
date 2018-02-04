@@ -14,7 +14,7 @@ class Enumerable extends Object
 
   next: -> @NOT_IMPLEMENTED
 
-  currentValue: -> @get @currentKey()
+  currentValue: -> @get(@currentKey())
 
   currentKey: -> @NOT_IMPLEMENTED
 
@@ -28,11 +28,11 @@ class Enumerable extends Object
 
   each: -> @NOT_IMPLEMENTED
 
-  firstValue: -> @get @firstKey()
+  firstValue: -> @get(@firstKey())
 
-  lastValue: -> @get @lastKey()
+  lastValue: -> @get(@lastKey())
 
-  randomValue: -> @get @randomKey()
+  randomValue: -> @get(@randomKey())
 
   minValue: ->
     min = null

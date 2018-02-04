@@ -77,8 +77,7 @@ class Tokenizer extends Class
   ###
   Return current location, which includes file, line and column information.
   ###
-  @property 'location',
-    get: -> new Location @file, @line, @column
+  @property 'location', -> new Location @file, @line, @column
 
   ###
   Prepare internals for tokenizing.
