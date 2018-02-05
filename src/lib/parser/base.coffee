@@ -349,22 +349,6 @@ class BaseParser extends Parser
 
   ###
   ###
-  parseCallArguments: (token) ->
-    args = []
-
-    for arg in token.arguments
-      if arg.kind in [T.QUOTED_STRING, T.RAW_STRING]
-        value = @parseSequence arg.value
-        raw = arg.is T.RAW_STRING
-        str = new String value, arg.quote, raw
-        args.push str
-      else
-        @syntaxError "Expected quoted or raw string"
-
-    return args
-
-  ###
-  ###
   parseNumber: ->
     if @token.is T.NUMBER
       # TODO Support line-height (`16px/50%`) syntax: if it's followed by a
@@ -380,6 +364,22 @@ class BaseParser extends Parser
       color = new Color "##{@token.value}"
       @next()
       return color
+
+  ###
+  ###
+  parseCallArguments: (token) ->
+    args = []
+
+    for arg in token.arguments
+      if arg.kind in [T.QUOTED_STRING, T.RAW_STRING]
+        value = @parseSequence arg.value
+        raw = arg.is T.RAW_STRING
+        str = new String value, arg.quote, raw
+        args.push str
+      else
+        @error "Expected quoted or raw string"
+
+    return args
 
   ###
   ###
@@ -470,8 +470,8 @@ class BaseParser extends Parser
   parseParens: ->
     if @token.is T.PAREN_OPEN
       start = @token.start
-
       @next()
+      @parens++
       @skipAllWhitespace()
 
       if expr = @parseExpression()
@@ -481,6 +481,7 @@ class BaseParser extends Parser
 
       @skipAllWhitespace()
       @expect T.PAREN_CLOSE
+      @parens--
 
       if perc = @eat T.PERCENT
         unit = new String '%'
@@ -526,6 +527,7 @@ class BaseParser extends Parser
 
     if @token.is T.PAREN_OPEN
       @next()
+      @parens++
       @skipAllWhitespace()
 
       args = []
@@ -540,9 +542,12 @@ class BaseParser extends Parser
             continue
 
         if @eat T.PAREN_CLOSE
+          @parens--
           return args
 
         break
+
+      @parens--
 
     @move start
 
@@ -710,6 +715,7 @@ class BaseParser extends Parser
     if @token.is T.PAREN_OPEN
       args = []
       @next()
+      @parens++
       @skipAllWhitespace()
 
       while arg = @parsePseudoSelectorArgument()
@@ -720,6 +726,7 @@ class BaseParser extends Parser
           @skipAllWhitespace()
 
       @expect T.PAREN_CLOSE
+      @parens--
 
       return args
 
@@ -905,10 +912,12 @@ class BaseParser extends Parser
     if @token.is T.PAREN_OPEN
       args = []
       @next()
+      @parens++
       @skipAllWhitespace()
       args.push @parseAtRuleArguments(yes)...
       @skipAllWhitespace()
       @expect T.PAREN_CLOSE
+      @parens--
 
       return args
 
@@ -948,6 +957,7 @@ class BaseParser extends Parser
     if @token.is(T.UNQUOTED_STRING) and @token.next.is(T.PAREN_OPEN)
       call = new Call @token
       @move @token.next.next
+      @parens++
       @skipAllWhitespace()
 
       args = []
@@ -963,6 +973,7 @@ class BaseParser extends Parser
           break
 
       @expect T.PAREN_CLOSE
+      @parens--
 
       call.arguments = args
 
@@ -1248,8 +1259,19 @@ class BaseParser extends Parser
   ###
   ###
   peekBinaryOperator: ->
-    if @token.is T.H_WHITESPACE
-      next = @token.next
+    if @parens
+      if @token.kind in [T.H_WHITESPACE, T.V_WHITESPACE]
+        token = @token
+
+        while token.next.kind in [T.H_WHITESPACE, T.V_WHITESPACE]
+          token = token.next
+    else if @token.is T.H_WHITESPACE
+      token = @token
+    else
+      token = null
+
+    if token
+      next = token.next
 
       if next.value in BINARY_OPERATORS
         if next.kind in [T.PLUS, T.MINUS]
@@ -1258,7 +1280,7 @@ class BaseParser extends Parser
         else if not next.is T.PAREN_OPEN
           return next
 
-      return @token
+      return token
     else if @token.value in BINARY_OPERATORS
       return @token
 
@@ -1289,9 +1311,11 @@ class BaseParser extends Parser
         @skipAllWhitespace()
 
       if next_op.is T.PAREN_OPEN
+        @parens++
         right = @parseArguments()
         @skipAllWhitespace()
         @expect T.PAREN_CLOSE
+        @parens--
       else
         right = @parsePrimaryExpression prec, blocks
 
@@ -1316,10 +1340,7 @@ class BaseParser extends Parser
         break unless  (next_prec > op_prec) or
           (RIGHT_ASSOC[next_op.value] and (next_prec is op_prec))
 
-        # TODO Mmm...
-        break if right is (right =
-          @parseRightOperation right, @precedence(op), blocks, commas, spaces)
-
+        right = @parseRightOperation right, op_prec, blocks, commas, spaces
         next_op = @peekBinaryOperator()
 
       if op.kind in [T.H_WHITESPACE, T.COMMA]
@@ -1409,5 +1430,10 @@ class BaseParser extends Parser
       @skipAllWhitespace()
       eof = @expect T.EOF
       root.end = eof.start
+
+
+  prepare: (program) ->
+    super program
+    @parens = 0
 
 module.exports = BaseParser

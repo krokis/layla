@@ -9,6 +9,10 @@ class Parser extends Class
 
   parseRoot: -> throw new InternalError 'Not implemented'
 
+  prepare: (program) ->
+    tokens = program.slice()
+    @token = tokens[0]
+
   ###
   Parse source string or an array of tokens.
   ###
@@ -17,7 +21,7 @@ class Parser extends Class
       program = program.toString()
       program = (new Tokenizer).tokenize program, file
 
-    @token = program[0]
+    @prepare program
 
     return @parseRoot()
 
