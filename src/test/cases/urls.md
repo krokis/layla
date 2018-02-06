@@ -3,21 +3,21 @@
 - Are declared with `url(...)`
 
   ~~~ lay
-  body {
-    background: url(back.png)
+  url {
+    i: url(back.png)
   }
   ~~~
 
   ~~~ css
-  body {
-    background: url("back.png");
+  url {
+    i: url("back.png");
   }
   ~~~
 
 - Can be quoted
 
   ~~~ lay
-  string.quoted {
+  url.quoted {
     i: url('background.jpg') no-repeat
     ii: url("http://example.org/background.jpg") center
     iii: url('roboto.eot?&#iefix')
@@ -26,7 +26,7 @@
   ~~~
 
   ~~~ css
-  string.quoted {
+  url.quoted {
     i: url("background.jpg") no-repeat;
     ii: url("http://example.org/background.jpg") center;
     iii: url("roboto.eot?&#iefix");
@@ -37,7 +37,7 @@
 - Do not need to be quoted
 
   ~~~ lay
-  string.unquoted {
+  url.unquoted {
     i: url(http://example.org/background.jpg) center
     ii: url(/background.jpg?v=123&c=0) center
     iii: url(`//example.org/background.jpg`) center
@@ -47,7 +47,7 @@
   ~~~
 
   ~~~ css
-  string.unquoted {
+  url.unquoted {
     i: url("http://example.org/background.jpg") center;
     ii: url("/background.jpg?v=123&c=0") center;
     iii: url("//example.org/background.jpg") center;
@@ -59,90 +59,94 @@
 - Can have no scheme
 
   ~~~ lay
-  body {
-    background: url(//localhost/backdrop.png?q=foo)
+  url[no-scheme] {
+    i: url(//localhost/backdrop.png?q=foo)
   }
   ~~~
 
   ~~~ css
-  body {
-    background: url("//localhost/backdrop.png?q=foo");
+  url[no-scheme] {
+    i: url("//localhost/backdrop.png?q=foo");
   }
   ~~~
 
 - Can have no host
 
   ~~~ lay
-  body {
-    background: url(/backdrop.png?q=foo)
-    background: url(img/backdrop.png?q=foo)
+  url[no-host] {
+    i: url(/backdrop.png?q=foo)
+    ii: url(img/backdrop.png?q=foo)
   }
   ~~~
 
   ~~~ css
-  body {
-    background: url("/backdrop.png?q=foo");
-    background: url("img/backdrop.png?q=foo");
+  url[no-host] {
+    i: url("/backdrop.png?q=foo");
+    ii: url("img/backdrop.png?q=foo");
   }
   ~~~
 
 - Can have no path
 
   ~~~ lay
-  body {
-    background: url(?q=foo&r=bar)
+  url[no-path] {
+    i: url(?q=foo&r=bar)
   }
   ~~~
 
   ~~~ css
-  body {
-    background: url("?q=foo&r=bar");
+  url[no-path] {
+    i: url("?q=foo&r=bar");
   }
   ~~~
 
 - Can be just a `#fragment`
 
   ~~~ lay
-  body {
-    background: url(#foobar)
+  url#fragment {
+    i: url(#foobar)
   }
   ~~~
 
   ~~~ css
-  body {
-    background: url("#foobar");
+  url#fragment {
+    i: url("#foobar");
   }
   ~~~
 
 - Can be empty
 
   ~~~ lay
-  background: url()
-  background: url('')
+  url[empty] {
+    i: url()
+    ii: url('')
+  }
   ~~~
 
   ~~~ css
-  background: url("");
-  background: url("");
+  url[empty] {
+    i: url("");
+    ii: url("");
+  }
   ~~~
 
 - Support interpolation
 
   ~~~ lay
-  body {
+  url:interpolation {
     $host = 'disney.com'
     $query = 'princess=beauty'
     $scheme = 'http'
 
-    foo: url(`#{$scheme + 's'}://#{$host}#{'/path' * 2}`)
-    foo: url("#{$scheme + 's'}://#{$host}/?#{$query}")
+    i: url(`#{$scheme + 's'}://#{$host}#{'/path' * 2}`)
+    ii: url("#{$scheme + 's'}://#{$host}/?#{$query}")
   }
   ~~~
 
   ~~~ css
-  body {
-    foo: url("https://disney.com/path/path");
-    foo: url("https://disney.com/?princess=beauty");
+  url:interpolation {
+    i: url("https://disney.com/path/path");
+    ii: url("https://disney.com/?princess=beauty");
   }
   ~~~
 
@@ -153,47 +157,51 @@
 - Returns the `scheme:` part of the URL, if any, or `null`
 
   ~~~ lay
-  #foo {
-    bar: url('http://disney.com').scheme
-    bar: url(//disney.com).scheme
-    bar: url(file:///pr0n/7281.jpg).scheme
+  url.scheme {
+    i: url('http://disney.com').scheme
+    ii: url(//disney.com).scheme
+    iii: url(file:///pr0n/7281.jpg).scheme
   }
   ~~~
 
   ~~~ css
-  #foo {
-    bar: "http";
-    bar: null;
-    bar: "file";
+  url.scheme {
+    i: "http";
+    ii: null;
+    iii: "file";
   }
   ~~~
-
-### `scheme=`
 
 - Sets the `scheme:` part of the URL
 
   ~~~ lay
-  $url = url('http://www.disney.com:8080/movies/?id=245#characters')
-  foo: $url
-  $url.scheme = 'https'
-  foo: $url
+  url.scheme {
+    $url = url('http://www.disney.com:8080/movies/?id=245#characters')
+
+    i: $url
+    ii: $url.scheme('https')
+  }
   ~~~
 
   ~~~ css
-  foo: url("http://www.disney.com:8080/movies/?id=245#characters");
-  foo: url("https://www.disney.com:8080/movies/?id=245#characters");
+  url.scheme {
+    i: url("http://www.disney.com:8080/movies/?id=245#characters");
+    ii: url("https://www.disney.com:8080/movies/?id=245#characters");
+  }
   ~~~
 
 - Accepts `null`, and makes it a scheme-less URL
 
   ~~~ lay
-  $url = url('http://www.disney.com')
-  $url.scheme = null
-  foo: $url
+  url.scheme {
+    i: url('http://www.disney.com').scheme(null)
+  }
   ~~~
 
   ~~~ css
-  foo: url("//www.disney.com/");
+  url.scheme {
+    i: url("//www.disney.com/");
+  }
   ~~~
 
 ### `protocol`
@@ -201,36 +209,30 @@
 - Is an alias of `scheme`
 
   ~~~ lay
-  #foo {
-    bar: url('ftp://disney.com').protocol
-    bar: url(//disney.com).protocol
-    bar: url(mailto:hello@example.com).protocol
+  url.protocol {
+    i: url('ftp://disney.com').protocol
+    ii: url(//disney.com).protocol
+    iii: url(mailto:hello@example.com).protocol
+    iv: url(http://disney.com/).protocol('gopher')
+    v: url(http://disney.com/).protocol(null)
   }
   ~~~
 
   ~~~ css
-  #foo {
-    bar: "ftp";
-    bar: null;
-    bar: "mailto";
+  url.protocol {
+    i: "ftp";
+    ii: null;
+    iii: "mailto";
+    iv: url("gopher://disney.com/");
+    v: url("//disney.com/");
   }
   ~~~
 
-### `protocol=`
-
-- Is an alias of `scheme=`
-
-  ~~~ lay
-  $url = url(http://disney.com/)
-  $url.protocol = 'gopher'
-  foo: $url
-  $url.protocol = null
-  foo: $url
-  ~~~
-
   ~~~ css
-  foo: url("gopher://disney.com/");
-  foo: url("//disney.com/");
+  url.protocol {
+    i: url("gopher://disney.com/");
+    ii: url("//disney.com/");
+  }
   ~~~
 
 ### `http?`
@@ -238,32 +240,32 @@
 - Returns `true` if the URL has a protocol and it's 'http'
 
   ~~~ lay
-  #foo {
-    bar: url('http://disney.com').http?
-    bar: url(https://disney.com).http?
-    bar: url(//127.0.0.1/background.url).http?
+  url.https {
+    i: url('http://disney.com').http?
+    ii: url(https://disney.com).http?
+    iii: url(//127.0.0.1/background.url).http?
   }
   ~~~
 
   ~~~ css
-  #foo {
-    bar: true;
-    bar: false;
-    bar: false;
+  url.https {
+    i: true;
+    ii: false;
+    iii: false;
   }
   ~~~
 
 - Is case insensitive
 
   ~~~ lay
-  #foo {
-    bar: url('HTTP://disney.com').http?
+  url.https {
+    i: url('HTTP://disney.com').http?
   }
   ~~~
 
   ~~~ css
-  #foo {
-    bar: true;
+  url.https {
+    i: true;
   }
   ~~~
 
@@ -272,11 +274,15 @@
 - Return a copy of the URL with the scheme set to 'http'
 
   ~~~ lay
-  foo: url('ftp://disney.es/foo').http
+  url.http {
+    i: url('ftp://disney.es/foo').http
+  }
   ~~~
 
   ~~~ css
-  foo: url("http://disney.es/foo");
+  url.http {
+    i: url("http://disney.es/foo");
+  }
   ~~~
 
 ### `https?`
@@ -284,32 +290,32 @@
 - Returns `true` if the URL has a protocol and it's 'https'
 
   ~~~ lay
-  #foo {
-    bar: url('http://disney.com').http?
-    bar: url(https://disney.com).http?
-    bar: url(//127.0.0.1/background.url).http?
+  url.https {
+    i: url('http://disney.com').http?
+    ii: url(https://disney.com).http?
+    iii: url(//127.0.0.1/background.url).http?
   }
   ~~~
 
   ~~~ css
-  #foo {
-    bar: true;
-    bar: false;
-    bar: false;
+  url.https {
+    i: true;
+    ii: false;
+    iii: false;
   }
   ~~~
 
 - Is case insensitive
 
   ~~~ lay
-  #foo {
-    bar: url('HTTPs://disney.com').https?
+  url.https {
+    i: url('HTTPs://disney.com').https?
   }
   ~~~
 
   ~~~ css
-  #foo {
-    bar: true;
+  url.https {
+    i: true;
   }
   ~~~
 
@@ -318,11 +324,15 @@
 - Returns a copy of the URL with the scheme set to 'https'
 
   ~~~ lay
-  foo: url('http://disney.es/index.aspx').https
+  url.https {
+    i: url('http://disney.es/index.aspx').https
+  }
   ~~~
 
   ~~~ css
-  foo: url("https://disney.es/index.aspx");
+  url.https {
+    i: url("https://disney.es/index.aspx");
+  }
   ~~~
 
 ### `username`
@@ -347,8 +357,6 @@
   }
   ~~~
 
-### `username=`
-
 - Sets the `username` portion of the `auth` component
 
   ~~~ lay
@@ -356,12 +364,10 @@
 
   url.username {
     i: $url.username
-    $url.username = 'joe';
-    ii: $url.username
-    $url.username = null;
+    ii: $url.username('joe').username
+    $url = $url.username(null)
     iii: $url.username
-    $url.username = '';
-    iv: $url.username
+    iv: $url.username(``).username
   }
   ~~~
 
@@ -398,8 +404,6 @@
   }
   ~~~
 
-### `password=`
-
 - Sets the `password` portion of the `auth` component
 
   ~~~ lay
@@ -407,15 +411,15 @@
 
   url.password {
     i: $url.password
-    $url.password = '4321';
+    $url = $url.password('4321')
     ii: $url.password
-    $url.password = null;
+    $url = $url.password(null)
     iii: $url.password
-    $url.password = '';
+    $url = $url.password('')
     iv: $url.password
-    $url.username = ''
+    $url = $url.username('')
     v: $url
-    $url.username = $url.password = null;
+    $url = $url.username(null).password(null)
     vi: $url
   }
   ~~~
@@ -431,90 +435,92 @@
   }
   ~~~
 
-
 ### `host`
 
 - Returns the `//host` part of the URL, if any, or `null`
 
   ~~~ lay
-  #foo {
-    bar: url('http://disney.com').host
-    bar: url(//disney.com).host
-    bar: url(//127.0.0.1/pr0n/7281.jpg).host
+  url.host {
+    i: url('http://disney.com').host
+    ii: url(//disney.com).host
+    iii: url(//127.0.0.1/pr0n/7281.jpg).host
   }
   ~~~
 
   ~~~ css
-  #foo {
-    bar: "disney.com";
-    bar: "disney.com";
-    bar: "127.0.0.1";
+  url.host {
+    i: "disney.com";
+    ii: "disney.com";
+    iii: "127.0.0.1";
   }
   ~~~
-
-### `host=`
 
 - Sets the `//host` part of the URL
 
   ~~~ lay
-  $url = url('http://www.disney.com/')
-  $url.host = 'disney.org'
-  foo: $url
+  url.host {
+    i: url('http://www.disney.com/').host('disney.org')
+  }
   ~~~
 
   ~~~ css
-  foo: url("http://disney.org/");
+  url.host {
+    i: url("http://disney.org/");
+  }
   ~~~
 
 - Accepts TLD's
 
   ~~~ lay
   $url = url('http://localhost/phpMyAdmin')
-  foo: $url
-  $url.host = com
-  foo: $url
+
+  url.host[tld] {
+    i: $url
+    ii: $url.host(com)
+  }
   ~~~
 
   ~~~ css
-  foo: url("http://localhost/phpMyAdmin");
-  foo: url("http://com/phpMyAdmin");
+  url.host[tld] {
+    i: url("http://localhost/phpMyAdmin");
+    ii: url("http://com/phpMyAdmin");
+  }
   ~~~
 
 - Accepts IP addresses
 
   ~~~ lay
   $url = url('http://www.disney.com/pixar')
-  $url.host = '192.168.1.1'
-  foo: $url
+
+  url.host[ipv4] {
+    i: $url.host('192.168.1.1')
+  }
   ~~~
 
   ~~~ css
-  foo: url("http://192.168.1.1/pixar");
+  url.host[ipv4] {
+    i: url("http://192.168.1.1/pixar");
+  }
   ~~~
 
 - Accepts IPv6 addresses
 
   ~~~ lay
-  url[ipv6] {
+  url.host[ipv6] {
     $url = url('http://www.disney.com/pixar')
-    $url.host = '2001:0db8:85a3:08d3:1319:8a2e:0370:7334'
-    i: $url
-    $url.port = 21
-    ii: $url
-
-    $url.host = '2001:0DB8::1428:57ab'
-    iii: $url
+    i: $url = $url.host('2001:0db8:85a3:08d3:1319:8a2e:0370:7334')
+    ii: $url = $url.port(21)
+    iii: $url.host('2001:0DB8::1428:57ab')
 
     $url = url(http://user:password@[3ffe:2a00:100:7031::1]:8080) +
            '/articles/index.html'
     iv: $url
-    $url.port = null
-    v: $url
+    v: $url.port(null)
   }
   ~~~
 
   ~~~ css
-  url[ipv6] {
+  url.host[ipv6] {
     i: url("http://[2001:0db8:85a3:08d3:1319:8a2e:0370:7334]/pixar");
     ii: url("http://[2001:0db8:85a3:08d3:1319:8a2e:0370:7334]:21/pixar");
     iii: url("http://[2001:0db8::1428:57ab]:21/pixar");
@@ -527,17 +533,20 @@
 
   ~~~ lay
   $url = url('http://www.disney.com:8080/movies/')
-  foo: $url
-  $url.host = ''
-  foo: $url
-  $url.host = null
-  foo: $url
+
+  url.host[null] {
+    i: $url
+    ii: $url.host('')
+    iii: $url.host(null)
+  }
   ~~~
 
   ~~~ css
-  foo: url("http://www.disney.com:8080/movies/");
-  foo: url("http:///movies/");
-  foo: url("http:///movies/");
+  url.host[null] {
+    i: url("http://www.disney.com:8080/movies/");
+    ii: url("http:///movies/");
+    iii: url("http:///movies/");
+  }
   ~~~
 
 ### `domain`
@@ -685,31 +694,64 @@
   }
   ~~~
 
-### `port=`
-
 - Sets the `:port` part of the URL
 
   ~~~ lay
-  $url = url('http://disney.com/')
-  $url.port = 8080
-  foo: $url
+  url.port {
+    i: url('http://disney.com/').port(8080)
+  }
   ~~~
 
   ~~~ css
-  foo: url("http://disney.com:8080/");
+  url.port {
+    i: url("http://disney.com:8080/");
+  }
+  ~~~
+
+- Accepts numeric strings
+
+  ~~~ lay
+  $url = url('http://disney.com/')
+  url.port {
+    i: $url.port('80.0')
+  }
+  ~~~
+
+  ~~~ css
+  url.port {
+    i: url("http://disney.com:80/");
+  }
+  ~~~
+
+- Accepts `null`
+
+  ~~~ lay
+  url.port[null] {
+    $url = url('http://disney.com/')
+    $url = $url.port(8080)
+    i: $url
+    ii: $url.port(null)
+  }
+  ~~~
+
+  ~~~ css
+  url.port[null] {
+    i: url("http://disney.com:8080/");
+    ii: url("http://disney.com/");
+  }
   ~~~
 
 - Fails for non-numeric values
 
   ~~~ lay
-  url('http://disney.com/').port = #fff
+  url('http://disney.com/').port(#fff)
   ~~~
 
   ~~~ ValueError
   ~~~
 
   ~~~ lay
-  url('http://disney.com/').port = ''
+  url('http://disney.com/').port('')
   ~~~
 
   ~~~ ValueError
@@ -718,61 +760,45 @@
 - Fails for non-integer numbers
 
   ~~~ lay
-  url('http://disney.com/').port = '2.7'
+  url('http://disney.com/').port(2.7)
   ~~~
 
   ~~~ ValueError
-  Cannot set URL port to non-integer number: 2.7
+  Cannot create URL with a non-integer port number: 2.7
   ~~~
 
   ~~~ lay
-  $url = url('http://disney.com/')
-  $url.port = '80.0'
-  background: $url
+  url('http://disney.com/').port('2.7')
   ~~~
 
-  ~~~ css
-  background: url("http://disney.com:80/");
+  ~~~ ValueError
+  Cannot create URL with a non-integer port number: 2.7
   ~~~
 
 - Fails for numbers not in the 0..65535 range
 
   ~~~ lay
-  url('http://disney.com/').port = -1
+  url('http://disney.com/').port(-1)
   ~~~
 
   ~~~ ValueError
-  Port number out of 1..65535 range: -1
+  Cannot create URL with port `-1`: port number is out of 1..65535 range
   ~~~
 
   ~~~ lay
-  url('http://disney.com/').port = 0
-  ~~~
-
-  ~~~ css
-  ~~~
-
-  ~~~ lay
-  url('http://disney.com/').port = 65536
+  url('http://disney.com/').port(0)
   ~~~
 
   ~~~ ValueError
-  Port number out of 1..65535 range: 65536
+  Cannot create URL with port `0`: port number is out of 1..65535 range
   ~~~
-
-- Accepts `null`
 
   ~~~ lay
-  $url = url('http://disney.com/')
-  $url.port = 8080
-  foo: $url
-  $url.port = null
-  foo: $url
+  url('http://disney.com/').port(65536)
   ~~~
 
-  ~~~ css
-  foo: url("http://disney.com:8080/");
-  foo: url("http://disney.com/");
+  ~~~ ValueError
+  Cannot create URL with port `65536`: port number is out of 1..65535 range
   ~~~
 
 ### `path`
@@ -795,17 +821,13 @@
   }
   ~~~
 
-### `path=`
-
 - Sets the `path` component of the URL
 
   ~~~ lay
   $url = url(http://disney.org/princesses/aladdin/jasmine.html);
   url.path {
-    $url.path = '/';
-    i: $url
-    $url.path = '/etc/foo/bar/baz';
-    ii: $url
+    i: $url.path('/')
+    ii: $url.path('/etc/foo/bar/baz')
   }
   ~~~
 
@@ -836,18 +858,14 @@
   }
   ~~~
 
-### `dirname=`
-
 - Sets the directory part of the URL path
 
   ~~~ lay
   $url = url(http://disney.org/princesses/aladdin/jasmine.html)
 
   url.dirname {
-    $url.dirname = '/'
-    i: $url
-    $url.dirname = 'search'
-    ii: $url
+    i: $url.dirname('/')
+    ii: $url.dirname('search')
   }
   ~~~
 
@@ -878,16 +896,13 @@
   }
   ~~~
 
-### `basename=`
-
 - Sets the last portion of the URL path
 
   ~~~ lay
   $url = url(http://disney.org/princesses/aladdin/jasmine.html)
 
   url.basename {
-    $url.basename = 'index.php'
-    i: $url
+    i: $url.basename('index.php')
   }
   ~~~
 
@@ -917,21 +932,15 @@
   }
   ~~~
 
-### `extname=`
-
 - Sets the extension of the URL path
 
   ~~~ lay
   $url = url(http://disney.org/princesses/aladdin/jasmine.html)
 
   url.extname {
-    $url.extname = '.aspx'
-    i: $url
-    $url.extname = null
-    ii: $url
-    $url.path = '/x/y/z'
-    $url.extname = '.php'
-    iii: $url
+    i: $url.extname('.aspx')
+    ii: $url.extname(null)
+    iii: $url.path('/x/y/z').extname('.php')
   }
   ~~~
 
@@ -963,16 +972,13 @@
   }
   ~~~
 
-### `filename=`
-
 - Sets the last portion of the URL path, without extension
 
   ~~~ lay
   $url = url(http://disney.org/princesses/aladdin/jasmine.html)
 
   url.filename {
-    $url.filename = 'index'
-    i: $url
+    i: $url.filename('index')
   }
   ~~~
 
@@ -987,35 +993,36 @@
 - Returns the `?query` part of the URL if any, or `null`
 
   ~~~ lay
-  a: url(http://google.com/).query
-  b: url(http://google.com/?).query.quoted
-  c: url(http://google.com/?q=google).query
-  d: url(http://google.com/?q=google#top).query.quoted
-  ~~~
-
-  ~~~ css
-  a: null;
-  b: "";
-  c: "q=google";
-  d: "q=google";
-  ~~~
-
-### `query=`
-
-- Sets the `?query` part of the URL
-
-  ~~~ lay
-  $url = url(http://google.com/)
-  $url.query = 'hey=Joe'
-
   url.query {
-    foo: $url
+    i: url(http://google.com/).query
+    ii: url(http://google.com/?).query.quoted
+    iii: url(http://google.com/?q=google).query
+    iv: url(http://google.com/?q=google#top).query.quoted
   }
   ~~~
 
   ~~~ css
   url.query {
-    foo: url("http://google.com/?hey=Joe");
+    i: null;
+    ii: "";
+    iii: "q=google";
+    iv: "q=google";
+  }
+  ~~~
+
+- Sets the `?query` part of the URL
+
+  ~~~ lay
+  $url = url(http://google.com/)
+
+  url.query {
+    i: $url.query('hey=Joe')
+  }
+  ~~~
+
+  ~~~ css
+  url.query {
+    i: url("http://google.com/?hey=Joe");
   }
   ~~~
 
@@ -1023,24 +1030,20 @@
 
   ~~~ lay
   $url = url(http://google.com/)
-  $url.query = 'hey=John Doe&q=foo bar'
-
-  url.query {
-    i: $url
+  url.query:encoding {
+    i: $url.query('hey=John Doe&q=foo bar')
     /*
     TODO I think maybe `?` should be encoded to `%3F`, but Node
     `url.format()` implementation does not.
     https://tools.ietf.org/html/rfc2396#section-3.4
     */
-    $url.query = '?hey=yo'
-    ii: $url
-    $url.query = '#hey=yo'
-    iii: $url
+    ii: $url.query('?hey=yo')
+    iii: $url.query('#hey=yo')
   }
   ~~~
 
   ~~~ css
-  url.query {
+  url.query:encoding {
     i: url("http://google.com/?hey=John%20Doe&q=foo%20bar");
     ii: url("http://google.com/??hey=yo");
     iii: url("http://google.com/?%23hey=yo");
@@ -1050,18 +1053,21 @@
 - Accepts `null` and empty string
 
   ~~~ lay
-  $url = url(http://google.com/?q=Lebowski)
-  foo: $url
-  $url.query = ''
-  foo: $url
-  $url.query = null
-  foo: $url
+  url.query[empty] {
+    $url = url(http://google.com/?q=Lebowski)
+
+    i: $url
+    ii: $url.query('')
+    iii: $url.query(null)
+  }
   ~~~
 
   ~~~ css
-  foo: url("http://google.com/?q=Lebowski");
-  foo: url("http://google.com/?");
-  foo: url("http://google.com/");
+  url.query[empty] {
+    i: url("http://google.com/?q=Lebowski");
+    ii: url("http://google.com/?");
+    iii: url("http://google.com/");
+  }
   ~~~
 
 ### `fragment`
@@ -1069,70 +1075,69 @@
 - Returns the `#fragment` part of the URL, if any, or `null`
 
   ~~~ lay
-  #foo {
-    bar: url(http://disney.com#start).fragment
-    bar: url('http://localhost/#').fragment
-    bar: url(http://localhost/index.php).fragment
+  url.fragment {
+    i: url(http://disney.com#start).fragment
+    ii: url('http://localhost/#').fragment
+    iii: url(http://localhost/index.php).fragment
   }
   ~~~
 
   ~~~ css
-  #foo {
-    bar: "start";
-    bar: "";
-    bar: null;
+  url.fragment {
+    i: "start";
+    ii: "";
+    iii: null;
   }
   ~~~
-
-### `fragment=`
 
 - Sets the `#fragment` part of the URL
 
   ~~~ lay
   url.fragment {
     $url = url('http://disney.com/')
-    $url.fragment = 'footer'
-    foo: $url
+    i: $url.fragment('footer')
   }
   ~~~
 
   ~~~ css
   url.fragment {
-    foo: url("http://disney.com/#footer");
+    i: url("http://disney.com/#footer");
   }
   ~~~
 
 - Is properly encoded
 
   ~~~ lay
-  url.fragment {
+  url.fragment:encoding {
     $url = url('http://disney.com/')
-    $url.fragment = 'second section'
-    foo: $url
+    i: $url.fragment('second section')
   }
   ~~~
 
   ~~~ css
-  url.fragment {
-    foo: url("http://disney.com/#second%20section");
+  url.fragment:encoding {
+    i: url("http://disney.com/#second%20section");
   }
   ~~~
 
 - Accepts `null` and empty string
 
   ~~~ lay
-  $url = url(http://google.com/#images)
-  foo: $url
-  $url.fragment = ''
-  foo: $url
-  $url.fragment = null
-  foo: $url
+  url.fragment[empty] {
+    $url = url(http://google.com/#images)
+
+    i: $url
+    ii: $url.fragment('')
+    iii: $url.fragment(null)
+  }
   ~~~
 
   ~~~ css
-  foo: url("http://google.com/#images");
-  foo: url("http://google.com/#");
-  foo: url("http://google.com/");
+  url.fragment[empty] {
+    i: url("http://google.com/#images");
+    ii: url("http://google.com/#");
+    iii: url("http://google.com/");
+  }
   ~~~
 
 ### `hash`
@@ -1140,18 +1145,18 @@
 - Is an alias of `fragment`
 
   ~~~ lay
-  #foo {
-    bar: url(http://disney.com#start).hash
-    bar: url('http://localhost/#').hash
-    bar: url(http://localhost/index.php).hash
+  url.hash {
+    i: url(http://disney.com#start).hash
+    ii: url('http://localhost/#').hash
+    iii: url(http://localhost/index.php).hash
   }
   ~~~
 
   ~~~ css
-  #foo {
-    bar: "start";
-    bar: "";
-    bar: null;
+  url.hash {
+    i: "start";
+    ii: "";
+    iii: null;
   }
   ~~~
 
@@ -1160,16 +1165,21 @@
 - Is an alias of `fragment=`
 
   ~~~ lay
-  $url = url('http://disney.org/')
-  $url.hash = 'footer'
-  foo: $url
-  $url.hash = null
-  foo: $url
+  url.hash {
+    $url = url('http://disney.org/')
+
+    i: $url
+    ii: $url.hash('footer')
+    iii: $url.hash(null)
+  }
   ~~~
 
   ~~~ css
-  foo: url("http://disney.org/#footer");
-  foo: url("http://disney.org/");
+  url.hash {
+    i: url("http://disney.org/");
+    ii: url("http://disney.org/#footer");
+    iii: url("http://disney.org/");
+  }
   ~~~
 
 ### `absolute?`
@@ -1177,18 +1187,18 @@
 - Returns `true` if the URL is fully qualified, ie: it has a scheme
 
   ~~~ lay
-  #foo {
-    bar: url('http://disney.com').absolute?
-    bar: url(//disney.com).absolute?
-    bar: url(file:///pr0n/7281.jpg).absolute?
+  url.absolute {
+    i: url('http://disney.com').absolute?
+    ii: url(//disney.com).absolute?
+    iii: url(file:///pr0n/7281.jpg).absolute?
   }
   ~~~
 
   ~~~ css
-  #foo {
-    bar: true;
-    bar: false;
-    bar: true;
+  url.absolute {
+    i: true;
+    ii: false;
+    iii: true;
   }
   ~~~
 
@@ -1197,18 +1207,18 @@
 - Returns `true` if the URL is not absolute
 
   ~~~ lay
-  #foo {
-    bar: url('http://disney.com').relative?
-    bar: url(//disney.com).relative?
-    bar: url(file:///pr0n/7281.jpg).relative?
+  url.relative {
+    i: url('http://disney.com').relative?
+    ii: url(//disney.com).relative?
+    iii: url(file:///pr0n/7281.jpg).relative?
   }
   ~~~
 
   ~~~ css
-  #foo {
-    bar: false;
-    bar: true;
-    bar: false;
+  url.relative {
+    i: false;
+    ii: true;
+    iii: false;
   }
   ~~~
 
@@ -1237,35 +1247,39 @@
 - Resolves a relative URL or string
 
   ~~~ lay
-  foo: url('/one/two/three/') + 'four.php'
-  foo: url('/one/two/three') + 'four.php' + 'five.php'
-  foo: url('/one/two/three') + 'four.php' + '/five.php'
-  foo: url(http://example.com/two) + '/one'
-  foo: url(//example.com/two) + '../one'
-  foo: url(//example.com/one/two/three/) + '../' + '..'
-  foo: url(//example.com/one/two/three) + '../../one'
-  foo: url(//example.com/two/) + '../../../one'
-  foo: url(//example.com/two) + url(/one)
-  foo: url(//example.com/two) + url(//example.org/three)
-  foo: url(http://disney.com) + url(?princess=ariel)
-  foo: url(http://disney.com) + url(https://example.com/)
-  foo: url(https://disney.com) + url(//example.com/path)
-  foo: 'http://example.com/one' + url(/two)
+  url[operator="+"] {
+    i: url('/one/two/three/') + 'four.php'
+    ii: url('/one/two/three') + 'four.php' + 'five.php'
+    iii: url('/one/two/three') + 'four.php' + '/five.php'
+    iv: url(http://example.com/two) + '/one'
+    v: url(//example.com/two) + '../one'
+    vi: url(//example.com/one/two/three/) + '../' + '..'
+    vii: url(//example.com/one/two/three) + '../../one'
+    viii: url(//example.com/two/) + '../../../one'
+    ix: url(//example.com/two) + url(/one)
+    x: url(//example.com/two) + url(//example.org/three)
+    xi: url(http://disney.com) + url(?princess=ariel)
+    xii: url(http://disney.com) + url(https://example.com/)
+    xiii: url(https://disney.com) + url(//example.com/path)
+    xiv: 'http://example.com/one' + url(/two)
+  }
   ~~~
 
   ~~~ css
-  foo: url("/one/two/three/four.php");
-  foo: url("/one/two/five.php");
-  foo: url("/five.php");
-  foo: url("http://example.com/one");
-  foo: url("//example.com/one");
-  foo: url("//example.com/one/");
-  foo: url("//example.com/one");
-  foo: url("//example.com/one");
-  foo: url("//example.com/one");
-  foo: url("//example.org/three");
-  foo: url("http://disney.com/?princess=ariel");
-  foo: url("https://example.com/");
-  foo: url("https://example.com/path");
-  foo: url("http://example.com/two");
+  url[operator="+"] {
+    i: url("/one/two/three/four.php");
+    ii: url("/one/two/five.php");
+    iii: url("/five.php");
+    iv: url("http://example.com/one");
+    v: url("//example.com/one");
+    vi: url("//example.com/one/");
+    vii: url("//example.com/one");
+    viii: url("//example.com/one");
+    ix: url("//example.com/one");
+    x: url("//example.org/three");
+    xi: url("http://disney.com/?princess=ariel");
+    xii: url("https://example.com/");
+    xiii: url("https://example.com/path");
+    xiv: url("http://example.com/two");
+  }
   ~~~

@@ -122,6 +122,7 @@ describe 'Cases', ->
                   catch e
                     unless c.err_name or c.err_msg
                       throw e
+
                     unless e instanceof Layla.Error
                       throw e
 

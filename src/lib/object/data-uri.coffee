@@ -25,26 +25,37 @@ class DataURI extends URI
 
   @decode: (data) -> new Buffer(data, 'base64').toString @charset
 
-  parse: (uri) ->
+  @parseComponents: (uri) ->
     uri = uri.trim()
 
     if m = RE_DATA_URI.exec uri
-      @scheme = 'data'
-      @mime = (m[2] or DEFAULT_MIME).toLowerCase()
-      @charset = (m[3] or DEFAULT_CHARSET).toLowerCase()
-      @base64 = !!m[5]
+      components =
+        scheme:  'data'
+        mime:    (m[2] or DEFAULT_MIME).toLowerCase()
+        charset: (m[3] or DEFAULT_CHARSET).toLowerCase()
+        base64:  !!m[5]
+
       data = m[8]
 
-      if @base64
+      if components.base64
         # TODO We should pre-check this is valid BASE64 data. Otherwise, errors
         # could raise when calling `DataURI.data` (which uses `Buffer`
         # implementation)
         # https://tools.ietf.org/html/rfc4648
-        @encoded = data.replace /\s+/g, ''
+        components.encoded_data = data.replace /\s+/g, ''
       else
-        @decoded = data
+        components.decoded_data = data
 
-  @property 'data', -> @decoded or= @class.decode @encoded
+      return components
+
+  @property 'data', ->
+    @components.decoded_data ?= @class.decode @components.encoded_data
+
+  @property 'mime', -> @components.mime
+
+  @property 'charset', -> @components.charset
+
+  @property 'base64', -> @components.base64
 
   toString: ->
     str = 'data:'
@@ -54,9 +65,9 @@ class DataURI extends URI
 
     if @base64
       str += ";base64"
-      data = @encoded
+      data = @components.encoded_data
     else
-      data = @decoded
+      data = @components.decoded_data
 
     str += ",#{data}"
 

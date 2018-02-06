@@ -13,38 +13,45 @@ class URI extends Object
   # TODO add more? (`ftp`, `file`...)
   COMMON_SCHEMES = ['http', 'https', 'data']
 
-  constructor: (@value) ->
+  constructor: (components = {}) ->
     super()
+    @components = {scheme: null, components...}
 
-  parse: (uri) ->
+  @parseComponents: (uri) ->
     # scheme = alpha *( alpha | digit | "+" | "-" | "." )
-    m = uri.match /^[a-z][a-z\d\+\-\.]+(?=:)/i
+    match = uri.match /^[a-z][a-z\d\+\-\.]+(?=:)/i
 
-    if m
-      @scheme = m[0].toLowerCase()
+    if not match
+      throw new Error "Could not parse URI"
 
-  @property 'value',
-    get: -> @toString()
-    set: (value) -> @parse value
+    return {
+      scheme: match[0].toLowerCase()
+    }
 
-  clone: ->
-    obj = @copy()
-    obj.name = @name
+  @parse: (uri) -> new @ @parseComponents(uri)
 
-    return obj
+  @property 'scheme', -> @components.scheme
 
-  copy: (value = @value) ->
-    super value
+  @property 'protocol', -> @components.scheme
+
+  @property 'value', -> @toString()
+
+  clone: -> @
+
+  copy: (components = {}) ->
+    super {@components..., components...}
 
   '.scheme': ->
-    if not @scheme
+    if not @components.scheme
       Null.NULL
     else
-      new QuotedString @scheme
+      new QuotedString @components.scheme
+
+  '.protocol': -> @['.scheme']()
 
   # TODO move these methods to the `URL` and `DataURI` classes?
   COMMON_SCHEMES.forEach (scheme) ->
-    URI::[".#{scheme}?"] = -> Boolean.new @scheme is scheme
+    URI::[".#{scheme}?"] = -> Boolean.new @components.scheme is scheme
 
   '.string': -> new QuotedString @toString()
 

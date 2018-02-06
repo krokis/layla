@@ -214,9 +214,9 @@ class Evaluator extends Class
         uri = args[0]?.value or ''
 
         if uri[0...5].trim().toLowerCase() is 'data:'
-          obj = new DataURI uri
+          obj = DataURI.parse uri
         else
-          obj = new URL uri
+          obj = URL.parse uri
 
         obj.name = name
       else
