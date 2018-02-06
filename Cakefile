@@ -200,7 +200,8 @@ task 'build:bin', 'Build CLI binary', ->
 task 'build:test', 'Build tests', ->
   queue ->
     log 'task', 'Building tests'
-    exec 'coffee --compile --output test/ src/test'
+    remove 'test', ->
+      exec 'coffee --compile --output test/ src/test'
 
   queue ->
     log 'task', 'Copying test fixtures'
