@@ -20,6 +20,9 @@ CHECK  = "#{GREEN}√#{RESET}"
 CROSS  = "#{BOLD}#{RED}×#{RESET}"
 BG_RED = "#{ESC}[41m"
 
+NPM = which.sync 'npm'
+NPM_BIN = childProcess.execSync("#{NPM} bin").toString().trim()
+
 ERRORS = 0
 
 VERBOSE = no
@@ -98,11 +101,10 @@ exec = (cmd,  callback = done) ->
   log 'exec', cmd
   args = cmd.split /\s+/
   cmd = args.shift()
-  wcmd = which.sync cmd
-
+  cmd = "#{NPM_BIN}/#{cmd}"
   stdio = if VERBOSE then 'inherit' else 'ignore'
 
-  child = childProcess.spawn wcmd, args, stdio: stdio
+  child = childProcess.spawn cmd, args, stdio: stdio
 
   child.on 'exit', (status) ->
     if status is 0
