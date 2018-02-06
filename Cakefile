@@ -61,10 +61,10 @@ log = (type = '', text = '') ->
 
   text += RESET
 
-  process.stdout.write text
+  process.stderr.write text
 
   if VERBOSE
-    process.stdout.write "\n"
+    process.stderr.write "\n"
 
 next = ->
   if QUEUE.length
