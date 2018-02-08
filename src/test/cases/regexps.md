@@ -106,7 +106,7 @@ Regular expressions
   ~~~
 
   ~~~ ValueError
-  Bad flag for RegExp: "j"
+  Invalid RegExp flag: "j"
   ~~~
 
 - Are case-sensitive
@@ -116,7 +116,7 @@ Regular expressions
   ~~~
 
   ~~~ ValueError
-  Bad flag for RegExp: "I"
+  Invalid RegExp flag: "I"
   ~~~
 
   ~~~ lay
@@ -124,7 +124,7 @@ Regular expressions
   ~~~
 
   ~~~ ValueError
-  Bad flag for RegExp: "M"
+  Invalid RegExp flag: "M"
   ~~~
 
   ~~~ lay
@@ -132,7 +132,7 @@ Regular expressions
   ~~~
 
   ~~~ ValueError
-  Bad flag for RegExp: "G"
+  Invalid RegExp flag: "G"
   ~~~
 
 - Can be repeated
@@ -392,10 +392,10 @@ Regular expressions
   regexp.flags {
     i: "";
     ii: "i";
-    iii: "img";
+    iii: "gim";
     iv: "im";
-    v: "mg";
-    vi: "img";
+    v: "gm";
+    vi: "gim";
   }
   ~~~
 

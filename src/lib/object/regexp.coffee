@@ -7,65 +7,34 @@ Number       = require './number'
 List         = require './list'
 ValueError   = require '../error/value'
 
+JSRegExp = global.RegExp
 
 ###
 ###
 class RegExp extends Object
 
-  _value: null
-  source: null
-  global: no
-  multiline: no
-  insensitive: no
-
   @escape: (str) -> str.replace /[-\/\\^$*+?.()|[\]{}]/g, '\\$&'
 
   constructor: (@source, @flags = '') ->
     super()
-    @build()
 
-  @property 'value', ->
-    @build() unless @_value and
-                    @_value.source is @source and
-                    @_value.ignoreCase is @insensitive and
-                    @_value.global is @global and
-                    @_value.multiline is @multiline
+    # Detect bad flags
+    if e = @flags.match /[^img]/
+      throw new ValueError "Invalid RegExp flag: \"#{e}\""
 
-    return @_value
+    # Remove duplicates
+    @flags = @flags.split('').sort().join('').replace /(.)\1+/g, '$1'
 
-  @property 'flags',
-    get: ->
-      flags = ''
-      flags += 'i' if @insensitive
-      flags += 'm' if @multiline
-      flags += 'g' if @global
-
-      return flags
-
-    set: (flags) ->
-      @multiline = @global = @insensitive = no
-
-      if flags?.length
-        @setFlag flag, yes for flag in flags
-
-  setFlag: (flag, value) ->
-    switch flag
-      when 'm'
-        @multiline = value
-      when 'g'
-        @global = value
-      when 'i'
-        @insensitive = value
-      else
-        throw new ValueError "Bad flag for RegExp: \"#{flag}\""
-
-    return @
-
-  build: ->
     try
-      @_value = new global.RegExp @source, @flags
+      @value = new JSRegExp @source, @flags
     catch e
       throw new ValueError e.message
+
+  @property 'multiline', -> 'm' in @flags
+
+  @property 'global', -> 'g' in @flags
+
+  @property 'insensitive', -> 'i' in @flags
 
   isEqual: (other) ->
     (other instanceof RegExp) and
@@ -76,6 +45,16 @@ class RegExp extends Object
 
   copy: (source = @source, flags = @flags, etc...) ->
     super source, flags, etc...
+
+  copyWithFlag: (flag, value) ->
+    # Remove given flag
+    flags = @flags.split(flag).join ''
+
+    # Add if necessary
+    if value
+      flags += flag
+
+    return @copy undefined, flags
 
   clone: -> @
 
@@ -97,19 +76,19 @@ class RegExp extends Object
 
   '.global?': -> Boolean.new @global
 
-  '.global': -> @copy().setFlag 'g', yes
+  '.global': -> @copyWithFlag 'g', yes
 
   '.sensitive?': -> Boolean.new not @insensitive
 
-  '.sensitive': -> @copy().setFlag 'i', no
+  '.sensitive': -> @copyWithFlag 'i', no
 
   '.insensitive?': -> Boolean.new @insensitive
 
-  '.insensitive': -> @copy().setFlag 'i', yes
+  '.insensitive': -> @copyWithFlag 'i', yes
 
   '.multiline?': -> Boolean.new @multiline
 
-  '.multiline': -> @copy().setFlag 'm', yes
+  '.multiline': -> @copyWithFlag 'm', yes
 
 do ->
   supah = String::match
@@ -130,7 +109,7 @@ String::['.split'] = (context, separator, limit = Null.null) ->
       reg = ''
     else
       reg = RegExp.escape separator.value
-      reg = new global.RegExp "#{reg}+"
+      reg = new JSRegExp "#{reg}+"
   else
     throw new ValueError 'Bad `separator` argument for `String.split`'
 
@@ -154,7 +133,7 @@ do ->
       reg = separator.value
     else if separator instanceof String
       reg = RegExp.escape separator.value
-      reg = new global.RegExp "#{reg}+"
+      reg = new JSRegExp "#{reg}+"
     else
       throw new ValueError "Cannot divide string by a [#{separator.reprType()}]"
 
@@ -173,7 +152,7 @@ String::['.replace'] = (context, search, replacement) ->
   if search instanceof RegExp
     search = search.value
   else
-    search = new global.RegExp RegExp.escape(search.toString()), 'g'
+    search = new JSRegExp RegExp.escape(search.toString()), 'g'
 
   replacement = replacement.toString()
 

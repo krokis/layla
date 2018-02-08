@@ -4,6 +4,9 @@ Location    = require './location'
 SyntaxError = require './error/syntax'
 EOTError    = require './error/eot'
 
+JSString = global.String
+
+
 ###
 ###
 class Tokenizer extends Class
@@ -206,7 +209,7 @@ class Tokenizer extends Class
           # https://www.w3.org/TR/css-syntax-3/#consume-an-escaped-code-point
           @move() if @char.match RE_WHITESPACE
           code = parseInt code, 16
-          return global.String.fromCharCode code
+          return JSString.fromCharCode code
         else
           val = @char
 
@@ -480,5 +483,6 @@ class Tokenizer extends Class
     tokens.push eof
 
     return tokens
+
 
 module.exports = Tokenizer
