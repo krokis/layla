@@ -1,3 +1,18 @@
 #!/usr/bin/env coffee
 
-require './index'
+LaylaCommand = require './command'
+
+
+process.title = 'layla' # Sets process name, plus terminal title on Windows
+
+command = new LaylaCommand {
+  env:    process.env
+  stdout: process.stdout
+  stderr: process.stderr
+  stdin:  process.stdin
+}
+
+argv = process.argv.slice 2
+
+command.run(argv).then (status) ->
+  process.exit status
