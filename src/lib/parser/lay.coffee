@@ -408,9 +408,12 @@ class BaseParser extends Parser
   parseCall: ->
     if @token.is T.CALL
       name = new String @token.name
+      @parens++
       args = @parseCallArguments @token
+      @parens--
       node = new Call name, args
       @next()
+
       return node
 
   ###
@@ -419,6 +422,7 @@ class BaseParser extends Parser
     if @token.is T.UNICODE_RANGE
       urange = new UnicodeRange @parseSequence @token.value
       @next()
+
       return urange
 
   ###
@@ -427,6 +431,7 @@ class BaseParser extends Parser
     if @token.is T.AMPERSAND
       ths = new This
       @next()
+
       return ths
 
   ###
@@ -435,6 +440,7 @@ class BaseParser extends Parser
     if @token.is T.REGEXP
       regexp = new RegExp @token.value, @token.flags
       @next()
+
       return regexp
 
   ###
@@ -646,6 +652,7 @@ class BaseParser extends Parser
       # Damn it
       pieces = @parseSequence @token.value
       @next()
+
       return new IdSelector new String pieces
 
   ###
@@ -1245,7 +1252,11 @@ class BaseParser extends Parser
 
     while item = @parseExpression 0, yes, no
       items.push item
-      @skipHorizontalWhitespace()
+
+      if @parens
+        @skipAllWhitespace()
+      else
+        @skipHorizontalWhitespace()
 
       unless @eat T.COMMA
         break
