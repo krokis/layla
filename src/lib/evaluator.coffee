@@ -17,10 +17,13 @@ Context               = require './context'
 Node                  = require './node'
 Expression            = require './node/expression'
 Operation             = require './node/expression/operation'
+Group                 = require './node/expression/group'
+Literal               = require './node/expression/literal'
 LiteralString         = require './node/expression/string'
+LiteralNumber         = require './node/expression/number'
+LiteralCalc           = require './node/expression/calc'
 Directive             = require './node/statement/directive'
 PropertyDeclaration   = require './node/statement/property'
-LiteralNumber         = require './node/expression/number'
 Root                  = require './node/root'
 Object                = require './object'
 Enumerable            = require './object/enumerable'
@@ -42,6 +45,7 @@ URL                   = require './object/url'
 Color                 = require './object/color'
 Property              = require './object/property'
 Call                  = require './object/call'
+Calc                  = require './object/calc'
 RuleSet               = require './object/rule-set'
 AtRule                = require './object/at-rule'
 UniversalSelector     = require './object/selector/universal'
@@ -152,6 +156,50 @@ class Evaluator extends Class
   evaluateUnicodeRange: (node, context) ->
     new RawString (@getStringValue node, context).toUpperCase()
 
+  evaluateCalcLiteral: (node, context) ->
+    if node instanceof LiteralCalc
+      return '(' + @evaluateCalcExpression(node.expression) + ')'
+
+    value = @evaluateNode(node, context)
+
+    return value.toString()
+
+  evaluateCalcUnaryOperation: (node, context) ->
+    " #{node.operator}" + @evaluateCalcExpression(node.right)
+
+  evaluateCalcBinaryOperation: (node, context) ->
+    @evaluateCalcExpression(node.left, context) +
+    " #{node.operator} " +
+    @evaluateCalcExpression(node.right, context)
+
+  evaluateCalcOperation: (node, context) ->
+    if node.binary
+      @evaluateCalcBinaryOperation node, context
+    else
+      @evaluateCalcUnaryOperation node, context
+
+  evaluateCalcGroup: (node, context) ->
+    '(' + @evaluateCalcExpression(node.expression) + ')'
+
+  evaluateCalcExpression: (node, context) ->
+    if node instanceof Group
+      @evaluateCalcGroup node, context
+    else if node instanceof Operation
+      @evaluateCalcOperation node, context
+    else if node instanceof Literal
+      @evaluateCalcLiteral node, context
+    else
+      throw new Error "Bad calc()!"
+
+  ###
+  ###
+  evaluateCalc: (node, context) ->
+    expr = @evaluateCalcExpression node.expression, context
+
+    return new Calc node.name, expr
+
+  ###
+  ###
   evaluateCall: (node, context) ->
     name = @getStringValue(node.name, context).toLowerCase()
     args = (@evaluateNode arg, context for arg in node.arguments)
@@ -202,7 +250,7 @@ class Evaluator extends Class
       else
         in_args.push arg
 
-    new Function (block, args...) =>
+    return new Function (block, args...) =>
       try
         ctx = context.child block
         l = in_args.length
@@ -244,12 +292,13 @@ class Evaluator extends Class
   ###
   evaluateList: (node, context) ->
     items = (@evaluateNode item, context for item in node.body)
+
     return new List items, node.separator
 
   ###
   ###
   evaluateUnaryOperation: (node, context) ->
-    (@evaluateNode node.right, context).operate context, "#{node.operator}@"
+    @evaluateNode(node.right, context).operate context, "#{node.operator}@"
 
   ###
   TODO Reimplement this mess as a Node methods

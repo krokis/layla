@@ -13,6 +13,7 @@ class Token extends Class
   @REGEXP          = 'RegExp'
   @URL             = 'URL'
   @CALl            = 'Call'
+  @CALC            = 'Calc'
   @UNICODE_RANGE   = 'UnicodeRange'
 
   @TILDE_EQUAL     = 'TildeEqual'

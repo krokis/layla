@@ -48,6 +48,7 @@ class Tokenizer extends Class
     '!'  : T.EXCLAMATION
 
   RE_HEX_DIGIT      = /[0-9a-fA-F]/
+  RE_CALC           = /^((-[a-z\d\-_]+)?calc)(?=\()/i
   RE_COLOR          = ///(#{RE_HEX_DIGIT.source})+///
   RE_BREAK          = /\r\n?|\n/
   RE_NON_ASCII      = /[^\x00-\x80]/
@@ -370,7 +371,9 @@ class Tokenizer extends Class
   ###
   skipAllWhitespace: -> @match RE_WHITESPACE
 
-  readCallArguments: ->
+  readRawArguments: (separator = '') ->
+    @skipAllWhitespace()
+
     args = []
 
     loop
@@ -378,21 +381,20 @@ class Tokenizer extends Class
 
       if not str
         start = @location
-        value = @readSequence /[^,\)]/
+        value = @readSequence ///[^#{separator}\)]///
 
         if value
           str = new Token T.RAW_STRING, start
           str.value = value
           str.end = @location
 
-      if not str
-        break
+      break if not str
 
       args.push str
 
       @skipAllWhitespace()
 
-      if @char is ','
+      if @char is separator
         @move()
         @skipAllWhitespace()
 
@@ -400,24 +402,64 @@ class Tokenizer extends Class
 
   ###
   ###
-  readCall: ->
+  readCalcToken: -> @readToken()
+
+  ###
+  ###
+  readCalcArguments: ->
+    tokens = []
+    parens = 0
+
+    loop
+      @skipAllWhitespace()
+      break if @isEndOfFile()
+
+      token = @readCalcToken()
+
+      if not token
+        @syntaxError()
+
+      if token.kind is T.PAREN_OPEN
+        parens++
+      else if token.kind is T.PAREN_CLOSE
+        parens--
+
+        if parens is 0
+          tokens.push ')'
+          break
+        else if parens < 0
+          @syntaxError()
+
+      if token.kind in [T.RAW_STRING, T.UNQUOTED_STRING, T.QUOTED_STRING]
+        eof = new Token T.EOF, @location, @location
+        token.next = eof
+        token = [token, eof]
+      else
+        token = token.value
+
+      tokens.push token
+
+    return tokens
+
+  ###
+  ###
+  readCalc: ->
+    if m = @match RE_CALC
+      calc = new Token T.CALC, m.start, m.end
+      calc.name = m[1]
+
+      return calc
+
+  ###
+  ###
+  readRawCall: ->
     if m = @match /^(url-prefix|url|domain|regexp)\(/i
       call = new Token T.CALL, m.start
-      call.name = m[1]
+      call.name = m[1].toLowerCase()
+
       @skipAllWhitespace()
 
-      switch call.name.toLowerCase()
-        when 'url', 'url-prefix'
-          uri = @readQuotedString()
-
-          if not uri
-            uri = new Token T.RAW_STRING, @location
-            value = @readSequence /[^\)]/
-            uri.value = value
-
-          call.arguments = [uri]
-        else
-          call.arguments = @readCallArguments()
+      call.arguments = @readRawArguments()
 
       @skipAllWhitespace()
 
@@ -433,6 +475,7 @@ class Tokenizer extends Class
   readBOM: ->
     if @position is 0 and @char is '\uFEFF'
       @move()
+
       return new Token T.BOM, 0, 1, @char
 
   ###
@@ -446,7 +489,8 @@ class Tokenizer extends Class
             @readRegExp()
 
     if not token and not (prev?.kind in [T.DOT, T.DOUBLE_COLON])
-      token = @readCall()
+      token = @readCalc() or
+              @readRawCall()
 
     if not token
       token = @readUnicodeRange() or

@@ -1,5 +1,5 @@
 Parser                = require '../parser'
-T                     = require '../token'
+T = Token             = require '../token'
 Expression            = require '../node/expression'
 Operation             = require '../node/expression/operation'
 Group                 = require '../node/expression/group'
@@ -12,6 +12,7 @@ Function              = require '../node/expression/function'
 List                  = require '../node/expression/list'
 Block                 = require '../node/expression/block'
 This                  = require '../node/expression/this'
+Calc                  = require '../node/expression/calc'
 Call                  = require '../node/expression/call'
 UnicodeRange          = require '../node/expression/unicode-range'
 SelectorList          = require '../node/selector/list'
@@ -74,7 +75,7 @@ class BaseParser extends Parser
   ]
 
   # Operator precedence, from highest to lowest.
-  PRECEDENCE =
+  OPERATOR_PRECEDENCE =
     '+@'    :  900
     '-@'    :  900
     '('     :  700
@@ -166,6 +167,15 @@ class BaseParser extends Parser
     T.MINUS
     T.GT
     T.TILDE
+  ]
+
+  CALC_PUNCTUATION = [
+    T.PAREN_OPEN
+    T.PAREN_CLOSE
+    T.PLUS
+    T.MINUS
+    T.ASTERISK
+    T.SLASH
   ]
 
   # These constructors share the same syntax.
@@ -307,8 +317,9 @@ class BaseParser extends Parser
     pieces = [].concat pieces
 
     return pieces.map (piece) =>
-      if piece instanceof Array
-        piece = (new @class).parse piece
+      if (piece instanceof Array) or (piece instanceof Token)
+        piece = (new @class).parse [].concat(piece)
+
       return piece
 
   ###
@@ -367,6 +378,24 @@ class BaseParser extends Parser
 
   ###
   ###
+  parseCalc: ->
+    if node = @eat T.CALC
+      calc = new Calc
+      calc.name = node.name
+      calc.start = node.start
+      @expect T.PAREN_OPEN
+      @parens++
+      @skipAllWhitespace()
+      calc.expression = @parseExpression 0, no, no, no
+      @skipAllWhitespace()
+      @expect T.PAREN_CLOSE
+      @parens--
+      calc.end = @location
+
+      return calc
+
+  ###
+  ###
   parseCallArguments: (token) ->
     args = []
 
@@ -390,6 +419,7 @@ class BaseParser extends Parser
       node = new Call name, args
       @next()
       return node
+
   ###
   ###
   parseUnicodeRange: ->
@@ -421,23 +451,23 @@ class BaseParser extends Parser
   Functions and blocks are only included if `blocks` is `yes`.
   ###
   parseLiteral: (blocks = yes) ->
-    node = @parseNumber()
+    number = @parseNumber()
 
-    if node
-      if @token.is T.SLASH
-        if @token.next.is T.NUMBER
-          left = node
-          @move @token.next
-          right = @parseNumber()
+    if number
+      if @token.is(T.SLASH) and @token.next.is(T.NUMBER)
+        left = number
+        @move @token.next
+        right = @parseNumber()
 
-          pieces = [left, '/', right]
+        pieces = [left, '/', right]
 
-          return new String pieces, null, yes, left.start, right.end
+        return new String pieces, null, yes, left.start, right.end
 
-      return node
+      return number
 
     node = @parseString() or
            @parseColor() or
+           @parseCalc() or
            @parseCall() or
            @parseUnicodeRange() or
            @parseAmpersand() or
@@ -1248,7 +1278,7 @@ class BaseParser extends Parser
   precedence: (op, unary = no) ->
     value = if op.is T.H_WHITESPACE then ' ' else op.value
     value += '@' if unary
-    return PRECEDENCE[value]
+    return OPERATOR_PRECEDENCE[value]
 
   ###
   ###

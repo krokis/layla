@@ -11,6 +11,14 @@ UnquotedString = require '../object/string/unquoted'
 ###
 class CSSEmitter extends Emitter
 
+  OPERATOR_PRECEDENCE =
+    '+@'    :  900
+    '-@'    :  900
+    '*'     :  500
+    '/'     :  500
+    '+'     :  450
+    '-'     :  450
+
   options: null
 
   constructor: (@options = {}) ->
@@ -160,6 +168,52 @@ class CSSEmitter extends Emitter
     args = (@emit arg for arg in call.arguments)
 
     return "#{name}(#{args.join ', '})"
+
+  emitCalcUnaryOperation: (expression) ->
+    precedence = OPERATOR_PRECEDENCE["#{expression.operator}@"]
+
+    return expression.operator +
+           @groupCalcExpression(expression.right, precedence)
+
+  groupCalcExpression: (expression, precedence = 0) ->
+    str = @emitCalcExpression expression
+
+    if expression.type is 'operation'
+      op = expression.operator
+
+      unless expression.binary
+        op = op + '@'
+
+      if OPERATOR_PRECEDENCE[op] < precedence
+        str = '(' + str + ')'
+
+    return str
+
+  emitCalcBinaryOperation: (expression) ->
+    precedence = OPERATOR_PRECEDENCE[expression.operator]
+
+    return @groupCalcExpression(expression.left, precedence) +
+           ' ' + expression.operator + ' ' +
+           @groupCalcExpression(expression.right, precedence)
+
+  emitCalcOperation: (expression) ->
+    if expression.binary
+      @emitCalcBinaryOperation expression
+    else
+      @emitCalcUnaryOperation expression
+
+  emitCalcLiteral: (expression) ->
+    @emitNumber expression.value
+
+  emitCalcExpression: (expression) ->
+    switch expression.type
+      when 'operation'
+        @emitCalcOperation expression
+      when 'literal'
+        @emitCalcLiteral expression
+
+  emitCalc: (calc) ->
+    "#{calc.name}(#{@emitCalcExpression calc.expression})"
 
   emitRegExp: (regexp) ->
     'regexp(' + @quoteString(regexp.toString()) + ')'
