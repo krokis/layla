@@ -360,14 +360,14 @@ Strings
 - Joins strings
 
   ~~~ lay
-  String[op="+"] {
+  string[operator="+"] {
     a: 'Hello' + "," + ' ' + world
     b: hello + '-world'
   }
   ~~~
 
   ~~~ css
-  String[op="+"] {
+  string[operator="+"] {
     a: "Hello, world";
     b: hello-world;
   }
@@ -378,25 +378,96 @@ Strings
 - Repeats a string a number of times
 
   ~~~ lay
-  foo: "na" * 0
-  foo: "na" * 1
-  foo: "na" * 2
-  foo: "na" * 5
-  foo: 0 * "na"
-  foo: 1 * "na"
-  foo: 2 * "na"
-  foo: 5 * "na"
+  string[operator="*"] {
+    i: "na" * 0
+    ii: "na" * 1
+    iii: "na" * 2
+    iv: "na" * 5
+    v: 0 * "na"
+    vi: 1 * "na"
+    vii: 2 * "na"
+    viii: 5 * "na"
+  }
   ~~~
 
   ~~~ css
-  foo: "";
-  foo: "na";
-  foo: "nana";
-  foo: "nanananana";
-  foo: "";
-  foo: "na";
-  foo: "nana";
-  foo: "nanananana";
+  string[operator="*"] {
+    i: "";
+    ii: "na";
+    iii: "nana";
+    iv: "nanananana";
+    v: "";
+    vi: "na";
+    vii: "nana";
+    viii: "nanananana";
+  }
+  ~~~
+
+- Works with decimal numbers
+
+  ~~~ lay
+  string[operator="*"] {
+    i: "1234567890" * 0.1
+    ii: "1234567890" * 0.2
+    iii: "1234567890" * 0.3
+    iv: "1234567890" * 0.4
+    v: "1234567890" * 0.5
+    vi: "1234567890" * 0.6
+    vii: "1234567890" * 0.7
+    viii: "1234567890" * 0.8
+    ix: "1234567890" * 0.9
+    x: "1234567890" * 1
+    xi: "1234567890" * 1.1
+    xii: "1234567890" * 1.3
+    xiii: "1234567890" * 1.47
+    xiv: "1234567890" * 1.51
+    xv: "1234567890" * 1.9
+  }
+  ~~~
+
+  ~~~ css
+  string[operator="*"] {
+    i: "1";
+    ii: "12";
+    iii: "123";
+    iv: "1234";
+    v: "12345";
+    vi: "123456";
+    vii: "1234567";
+    viii: "12345678";
+    ix: "123456789";
+    x: "1234567890";
+    xi: "12345678901";
+    xii: "1234567890123";
+    xiii: "123456789012345";
+    xiv: "123456789012345";
+    xv: "1234567890123456789";
+  }
+  ~~~
+
+- Fails for non-pure numbers
+
+  ~~~ lay
+  "na" * 2px
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+- Fails for negative numbers
+
+  ~~~ lay
+  "na" * -2px
+  ~~~
+
+  ~~~ ValueError
+  ~~~
+
+  ~~~ lay
+  "na" * -1
+  ~~~
+
+  ~~~ ValueError
   ~~~
 
 ### `/`

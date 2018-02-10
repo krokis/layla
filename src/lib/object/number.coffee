@@ -123,6 +123,8 @@ class Number extends Object
 
   isPositive: -> @value > 0
 
+  isNegative: -> @value < 0
+
   # http://www.javascripter.net/faq/numberisprime.htm
   isPrime: ->
     n = @value
@@ -275,7 +277,7 @@ class Number extends Object
 
   '.negate': -> @negate()
 
-  '.negative?': -> Boolean.new @value < 0
+  '.negative?': -> Boolean.new @isNegative()
 
   '.round': (context, places = ZERO) ->
     @copy round(@value, places.value)

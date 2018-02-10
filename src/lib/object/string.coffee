@@ -109,25 +109,18 @@ class String extends Object
 
   '.*': (context, other) ->
     if other instanceof Number
-      if other.value >= 0
-        unless other.unit
-          return @copy Array(other.value + 1).join(@value)
+      if other.isNegative()
+        throw new ValueError """
+          Cannot multiply a string with a negative number"""
 
-        throw new ValueError (
-          """
-          Cannot perform #{@repr()} * #{other.repr()}: \
-          that's not a [Number]
-          """
-        )
+      unless other.isPure()
+        throw new ValueError """
+          Cannot multiply a string with a dimension"""
 
-      throw new ValueError
+      str = Array(Math.floor(other.value) + 1).join(@value) +
+            @value[0...Math.round(@value.length * (other.value % 1))]
 
-    throw new ValueError (
-      """
-      Cannot perform #{@repr()} * #{other.repr()}: \
-      that's not a [Number]
-      """
-    )
+      return @copy str
 
   '.::': (context, other) ->
     if other instanceof Number
