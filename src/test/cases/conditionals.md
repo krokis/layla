@@ -15,7 +15,7 @@ Conditionals
         }
       }
 
-      if (true is false) {
+      if (true == false) {
         border: none
         font-weight: normal
       }
@@ -82,7 +82,7 @@ Conditionals
 
     if false {
       color: transparent
-    } else if not true or null or black is white {
+    } else if not true or null or black == white {
       color: white
     } else {
       color: black

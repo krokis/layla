@@ -144,29 +144,57 @@
 
 ## Operators
 
-### `is`
+### `==`
 
 - Returns `true` only for colors with the same channels
 
   ~~~ lay
-  color.is {
-    i: #000 is #000
-    ii: #000 is #000000
-    iii: #000 isnt red
-    iv: #f02 is #ff0022
-    vi: #f02 is #ff0022ff
-    vi: #f02e isnt #ff0022ff
-    vii: not (#f02 isnt #ff0022)
+  color.equal {
+    i: #000 == #000
+    ii: #000 == #000000
+    iii: #000 == red
+    iv: #f02 == #ff0022
+    vi: #f02 == #ff0022ff
+    vi: #f02e == #ff0022ff
+    vii: not (#f02 == #ff0022)
   }
   ~~~
 
   ~~~ css
-  color.is {
+  color.equal {
     i: true;
     ii: true;
-    iii: true;
+    iii: false;
     iv: true;
     vi: true;
+    vi: false;
+    vii: false;
+  }
+  ~~~
+
+### `!=`
+
+- Returns `false` only for colors with the same channels
+
+  ~~~ lay
+  color.not-equal {
+    i: #000 != #000
+    ii: #000 != #000000
+    iii: #000 != red
+    iv: #f02 != #ff0022
+    vi: #f02 != #ff0022ff
+    vi: #f02e != #ff0022ff
+    vii: not (#f02 != #ff0022)
+  }
+  ~~~
+
+  ~~~ css
+  color.not-equal {
+    i: false;
+    ii: false;
+    iii: true;
+    iv: false;
+    vi: false;
     vi: true;
     vii: true;
   }

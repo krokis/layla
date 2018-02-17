@@ -27,6 +27,8 @@ class Token extends Class
   @DOUBLE_COLON    = 'DoubleColon'
   @DOUBLE_DOT      = 'DoubleDot'
   @ELLIPSIS        = 'Ellipsis'
+  @DOUBLE_EQUAL    = 'DoubleEqual'
+  @NOT_EQUAL       = 'NotEqual'
   @EQUAL           = 'Equal'
   @DOT             = 'Dot'
   @ASTERISK        = 'Asterisk'

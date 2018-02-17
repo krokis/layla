@@ -22,6 +22,8 @@ class Tokenizer extends Class
     '|=' : T.PIPE_EQUAL
     '::' : T.DOUBLE_COLON
     '..' : T.DOUBLE_DOT
+    '==' : T.DOUBLE_EQUAL
+    '!=' : T.NOT_EQUAL
     '='  : T.EQUAL
     '.'  : T.DOT
     '*'  : T.ASTERISK
@@ -60,7 +62,7 @@ class Tokenizer extends Class
   RE_IDENT_END      = /^[\!\?]+/
   RE_PUNC           = ///^
                         (::|\|?:|\.{1,3}|\(|\)|\{|\}|\[|\]|\&|@|;|%|
-                        \,|[\|\$~*^]?=|~|\*|\/|
+                        \,|[\|\$~*^=!]?=|~|\*|\/|
                         \||>=|>|<=|<|
                         ([\+\-\!](?!#{RE_IDENT_START.source})))
                       ///

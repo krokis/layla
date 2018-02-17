@@ -313,7 +313,7 @@ Lists
   a = (2,)
   b = ()
   foo {
-    a: a.last (a.first is a.last)
+    a: a.last (a.first == a.last)
     b: b.last
   }
   ~~~
@@ -561,33 +561,65 @@ Lists
 
 ## Operators
 
-### `is`
+### `==`
 
 - Returns `true` only if the other operand is a collection and has equal elements, in the same order.
 
   ~~~ lay
-  list[operator="is"] {
-    a: (1 2 3) is (1, 2, 3)
-    b: (1 2 3) isnt (1, 2)
-    c: (1 2) isnt (1, 2, 3)
-    d: (1 2 2 3) isnt (1, 2, 3)
-    e: () is ()
-    f: (0,) is (().push(0))
-    g: (a b c) is ('a' `b` "c")
-    h: (1 2 3) isnt (1 `2` 3)
-    i: (1 2 3) isnt (2 1 3)
+  list[operator="=="] {
+    a: (1 2 3) == (1, 2, 3)
+    b: (1 2 3) == (1, 2)
+    c: (1 2) == (1, 2, 3)
+    d: (1 2 2 3) == (1, 2, 3)
+    e: () == ()
+    f: (0,) == (().push(0))
+    g: (a b c) == ('a' `b` "c")
+    h: (1 2 3) == (1 `2` 3)
+    i: (1 2 3) == (2 1 3)
   }
   ~~~
 
   ~~~ css
-  list[operator="is"] {
+  list[operator="=="] {
     a: true;
-    b: true;
-    c: true;
-    d: true;
+    b: false;
+    c: false;
+    d: false;
     e: true;
     f: true;
     g: true;
+    h: false;
+    i: false;
+  }
+  ~~~
+
+### `!=`
+
+- Returns `false` only if the other operand is a collection and has equal elements, in the same order.
+
+  ~~~ lay
+  list[operator="!="] {
+    a: (1 2 3) != (1, 2, 3)
+    b: (1 2 3) != (1, 2)
+    c: (1 2) != (1, 2, 3)
+    d: (1 2 2 3) != (1, 2, 3)
+    e: () != ()
+    f: (0,) != (().push(0))
+    g: (a b c) != ('a' `b` "c")
+    h: (1 2 3) != (1 `2` 3)
+    i: (1 2 3) != (2 1 3)
+  }
+  ~~~
+
+  ~~~ css
+  list[operator="!="] {
+    a: false;
+    b: true;
+    c: true;
+    d: true;
+    e: false;
+    f: false;
+    g: false;
     h: true;
     i: true;
   }

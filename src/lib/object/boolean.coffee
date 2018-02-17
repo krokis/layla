@@ -31,9 +31,9 @@ Object::toBoolean = -> yes
 # TODO should throw an exception ("Cannot compare")?
 Object::isEqual = (other) -> other is @
 
-Object::['.is'] = (context, other) -> Boolean.new @isEqual other
+Object::['.=='] = (context, other) -> Boolean.new @isEqual other
 
-Object::['.isnt'] = (context, other) -> Boolean.new not @isEqual other
+Object::['.!='] = (context, other) -> Boolean.new not @isEqual other
 
 Object::['.not@'] = (context, other) -> Boolean.new not @toBoolean()
 

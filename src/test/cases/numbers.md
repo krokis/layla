@@ -171,12 +171,12 @@
     iii: -.1.sign
     iv: 0.2.sign
     v: 2.sign
-    vi: 1.sign is 0.1.sign
-    vii: 1.sign isnt 0.sign
-    viii: 1.sign isnt -1.sign
-    ix: -1.sign isnt 0.sign
-    x: -1.sign is -9999.sign
-    xi: -1.sign isnt .0001.sign
+    vi: 1.sign == 0.1.sign
+    vii: 1.sign != 0.sign
+    viii: 1.sign != -1.sign
+    ix: -1.sign != 0.sign
+    x: -1.sign == -9999.sign
+    xi: -1.sign != .0001.sign
   }
   ~~~
 
@@ -1652,66 +1652,66 @@
 
 ### Binary
 
-#### `is`
+#### `==`
 
 - Returns `true` only if the right side is a number with the same value and compatible units
 
   ~~~ lay
-  number[op="is"] {
-    i: 1px is 1px
-    ii: 1 is 1px
-    iii: 1px isnt 1rem
-    iv: 1 isnt "1"
-    v: 1px isnt (3em - 2)
-    vi: 0 isnt null
-    vii: 0 isnt false
-    viii: 1Hz isnt 1cm
+  number[op="=="] {
+    i: 1px == 1px
+    ii: 1 == 1px
+    iii: 1px == 1rem
+    iv: 1 == "1"
+    v: 1px == (3em - 2)
+    vi: 0 == null
+    vii: 0 == false
+    viii: 1Hz == 1cm
   }
   ~~~
 
   ~~~ css
-  number[op="is"] {
+  number[op="=="] {
     i: true;
     ii: true;
-    iii: true;
-    iv: true;
-    v: true;
-    vi: true;
-    vii: true;
-    viii: true;
+    iii: false;
+    iv: false;
+    v: false;
+    vi: false;
+    vii: false;
+    viii: false;
   }
   ~~~
 
 - Converts units as necessary
 
   ~~~ lay
-  number[op="is"] {
-        i: 1cm is 10mm
-       ii: 10mm is 1cm
-      iii: 1turn is 360deg
-       iv: 1turn is (2 * PI)rad
-        v: (PI)rad is .5turn
-       vi: 360deg is 1turn
-      vii: 360deg is (2 * PI)rad
-     viii: (PI)rad is 180deg
-       ix: 1s is 1000ms
-        x: 77ms is 0.077s
-       xi: 1000ms is 1s
-      xii: 400grad is 1turn
-     xiii: 100grad is 90deg
-      xiv: (PI)rad is 200grad
-       xv: 1kHz is 1000Hz
-      xvi: 96px is 1in
-     xvii: 96px is 25.4mm
-    xviii: 96px is 1in
-      xix: 1in is 2.54cm
-       xx: .5turn is 200grad
-      xxi: 1mm isnt 0.24pc
+  number[op="=="] {
+        i: 1cm == 10mm
+       ii: 10mm == 1cm
+      iii: 1turn == 360deg
+       iv: 1turn == (2 * PI)rad
+        v: (PI)rad == .5turn
+       vi: 360deg == 1turn
+      vii: 360deg == (2 * PI)rad
+     viii: (PI)rad == 180deg
+       ix: 1s == 1000ms
+        x: 77ms == 0.077s
+       xi: 1000ms == 1s
+      xii: 400grad == 1turn
+     xiii: 100grad == 90deg
+      xiv: (PI)rad == 200grad
+       xv: 1kHz == 1000Hz
+      xvi: 96px == 1in
+     xvii: 96px == 25.4mm
+    xviii: 96px == 1in
+      xix: 1in == 2.54cm
+       xx: .5turn == 200grad
+      xxi: not (1mm == 0.24pc)
   }
   ~~~
 
   ~~~ css
-  number[op="is"] {
+  number[op="=="] {
     i: true;
     ii: true;
     iii: true;
@@ -1733,6 +1733,90 @@
     xix: true;
     xx: true;
     xxi: true;
+  }
+  ~~~
+
+#### `!=`
+
+- Returns `false` only if the right side is a number with the same value and compatible units
+
+  ~~~ lay
+  number[op="!="] {
+    i: 1px != 1px
+    ii: 1 != 1px
+    iii: 1px != 1rem
+    iv: 1 != "1"
+    v: 1px != (3em - 2)
+    vi: 0 != null
+    vii: 0 != false
+    viii: 1Hz != 1cm
+  }
+  ~~~
+
+  ~~~ css
+  number[op="!="] {
+    i: false;
+    ii: false;
+    iii: true;
+    iv: true;
+    v: true;
+    vi: true;
+    vii: true;
+    viii: true;
+  }
+  ~~~
+
+- Converts units as necessary
+
+  ~~~ lay
+  number[op="!="] {
+        i: 1cm != 10mm
+       ii: 10mm != 1cm
+      iii: 1turn != 360deg
+       iv: 1turn != (2 * PI)rad
+        v: (PI)rad != .5turn
+       vi: 360deg != 1turn
+      vii: 360deg != (2 * PI)rad
+     viii: (PI)rad != 180deg
+       ix: 1s != 1000ms
+        x: 77ms != 0.077s
+       xi: 1000ms != 1s
+      xii: 400grad != 1turn
+     xiii: 100grad != 90deg
+      xiv: (PI)rad != 200grad
+       xv: 1kHz != 1000Hz
+      xvi: 96px != 1in
+     xvii: 96px != 25.4mm
+    xviii: 96px != 1in
+      xix: 1in != 2.54cm
+       xx: .5turn != 200grad
+      xxi: not (1mm != 0.24pc)
+  }
+  ~~~
+
+  ~~~ css
+  number[op="!="] {
+    i: false;
+    ii: false;
+    iii: false;
+    iv: false;
+    v: false;
+    vi: false;
+    vii: false;
+    viii: false;
+    ix: false;
+    x: false;
+    xi: false;
+    xii: false;
+    xiii: false;
+    xiv: false;
+    xv: false;
+    xvi: false;
+    xvii: false;
+    xviii: false;
+    xix: false;
+    xx: false;
+    xxi: false;
   }
   ~~~
 

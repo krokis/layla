@@ -78,6 +78,7 @@ Booleans
     i: false;
   }
   ~~~
+
 ## Operators
 
 ### Unary
@@ -87,77 +88,115 @@ Booleans
 - Negates a boolean
 
   ~~~ lay
-  foo: not true
-  foo: not (not true)
-  foo: not (not false)
-  foo: not false
+  boolean.not {
+    i: not true
+    ii: not (not true)
+    iii: not (not false)
+    iv: not false
+  }
   ~~~
 
   ~~~ css
-  foo: false;
-  foo: true;
-  foo: false;
-  foo: true;
+  boolean.not {
+    i: false;
+    ii: true;
+    iii: false;
+    iv: true;
+  }
   ~~~
 
 - Evaluates any expression to a boolean and negates it
 
   ~~~ lay
-  foo: not ""
-  foo: not (0)
-  foo: not (1,)
-  foo: not (1..2)
-  foo: not (1 - 1)
-  foo: not bar
-  foo: not ({ color: red; })
-  foo: not ({})
-  foo: not #666
-  foo: not (not null)
-  foo: not ((foo: null) { return false })
+  object.not {
+    i: not ""
+    ii: not (0)
+    iii: not (1,)
+    iv: not (1..2)
+    v: not (1 - 1)
+    vi: not bar
+    vi: not ({ color: red; })
+    vii: not ({})
+    viii: not #666
+    ix: not (not null)
+    x: not ((foo: null) { return false })
+  }
   ~~~
 
   ~~~ css
-  foo: false;
-  foo: false;
-  foo: false;
-  foo: false;
-  foo: false;
-  foo: false;
-  foo: false;
-  foo: false;
-  foo: false;
-  foo: false;
-  foo: false;
+  object.not {
+    i: false;
+    ii: false;
+    iii: false;
+    iv: false;
+    v: false;
+    vi: false;
+    vi: false;
+    vii: false;
+    viii: false;
+    ix: false;
+    x: false;
+  }
   ~~~
 
 - Can be nested
 
   ~~~ lay
-  bar: not not not null
+  object.not {
+    bar: not not not null
+  }
   ~~~
 
   ~~~ css
-  bar: true;
+  object.not {
+    bar: true;
+  }
   ~~~
 
 ### Binary
 
-#### `is`
+#### `==`
 
 - Returns true only if the right side is a boolean with the same value
 
   ~~~ lay
-  foo: true is true
-  foo: true is 1
-  foo: false is null
-  foo: false is true
+  boolean.equal {
+    i: true == true
+    ii: true == 1
+    iii: false == null
+    iv: false == true
+  }
   ~~~
 
   ~~~ css
-  foo: true;
-  foo: false;
-  foo: false;
-  foo: false;
+  boolean.equal {
+    i: true;
+    ii: false;
+    iii: false;
+    iv: false;
+  }
+  ~~~
+
+#### `!=`
+
+- Returns true only if the right side is a boolean with the same value
+
+  ~~~ lay
+  boolean.not-equal {
+    i: true != true
+    ii: true != 1
+    iii: false != null
+    iv: false != true
+  }
+  ~~~
+
+  ~~~ css
+  boolean.not-equal {
+    i: false;
+    ii: true;
+    iii: true;
+    iv: true;
+  }
   ~~~
 
 #### `and`

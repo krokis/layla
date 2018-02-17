@@ -401,23 +401,43 @@ Regular expressions
 
 ### Operators
 
-#### `is`
+#### `==`
 
 - Returns `true` only if the right side is a `RegExp` with the same source and flags
 
   ~~~ lay
   regexp[operator="is"] {
-    foo: /\d+/ is /\d*/
-    foo: /\d+/i is /\d+/gi
-    foo: /\d+/iggm is /\d+/mgi
+    i: /\d+/ == /\d*/
+    ii: /\d+/i == /\d+/gi
+    iii: /\d+/iggm == /\d+/mgi
   }
   ~~~
 
   ~~~ css
   regexp[operator="is"] {
-    foo: false;
-    foo: false;
-    foo: true;
+    i: false;
+    ii: false;
+    iii: true;
+  }
+  ~~~
+
+#### `!=`
+
+- Returns `false` only if the right side is a `RegExp` with the same source and flags
+
+  ~~~ lay
+  regexp[operator="is"] {
+    i: /\d+/ != /\d*/
+    ii: /\d+/i != /\d+/gi
+    iii: /\d+/iggm != /\d+/mgi
+  }
+  ~~~
+
+  ~~~ css
+  regexp[operator="is"] {
+    i: true;
+    ii: true;
+    iii: false;
   }
   ~~~
 

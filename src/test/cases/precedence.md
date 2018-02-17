@@ -166,11 +166,11 @@
 
 ## `>`, `>=`, `<` and `<=`
 
-- Have precedence over `is` and `isnt`
+- Have precedence over `==` and `!=`
 
   ~~~ lay
   body {
-    foo: 3 > 2 is true
+    foo: 3 > 2 == true
   }
   ~~~
 
@@ -194,13 +194,13 @@
   }
   ~~~
 
-## `is` and `isnt`
+## `==` and `!==`
 
 - Have precedence over `~`
 
   ~~~ lay
   body {
-    foo: /hey/ ~ hello is null
+    foo: /hey/ ~ hello == null
   }
   ~~~
 
@@ -209,7 +209,7 @@
 
   ~~~ lay
   body {
-    foo: (/hey/ ~ hello) is null
+    foo: (/hey/ ~ hello) == null
   }
   ~~~
 
@@ -223,9 +223,9 @@
 
   ~~~ lay
   body {
-    i: (true is 'bar') isnt false
-    ii: true is ('bar' isnt false)
-    iii: true is 'bar' isnt false
+    i: (true == 'bar') != false
+    ii: true == ('bar' != false)
+    iii: true == 'bar' != false
   }
   ~~~
 

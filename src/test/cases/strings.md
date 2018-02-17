@@ -291,33 +291,67 @@ Strings
 
 ## Operators
 
-### `is`
+### `==`
 
 - Returns `true` only if the right side is a string with the same value
 
   ~~~ lay
-  string is string {
-    a: 'black' is 'black'
-    b: 'black' is "black"
-    c: 'black' isnt " black"
-    d: 'Black' isnt "black"
-    e: 'foo' is foo
-    f: '' is ``
-    g: '' isnt false
-    h: '' isnt null
-    i: '0' isnt 0
-    j: 'google.com' isnt url('google.com')
+  string.equal {
+    a: 'black' == 'black'
+    b: 'black' == "black"
+    c: 'black' == " black"
+    d: 'Black' == "black"
+    e: 'foo' == foo
+    f: '' == ``
+    g: '' == false
+    h: '' == null
+    i: '0' == 0
+    j: 'google.com' == url('google.com')
   }
   ~~~
 
   ~~~ css
-  string is string {
+  string.equal {
     a: true;
     b: true;
-    c: true;
-    d: true;
+    c: false;
+    d: false;
     e: true;
     f: true;
+    g: false;
+    h: false;
+    i: false;
+    j: false;
+  }
+  ~~~
+
+### `!=`
+
+- Returns `false` only if the right side is a string with the same value
+
+  ~~~ lay
+  string.not-equal {
+    a: 'black' != 'black'
+    b: 'black' != "black"
+    c: 'black' != " black"
+    d: 'Black' != "black"
+    e: 'foo' != foo
+    f: '' != ``
+    g: '' != false
+    h: '' != null
+    i: '0' != 0
+    j: 'google.com' != url('google.com')
+  }
+  ~~~
+
+  ~~~ css
+  string.not-equal {
+    a: false;
+    b: false;
+    c: true;
+    d: true;
+    e: false;
+    f: false;
     g: true;
     h: true;
     i: true;
@@ -1578,9 +1612,9 @@ Strings
     str = orig.copy
     val: str
     quote: str.quoted?
-    diff: str isnt orig
+    diff: str != orig
 
-    if str.copy.copy.copy isnt orig {
+    if str.copy.copy.copy != orig {
       god: damn!
     }
   }
