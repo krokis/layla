@@ -51,12 +51,6 @@ Object::['.<='] = (context, other) -> Boolean.new @compare(other) >= 0
 
 Object::['.contains?'] = (context, other) -> Boolean.new @contains(other)
 
-Object::['.has'] = (context, other) -> Boolean.new @contains(other)
-
-Object::['.hasnt'] = (context, other) -> Boolean.new not @contains(other)
-
-Object::['.in'] = (context, other) -> Boolean.new other.contains(@)
-
 Object::['.enumerable?'] = -> Boolean.new @isEnumerable()
 
 Object::['.boolean'] = -> Boolean.new @toBoolean()

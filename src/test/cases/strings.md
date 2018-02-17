@@ -359,36 +359,6 @@ Strings
   }
   ~~~
 
-### `has`
-
-- Returns `true` if the string contains the given substring
-
-  ~~~ lay
-  foo: 'Lorem ipsum dolor sit' has 'ipsum'
-  foo: 'Lorem ipsum dolor sit' has 'Ipsum'
-  ~~~
-
-  ~~~ css
-  foo: true;
-  foo: false;
-  ~~~
-
-### `in`
-
-- Returns `true` if the string is contained in another string
-
-  ~~~ lay
-  foo: 'ipsum' in 'Lorem ipsum dolor sit'
-  foo: 'Ipsum' in 'Lorem ipsum dolor sit'
-  foo: 'dolor' in 'Lorem ipsum dolor'
-  ~~~
-
-  ~~~ css
-  foo: true;
-  foo: false;
-  foo: true;
-  ~~~
-
 ### `+`
 
 - Joins strings

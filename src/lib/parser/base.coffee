@@ -55,9 +55,6 @@ class BaseParser extends Parser
     '>='    # Greater than or equal
     '=='    # Equality
     '!='    # Negated equality
-    'has'   # Ownership
-    'hasnt' # Negated ownership
-    'in'    # Existence
     '~'     # String/RegExp matching
     'and'   # Logical "and"
     'or'    # Logical "or"
@@ -90,11 +87,8 @@ class BaseParser extends Parser
     '<='    :  300
     '>'     :  300
     '>='    :  300
-    'has'   :  250
-    'hasnt' :  250
     '=='    :  200
     '!='    :  200
-    'in'    :  190
     '~'     :  150
     'not@'  :  110
     'and'   :   90

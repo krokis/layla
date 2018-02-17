@@ -142,84 +142,81 @@ Ranges
 
 ## Methods
 
-### Operators
-
-#### `has`, `in`
+#### `contains?`
 
 - Tells if a number is in the range
 
   ~~~ lay
   $r = 1..2
 
-  range.has, range.in {
-    foo: $r has 1
-    foo: 2 in $r
-    foo: $r hasnt 3
-    foo: not 0 in $r
+  range.contains {
+    i: $r.contains?(1)
+    ii: $r.contains?(2)
+    iii: not $r.contains?(3)
+    iv: not $r.contains?(0)
     $r = 2..-1
-    bar: $r has 1
-    bar: $r has -1
-    bar: $r has 2
-    bar: $r has -2
-    bar: $r has 3
-    bar: $r has 0
+    v: $r.contains?(1)
+    vi: $r.contains?(-1)
+    vii: $r.contains?(2)
+    viii: $r.contains?(-2)
+    ix: $r.contains?(3)
+    x: $r.contains?(0)
   }
   ~~~
 
   ~~~ css
-  range.has,
-  range.in {
-    foo: true;
-    foo: true;
-    foo: true;
-    foo: true;
-    bar: true;
-    bar: true;
-    bar: true;
-    bar: false;
-    bar: false;
-    bar: true;
+  range.contains {
+    i: true;
+    ii: true;
+    iii: true;
+    iv: true;
+    v: true;
+    vi: true;
+    vii: true;
+    viii: false;
+    ix: false;
+    x: true;
   }
   ~~~
 
 - Checks units
 
   ~~~ lay
-  range.has, range.in {
+  range.contains {
     $r = 1..2px
-    foo: 1 in $r
-    foo: 2px in $r
-    foo: $r hasnt 2rm
-    foo: not 1% in $r
+    i: $r.contains?(1)
+    ii: $r.contains?(2px)
+    iii: not $r.contains?(2rm)
+    iv: not $r.contains?(1%)
   }
   ~~~
 
   ~~~ css
-  range.has,
-  range.in {
-    foo: true;
-    foo: true;
-    foo: true;
-    foo: true;
+  range.contains {
+    i: true;
+    ii: true;
+    iii: true;
+    iv: true;
   }
   ~~~
 
   ~~~ lay
   $r = 0..30mm
 
-  range.has, range.in {
-    foo: 2mm in $r
-    foo: 3cm in $r
+  range.contains {
+    i: $r.contains?(2mm)
+    ii: $r.contains?(3cm)
   }
   ~~~
 
   ~~~ css
-  range.has,
-  range.in {
-    foo: true;
-    foo: true;
+  range.contains {
+    i: true;
+    ii: true;
   }
   ~~~
+
+### Operators
 
 #### `/`
 
