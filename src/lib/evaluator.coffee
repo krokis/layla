@@ -782,6 +782,8 @@ class Evaluator extends Class
     else
       rule.block = null
 
+    rule.standalone = node.standalone
+
     return rule
 
   ###

@@ -130,11 +130,19 @@ At-rules
 
 - Can be empty
 
+  ~~~ lay
+  @media screen {
+  }
+  ~~~
+
+  ~~~ css
+  ~~~
+
 - Can contain nested rules
 
 ## Arguments
 
-- Can not be present
+- Can be empty
 
   ~~~ lay
   @media

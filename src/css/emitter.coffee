@@ -60,13 +60,16 @@ class CSSEmitter extends Emitter
     lines = for stmt in body
       switch yes
         when stmt instanceof Rule
-          (@emit stmt) + (if stmt.items?.length then '' else ';') + '\n'
+          line = @emit stmt
+          if line.trim()
+            line += (if stmt.items?.length then '' else ';') + '\n'
+          line
         when stmt instanceof Property
           (@emitProperty stmt) + ';'
         else
           throw new Error "Cannot emit a (#{stmt.type}) as CSS"
 
-    str = lines.join '\n'
+    str = lines.filter((line) -> line.trim()).join '\n'
 
     if '\n' is str.substr -1
       str = str.substr 0, (str.length - 1)
@@ -345,13 +348,16 @@ class CSSEmitter extends Emitter
     return str
 
   emitAtRule: (rule) ->
-    css = @emitAtRuleName rule
+    css = ''
 
-    if rule.arguments?
-      css += " #{@emitAtRuleArguments rule.arguments}"
+    if rule.standalone or not rule.isEmpty()
+      css += @emitAtRuleName rule
 
-    if rule.items?.length
-      css += " #{@emitBlock rule}"
+      if rule.arguments?
+        css += " #{@emitAtRuleArguments rule.arguments}"
+
+      if rule.items?.length
+        css += " #{@emitBlock rule}"
 
     return css
 

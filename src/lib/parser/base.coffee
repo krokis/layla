@@ -1,47 +1,43 @@
 Parser                = require '../parser'
 T = Token             = require '../token'
-Expression            = require '../ast/expression'
-Operation             = require '../ast/expression/operation'
-Group                 = require '../ast/expression/group'
-String                = require '../ast/expression/string'
-Number                = require '../ast/expression/number'
-URL                   = require '../ast/expression/url'
-Color                 = require '../ast/expression/color'
-RegExp                = require '../ast/expression/regexp'
-Function              = require '../ast/expression/function'
-List                  = require '../ast/expression/list'
-Block                 = require '../ast/expression/block'
-This                  = require '../ast/expression/this'
-Calc                  = require '../ast/expression/calc'
-Call                  = require '../ast/expression/call'
-UnicodeRange          = require '../ast/expression/unicode-range'
-SelectorList          = require '../ast/selector/list'
-ComplexSelector       = require '../ast/selector/complex'
-CompoundSelector      = require '../ast/selector/compound'
-ElementalSelector     = require '../ast/selector/elemental'
-KeyframeSelector      = require '../ast/selector/keyframe'
-ClassSelector         = require '../ast/selector/class'
-IdSelector            = require '../ast/selector/id'
-AttributeSelector     = require '../ast/selector/attribute'
-PseudoClassSelector   = require '../ast/selector/pseudo-class'
-PseudoElementSelector = require '../ast/selector/pseudo-element'
-ParentSelector        = require '../ast/selector/parent'
-Combinator            = require '../ast/selector/combinator'
-Directive             = require '../ast/statement/directive'
-Conditional           = require '../ast/statement/conditional'
-Loop                  = require '../ast/statement/loop'
-For                   = require '../ast/statement/for'
-Property              = require '../ast/statement/property'
-AtRule                = require '../ast/statement/at-rule'
-RuleSet               = require '../ast/statement/rule-set'
-Root                  = require '../ast/root'
-
+Expression            = require '../node/expression'
+Operation             = require '../node/expression/operation'
+Group                 = require '../node/expression/group'
+String                = require '../node/expression/string'
+Number                = require '../node/expression/number'
+URL                   = require '../node/expression/url'
+Color                 = require '../node/expression/color'
+RegExp                = require '../node/expression/regexp'
+Function              = require '../node/expression/function'
+List                  = require '../node/expression/list'
+Block                 = require '../node/expression/block'
+This                  = require '../node/expression/this'
+Calc                  = require '../node/expression/calc'
+Call                  = require '../node/expression/call'
+UnicodeRange          = require '../node/expression/unicode-range'
+SelectorList          = require '../node/selector/list'
+ComplexSelector       = require '../node/selector/complex'
+CompoundSelector      = require '../node/selector/compound'
+ElementalSelector     = require '../node/selector/elemental'
+KeyframeSelector      = require '../node/selector/keyframe'
+ClassSelector         = require '../node/selector/class'
+IdSelector            = require '../node/selector/id'
+AttributeSelector     = require '../node/selector/attribute'
+PseudoClassSelector   = require '../node/selector/pseudo-class'
+PseudoElementSelector = require '../node/selector/pseudo-element'
+ParentSelector        = require '../node/selector/parent'
+Combinator            = require '../node/selector/combinator'
+Directive             = require '../node/statement/directive'
+Conditional           = require '../node/statement/conditional'
+Loop                  = require '../node/statement/loop'
+For                   = require '../node/statement/for'
+Property              = require '../node/statement/property'
+AtRule                = require '../node/statement/at-rule'
+RuleSet               = require '../node/statement/rule-set'
+Root                  = require '../node/root'
 SyntaxError           = require '../error/syntax'
 EOTError              = require '../error/eot'
 
-
-###
-###
 class BaseParser extends Parser
 
   BINARY_OPERATORS = [
@@ -359,8 +355,12 @@ class BaseParser extends Parser
   ###
   ###
   parseNumber: ->
-    if token = @eat(T.NUMBER)
-      return new Number token.value, token.unit
+    if @token.is T.NUMBER
+      # TODO Support line-height (`16px/50%`) syntax: if it's followed by a
+      # SLASH and then another literal number, make a raw string of it (#14).
+      num = new Number @token.value, @token.unit
+      @next()
+      return num
 
   ###
   ###
@@ -409,12 +409,9 @@ class BaseParser extends Parser
   parseCall: ->
     if @token.is T.CALL
       name = new String @token.name
-      @parens++
       args = @parseCallArguments @token
-      @parens--
       node = new Call name, args
       @next()
-
       return node
 
   ###
@@ -423,7 +420,6 @@ class BaseParser extends Parser
     if @token.is T.UNICODE_RANGE
       urange = new UnicodeRange @parseSequence @token.value
       @next()
-
       return urange
 
   ###
@@ -432,7 +428,6 @@ class BaseParser extends Parser
     if @token.is T.AMPERSAND
       ths = new This
       @next()
-
       return ths
 
   ###
@@ -441,7 +436,6 @@ class BaseParser extends Parser
     if @token.is T.REGEXP
       regexp = new RegExp @token.value, @token.flags
       @next()
-
       return regexp
 
   ###
@@ -653,7 +647,6 @@ class BaseParser extends Parser
       # Damn it
       pieces = @parseSequence @token.value
       @next()
-
       return new IdSelector new String pieces
 
   ###
@@ -719,10 +712,10 @@ class BaseParser extends Parser
         else
           arg = new String punc, null, yes
       else
-        arg = @parseCompoundSelector()
+        arg = @parseString() or @parseNumber()
 
         if not arg
-          arg = @parseString() or @parseNumber()
+          arg = @parseCompoundSelector()
 
       if not arg
         break
@@ -1257,11 +1250,7 @@ class BaseParser extends Parser
 
     while item = @parseExpression 0, yes, no
       items.push item
-
-      if @parens
-        @skipAllWhitespace()
-      else
-        @skipHorizontalWhitespace()
+      @skipHorizontalWhitespace()
 
       unless @eat T.COMMA
         break
@@ -1474,6 +1463,5 @@ class BaseParser extends Parser
   prepare: (program) ->
     super program
     @parens = 0
-
 
 module.exports = BaseParser
