@@ -201,14 +201,5 @@ class String extends Object
 
   '.eval': (context) -> context.evaluate @value
 
-do ->
-  supah = Number::['.*']
-
-  Number::['.*'] = (context, other, etc...) ->
-    if other instanceof String
-      other['.*'] context, @
-    else
-      supah.call @, context, other, etc...
-
 
 module.exports = String

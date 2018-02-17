@@ -387,10 +387,6 @@ Strings
     ii: "na" * 1
     iii: "na" * 2
     iv: "na" * 5
-    v: 0 * "na"
-    vi: 1 * "na"
-    vii: 2 * "na"
-    viii: 5 * "na"
   }
   ~~~
 
@@ -400,10 +396,6 @@ Strings
     ii: "na";
     iii: "nana";
     iv: "nanananana";
-    v: "";
-    vi: "na";
-    vii: "nana";
-    viii: "nanananana";
   }
   ~~~
 
