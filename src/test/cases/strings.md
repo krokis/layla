@@ -167,7 +167,7 @@ Strings
 
   ~~~ lay
   string.unquoted[escaped=unicode] {
-    is: Espa\f1ist\e1n, se\f1oras\20y\20se\f1ores!
+    is: Espa\f1ist\e1n, se\f1oras\20y\20se\f1ores\!
   }
   ~~~
 
@@ -209,7 +209,7 @@ Strings
 
   ~~~ lay
   string.unquoted.true {
-    i: -moz-border-radius.true? not important!.false? yes.true?
+    i: -moz-border-radius.true? not important.false? yes.true?
   }
   ~~~
 
@@ -1615,7 +1615,7 @@ Strings
     diff: str != orig
 
     if str.copy.copy.copy != orig {
-      god: damn!
+      god: damn
     }
   }
   ~~~

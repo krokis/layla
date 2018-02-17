@@ -1,23 +1,27 @@
 Idents
 ======
 
-- Can contain letters, numbers and `[$-_?!]`
+- Can contain letters, numbers, `[$-_]` and end with `?`
 
   ~~~ lay
-  color: red!
-  colour: __light_green!!!
-  $-my-colour-! = #f00
-  colour: $-my-colour-!
-  colour: --pale-white
-  whisky: please?
+  idents {
+    color: red
+    colour: __light_green__\_
+    $-my-colour- = #f00
+    colour: $-my-colour-
+    colour: --pale-white
+    whisky: please?
+  }
   ~~~
 
   ~~~ css
-  color: red\!;
-  colour: __light_green\!\!\!;
-  colour: #ff0000;
-  colour: --pale-white;
-  whisky: please\?;
+  idents {
+    color: red;
+    colour: __light_green___;
+    colour: #ff0000;
+    colour: --pale-white;
+    whisky: please\?;
+  }
   ~~~
 
 - Are case-sensitive

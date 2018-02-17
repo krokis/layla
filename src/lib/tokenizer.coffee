@@ -59,7 +59,7 @@ class Tokenizer extends Class
                         (?=[a-zA-Z\\]|(#{RE_NON_ASCII.source})|(\#\{)
                       )///
   RE_IDENT_CHAR     = ///([a-zA-Z\d_\-\\])|(#{RE_NON_ASCII.source})///
-  RE_IDENT_END      = /^[\!\?]+/
+  RE_IDENT_END      = /^[\?]+/
   RE_PUNC           = ///^
                         (::|\|?:|\.{1,3}|\(|\)|\{|\}|\[|\]|\&|@|;|%|
                         \,|[\|\$~*^=!]?=|~|\*|\/|

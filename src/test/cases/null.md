@@ -7,7 +7,7 @@ Null
   body {
     if not null {
       if null.false? {
-        if not null { foo: bar! }
+        if not null { foo: bar }
       }
     }
   }
@@ -15,7 +15,7 @@ Null
 
   ~~~ css
   body {
-    foo: bar\!;
+    foo: bar;
   }
   ~~~
 
