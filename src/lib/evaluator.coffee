@@ -605,8 +605,10 @@ class Evaluator extends Class
     for name in node.names
       name = @getStringValue name, context
 
-      if node.conditional and context.block.hasProperty name
-        continue
+      if node.conditional
+        current = context.block.getProperty(name)
+        if current and not current.isNull()
+          continue
 
       property = new Property name, value
       context.block.items.push property

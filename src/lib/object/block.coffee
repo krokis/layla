@@ -16,21 +16,24 @@ class Block extends Collection
     # TODO check pushed elements are properties or blocks
     super elements...
 
+
+  getProperty: (name) ->
+    val = null
+
+    for node in @items
+      if node instanceof Property and node.name is name
+        val = node.value
+
+    return val
+
   hasProperty: (name) ->
     @items.some (item) ->
       (item instanceof Property) and
-      (item.name is name) and
-      (not item.value.isNull())
+      (item.name is name)
 
   '.::': (context, other) ->
     if other instanceof String
-      val = Null.null
-
-      for node in @items
-        if node instanceof Property and node.name is other.value
-          val = node.value
-
-      return val
+      return @getProperty(other.value) or Null.null
 
     return super context, other
 

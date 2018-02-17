@@ -276,25 +276,31 @@ Blocks
 
 ### `.has-property?`
 
-- Returns `true` if the block has a property with given name, and it's not `null`.
+- Returns `true` if the block has a property with given name, even if it's `null`.
 
   ~~~~ lay
-  body {
+  block.has-property {
     color: red
     has-color: &.has-property?(color)
     has-background-color: &.has-property?(background-color)
     background-color: white
     has-background-color: &.has-property?(background-color)
+    border: null
+    has-border: &.has-property?("border")
+    has-shadow: &.has-property?(`shadow`)
   }
   ~~~~
 
   ~~~~ css
-  body {
+  block.has-property {
     color: red;
     has-color: true;
     has-background-color: false;
     background-color: white;
     has-background-color: true;
+    border: null;
+    has-border: true;
+    has-shadow: false;
   }
   ~~~~
 
