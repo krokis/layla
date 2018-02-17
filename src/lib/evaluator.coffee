@@ -3,8 +3,8 @@ path = require 'path'
 
 ###
 Note not all of these classes are being actually used here. But many of them
-monkey-patche others (so they can live in separate files without circular
-imports), so they all need to be `require`d in order to have the chance to
+monkey-patch others (so they can live in separate files without circular
+imports), and they all need to be `require`d in order to have the chance to
 "register" their methods.
 
 TODO Should we define this "stdlib" somewhere else (as a list of all built-in
