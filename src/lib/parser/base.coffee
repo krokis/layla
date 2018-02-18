@@ -712,10 +712,10 @@ class BaseParser extends Parser
         else
           arg = new String punc, null, yes
       else
-        arg = @parseString() or @parseNumber()
+        arg = @parseCompoundSelector()
 
         if not arg
-          arg = @parseCompoundSelector()
+          arg = @parseString() or @parseNumber()
 
       if not arg
         break

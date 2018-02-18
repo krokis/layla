@@ -796,8 +796,12 @@ Rule sets
     margin: 0 0 50px
   }
 
-  p:not(.foo, .bar) {
+  p:not(i.foo, b.bar) {
     margin: 0 0 50px
+  }
+
+  *:matches(div>a.hidden:not( :link)) {
+    outline: 1px dotted
   }
   ~~~
 
@@ -818,8 +822,12 @@ Rule sets
     margin: 0 0 50px;
   }
 
-  p:not(.foo, .bar) {
+  p:not(i.foo, b.bar) {
     margin: 0 0 50px;
+  }
+
+  *:matches(div > a.hidden:not(:link)) {
+    outline: 1px dotted;
   }
   ~~~
 
