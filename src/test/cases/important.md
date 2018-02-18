@@ -50,6 +50,27 @@
   }
   ~~~
 
+## `!unimportant`
+
+- Can be used to get an unimportant copy of a value
+
+  ~~~ lay
+  unimportant {
+    $border = 1px 2px 3px !important
+    i: $border
+    ii: $border !unimportant
+    iii: $border !unimportant !important !unimportant !unimportant
+  }
+  ~~~
+
+  ~~~ css
+  unimportant {
+    i: 1px 2px 3px !important;
+    ii: 1px 2px 3px;
+    iii: 1px 2px 3px;
+  }
+  ~~~
+
 ## Methods
 
 ### `.important?`

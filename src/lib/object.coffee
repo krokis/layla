@@ -82,6 +82,8 @@ class Object extends Class
 
   '.!important': -> @toImportant()
 
+  '.!unimportant': -> @toUnimportant()
+
   '.important': -> @toImportant()
 
   '.unimportant': -> @toUnimportant()
