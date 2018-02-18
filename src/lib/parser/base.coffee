@@ -355,12 +355,8 @@ class BaseParser extends Parser
   ###
   ###
   parseNumber: ->
-    if @token.is T.NUMBER
-      # TODO Support line-height (`16px/50%`) syntax: if it's followed by a
-      # SLASH and then another literal number, make a raw string of it (#14).
-      num = new Number @token.value, @token.unit
-      @next()
-      return num
+    if token = @eat(T.NUMBER)
+      return new Number token.value, token.unit
 
   ###
   ###
