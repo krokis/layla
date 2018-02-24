@@ -158,6 +158,11 @@ class URL extends URI
       super context, other
 
   ###
+  ###
+  '.port': ->
+    if @port? then new Number @port else Null.null
+
+  ###
   Sets the `port` component
   ###
   '.port=': (context, port) ->
@@ -197,7 +202,7 @@ class URL extends URI
       if value is null
         Null.null
       else
-        new QuotedString value
+        new QuotedString value.toString()
 
     URL::[".#{component}="] ?= (context, value) ->
       value = if value.isNull() then null else value.toString()

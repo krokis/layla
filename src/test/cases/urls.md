@@ -667,21 +667,23 @@
 
 ### `port`
 
-- Returns the `:port` part of the URL, if any, or `null`
+- Returns the `:port` part of the URL as a `Number`, if any, or `null`
 
   ~~~ lay
   url.port {
     i: url('http://disney.com').port
     ii: url(http://disney.com:8080/index.php).port
-    iii: url(http://disney.com:21/index.php).port.number
+    iii: url(http://disney.com:0).port.number
+    iv: url(http://disney.com:21/index.php).port.string
   }
   ~~~
 
   ~~~ css
   url.port {
     i: null;
-    ii: "8080";
-    iii: 21;
+    ii: 8080;
+    iii: 0;
+    iv: "21";
   }
   ~~~
 
@@ -722,7 +724,7 @@
   ~~~
 
   ~~~ ValueError
-  Cannot set URL port to non-integer number: 2.7
+  /Port must be an integer number/
   ~~~
 
   ~~~ lay
@@ -742,7 +744,7 @@
   ~~~
 
   ~~~ ValueError
-  Port number out of 1..65535 range: -1
+  /Port must be in the 0..65535 range/
   ~~~
 
   ~~~ lay
@@ -757,7 +759,7 @@
   ~~~
 
   ~~~ ValueError
-  Port number out of 1..65535 range: 65536
+  /Port must be in the 0..65535 range/
   ~~~
 
 - Accepts `null`
