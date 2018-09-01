@@ -5,7 +5,6 @@ which        = require 'which'
 childProcess = require 'child_process'
 coffee       = require 'coffeescript'
 glob         = require 'glob'
-Layla        = require './src/lib'
 
 #
 MODULES = ['lib', 'css', 'node', 'cli']
@@ -157,7 +156,18 @@ chmod = (path, mode, callback = done) ->
     callback()
 
 uncoffee = (source) ->
-  coffee.compile source, bare: yes, header: no
+  coffee.compile source, {
+    bare: yes,
+    header: no
+    transpile: {
+      presets: [
+        'env'
+      ]
+      plugins: [
+        'transform-object-rest-spread'
+      ]
+    }
+  }
 
 test = (path, source = no, callback = done) ->
   path = "test/#{path}"
@@ -189,7 +199,7 @@ task 'build:test', 'Build tests', ->
   queue ->
     log 'task', 'Building tests'
     remove 'test', ->
-      exec 'coffee --compile --output test/ src/test'
+      exec 'coffee --compile --transpile --output test/ src/test'
 
   queue ->
     log 'task', 'Copying test fixtures'
@@ -211,7 +221,7 @@ MODULES.forEach (module) ->
   task "build:#{module}", 'Build #{module} module', ->
     queue ->
       log 'task', "Building #{module} module"
-      args = ['--compile', '--no-header']
+      args = ['--compile', ' --transpile', '--no-header']
       args.push '--watch' if WATCH
 
       mkdir module, ->
