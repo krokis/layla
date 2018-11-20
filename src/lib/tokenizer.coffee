@@ -70,7 +70,7 @@ class Tokenizer extends Class
                         ^((?:\d*\.)?\d+)
                         (%|(([a-z]|#{RE_NON_ASCII.source})+))?
                       ///i
-  RE_REGEXP         = /^\/([^\s](?:(?:\\.)|[^\\\/\n\r])+)\/([a-z]+)?/i
+  RE_REGEXP         = /^\/([^\s](?:(?:\\.)|[^\\\/\n\r])*)\/([a-z]+)?/i
   RE_UNICODE_RANGE  = /^u\+[0-9a-f?]{1,6}(-[0-9a-f?]{1,6})?/i
   RE_H_WHITESPACE   = ///^(
                         ([\x20\t]+)| # Non breaking whitespace or

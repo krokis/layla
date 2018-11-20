@@ -5,6 +5,7 @@ Regular expressions
 
   ~~~ lay
   a = /[a-z]+/
+  b = /./
   ~~~
 
   ~~~ css
