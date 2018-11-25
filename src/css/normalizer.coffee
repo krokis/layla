@@ -64,7 +64,7 @@ class Normalizer extends Visitor
             ) or
             (child instanceof AtRule and (
               @options.hoist_at_rules or
-              @.options["hoist_#{child.name}_at_rules"]
+              @options["hoist_#{child.name}_at_rules"]
             ))
 
           (if hoist then root else node).items.push child
