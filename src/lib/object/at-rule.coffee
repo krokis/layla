@@ -6,18 +6,11 @@ QuotedString = require './string/quoted'
 ###
 class AtRule extends Rule
 
-  constructor: (@name, @arguments = []) ->
-    super()
+  constructor: (items, prelude, @name) ->
+    super items, prelude
 
-  copy: ->
-    copy = super()
-    copy.name = @name
-    copy.arguments = @arguments
-
-    return copy
-
-  # TODO
-  # copy: (name = @name, args = @arguments, etc...) -> super name, args, etc...
+  copy: (items, prelude, name = @name, etc...) ->
+    super items, prelude, name, etc...
 
   '.name': -> new QuotedString @name
 

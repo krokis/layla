@@ -9,8 +9,9 @@ ValueError = require '../error/value'
 ###
 class Collection extends Indexed
 
-  constructor: (@items = []) ->
+  constructor: (items = []) ->
     super()
+    @items = items.slice()
 
   length: -> @items.length
 
