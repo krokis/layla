@@ -45,6 +45,7 @@ class ComplexSelector extends Selector
         if child instanceof Combinator
           if piece.trim() isnt ''
             piece = ' ' + piece
+
           if piece[-1..-1].trim() isnt ''
             piece += ' '
 

@@ -314,7 +314,7 @@ class Color extends Object
         else
           throw new ValueError "Bad hex color: #{str}"
 
-      return new @('rgb', [red, green, blue], alpha)
+      return @.new('rgb', [red, green, blue], alpha)
 
   @parseFuncString: (str) ->
     if m = str.match RE_FUNC_COLOR
@@ -340,7 +340,7 @@ class Color extends Object
         if args.length
           throw new ReferenceError "Too many values passed to `#{space}()`"
 
-        return new @(space, channels, alpha)
+        return @.new(space, channels, alpha)
       else
         throw new ValueError "Invalid color space: `#{space}`"
 
@@ -477,7 +477,7 @@ class Color extends Object
   isEmpty: Color::isTransparent
 
   toRGBAString: ->
-    comps = @['rgb'].map (c) -> round c
+    comps = @['rgb'].map round
 
     if @alpha < 1
       comps.push round(@alpha * 100) / 100
@@ -622,7 +622,7 @@ class Color extends Object
   '.opposite': -> @adjustChannel 'hsl', 0, 180
 
   # https://www.w3.org/TR/WCAG20/#relativeluminancedef
-  '.luminance': -> new Number 100 * @luminance, '%'
+  '.luminance': -> Number.new 100 * @luminance, '%'
 
   '.luminance?': -> Boolean.new @luminance > 0
 
@@ -641,7 +641,7 @@ class Color extends Object
     black.blend @
 
   '.contrast-ratio': (context, other) ->
-    new Number @contrastRatio other
+    Number.new @contrastRatio other
 
   '.contrast': (context, others...) -> @contrast others...
 
@@ -680,7 +680,7 @@ class Color extends Object
   # Individual channel accessors
   '.alpha': (context, value) ->
     if not value?
-      return new Number @alpha
+      return Number.new @alpha
 
     unless value instanceof Number
       throw new ValueError """
@@ -708,7 +708,7 @@ class Color extends Object
 
       Color::[".#{name}"] ?= (context, value) ->
         if not value?
-          return new Number @[space][index], channel.unit
+          return Number.new @[space][index], channel.unit
 
         unless value instanceof Number
           throw new ValueError """

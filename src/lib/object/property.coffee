@@ -27,7 +27,7 @@ class Property extends Object
 
   reprValue: -> "#{@name}: #{@value.repr()}"
 
-  '.name': -> new QuotedString @name
+  '.name': -> QuotedString.new @name
 
   '.value': -> @value
 

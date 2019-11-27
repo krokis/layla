@@ -17,7 +17,6 @@ class URI extends Object
     super()
 
   parse: (uri) ->
-    # scheme = alpha *( alpha | digit | "+" | "-" | "." )
     m = uri.match /^[a-z][a-z\d\+\-\.]+(?=:)/i
 
     if m
@@ -40,13 +39,13 @@ class URI extends Object
     if not @scheme
       Null.null
     else
-      new QuotedString @scheme
+      QuotedString.new @scheme
 
   # TODO move these methods to the `URL` and `DataURI` classes?
   COMMON_SCHEMES.forEach (scheme) ->
     URI::[".#{scheme}?"] = -> Boolean.new @scheme is scheme
 
-  '.string': -> new QuotedString @toString()
+  '.string': -> QuotedString.new @toString()
 
 
 module.exports = URI

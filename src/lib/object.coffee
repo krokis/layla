@@ -12,12 +12,16 @@ class Object extends Class
 
   @NOT_IMPLEMENTED: (name) -> throw new NotImplementedError
 
-  @new: (args...) ->
-    new (@bind.apply @, args)
+  @new: (args...) -> new @ args...
 
   @repr: -> "<#{@reprType()}>"
 
   @reprType: -> @name
+
+  compare: (other) ->
+    throw new ValueError (
+      "Cannot compare #{@reprType()} with #{other.reprType()}"
+    )
 
   copy: (etc...) ->
     copy = super etc...

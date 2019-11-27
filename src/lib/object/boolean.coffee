@@ -9,8 +9,10 @@ class Boolean extends Object
     super()
     @value = !!@value
 
+  # TODO uppercase: @TRUE
   @true: new @ yes
 
+  # TODO uppercase: @FALSE
   @false: new @ no
 
   @new: (value) -> value and @true or @false
@@ -31,9 +33,9 @@ Object::toBoolean = -> yes
 # TODO should throw an exception ("Cannot compare")?
 Object::isEqual = (other) -> other is @
 
-Object::['.=='] = (context, other) -> Boolean.new @isEqual other
+Object::['.=='] = (context, other) -> Boolean.new @isEqual(other)
 
-Object::['.!='] = (context, other) -> Boolean.new not @isEqual other
+Object::['.!='] = (context, other) -> Boolean.new not @isEqual(other)
 
 Object::['.not@'] = (context, other) -> Boolean.new not @toBoolean()
 

@@ -9,6 +9,7 @@ ValueError   = require '../error/value'
 
 JSRegExp = global.RegExp
 
+
 ###
 ###
 class RegExp extends Object
@@ -66,13 +67,13 @@ class RegExp extends Object
   '.~': (context, other) ->
     if other instanceof String
       if m = other.value.match @value
-        return new List m.map (str) -> other.copy str
+        return List.new m.map (str) -> other.copy str
 
       return Null.null
 
     return super context, other
 
-  '.flags': -> new QuotedString @flags
+  '.flags': -> QuotedString.new @flags
 
   '.global?': -> Boolean.new @global
 
@@ -95,9 +96,9 @@ do ->
 
   String::['.~'] = (context, other, etc...) ->
     if other instanceof RegExp
-      other['.~'] context, this
-    else
-      supah.call @, context, other, etc...
+      return other['.~'] context, this
+
+    return supah.call @, context, other, etc...
 
 String::['.split'] = (context, separator, limit = Null.null) ->
   if not separator
@@ -125,7 +126,7 @@ String::['.split'] = (context, separator, limit = Null.null) ->
     .filter (str) -> str isnt ''
     .map (str) => @copy str
 
-  return new List chunks
+  return List.new chunks
 
 do ->
   supah = String::['./']
@@ -142,13 +143,13 @@ do ->
     return @['.split'] context, separator
 
 String::['.characters'] = (context, limit = Null.null) ->
-  new List (@value.split '').map (char) => @copy char
+  List.new (@value.split '').map (char) => @copy char
 
 String::['.words'] = ->
-  new List ((@value.match /\w+/g) or []).map (word) => @copy word
+  List.new ((@value.match /\w+/g) or []).map (word) => @copy word
 
 String::['.lines'] = ->
-  new List ((@value.match /[^\s](.+)[^\s]/g) or []).map (line) => @copy line
+  List.new ((@value.match /[^\s](.+)[^\s]/g) or []).map (line) => @copy line
 
 String::['.replace'] = (context, search, replacement) ->
   if search instanceof RegExp
@@ -158,7 +159,7 @@ String::['.replace'] = (context, search, replacement) ->
 
   replacement = replacement.toString()
 
-  @copy @value.replace(search, replacement)
+  return @copy @value.replace(search, replacement)
 
 
 module.exports = RegExp

@@ -9,13 +9,10 @@ class RuleSet extends Rule
   constructor: (items, @selector = []) ->
     super items
 
-  copy: (args...) ->
-    copy = super args...
-    copy.selector = @selector.clone()
+  copy: (items = @items, selector = @selector, etc...) ->
+    super items, selector.copy(), etc...
 
-    return copy
-
-  '.selector': -> new QuotedString @selector.toString()
+  '.selector': -> QuotedString.new @selector.toString()
 
 
 module.exports = RuleSet

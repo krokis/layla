@@ -58,21 +58,21 @@ Ranges
 
   ~~~ lay
   range[unit] {
-    foo: 5..(7px)
-    foo: 1%..10
-    foo: 1em..1em
-    foo: -1rem..0
-    foo: 1mm..1cm
+    i: 5..(7px)
+    ii: 1%..10
+    iii: 1em..1em
+    iv: -1rem..0
+    v: 1mm..1cm
   }
   ~~~
 
   ~~~ css
   range[unit] {
-    foo: 5px 6px 7px;
-    foo: 1% 2% 3% 4% 5% 6% 7% 8% 9% 10%;
-    foo: 1em;
-    foo: -1rem 0;
-    foo: 1mm 2mm 3mm 4mm 5mm 6mm 7mm 8mm 9mm 10mm;
+    i: 5px 6px 7px;
+    ii: 1% 2% 3% 4% 5% 6% 7% 8% 9% 10%;
+    iii: 1em;
+    iv: -1rem 0;
+    v: 1mm 2mm 3mm 4mm 5mm 6mm 7mm 8mm 9mm 10mm;
   }
   ~~~
 
@@ -89,15 +89,15 @@ Ranges
 
   ~~~ lay
   range[unit] {
-    foo: (1..2)px
-    foo: (0..1)%
+    i: (1..2)px
+    ii: (0..1)%
   }
   ~~~
 
   ~~~ css
   range[unit] {
-    foo: 1px 2px;
-    foo: 0 1%;
+    i: 1px 2px;
+    ii: 0 1%;
   }
   ~~~
 

@@ -114,7 +114,7 @@
   }
   ~~~
 
-- Whitespace in between base-64 data is ignored
+- Ignore Whitespace inside base-64 data
 
   ~~~ lay
   #data-uri[base64][whitespace] {
@@ -222,14 +222,14 @@
 - Defaults to `us-ascii`
 
   ~~~ lay
-  #data-uri.mime {
+  #data-uri.charset {
     i: url(data:text/html,<h1>Hello</h1>).charset
     ii: url(data:,<h1>Hello</h1>).charset
   }
   ~~~
 
   ~~~ css
-  #data-uri.mime {
+  #data-uri.charset {
     i: "us-ascii";
     ii: "us-ascii";
   }

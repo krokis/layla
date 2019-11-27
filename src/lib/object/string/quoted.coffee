@@ -18,7 +18,7 @@ String::['.quoted?'] = -> Boolean.false
 
 String::['.unquoted?'] = -> Boolean.true
 
-Object::['.quote'] = -> new QuotedString @toString()
+Object::['.quote'] = -> QuotedString.new @toString()
 
 Object::['.quoted'] = Object::['.quote']
 

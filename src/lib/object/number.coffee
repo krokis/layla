@@ -48,7 +48,7 @@ class Number extends Object
       if match = RE_NUMERIC.exec str
         value = parseFloat match[1]
         unit = match[2]
-        return new Number value, unit
+        return Number.new value, unit
 
     throw new ValueError "Could not convert \"#{str}\" to #{@repr()}"
 
@@ -102,6 +102,7 @@ class Number extends Object
   compare: (other) ->
     if other instanceof Number
       other = other.convert @unit
+
       if other.value is @value
         return 0
       else if other.value > @value
@@ -109,7 +110,7 @@ class Number extends Object
       else
         return -1
 
-    throw new ValueError "Cannot compare #{@repr()} with #{other.repr()}"
+    return super other
 
   isPure: -> not @unit
 
@@ -212,7 +213,7 @@ class Number extends Object
 
   '.pure?': -> Boolean.new @isPure()
 
-  '.pure': -> new Number @value
+  '.pure': -> Number.new @value
 
   '.zero?': -> Boolean.new @value is 0
 
@@ -243,7 +244,7 @@ class Number extends Object
     else
       sign = -1
 
-    return new @class sign
+    return @class.new sign
 
   '.positive?': -> Boolean.new @isPositive()
 
@@ -312,7 +313,7 @@ Object::toNumber = ->
   throw new ReferenceError "Cannot convert #{@repr()} to #{Number.repr()}"
 
 Boolean::toNumber = ->
-  new Number(if @value then 1 else 0)
+  Number.new(if @value then 1 else 0)
 
 Object::['.number'] = -> @toNumber()
 

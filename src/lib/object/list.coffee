@@ -42,9 +42,9 @@ class List extends Collection
 
 Object::['.list'] = ->
   if @ instanceof Collection
-    new List @items
+    List.new @items
   else
-    new List [@]
+    List.new [@]
 
 
 module.exports = List

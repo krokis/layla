@@ -33,7 +33,7 @@ class Block extends Collection
 
   '.::': (context, other) ->
     if other instanceof String
-      return @getProperty(other.value) or Null.null
+      return Null.ifNull @getProperty(other.value)
 
     return super context, other
 
@@ -49,15 +49,15 @@ class Block extends Collection
       if prop
         prop.value = value
       else
-        @push new Property name, value
+        @push Property.new(name, value)
 
       return value
 
     return super context, key, value
 
-  '.properties': -> new Block (@items.filter (obj) -> obj instanceof Property)
+  '.properties': -> Block.new(@items.filter (obj) -> obj instanceof Property)
 
-  '.has-property?': (context, name) -> Boolean.new @hasProperty name.value
+  '.has-property?': (context, name) -> Boolean.new @hasProperty(name.value)
 
 
 module.exports = Block

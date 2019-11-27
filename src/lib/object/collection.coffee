@@ -72,15 +72,7 @@ class Collection extends Indexed
     return super context, other
 
   '.::': (context, other) ->
-    if other instanceof Number
-      idx = other.value
-      idx += @items.length if idx < 0
-
-      if 0 <= idx < @items.length
-        return @items[idx]
-      else
-        return Null.null
-    else if other instanceof Collection
+    if other instanceof Collection
       slice = @copy []
       for idx in other.items
         slice.items.push @['.::'](context, idx)
@@ -95,44 +87,34 @@ class Collection extends Indexed
 
       if 0 <= idx <= @items.length
         return @items[idx] = value
-      else
-        return Null.null
+
+      return Null.null
 
     return super context, key, value
 
-  '.length': -> new Number @length()
-
   '.push': (context, args...) -> @push args...; @
 
-  '.pop': -> @items.pop() or Null.null
+  '.pop': -> Null.ifNull @items.pop()
 
-  '.shift': -> @items.shift() or Null.null
+  '.shift': -> Null.ifNull @items.shift()
 
   '.unshift': (context, objs...) ->
     @items.unshift (obj.clone() for obj in objs)...
-    this
+
+    return @
 
   '.slice': (context, start, end) -> @copy @slice(start, end)
 
   '.empty': -> @items = []; @
-
-  '.first': -> @items[0] or Null.null
-
-  '.last': -> @items[@items.length - 1] or Null.null
 
   '.unique?': -> Boolean.new @isUnique()
 
   '.unique': ->
     unique = []
 
-    @items.filter (item) ->
-      for val in unique
-        if val.isEqual item
-          return no
-
-      unique.push item
-      return yes
-
+    for item in @items
+      unless unique.some((other) -> other.isEqual item)
+        unique.push item
 
     return @copy unique
 

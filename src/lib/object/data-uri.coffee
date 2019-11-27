@@ -30,8 +30,8 @@ class DataURI extends URI
 
     if m = RE_DATA_URI.exec uri
       @scheme = 'data'
-      @mime = (m[2] or DEFAULT_MIME).toLowerCase()
-      @charset = (m[3] or DEFAULT_CHARSET).toLowerCase()
+      @mime = if m[2]? then m[2].toLowerCase() else DEFAULT_MIME
+      @charset = if m[3]? then m[3].toLowerCase() else DEFAULT_CHARSET
       @base64 = !!m[5]
       data = m[8]
 
@@ -62,15 +62,15 @@ class DataURI extends URI
 
     return str
 
-  '.charset': -> new QuotedString @charset
+  '.charset': -> QuotedString.new @charset
 
-  '.mime': -> new QuotedString @mime
+  '.mime': -> QuotedString.new @mime
 
-  '.mediatype': -> new QuotedString "#{@mime};charset=#{@charset}"
+  '.mediatype': -> QuotedString.new "#{@mime};charset=#{@charset}"
 
   '.base64?': -> Boolean.new @base64
 
-  '.data': -> new QuotedString @data
+  '.data': -> QuotedString.new @data
 
 
 module.exports = DataURI

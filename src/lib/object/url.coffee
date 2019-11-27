@@ -160,7 +160,7 @@ class URL extends URI
   ###
   ###
   '.port': ->
-    if @port? then new Number @port else Null.null
+    if @port? then Number.new(@port) else Null.null
 
   ###
   Sets the `port` component
@@ -198,7 +198,7 @@ class URL extends URI
       if value is null
         Null.null
       else
-        new QuotedString value.toString()
+        QuotedString.new value.toString()
 
     URL::[".#{component}="] ?= (context, value) ->
       value = if value.isNull() then null else value.toString()
@@ -239,7 +239,7 @@ class URL extends URI
   ###
   '.domain': ->
     if domain = @domain
-      new QuotedString domain
+      QuotedString.new domain
     else
       Null.null
 
@@ -260,7 +260,7 @@ class URL extends URI
       value = @[name]
 
       if value?
-        new QuotedString value
+        QuotedString.new value
 
     URL::[".#{name}="] = (context, value) ->
       if not value.isNull()

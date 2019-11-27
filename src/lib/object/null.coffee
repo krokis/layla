@@ -1,16 +1,18 @@
 Object  = require '../object'
 Boolean = require './boolean'
 
+
 ###
 ###
 class Null extends Object
 
+  # TODO Uppercase: @NULL
   @null = new @
 
   @new: -> @null
 
   @ifNull: (value) ->
-    if not value? or (value instanceof @) then @null else value
+    if not value? or (value instanceof Null) then @null else value
 
   toString: -> ''
 

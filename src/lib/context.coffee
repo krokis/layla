@@ -9,7 +9,6 @@ Evaluator    = require './evaluator'
 IncludeError = require './error/include'
 
 
-
 ###
 ###
 class Context extends Class

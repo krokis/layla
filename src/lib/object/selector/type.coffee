@@ -11,19 +11,7 @@ class TypeSelector extends ElementalSelector
   copy: (name = @name, etc...) ->
     super name, etc...
 
-  toString: ->
-    str = ''
-
-    if @namespace?
-      if @namespace is '*'
-        str += '*'
-      else
-        str += @escape @namespace
-      str += '|'
-
-    str += @escape @name
-
-    return str
+  toString: -> super @escape(@name)
 
 
 module.exports = TypeSelector

@@ -18,17 +18,17 @@ class Range extends Indexed
     items = []
 
     for i in [0...@length()]
-      items.push new Number (@getByIndex i), @unit
+      items.push Number.new (@getByIndex i), @unit
 
     return items
 
   isReverse: -> @first > @last
 
-  length: -> 1 + floor (abs @last - @first) / @step
+  length: -> 1 + floor(abs(@last - @first) / @step)
 
-  minValue: -> new Number min(@first, @last), @unit
+  minValue: -> Number.new min(@first, @last), @unit
 
-  maxValue: -> new Number max(@first, @last), @unit
+  maxValue: -> Number.new max(@first, @last), @unit
 
   getByIndex: (index) ->
     step = @step
@@ -36,10 +36,16 @@ class Range extends Indexed
     if @isReverse()
       step *= -1
 
-    return new Number @first + index * step, @unit
+    return Number.new @first + index * step, @unit
 
-  constructor: (@first = 0, @last = 0, @unit = null, @step = 1) ->
+  constructor: (@first = 0, @last = 0, unit = null, @step = 1) ->
     super()
+
+    if unit?
+      if unit.trim() == ''
+        unit = null
+
+    @unit = unit
 
   convert: (unit) ->
     unit = unit.toString()
@@ -78,15 +84,15 @@ class Range extends Indexed
 
     return super context, step
 
-  '.unit': -> if @unit then new UnquotedString @unit else Null.null
+  '.unit': -> if @unit then UnquotedString.new(@unit) else Null.null
 
-  '.unit?': -> Boolean.new @unit
+  '.unit?': -> Boolean.new @unit?
 
   '.pure?': -> Boolean.new @isPure()
 
-  '.pure': -> @copy undefined, undefined, ''
+  '.pure': -> @copy undefined, undefined, null
 
-  '.step': -> new Number @step, @unit
+  '.step': -> Number.new @step, @unit
 
   '.convert': (context, args...) -> @convert args...
 
@@ -96,7 +102,7 @@ class Range extends Indexed
 
   '.reverse': -> @copy @last, @first
 
-  '.list': -> new List @items
+  '.list': -> List.new @items
 
 
 do ->
@@ -112,7 +118,7 @@ do ->
       else
         unit = null
 
-      return new Range @value, other.value, unit
+      return Range.new @value, other.value, unit
 
     return supah context, other
 
@@ -122,11 +128,13 @@ do ->
   List::['.::'] = (context, other, etc...) ->
     if other instanceof Range
       slice = @copy []
+
       for idx in other.items
         slice.items.push @['.::'] context, idx
-      slice
-    else
-      supah.call @, context, other, etc...
+
+      return slice
+
+    supah.call @, context, other, etc...
 
 do ->
   { min, max } = Math
@@ -136,6 +144,7 @@ do ->
   String::['.::'] = (context, other, etc...) ->
     if other instanceof Range
       str = ''
+
       if @value isnt ''
         len = @value.length
 
@@ -150,9 +159,10 @@ do ->
         while idx isnt end
           str += @value.charAt idx
           idx = (idx + 1) % len
-      @copy str
-    else
-      supah.call @, context, other, etc...
+
+      return @copy str
+
+    return supah.call @, context, other, etc...
 
 
 module.exports = Range

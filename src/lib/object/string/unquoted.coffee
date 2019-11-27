@@ -7,7 +7,7 @@ class UnquotedString extends String
 
   @ESCAPE_CHARS = /[^a-zA-Z\d_\-\x80-\uFFFF]/
 
-Object::['.unquote'] = -> new UnquotedString @toString()
+Object::['.unquote'] = -> UnquotedString.new @toString()
 
 Object::['.unquoted'] = Object::['.unquote']
 

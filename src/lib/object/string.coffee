@@ -77,15 +77,13 @@ class String extends Object
   compare: (other) ->
     if other instanceof String
       if other.value is @value
-        0
+        return 0
       else if other.value > @value
-        1
+       return 1
       else
-        -1
-    else
-      throw new ValueError """
-        Cannot compare #{@reprType()} with #{other.reprType()}
-        """
+       return -1
+
+    return super other
 
   contains: (other) ->
     # TODO should throw an error when other is not an string?
@@ -135,11 +133,11 @@ class String extends Object
 
     return super context, other
 
-  '.length': -> new Number @length
+  '.length': -> Number.new @length
 
-  '.empty?': -> new Boolean @isEmpty()
+  '.empty?': -> Boolean.new @isEmpty()
 
-  '.blank?': -> new Boolean @isBlank()
+  '.blank?': -> Boolean.new @isBlank()
 
   '.trim': (context, chars) ->
     # TODO check bad args

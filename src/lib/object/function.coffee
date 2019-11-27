@@ -10,7 +10,7 @@ class Function extends Object
     super()
 
   invoke: (context, args...) ->
-    (@func.call this, context, args...) or Null.null
+    Null.ifNull @func.call this, context, args...
 
   toString: -> 'function'
 

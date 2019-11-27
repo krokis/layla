@@ -45,9 +45,12 @@ class Indexed extends Enumerable
     @reset()
 
     while null isnt (key = @currentKey())
-      index = new Number key
-      value = (@get key) or Null.null
-      return no if no is cb.call @, index, value
+      index = Number.new key
+      value = Null.ifNull @get(key)
+
+      if no is cb.call(@, index, value)
+        return no
+
       @next()
 
   '.index': ->  Null.ifNull @currentKey()
@@ -62,7 +65,7 @@ class Indexed extends Enumerable
       idx = other.value
       idx += len if idx < 0
 
-      return @get(idx) or Null.null
+      return Null.ifNull @get(idx)
 
     return super context, other
 

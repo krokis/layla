@@ -292,6 +292,7 @@ Lists
   ~~~ lay
   a = (1 2 3)
   b = ()
+
   foo {
     a: a.first
     b: b.first
@@ -312,16 +313,38 @@ Lists
   ~~~ lay
   a = (2,)
   b = ()
-  foo {
+  c = (1 2 3)
+
+  list.last {
     a: a.last (a.first == a.last)
     b: b.last
+    c: c.last
   }
   ~~~
 
   ~~~ css
-  foo {
+  list.last {
     a: 2 true;
     b: null;
+    c: 3;
+  }
+  ~~~
+
+### `random`
+
+- Returns a random element from the list
+
+- Returns null for empty lists
+
+  ~~~ lay
+  list.random {
+    empty: ().random
+  }
+  ~~~
+
+  ~~~ css
+  list.random {
+    empty: null;
   }
   ~~~
 
@@ -542,15 +565,17 @@ Lists
 
   ~~~ lay
   list.max {
-    foo: (1, +71, 2, 3, -1, 5).max
-    foo: (b 'a' `d` "c" ).max.quoted
+    numbers: (1, +71, 2, 3, -1, 5).max
+    strings: (b 'a' `d` "c" ).max.quoted
+    empty: ().max
   }
   ~~~
 
   ~~~ css
   list.max {
-    foo: 71;
-    foo: "d";
+    numbers: 71;
+    strings: "d";
+    empty: null;
   }
   ~~~
 
@@ -560,15 +585,17 @@ Lists
 
   ~~~ lay
   list.min {
-    foo: (1, +71, 2, 3, -1, 5).min
-    foo: (b 'a' `d` "c" ).min.quoted
+    numbers: (1, +71, 2, 3, -1, 5).min
+    strings: (b 'a' `d` "c" ).min.quoted
+    empty: ().min
   }
   ~~~
 
   ~~~ css
   list.min {
-    foo: -1;
-    foo: "a";
+    numbers: -1;
+    strings: "a";
+    empty: null;
   }
   ~~~
 

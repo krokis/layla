@@ -14,7 +14,7 @@ class Enumerable extends Object
 
   next: -> @NOT_IMPLEMENTED
 
-  currentValue: -> @get(@currentKey())
+  currentValue: -> @get @currentKey()
 
   currentKey: -> @NOT_IMPLEMENTED
 
@@ -28,11 +28,11 @@ class Enumerable extends Object
 
   each: -> @NOT_IMPLEMENTED
 
-  firstValue: -> @get(@firstKey())
+  firstValue: -> @get @firstKey()
 
-  lastValue: -> @get(@lastKey())
+  lastValue: -> @get @lastKey()
 
-  randomValue: -> @get(@randomKey())
+  randomValue: -> @get @randomKey()
 
   minValue: ->
     min = null
@@ -52,17 +52,17 @@ class Enumerable extends Object
 
   isEnumerable: -> yes
 
-  '.length': -> new Number @length()
+  '.length': -> Number.new @length()
 
-  '.first': -> @firstValue() or Null.null
+  '.first': -> Null.ifNull @firstValue()
 
-  '.last': -> @lastValue() or Null.null
+  '.last': -> Null.ifNull @lastValue()
 
-  '.random': -> @randomValue() or Null.null
+  '.random': -> Null.ifNull @randomValue()
 
-  '.min': -> @minValue() or Null.null
+  '.min': -> Null.ifNull @minValue()
 
-  '.max': -> @maxValue() or Null.null
+  '.max': -> Null.ifNull @maxValue()
 
 Object::isEnumerable = -> no
 

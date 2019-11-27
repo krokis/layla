@@ -68,7 +68,7 @@ class Calc extends Call
 
     error: (message = '') ->
       message = "Invalid calc() expression" +
-                if message then ": #{message}." else ''
+                if message then ": #{message}" else ''
 
       throw new ValueError message
 

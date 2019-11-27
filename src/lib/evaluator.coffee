@@ -84,6 +84,9 @@ class Evaluator extends Class
   referenceError: (msg, node, context) ->
     @error ReferenceError, msg, node, context
 
+  internalError: (msg, node, context) ->
+    @error InternalError, msg, node, context
+
   ###
   ###
   evaluateNode: (node, context) ->
@@ -100,7 +103,9 @@ class Evaluator extends Class
           throw e
 
     unless node instanceof Object
-      throw new InternalError "Don't know how to evaluate node #{node.type}"
+      @internalError(
+        "Don't know how to evaluate node #{node.type}", node, context
+      )
 
     return node
 
@@ -138,9 +143,9 @@ class Evaluator extends Class
     value = @getStringValue node, context
 
     if node.quote
-      str = new QuotedString
+      strClass = QuotedString
     else if node.raw
-      str = new RawString
+      strClass = RawString
     else
       dollar = value[0] is '$'
 
@@ -149,11 +154,9 @@ class Evaluator extends Class
       else if dollar
         @referenceError "Undefined variable: `#{value}`", node, context
       else
-        str = new UnquotedString
+        strClass = UnquotedString
 
-    str.value = value
-
-    return str
+    return strClass.new value
 
   ###
   ###
@@ -162,7 +165,7 @@ class Evaluator extends Class
   ###
   ###
   evaluateUnicodeRange: (node, context) ->
-    new RawString (@getStringValue node, context).toUpperCase()
+    RawString.new @getStringValue(node, context).toUpperCase()
 
   evaluateCalcLiteral: (node, context) ->
     if node instanceof LiteralCalc
@@ -197,14 +200,14 @@ class Evaluator extends Class
     else if node instanceof Literal
       @evaluateCalcLiteral node, context
     else
-      throw new Error "Bad calc()!"
+      @internalError "Invalid calc expression", node, context
 
   ###
   ###
   evaluateCalc: (node, context) ->
     expr = @evaluateCalcExpression node.expression, context
 
-    return new Calc node.name, expr
+    return Calc.new node.name, expr
 
   ###
   ###
@@ -222,27 +225,27 @@ class Evaluator extends Class
         uri = args[0]?.value or ''
 
         if uri[0...5].trim().toLowerCase() is 'data:'
-          obj = new DataURI uri
+          obj = DataURI.new uri
         else
-          obj = new URL uri
+          obj = URL.new uri
 
         obj.name = name
       when 'regexp'
-        obj = new RegExp args[0]?.value or null
+        obj = RegExp.new args[0]?.value or null
       else
-        obj = new Call name, args
+        obj = Call.new name, args
 
     return obj
 
   ###
   ###
   evaluateNumber: (node) ->
-    new Number node.value, node.unit
+    Number.new node.value, node.unit
 
   ###
   ###
   evaluateRegExp: (node, context) ->
-    new RegExp node.value, node.flags
+    RegExp.new node.value, node.flags
 
   ###
   ###
@@ -258,7 +261,7 @@ class Evaluator extends Class
       else
         in_args.push arg
 
-    return new Function (caller, args...) =>
+    return Function.new (caller, args...) =>
       try
         ctx = context.child caller.block
         l = in_args.length
@@ -278,7 +281,7 @@ class Evaluator extends Class
           ctx.set in_args[d][0], value
 
         if rest_arg
-          rest = new List args[in_args.length...]
+          rest = List.new args[in_args.length...]
           ctx.set rest_arg, rest
 
         @evaluateBody body, ctx
@@ -301,7 +304,7 @@ class Evaluator extends Class
   evaluateList: (node, context) ->
     items = (@evaluateNode item, context for item in node.body)
 
-    return new List items, node.separator
+    return List.new items, node.separator
 
   ###
   ###
@@ -326,13 +329,13 @@ class Evaluator extends Class
     }
 
     try
-      res = obj["."](context, method, args...) or Null.null
+      res = obj['.'](context, method, args...) or Null.null
     catch e
       throw e
     finally
       context.stack.pop()
 
-    return res
+    return Null.ifNull res
 
   ###
   TODO Reimplement this mess as a Node methods
@@ -353,7 +356,7 @@ class Evaluator extends Class
         right = node.right
 
         if right instanceof LiteralString
-          right = new UnquotedString @getStringValue(right, context)
+          right = UnquotedString.new @getStringValue(right, context)
         else
           right = @evaluateNode right, context
 
@@ -368,7 +371,7 @@ class Evaluator extends Class
 
         if (left instanceof Operation) and (left.operator.value in ['.', '::'])
           if left.right instanceof LiteralString
-            name = new UnquotedString @getStringValue left.right
+            name = UnquotedString.new @getStringValue left.right
             obj = @evaluateNode left.left, context
             method = if left.operator.value is '.' then '' else '::'
             args.unshift name
@@ -431,7 +434,7 @@ class Evaluator extends Class
         @referenceError "Bad unit definition", right, context
 
       # TODO This is a temporary hack, because units are not scoped yet
-      left = new Number value
+      left = Number.new value
       left.unit = unit
 
       # TODO scope this
@@ -651,7 +654,7 @@ class Evaluator extends Class
       when 'continue'
         @evaluateContinue node, context
       else
-        throw new InternalError "Unkown directive!"
+        @internalError "Unknown directive: #{node.name}", node, context
 
   ###
   ###
@@ -666,7 +669,7 @@ class Evaluator extends Class
         if current and not current.isNull()
           continue
 
-      property = new Property name, value
+      property = Property.new name, value
       context.block.items.push property
 
     return property
@@ -684,7 +687,7 @@ class Evaluator extends Class
   ###
   ###
   evaluateBlock: (node, context) ->
-    block = new Block
+    block = Block.new()
     ctx = context.child block
     @evaluateBody node.body, ctx
 
@@ -693,7 +696,7 @@ class Evaluator extends Class
   ###
   ###
   evaluateCombinator: (combinator, context) ->
-    new Combinator combinator.value
+    Combinator.new combinator.value
 
   ###
   ###
@@ -714,24 +717,24 @@ class Evaluator extends Class
 
     switch node.name
       when '*'
-        return new UniversalSelector namespace
+        return UniversalSelector.new namespace
       else
         # TODO :S
         name = node.name
         unless typeof name is 'string'
           name = @getStringValue name, context
 
-        return new TypeSelector name, namespace
+        return TypeSelector.new name, namespace
 
   ###
   ###
   evaluateIdSelector: (node, context) ->
-    new IdSelector @getStringValue node.name, context
+    IdSelector.new @getStringValue node.name, context
 
   ###
   ###
   evaluateClassSelector: (node, context) ->
-    new ClassSelector @getStringValue node.name, context
+    ClassSelector.new @getStringValue node.name, context
 
   ###
   ###
@@ -739,7 +742,7 @@ class Evaluator extends Class
     namespace = @evaluateSelectorNamespace node, context
     name = @getStringValue node.name, context
 
-    attr_selector = new AttributeSelector name, null, null, null, namespace
+    attr_selector = AttributeSelector.new name, null, null, null, namespace
 
     if node.operator
       attr_selector.operator = node.operator
@@ -765,7 +768,7 @@ class Evaluator extends Class
     else
       args = null
 
-    return new cls name, args
+    return cls.new name, args
 
   ###
   ###
@@ -780,12 +783,12 @@ class Evaluator extends Class
   ###
   ###
   evaluateParentSelector: (node, context) ->
-    return new ParentSelector
+    return ParentSelector.new()
 
   ###
   ###
   evaluateCompoundSelector: (node, context) ->
-    compound = new CompoundSelector
+    compound = CompoundSelector.new()
 
     for child in node.items
       compound.children.push @evaluateNode child, context
@@ -793,12 +796,12 @@ class Evaluator extends Class
     return compound
 
   evaluateKeyframeSelector: (node, context) ->
-    return new KeyframeSelector node.keyframe
+    return KeyframeSelector.new node.keyframe
 
   ###
   ###
   evaluateComplexSelector: (node, context) ->
-    complex = new ComplexSelector
+    complex = ComplexSelector.new()
 
     for child in node.items
       complex.children.push @evaluateNode child, context
@@ -808,7 +811,7 @@ class Evaluator extends Class
   ###
   ###
   evaluateSelectorList: (node, context) ->
-    selector_list = new SelectorList
+    selector_list = SelectorList.new()
 
     for child in node.items
       selector_list.children.push @evaluateNode child, context
@@ -818,7 +821,7 @@ class Evaluator extends Class
   ###
   ###
   evaluateRuleSetDeclaration: (node, context) ->
-    rule = new RuleSet
+    rule = RuleSet.new()
     context.block.items.push rule
 
     # TODO When evaluating a rule-set selector, the context is the parent of the
@@ -840,14 +843,14 @@ class Evaluator extends Class
       else if arg instanceof PropertyDeclaration
         name = @getStringValue arg.names[0], context
         value = (@evaluateNode arg.value, context).clone() # TODO ??
-        return new Property name, value
+        return Property.new name, value
 
       return @evaluateNode arg, context
 
   ###
   ###
   evaluateAtRuleDeclaration: (node, context) ->
-    rule = new AtRule
+    rule = AtRule.new()
     context.block.items.push rule
     rule.name = @getStringValue node.name, context
 
